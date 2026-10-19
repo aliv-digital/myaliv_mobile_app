@@ -1,0 +1,228 @@
+GUEST PAY BILLS KEYBOARD BEHAVIOR IMPLEMENTATION REPORT
+
+Summary
+-------
+
+Implemented isolated keyboard Next/Done behavior for every editable Guest Pay
+Bills service mode, following guest_pay_bills_keyboard_behavior_audit.txt.
+
+The implementation reuses the existing verification and final-submit actions,
+preserves the current loading/disabled behavior, and does not change validation,
+API, BLoC, navigation, formatting, layout, or payment behavior.
+
+
+Files changed
+-------------
+
+Application files:
+
+1. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/
+   guest_pay_bill_screen.dart
+
+2. lib/resources/widgets/custom_country_phone_input_submit_row.dart
+
+3. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+   guest_pay_bill_focused_text_field.dart
+
+4. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+   guest_pay_bill_inline_verify_field.dart
+
+Targeted test:
+
+5. test/guest_pay_bill/guest_pay_bill_keyboard_behavior_test.dart
+
+Implementation report:
+
+6. guest_pay_bills_keyboard_behavior_implementation_report.txt
+
+No other application or shared file was modified.
+
+
+Behavior implemented by service mode
+------------------------------------
+
+ALIV Postpaid
+
+- Mobile number now uses TextInputAction.next.
+- Flutter's standard focus traversal moves Next to Confirm mobile number.
+- No manual nextFocus, requestFocus, new FocusNode, raw keyboard listener, or
+  onEditingComplete behavior was added.
+- Confirm mobile number now uses TextInputAction.done.
+- Confirm Done ignores the submitted String and invokes the existing verify
+  action only through the same guards used by the nearby inline Submit.
+
+ALIV Fibr
+
+- Account number/username now uses TextInputAction.next.
+- Standard focus traversal moves Next to Name.
+- Name now uses TextInputAction.done.
+- Name Done ignores the submitted String and follows the same current loading,
+  enabled, feedback, and GuestPayBillVerifyPressed flow as its inline Submit.
+
+Custom amount / final stage
+
+- Custom amount now uses TextInputAction.done.
+- Amount Done ignores the submitted String and reads current BLoC state.
+- When state.canSubmit is false, Done does nothing and shows no new feedback.
+- When state.canSubmit is true, Done invokes the same screen-local
+  finalSubmitAction used by the bottom Submit button.
+- finalSubmitAction preserves the exact existing
+  _onSubmitPressed(context, state) behavior: dispatch GuestPayBillSubmitPressed,
+  build the same GuestPayBillConfirmArgs, and immediately push the same
+  confirmation route.
+- Because state.canSubmit already includes the existing submit-loading
+  restriction, keyboard Done cannot invoke _onSubmitPressed while the visible
+  bottom button is disabled/loading.
+
+REV
+
+- No keyboard-input behavior was added.
+- The existing selection-only REV card and continue-to-pay action are unchanged.
+
+
+Inline Verify and keyboard Done guard parity
+--------------------------------------------
+
+ALIV Postpaid confirm row
+
+- CustomCountryPhoneInputSubmitRow now has one internal _runGuardedSubmit path.
+- The existing inline button calls that path with its existing onSubmit action.
+- TextField submission calls the same path with its onSubmitted callback.
+- Both paths therefore preserve exactly:
+  - submitLoading true -> no-op;
+  - submitEnabled false -> the existing ScaffoldMessenger SnackBar using the
+    unchanged "Please enter required details first." message;
+  - submitEnabled true -> the shared screen-local verifyAction.
+- verifyAction calls the existing _onVerifyPressed(context), which dispatches
+  const GuestPayBillVerifyPressed().
+
+ALIV Fibr name field
+
+- The new submitted handler checks the existing loading and enabled values.
+- loading true -> no-op.
+- enabled/state.canVerify false -> the existing AppToast feedback with the
+  unchanged "Please enter required details first" message and punctuation.
+- enabled/state.canVerify true -> the same screen-local verifyAction passed to
+  the existing inline button.
+- No phone/account/name validation logic was copied or changed.
+
+
+Shared-widget default preservation
+----------------------------------
+
+CustomCountryPhoneInputSubmitRow
+
+- Added only nullable TextInputAction? textInputAction to its public keyboard
+  configuration.
+- The default remains null.
+- It is forwarded unchanged to the internal TextField.
+- Existing FocusNode ownership, controller, formatter, readOnly, focus-border,
+  country UI, button UI, and lifecycle behavior are unchanged.
+- Existing callers that omit textInputAction/onSubmitted keep their prior
+  keyboard configuration and do not trigger keyboard submission.
+
+GuestPayBillFocusedTextField
+
+- Added nullable/default-null textInputAction and onSubmitted properties.
+- Both are forwarded unchanged to the internal TextField.
+- Its private FocusNode, focus listener, border behavior, and disposal remain
+  unchanged.
+
+GuestPayBillInlineVerifyField
+
+- Added nullable/default-null textInputAction and onSubmitted hooks.
+- Its private FocusNode, field UI, inline button UI, loading spinner, feedback,
+  and lifecycle remain unchanged.
+
+CustomCountryPhoneInputRow was not modified. Its existing nullable
+textInputAction support is used only at the ALIV Postpaid mobile call site.
+
+
+Loading and duplicate-submit behavior
+-------------------------------------
+
+- Postpaid Confirm Done returns while verify loading, matching its inline
+  button.
+- Fibr Name Done returns while verify loading, matching its inline button.
+- Amount Done requires current state.canSubmit, which is false while final
+  submission is loading.
+- Existing BLoC loading guards remain unchanged and provide their existing
+  secondary protection.
+- No debounce, new loading state, lock, route guard, or concurrency behavior
+  was introduced.
+- The existing immediate confirmation navigation and pre-loading race boundary
+  were not redesigned.
+
+
+Tests added and results
+-----------------------
+
+The targeted widget suite contains 15 passing tests:
+
+1. Postpaid Mobile exposes TextInputAction.next.
+2. Postpaid Mobile Next focuses Confirm mobile.
+3. Postpaid Confirm exposes TextInputAction.done.
+4. Valid Postpaid Confirm Done triggers the existing account lookup.
+5. Invalid Postpaid Confirm Done preserves its exact SnackBar feedback.
+6. Postpaid Confirm Done is ignored while verification is loading.
+7. Fibr Account Next focuses Name.
+8. Valid Fibr Name Done triggers the existing Fibr lookup.
+9. Invalid Fibr Name Done preserves its exact AppToast feedback.
+10. Fibr Name Done is ignored while verification is loading.
+11. Custom amount exposes TextInputAction.done.
+12. Amount Done does nothing while the final Submit is disabled.
+13. Enabled Amount Done preserves confirmation route and argument behavior.
+14. Amount Done does not bypass the final submit loading state.
+15. REV remains a no-TextField selection-only flow.
+
+Command:
+
+flutter test test/guest_pay_bill/guest_pay_bill_keyboard_behavior_test.dart
+
+Result:
+
+- 15 passed
+- 0 failed
+- Final output: All tests passed
+
+No pre-existing Guest Pay Bill test file was found under test/, so there was no
+additional existing module-specific suite to run.
+
+
+Checks run and results
+----------------------
+
+Targeted analyzer command:
+
+flutter analyze \
+  lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart \
+  lib/resources/widgets/custom_country_phone_input_submit_row.dart \
+  lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/guest_pay_bill_focused_text_field.dart \
+  lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/guest_pay_bill_inline_verify_field.dart \
+  test/guest_pay_bill/guest_pay_bill_keyboard_behavior_test.dart
+
+Result:
+
+- No issues found
+
+Command:
+
+git diff --check
+
+Result:
+
+- Passed with no whitespace errors
+
+
+Non-regression confirmation
+---------------------------
+
+No GuestPayBillBloc/event/state, repository/API, state.canVerify,
+state.canSubmit, phone helper, Bahamas formatter, phone matching, amount parsing,
+amount threshold, service reset, loading state, spinner, error copy, route,
+GuestPayBillConfirmArgs, immediate navigation, confirmation/payment/receipt,
+service selector, REV flow, UI/layout/style, or other Guest/Login behavior was
+modified.
+
+The feature remains isolated to the four explicitly allowed application files
+and the explicitly allowed targeted test.

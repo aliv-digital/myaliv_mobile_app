@@ -1,0 +1,270 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+
+import '../data/plan_icon_assets.dart';
+import '../models/plan_model.dart';
+import '../theme/theme.dart';
+
+class MifiPlanCard extends StatelessWidget {
+  final GuestPlanDisplayModel plan;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final VoidCallback onViewDetails; // toggle expand/collapse
+  final VoidCallback onPurchaseNow;
+
+  const MifiPlanCard({
+    super.key,
+    required this.plan,
+    required this.expanded,
+    required this.onToggle,
+    required this.onViewDetails,
+    required this.onPurchaseNow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // ✅ mifi card center metric: data benefit prefer
+    final PlanBenefit? dataBenefit = plan.highlights
+        .where((b) => b.type == PlanBenefitType.data)
+        .cast<PlanBenefit?>()
+        .firstWhere((b) => b != null, orElse: () => null);
+
+    final PlanBenefit? center =
+        dataBenefit ?? (plan.highlights.isEmpty ? null : plan.highlights.first);
+
+    return Container(
+      margin: GuestPurchasePlanTheme.planCardOuterMargin,
+      padding: GuestPurchasePlanTheme.planCardInnerPadding,
+      decoration: BoxDecoration(
+        color: GuestPurchasePlanTheme.planCardBackgroundColor,
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planCardRadius,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: GuestPurchasePlanTheme.planCardShadowColor,
+            blurRadius: GuestPurchasePlanTheme.planCardShadowBlur,
+            offset: GuestPurchasePlanTheme.planCardShadowOffset,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // ===== Header row =====
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: onToggle,
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardHeaderTapRadius,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              plan.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style:
+                                  GuestPurchasePlanTheme.planCardTitleTextStyle,
+                            ),
+                          ),
+                          const SizedBox(
+                            width:
+                                GuestPurchasePlanTheme.planCardTitleToArrowGap,
+                          ),
+                          SizedBox(
+                            child: SvgPicture.asset(
+                              expanded
+                                  ? AssetConstant.upArrowSVG
+                                  : AssetConstant.downArrowSVG,
+                              width: GuestPurchasePlanTheme
+                                  .planCardToggleArrowWidth,
+                              height: GuestPurchasePlanTheme
+                                  .planCardToggleArrowHeight,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        plan.subtitle,
+                        style: GuestPurchasePlanTheme.planCardSubtitleTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              _PricePill(price: plan.formattedPrice),
+            ],
+          ),
+
+          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
+
+          // ===== Center metric (data only) =====
+          if (center != null) _CenterMetric(benefit: center),
+
+          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
+
+          // ===== Expanded description =====
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 180),
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            firstChild: const SizedBox(height: 0),
+            secondChild: Padding(
+              padding: const EdgeInsets.only(
+                bottom: GuestPurchasePlanTheme.planCardDescriptionBottomSpacing,
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text(
+                  plan.description,
+                  textAlign: TextAlign.start,
+                  style: GuestPurchasePlanTheme.planCardDescriptionTextStyle,
+                ),
+              ),
+            ),
+          ),
+
+          // ===== Buttons =====
+          Row(
+            children: [
+              Expanded(
+                child: DefaultButton(
+                  label: expanded
+                      ? GuestPurchasePlanTheme.planCardHideDetailsLabel
+                      : GuestPurchasePlanTheme.planCardViewDetailsLabel,
+                  isLoading: false,
+                  onPressed: onViewDetails,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardViewDetailsBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardViewDetailsTextStyle,
+                  borderSide: BorderSide(
+                    color:
+                        GuestPurchasePlanTheme.planCardViewDetailsBorderColor,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: GuestPurchasePlanTheme.planCardActionButtonsGap,
+              ),
+              Expanded(
+                child: DefaultButton(
+                  label: GuestPurchasePlanTheme.planCardPurchaseNowLabel,
+                  isLoading: false,
+                  onPressed: onPurchaseNow,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardPurchaseNowBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardPurchaseNowTextStyle,
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PricePill extends StatelessWidget {
+  final String price;
+  const _PricePill({required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
+      decoration: BoxDecoration(
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planPricePillRadius,
+        ),
+      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
+    );
+  }
+}
+
+class _CenterMetric extends StatelessWidget {
+  final PlanBenefit benefit;
+  const _CenterMetric({required this.benefit});
+
+  @override
+  Widget build(BuildContext context) {
+    final iconPath = PlanIconAssets.forType(benefit.type);
+    final isSvg = iconPath.toLowerCase().endsWith('.svg');
+
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isSvg)
+              SvgPicture.asset(iconPath, width: 16, height: 16)
+            else
+              Image.asset(iconPath, width: 16, height: 16),
+            const SizedBox(width: 2),
+            Text(
+              benefit.label.toLowerCase(),
+              style: const TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 12,
+                height: 1.0,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFFF6C36),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          benefit.value,
+          style: const TextStyle(
+            fontFamily: 'CircularPro',
+            fontSize: 16,
+            height: 1.0,
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          benefit.sub,
+          style: const TextStyle(
+            fontFamily: 'CircularPro',
+            fontSize: 12,
+            height: 1.0,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF707070),
+          ),
+        ),
+      ],
+    );
+  }
+}

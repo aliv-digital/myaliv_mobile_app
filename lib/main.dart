@@ -1,121 +1,172 @@
+import 'dart:async';
+
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/router/app_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import 'main_injection_container.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo 2',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('⚠️ Firebase not configured yet — analytics disabled: $e');
   }
+
+  // Initialize HydratedBloc storage for account info persistence
+  final storageDir = await getApplicationDocumentsDirectory();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(storageDir.path),
+  );
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: ColorManager.primaryPurple,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
+  final appRouter = AppRouter();
+
+  await AppMainInjection().initInjection();
+
+  // Load biometric status so the GoRouter redirect can read it synchronously
+  await instance<FingerFaceSecurityCubit>().loadBiometricStatus();
+
+  final accountState = instance<AccountInfoCubit>().state;
+  final initialUiConfig = !accountState.hasAccount
+      ? null
+      : HomeUiConfig(
+          userType: accountState.isPostpaid
+              ? UserType.postpaid
+              : UserType.prepaid,
+          hasActivePlan: false,
+          isFuturePlan: false,
+          isCurrentPlan: false,
+        );
+
+  runApp(MyApp(appRouter: appRouter, initialUiConfig: initialUiConfig));
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MyApp extends StatefulWidget {
+  final AppRouter appRouter;
+  final HomeUiConfig? initialUiConfig;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyApp({super.key, required this.appRouter, this.initialUiConfig});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final _sessionTimeoutService = SessionTimeoutService();
+  Timer? _activityHeartbeat;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  // Refresh the "last active" timestamp this often while the app is in
+  // foreground. Keeps hot restarts (dev) and in-app periods of use from
+  // appearing as "20 min idle" because paused never fired.
+  static const _heartbeatInterval = Duration(minutes: 1);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _startHeartbeat();
+  }
+
+  @override
+  void dispose() {
+    _activityHeartbeat?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _startHeartbeat() {
+    _activityHeartbeat?.cancel();
+    _activityHeartbeat = Timer.periodic(_heartbeatInterval, (_) {
+      _sessionTimeoutService.markActive();
     });
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _activityHeartbeat?.cancel();
+      _sessionTimeoutService.markActive();
+    } else if (state == AppLifecycleState.resumed) {
+      // Only enforce timeout for already-logged-in users. Skip during
+      // ongoing login/OTP flows where no session exists yet — otherwise
+      // switching to Messages for an SMS code bounces user to Welcome.
+      final session = instance<AuthManager>().currentSession;
+      if (session == null || session.refreshExpired) {
+        _startHeartbeat();
+        return;
+      }
+
+      _sessionTimeoutService.hasTimedOut().then((timedOut) {
+        if (!mounted) return;
+        if (timedOut) {
+          widget.appRouter.router.go(AppRoutes.logIn);
+        } else {
+          // Still within the 20-min window — refresh the stamp so an
+          // immediate hot-restart (or back-to-back resumes) can't fall
+          // off the boundary into a false timeout.
+          _sessionTimeoutService.markActive();
+        }
+        _startHeartbeat();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              AppUiConfigCubit(initialConfig: widget.initialUiConfig),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        BlocProvider.value(value: instance<AccountInfoCubit>()),
+        BlocProvider.value(value: instance<PlansCubit>()),
+        BlocProvider.value(value: instance<LimitedOfferCubit>()),
+        BlocProvider.value(value: instance<BestPlanCubit>()),
+        BlocProvider.value(value: instance<BalanceCubit>()),
+        BlocProvider.value(value: instance<BucketUsageSummaryCubit>()),
+        BlocProvider.value(value: instance<SavedCardsCubit>()),
+      ],
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'My Aliv',
+        routerConfig: widget.appRouter.router,
+        theme: ThemeData(
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: Colors.white,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
+          ),
+        ),
       ),
     );
   }

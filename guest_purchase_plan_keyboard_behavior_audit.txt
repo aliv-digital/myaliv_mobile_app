@@ -1,0 +1,468 @@
+GUEST PURCHASE A PLAN BOTTOM-SHEET KEYBOARD BEHAVIOR AUDIT
+
+Audit scope
+-----------
+Investigation only. No application code, UI, styling, validation, API,
+business logic, navigation, formatting, or bottom-sheet behavior was changed.
+The only created artifact is this audit report. Line numbers refer to the
+inspected snapshot.
+
+
+1. Exact bottom-sheet and directly related files
+------------------------------------------------
+
+Primary bottom-sheet implementation:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/widgets/guest_purchase_plan_bottom_sheet.dart
+  - showGuestSplashPurchasePlanBottomSheet (lines 19-43) initializes state and
+    opens the modal bottom sheet.
+  - _GuestSplashPurchasePlanSheetView (lines 45-119) handles keyboard inset,
+    route animation, and the success-state listener.
+  - _SheetBody (lines 121-444) contains both editable phone fields, live
+    validation, the Continue button, and its direct navigation callback.
+
+Opening screen:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart
+  - The "purchase a plan" button at lines 196-210 awaits
+    showGuestSplashPurchasePlanBottomSheet(context).
+
+Bottom-sheet state/event files:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/bloc/guest_splash_bloc.dart
+- lib/app/Aliv-Mobile-Guest/guestSplash/bloc/guest_splash_event.dart
+- lib/app/Aliv-Mobile-Guest/guestSplash/bloc/guest_splash_state.dart
+- lib/app/Aliv-Mobile-Guest/guestSplash/model/guest_purchase_plan_input.dart
+
+Direct input, validation, formatting, and button dependencies:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart
+  - Shared phone-row widget containing the actual TextField used twice here.
+- lib/resources/widgets/defaultButton.dart
+  - Shared Continue button implementation.
+- lib/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart
+  - Formats Bahamas input and limits it to 10 digits.
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+  - Supplies live country-aware phone validation and final display formatting.
+- lib/app/Aliv-Mobile-Guest/guestSplash/theme/guest_splash_theme.dart
+  - Copy, dimensions, animation, and styles only.
+
+Direct navigation target:
+
+- lib/router/app_routes.dart
+  - AppRoutes.guestPurchasePlan is /guest-purchase-plan.
+- lib/router/app_router.dart lines 683-692
+  - Reads extra['phoneNumber'] and constructs GuestPurchasePlanScreen.
+- lib/app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart
+  - Receives the phoneNumber and creates GuestPurchasePlanBloc.
+- lib/app/Aliv-Mobile-Guest/guestPurchasePlan/bloc/guest_purchase_plan_bloc.dart
+  - GuestPurchasePlanStarted begins plan loading after navigation.
+- lib/app/Aliv-Mobile-Guest/guestPurchasePlan/repository/guest_purchase_plan_repository.dart
+  - Current plan/add-on loading is delayed static/demo repository data, not a
+    request made by the bottom-sheet Continue callback.
+
+No targeted widget test for this bottom sheet or its keyboard behavior was
+found under test/ at audit time.
+
+
+2. Editable fields and current order
+------------------------------------
+
+There are exactly two editable TextFields in the bottom sheet, in this order:
+
+1. "enter mobile number"
+   - Label at guest_purchase_plan_bottom_sheet.dart line 198.
+   - First CustomCountryPhoneInputRow at lines 214-263.
+   - Hint: "eg: (242)-899-9999".
+   - onChanged dispatches GuestSplashPurchasePlanPhoneChanged.
+
+2. "confirm mobile number"
+   - Label at line 272.
+   - Second CustomCountryPhoneInputRow at lines 288-337.
+   - Same hint: "eg: (242)-899-9999".
+   - onChanged dispatches GuestSplashPurchasePlanConfirmPhoneChanged.
+
+Both CustomCountryPhoneInputRow instances contain one TextField at
+custom_country_phone_input_row.dart lines 365-384. Country selection is
+disabled for both rows in this sheet (enableCountryPicker: false and
+showCountryArrow: false), so the country boxes are not active input controls.
+
+
+3. Current TextInputAction / keyboard action configuration
+----------------------------------------------------------
+
+Shared widget capabilities:
+
+- CustomCountryPhoneInputRow accepts nullable TextInputAction?
+  textInputAction (constructor line 51, property line 94).
+- It forwards that value unchanged to TextField.textInputAction (line 372).
+- The default is null.
+
+Current bottom-sheet call sites:
+
+- The first mobile field does not pass textInputAction.
+- The confirm mobile field does not pass textInputAction.
+- Both therefore retain the shared null/default configuration.
+- Both use the shared default keyboardType of TextInputType.phone.
+- Since each is a default single-line TextField with no explicit action,
+  Flutter/IME normally presents a completion/Done action. The first field does
+  not explicitly advertise Next and the second does not explicitly establish
+  Done as a screen contract.
+
+
+4. Current FocusNode and submit-key handling
+--------------------------------------------
+
+The bottom-sheet call sites do not provide FocusNodes.
+
+For each CustomCountryPhoneInputRow, the shared widget therefore:
+
+- creates its own _effectiveFocusNode in _bindFocusNode (shared file lines
+  192-197);
+- marks itself as owner because the caller supplied no external node;
+- listens for focus changes and updates _hasPhoneFocus for border painting;
+- unbinds and disposes its owned node in dispose (lines 186-204);
+- assigns that node to the internal TextField (line 366).
+
+The two rows have independent internally owned FocusNodes. They appear in the
+desired traversal order, first mobile then confirm mobile.
+
+Shared submit capability:
+
+- CustomCountryPhoneInputRow already accepts nullable
+  ValueChanged<String>? onSubmitted (constructor line 57, property line 100).
+- It forwards onSubmitted unchanged to the TextField (line 374).
+
+Current bottom-sheet behavior:
+
+- Neither field supplies onSubmitted.
+- Neither field supplies onEditingComplete.
+- There is no FocusScope.nextFocus, FocusNode.requestFocus, nextFocus,
+  FocusTraversalOrder, or raw keyboard listener in this bottom sheet.
+- No keyboard action currently calls the Continue behavior.
+
+The bottom sheet uses MediaQuery.viewInsets.bottom with AnimatedPadding
+(guest_purchase_plan_bottom_sheet.dart lines 49-76), so it moves above the
+keyboard using the existing configured animation. That behavior is independent
+of Next/Done and must remain unchanged.
+
+
+5. Exact existing Continue button callback/action
+-------------------------------------------------
+
+The Continue control is DefaultButton at
+guest_purchase_plan_bottom_sheet.dart lines 358-403.
+
+Its current callback performs exactly this sequence:
+
+1. If state.purchasePhone is empty OR _isPhoneInvalid returns true:
+   - AppToast.show GuestSplashTheme.invalidPhoneMessage as ToastType.error.
+   - Return without navigation.
+2. If state.purchaseConfirmPhone is empty OR _isMismatch returns true:
+   - AppToast.show GuestSplashTheme.phoneMismatchMessage as ToastType.error.
+   - Return without navigation.
+3. Otherwise call:
+   context.push(
+     AppRoutes.guestPurchasePlan,
+     extra: {
+       'phoneNumber':
+         LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
+           state.purchasePhone,
+         ),
+     },
+   );
+
+Important: this callback does not dispatch
+GuestSplashPurchasePlanSubmitted. It performs validation/toasts/navigation
+directly in _SheetBody.
+
+The button is passed isLoading: false unconditionally. Its onPressed callback
+is non-null, so DefaultButton always considers it enabled.
+
+
+6. Current validation, submission, business logic, and navigation
+-----------------------------------------------------------------
+
+Bottom-sheet initialization/opening:
+
+1. The Guest Splash screen calls showGuestSplashPurchasePlanBottomSheet.
+2. CountryService resolves Bahamas, falling back to the United States.
+3. Before opening the modal, GuestSplashPurchasePlanInit is dispatched to the
+   existing GuestSplashBloc.
+4. _onPurchasePlanInit sets the country, clears both phone values, sets status
+   to idle, and clears previous purchase error/result state.
+5. showModalBottomSheet uses isScrollControlled: true, useSafeArea: true,
+   transparent background, the existing barrier color, and the existing
+   GuestSplashBloc via BlocProvider.value.
+
+Field updates:
+
+- First field onChanged dispatches GuestSplashPurchasePlanPhoneChanged(raw
+  formatted value). The BLoC stores it, returns purchaseStatus to idle, and
+  clears prior purchase error/result.
+- Confirm field onChanged dispatches
+  GuestSplashPurchasePlanConfirmPhoneChanged(raw formatted value), with the
+  same status/error/result reset behavior.
+
+Formatting:
+
+- The initial/current country is Bahamas in the normal path.
+- For Bahamas, both fields use BahamasPhoneInputFormatter. It formats typing
+  as "(242) 345-4356", retains digits as the meaningful value, and limits
+  input to 10 digits.
+- For a non-Bahamas state, both fields use a formatter allowing digits, hyphens,
+  and spaces.
+- Both fields receive the same formatter policy for the current country.
+
+Live phone validation:
+
+- _isPhoneInvalid calls LoginPhoneNumberHelper.hasLiveValidationError using a
+  LoginCountrySelection derived from the current Country.
+- The helper stays quiet while the phone has no digits, then applies its
+  country-aware validation.
+- A live invalid phone changes first-field text/border styling and shows
+  GuestSplashTheme.invalidPhoneMessage inline.
+- Bahamas validation accepts seven subscriber digits or ten digits beginning
+  with 242, as defined by LoginPhoneNumberHelper.
+
+Live matching validation:
+
+- _isMismatch returns false while confirm is the empty string.
+- Otherwise it removes all non-digits from both values and compares the digit
+  strings.
+- A mismatch changes confirm-field text/border styling and shows
+  GuestSplashTheme.phoneMismatchMessage inline.
+- Formatting differences do not cause a mismatch when the digits match.
+
+Continue validation and navigation:
+
+- Continue checks first phone emptiness/validity first and displays an error
+  toast on failure.
+- It then checks confirm emptiness/digit mismatch and displays a mismatch error
+  toast on failure.
+- It does not set purchaseStatus, call a repository, or start an API request.
+- On valid input it formats state.purchasePhone through
+  formatBahamasNumberForDisplay and pushes AppRoutes.guestPurchasePlan with
+  that phoneNumber in route extra.
+- app_router.dart reads the value and passes it to GuestPurchasePlanScreen.
+- GuestPurchasePlanScreen creates GuestPurchasePlanBloc and dispatches
+  GuestPurchasePlanStarted. The destination then loads the initially selected
+  plan tab through GuestPurchasePlanRepository. In the inspected code this
+  repository currently returns delayed static/demo plan data.
+
+Bottom-sheet close/result behavior:
+
+- Back uses Navigator.pop and closes the sheet.
+- _GuestSplashPurchasePlanSheetView has a listener that pops with a
+  GuestSplashPurchasePlanInput only when purchaseStatus becomes success, then
+  dispatches GuestSplashPurchasePlanReset.
+- The current Continue callback never produces that success state; it directly
+  pushes the guest plan screen. Therefore Continue does not explicitly pop the
+  sheet or return GuestSplashPurchasePlanInput to the awaiting caller.
+- This existing behavior must not be changed by keyboard integration.
+
+Unused alternate submission path that must not be substituted:
+
+- GuestSplashBloc handles GuestSplashPurchasePlanSubmitted. That handler trims
+  both raw strings, compares raw trimmed strings (not digit-normalized values),
+  emits failure messages into state, or emits success with a result.
+- The success listener then pops the bottom sheet rather than pushing the plan
+  route.
+- The current Continue button does not dispatch this event. Wiring keyboard
+  Done to GuestSplashPurchasePlanSubmitted would not be equivalent: it would
+  change validation, feedback, navigation, and bottom-sheet close behavior.
+
+
+7. Shared/custom phone input used here
+--------------------------------------
+
+Both fields use:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart
+- Widget: CustomCountryPhoneInputRow
+- Actual editable control: its internal TextField
+
+The shared widget controls:
+
+- TextInputType.phone default;
+- optional nullable textInputAction;
+- optional nullable onSubmitted;
+- input formatters;
+- controller/autofocus/readOnly options;
+- internal or externally supplied FocusNode ownership and lifecycle;
+- focused border gradient;
+- field/container dimensions, decoration, country display, and typography.
+
+The bottom sheet supplies no controllers or FocusNodes, so field content is
+held by each TextField while BLoC state is updated through onChanged.
+
+
+8. Shared-widget impact analysis
+--------------------------------
+
+CustomCountryPhoneInputRow has multiple callers across login, forgot password,
+guest top-up, guest bill pay, plan/contact, referral, and account top-up flows.
+A behavioral default change could affect all of those screens.
+
+However, no shared-widget modification is needed for this feature. The widget
+already exposes both required hooks:
+
+- TextInputAction? textInputAction, default null;
+- ValueChanged<String>? onSubmitted, default null.
+
+The future implementation should configure those existing properties only at
+the two bottom-sheet call sites. This gives strict isolation and leaves every
+other caller unchanged.
+
+If a future codebase revision removes either hook before implementation, any
+restoration must be additive, nullable, default-null, and forwarded unchanged.
+It must not hardcode Next/Done or submission behavior in the shared widget.
+
+
+9. Safest minimal isolated integration approach
+------------------------------------------------
+
+No implementation is included in this audit.
+
+All application changes can remain inside:
+
+  lib/app/Aliv-Mobile-Guest/guestSplash/widgets/
+  guest_purchase_plan_bottom_sheet.dart
+
+A. First mobile field -> Next -> confirm mobile field
+
+- Pass textInputAction: TextInputAction.next to the first
+  CustomCountryPhoneInputRow only.
+- Leave its onSubmitted and onEditingComplete unset.
+- Do not add manual nextFocus or requestFocus. Flutter's standard completion
+  behavior for TextInputAction.next advances to the next focusable control; in
+  the current widget order that is the confirm phone TextField.
+- Do not both rely on standard Next traversal and call nextFocus manually,
+  because double traversal could skip the confirm field and reach Continue or
+  another later control.
+- Keep both internally owned FocusNodes and their existing lifecycle/focus
+  border listeners unchanged.
+
+B. Confirm mobile field -> Done -> exact Continue behavior
+
+- Inside the loaded-state BlocBuilder, define one local VoidCallback (for
+  example continueAction) containing the exact current DefaultButton.onPressed
+  body without logic changes.
+- Pass that one callback directly to DefaultButton.onPressed.
+- Pass textInputAction: TextInputAction.done to the confirm
+  CustomCountryPhoneInputRow.
+- Set its onSubmitted to ignore the submitted String and invoke the same
+  continueAction callback.
+- Do not copy validation into onSubmitted and do not dispatch
+  GuestSplashPurchasePlanSubmitted.
+- Do not use the submitted String as a new source of truth. The existing BLoC
+  state, formatter, helper, matching logic, toasts, route, and route extra must
+  remain authoritative.
+
+This preserves one action definition shared by Continue tap and keyboard Done:
+
+- Continue tap or confirm-field Done
+- same local continueAction
+- same phone validation
+- same matching validation
+- same error toasts or same context.push
+
+
+10. Loading and duplicate-submit considerations
+-----------------------------------------------
+
+Current state/button protection:
+
+- GuestSplashPurchasePlanStatus has idle, success, and failure only; there is
+  no loading value for this bottom-sheet Continue path.
+- DefaultButton receives isLoading: false unconditionally.
+- The Continue callback is always non-null, so the button is always enabled.
+- The callback performs no async operation and does not call an API before
+  context.push.
+- There is no in-flight flag, re-entry guard, debounce, or duplicate-navigation
+  protection in the current action.
+
+Keyboard parity requirements:
+
+- Since there is no disabled/loading button state, keyboard Done has no loading
+  state to bypass.
+- Reusing the exact same callback gives Done the same current behavior and
+  duplicate-navigation boundary as a rapid repeated button tap.
+- Do not invent a new loading guard, status, debounce, or BLoC concurrency
+  behavior as part of keyboard integration; that would change existing button
+  semantics and is outside scope.
+- Do not use purchaseStatus failure/success as a keyboard gate. The physical
+  button does not do so, and its direct path does not set those statuses.
+
+
+11. Regression risks and behavior that must remain unchanged
+------------------------------------------------------------
+
+- Exact action reuse: Done must invoke the current Continue callback, not a
+  separately copied validation/navigation implementation.
+- Do not dispatch GuestSplashPurchasePlanSubmitted from Done; that alternate
+  path has different string matching, error presentation, return data,
+  navigation, and bottom-sheet close behavior.
+- Validation order must remain first phone empty/invalid, then confirm
+  empty/mismatch.
+- Error presentation must remain the current inline live styling/messages plus
+  the current AppToast errors on Continue/Done.
+- Matching must remain digit-normalized through _digitsOnly; formatted and
+  unformatted values with identical digits must continue to match.
+- Bahamas formatting, 10-digit input limit, deletion behavior, country-aware
+  validation, and accepted Bahamas lengths/prefix must remain unchanged.
+- Preserve the non-Bahamas formatter behavior even though the country picker
+  is currently disabled.
+- Preserve raw BLoC field values and existing onChanged events/status resets.
+- Preserve formatBahamasNumberForDisplay for the route value; do not send the
+  TextField.onSubmitted String directly.
+- Preserve AppRoutes.guestPurchasePlan, the extra map key phoneNumber, and
+  GuestPurchasePlanScreen construction/loading behavior.
+- Preserve the current absence of API work in the bottom-sheet Continue path.
+- Preserve the current modal open configuration, animations, keyboard inset
+  AnimatedPadding, SafeArea, barrier, and route transition.
+- Preserve current back-button pop behavior and the separate success-listener
+  pop/reset behavior, even though Continue currently uses direct route push.
+- Preserve each shared row's internally owned FocusNode, disposal, focus
+  listener, and focused gradient/error border behavior.
+- Preserve country boxes, flags, dial codes, labels, hints, dimensions,
+  spacing, styles, and Continue layout.
+- Avoid manual Next traversal in addition to TextInputAction.next; it can skip
+  the confirm field.
+- Use standard TextField textInputAction/onSubmitted hooks, not raw key event
+  interception, to preserve IME, hardware keyboard, and accessibility behavior.
+- Do not alter CustomCountryPhoneInputRow defaults or any other caller, so
+  login, forgot-password, guest top-up, bill-pay, and other phone flows remain
+  unchanged.
+- Add focused widget coverage for action values, Next focus transfer, valid
+  Done using the exact Continue navigation, invalid Done preserving the two
+  toast/validation branches, and parity with the current always-enabled button.
+
+
+Exact files that should be allowed to change during implementation
+-----------------------------------------------------------------
+
+Application file:
+
+1. lib/app/Aliv-Mobile-Guest/guestSplash/widgets/
+   guest_purchase_plan_bottom_sheet.dart
+   - Add the two call-site textInputAction values.
+   - Extract/reuse one local copy of the existing Continue callback body.
+   - Wire confirm onSubmitted to that same callback.
+
+Targeted test file:
+
+2. A new focused test, preferably:
+   test/guest_splash/guest_purchase_plan_keyboard_behavior_test.dart
+
+No shared application file needs to change. In particular, implementation
+should not change:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart
+- lib/resources/widgets/defaultButton.dart
+- GuestSplashBloc/event/state/repository/model files
+- LoginPhoneNumberHelper or BahamasPhoneInputFormatter
+- guest_splash_screen.dart
+- route files or GuestPurchasePlanScreen/Bloc/Repository
+- any login, forgot-password, top-up, bill-pay, purchase, confirmation, or OTP
+  screen

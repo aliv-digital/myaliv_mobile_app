@@ -1,0 +1,743 @@
+GUEST PAY BILLS KEYBOARD BEHAVIOR AUDIT
+
+Audit scope
+-----------
+
+Investigation only. No application code, UI, validation, formatting, BLoC,
+repository, API, navigation, or shared-widget behavior was changed. The only
+new artifact is this audit report.
+
+The audit covers the Guest module's "pay bills" screen, every editable field
+that it can render for its three service modes, the two submit stages, and the
+direct confirmation-route boundary. Line numbers refer to the inspected
+snapshot.
+
+
+1. Exact screen and directly related files
+------------------------------------------
+
+Primary screen:
+
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/
+  guest_pay_bill_screen.dart
+  - GuestPayBillScreen creates GuestPayBillBloc and dispatches
+    GuestPayBillStarted (lines 29-45).
+  - _GuestPayBillView owns the two ALIV Postpaid phone FocusNodes and their
+    focus-border listeners (lines 48-85).
+  - _buildAlivPostpaidFields builds mobile and confirm-mobile fields (lines
+    228-373).
+  - _buildNonPostpaidFields builds account/username and name fields for the
+    ALIV Fibr/non-postpaid branch (lines 375-407).
+  - build renders the service-specific form, account results, custom amount,
+    and bottom Submit action (lines 409-585).
+
+Screen-local widgets actually used by this screen:
+
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_service_dropdown.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_focused_text_field.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_inline_verify_field.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_focused_input_border_wrapper.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_primary_submit_button.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_read_only_box.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_required_label.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+  guest_pay_bill_pay_with_rev_card.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/theme/
+  guest_pay_bill_theme.dart
+
+Shared editable phone widgets used by the screen:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart
+- lib/resources/widgets/custom_country_phone_input_submit_row.dart
+
+State and business flow:
+
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/
+  guest_pay_bill_bloc.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/
+  guest_pay_bill_event.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/
+  guest_pay_bill_state.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/
+  guest_pay_bill_models.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/repository/
+  guest_pay_bill_repository.dart
+
+Direct formatting/validation dependencies:
+
+- lib/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+- lib/app/common/services/balance_currency_formatter_service.dart
+
+Direct navigation boundary:
+
+- lib/router/app_routes.dart
+- lib/router/app_router.dart (guest pay-bill routes at lines 639-681)
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/
+  guest_pay_bill_confirm_models.dart
+- lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/
+  guest_pay_bill_confirm_screen.dart
+
+The guest splash "bill pay" button pushes AppRoutes.guestPayBill from:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart
+  (lines 213-218)
+
+
+2. Editable fields and their visual/focus order
+------------------------------------------------
+
+The service dropdown changes which initial fields exist. There is no single
+field list shared by every service.
+
+A. Default ALIV Postpaid mode
+
+The repository returns ALIV Postpaid first and GuestPayBillBloc selects the
+first service after loading, so this is the normal initial form.
+
+Editable fields in visual and default traversal order:
+
+1. "mobile number"
+   - CustomCountryPhoneInputRow at screen lines 280-306.
+2. "confirm mobile number"
+   - CustomCountryPhoneInputSubmitRow at lines 323-358.
+   - The nearby inline Submit button is inside the same row but is not an
+     editable text field.
+3. "enter a custom amount"
+   - GuestPayBillFocusedTextField at lines 536-560.
+
+Between the confirm field and amount field, the screen renders account status
+and amount due. Account status is a Container/Text through
+GuestPayBillReadOnlyBox, and amount due is Text. Neither is editable or part of
+text-input traversal.
+
+B. ALIV Fibr mode
+
+Editable fields in visual and default traversal order:
+
+1. "account number/username" / hint "enter ID"
+   - GuestPayBillFocusedTextField at lines 382-390.
+2. "name" / hint "enter name"
+   - GuestPayBillInlineVerifyField at lines 394-405.
+   - It contains the lookup-stage inline Submit button.
+3. "enter a custom amount"
+   - The same GuestPayBillFocusedTextField at lines 536-560.
+
+C. REV mode
+
+There are no editable TextFields. The dynamic form is replaced by
+GuestPayBillPayWithRevCard with a selection/action button labelled
+"continue to pay". It pushes AppRoutes.revLandingPrepaidScreen. The account
+status, amount due, custom amount, and bottom Submit controls are not rendered.
+
+D. Null/failed service edge state
+
+If no service is selected and the screen is not in its initial loading branch,
+the current `else` branch renders the non-postpaid account-number, name, and
+custom-amount fields. `canVerify` and `canSubmit` remain false because
+selectedService is null. This existing edge behavior must not be changed as
+part of keyboard work.
+
+Important custom-amount finding:
+
+- The custom amount is not conditionally made editable after verification.
+- It is already rendered and editable for every non-REV service before account
+  verification completes.
+- Verification controls whether the bottom Submit is enabled through
+  accountInfo; it does not control whether the amount TextField can be edited.
+
+
+3. Current configuration of every editable field
+-------------------------------------------------
+
+A. ALIV Postpaid mobile number
+
+- Widget: CustomCountryPhoneInputRow.
+- TextInputAction: no value is passed; shared nullable default is null.
+- keyboardType: TextInputType.phone, explicitly passed by the screen.
+- FocusNode: _mobileFocusNode, created, listened to, and disposed by
+  _GuestPayBillViewState. The shared widget uses this external node and does not
+  own/dispose it.
+- onSubmitted: not passed; shared default null.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- autofocus: shared default false.
+- readOnly: shared default false.
+- enabled: TextField.enabled is not set, so the field remains enabled.
+- input formatter: BahamasPhoneInputFormatter while the country ISO is BS;
+  otherwise no formatter is passed.
+- onChanged: dispatches GuestPayBillMobileChanged.
+
+B. ALIV Postpaid confirm mobile number
+
+- Widget: CustomCountryPhoneInputSubmitRow.
+- TextInputAction: the shared widget does not expose a textInputAction property,
+  and its internal TextField does not set one; effective explicit value is null.
+- keyboardType: TextInputType.phone, explicitly passed by the screen.
+- FocusNode: _confirmMobileFocusNode, created, listened to, and disposed by
+  _GuestPayBillViewState. The shared widget borrows it.
+- onSubmitted: supported as nullable ValueChanged<String> by the shared widget,
+  but the screen does not pass it. The internal TextField always has a wrapper
+  that calls widget.onSubmitted if non-null, so it currently does nothing.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- autofocus: shared default false.
+- readOnly: shared default false.
+- enabled: TextField.enabled is not set, so the field remains enabled even when
+  the adjacent Submit button is disabled/guarded or loading.
+- input formatter: same BahamasPhoneInputFormatter policy as the first field.
+- onChanged: dispatches GuestPayBillConfirmMobileChanged.
+
+C. ALIV Fibr account number/username
+
+- Widget: GuestPayBillFocusedTextField.
+- TextInputAction: not exposed or set; explicit value null.
+- keyboardType: TextInputType.text for ALIV Fibr. The generic non-Fibr fallback
+  uses TextInputType.number.
+- FocusNode: private _focusNode created and disposed by that widget instance.
+- onSubmitted: not exposed or set.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- readOnly/enabled: neither is exposed/set; the TextField is editable.
+- onChanged: dispatches GuestPayBillAccountNumberChanged.
+
+D. ALIV Fibr name
+
+- Widget: GuestPayBillInlineVerifyField.
+- TextInputAction: not exposed or set; explicit value null.
+- keyboardType: TextInputType.text.
+- FocusNode: private _focusNode created and disposed by the widget.
+- onSubmitted: not exposed or set.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- readOnly/enabled: the TextField itself is always editable. The widget's
+  `enabled` value controls only its adjacent Submit button; it is not forwarded
+  to TextField.enabled.
+- onChanged: dispatches GuestPayBillNameChanged.
+
+E. Custom amount (ALIV Postpaid and ALIV Fibr)
+
+- Widget: GuestPayBillFocusedTextField.
+- TextInputAction: not exposed or set; explicit value null.
+- keyboardType: TextInputType.numberWithOptions(decimal: true).
+- FocusNode: private _focusNode created and disposed by this widget instance.
+- onSubmitted: not exposed or set.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- readOnly/enabled: neither is exposed/set; the field remains editable before,
+  during, and after account verification.
+- inputFormatters: none. The field does not currently restrict decimal syntax,
+  commas, signs, or other input beyond what the platform keyboard offers.
+- onChanged: dispatches GuestPayBillAmountChanged.
+
+No field currently has a manual focus transfer or keyboard-triggered submit.
+With no explicit action, these single-line fields normally receive the
+platform's completion/Done behavior rather than a declared screen contract.
+
+
+4. Service selector
+-------------------
+
+GuestPayBillServiceDropdown wraps DropdownButton<BillService>.
+
+- It is selection-only, not editable text.
+- It does not contain a TextField, controller, input formatter, text keyboard,
+  onSubmitted, or onEditingComplete.
+- Its onChanged dispatches GuestPayBillServiceChanged.
+- It should not be added to the IME Next/Done text-entry sequence.
+- It remains independently keyboard/accessibility focusable according to
+  DropdownButton/Flutter behavior, but no keyboard-text traversal code should
+  target it.
+- It appears before all editable fields, so normal Next traversal from the
+  first visible TextField does not need to cross it.
+
+Changing the selected service currently resets country, account number, name,
+both phone values, accountInfo, verify status, submit status, and error message.
+It does not reset amountText. Keyboard work must preserve this current state
+behavior and must not alter dropdown selection or focus behavior.
+
+
+5. Exact callbacks for visible Submit controls
+-----------------------------------------------
+
+A. Inline Submit beside confirm mobile number (ALIV Postpaid)
+
+Screen call site:
+
+- CustomCountryPhoneInputSubmitRow receives:
+  - submitEnabled: state.canVerify
+  - submitLoading: state.verifyStatus == GuestPayBillVerifyStatus.loading
+  - onSubmit: () { _onVerifyPressed(context); }
+
+Shared button action:
+
+- ElevatedButton.onPressed is always _onSubmitTapped.
+- _onSubmitTapped first returns when submitLoading is true.
+- If submitEnabled is true, it invokes widget.onSubmit.
+- If submitEnabled is false, it shows a ScaffoldMessenger SnackBar containing
+  widget.submitDisabledMessage.
+- The screen does not override that message, so the exact default is:
+  "Please enter required details first."
+- The screen's _onVerifyPressed adds const GuestPayBillVerifyPressed() to the
+  current GuestPayBillBloc.
+
+B. Inline Submit beside name (ALIV Fibr conditional branch)
+
+- GuestPayBillInlineVerifyField receives `enabled: state.canVerify`, loading
+  from verifyStatus, and onSubmit calling _onVerifyPressed.
+- GuestPayBillInlineSubmitButton sets onPressed to null while loading.
+- When not loading and enabled, it invokes onTap -> _onVerifyPressed -> adds
+  GuestPayBillVerifyPressed.
+- When not loading and disabled, it calls AppToast.show with the exact message
+  "Please enter required details first" (no period).
+
+C. Bottom Submit (all non-REV modes)
+
+Screen call site at lines 564-572:
+
+- GuestPayBillPrimarySubmitButton receives:
+  - enabled: state.canSubmit
+  - loading: state.submitStatus == GuestPayBillSubmitStatus.loading
+  - onTap: () { _onSubmitPressed(context, state); }
+
+Button guard:
+
+- Its ElevatedButton.onPressed is `enabled && !loading ? onTap : null`.
+- It is genuinely disabled for invalid or loading states.
+
+Exact screen-level callback _onSubmitPressed (lines 193-199):
+
+1. Adds const GuestPayBillSubmitPressed() to GuestPayBillBloc.
+2. Immediately builds GuestPayBillConfirmArgs from the builder's current state.
+3. Immediately calls:
+
+   context.push(AppRoutes.guestPayBillConfirm, extra: confirmArgs)
+
+The screen callback itself does not repeat `canSubmit` or loading checks. It
+relies on GuestPayBillPrimarySubmitButton not invoking it while disabled. This
+is critical for future keyboard integration: calling _onSubmitPressed directly
+from amount-field Done without checking current state would bypass the visible
+button's disabled/loading boundary and would still navigate.
+
+
+6. Complete current business flow
+----------------------------------
+
+A. Screen load and service selection
+
+1. Guest splash pushes AppRoutes.guestPayBill.
+2. GuestPayBillScreen creates GuestPayBillBloc and adds GuestPayBillStarted.
+3. The BLoC emits loadStatus.loading; the body shows a centered progress
+   indicator.
+4. GuestPayBillRepository.fetchServices waits 250 ms and returns static entries
+   in this order: ALIV Postpaid, ALIVFibr, REV.
+5. The BLoC emits ready and selects services.first, making ALIV Postpaid the
+   default.
+6. Changing service dispatches GuestPayBillServiceChanged and resets the
+   service-specific identifiers and verification/submission state as described
+   above. REV renders a separate continue-to-pay card.
+
+B. ALIV Postpaid phone entry, formatting, and live validation
+
+1. Both fields are fixed to the default Bahamas country UI; the country picker
+   is disabled and its arrow hidden.
+2. BahamasPhoneInputFormatter formats both values while typing as
+   `(242) 345-4356`, limits them to 10 digits, and preserves natural deletion
+   across punctuation.
+3. Each onChanged event stores the formatted raw display string, clears
+   accountInfo, resets verifyStatus to idle, and clears the BLoC error.
+4. LoginPhoneNumberHelper validates the current selected country. Bahamas
+   accepts seven subscriber digits or ten digits beginning with 242.
+5. Live validation stays quiet for an empty field and then controls red input,
+   unfocused red borders, and the inline "invalid phone number" message.
+6. Confirm mismatch is checked only when confirm is non-empty and the first
+   number is valid. Both values are stripped to digits before comparison, so
+   formatting differences do not cause a mismatch.
+
+C. Lookup/verification stage
+
+`state.canVerify` is false when no service is selected or verifyStatus is
+loading.
+
+For ALIV Postpaid it additionally requires:
+
+- valid first phone;
+- valid confirm phone; and
+- digit-normalized equality.
+
+For the non-postpaid branch it requires non-empty trimmed accountNumber and
+name.
+
+When the guarded inline Submit invokes GuestPayBillVerifyPressed:
+
+1. The BLoC checks `state.canVerify` again and returns if false.
+2. It emits verifyStatus.loading, clears errorMessage, and clears accountInfo.
+3. ALIV Postpaid calls GuestPayBillRepository.verifyAlivPostpaid with both
+   stored phone strings.
+4. The repository strips all non-digits from mobileNumber and POSTs to
+   Api.guestBalanceUrl with:
+   - ChannelType: SelfCare
+   - PhoneNumber: raw digits
+   - skipAuth: true
+   The confirm value is accepted by the repository method but is not included
+   in the request; matching has already been enforced by state.canVerify.
+5. ALIV Fibr POSTs to Api.guestFibrBalanceUrl with uppercase trimmed FibrName,
+   trimmed FibrAccountID, ChannelType SelfCare, and skipAuth true.
+6. On success, accountInfo stores status, optional balance, and optional Fibr
+   account ID; verifyStatus becomes success.
+7. Account status is mapped through LineStatus.fromCode, and amount due is
+   displayed with BalanceCurrencyFormatterService. Neither display is editable.
+8. On error, verifyStatus becomes failure, accountInfo stays null, and the
+   listener passes either the extracted backend message or the existing generic
+   message to AppToast.show.
+
+GuestPayBillRepository.verifyRev contains delayed demo behavior, but the
+current REV UI never renders the account/name verification form; it renders the
+REV continue card instead.
+
+D. Custom amount
+
+1. The amount field is always editable in non-REV modes.
+2. Its onChanged stores the raw string and clears errorMessage.
+3. `amountValue` trims the string, removes commas, and uses double.tryParse;
+   parse failure becomes 0.0.
+4. There is no input formatter and no separate inline amount error.
+5. A `$` prefix appears when amountText is non-empty.
+6. The bottom button requires amountValue > 0; zero, negative, empty, and
+   unparseable values leave it disabled.
+
+E. Final bottom Submit and navigation
+
+`state.canSubmit` requires all of:
+
+- selectedService is non-null;
+- accountInfo is non-null (successful verification);
+- amountValue is greater than zero; and
+- submitStatus is not loading.
+
+When enabled and tapped:
+
+1. _onSubmitPressed dispatches GuestPayBillSubmitPressed.
+2. It immediately creates GuestPayBillConfirmArgs:
+   - serviceName: selected service label;
+   - identifierLabel: "phone no." for ALIV Postpaid, "Acc #" for ALIV Fibr,
+     otherwise "account no.";
+   - identifierValue: formatted `242-...-....` mobile for ALIV Postpaid, or
+     trimmed accountNumber otherwise;
+   - amount: state.amountValue;
+   - fibrAccountId: accountInfo.fibrAccountId when available.
+3. It immediately pushes AppRoutes.guestPayBillConfirm with those args. It does
+   not wait for the BLoC event or repository call.
+4. Separately, the BLoC handler checks canSubmit, emits submitStatus.loading,
+   and calls GuestPayBillRepository.submitBillPayment with service code,
+   trimmed raw mobile/account identifier, and amountValue.
+5. That repository method currently only waits 900 ms and returns; it is demo
+   behavior rather than the eventual card-payment API.
+6. The BLoC later emits submit success or "Payment failed. Try again." failure.
+   The original screen remains below the pushed confirmation route.
+
+The confirmation route creates GuestPayBillConfirmBloc, loads VAT (currently
+0.00 demo data), requires Terms & Conditions, and later opens the actual
+service-specific payment path. That confirmation/payment behavior is outside
+the keyboard feature and must remain unchanged.
+
+F. Navigation/back behavior
+
+- App-bar back calls context.pop.
+- App-bar home calls context.go(AppRoutes.logIn).
+- REV "continue to pay" pushes AppRoutes.revLandingPrepaidScreen.
+- Bottom Submit pushes AppRoutes.guestPayBillConfirm with typed args as above.
+- There is no return result from the Pay Bills screen's submit callback.
+- Scaffold uses its default keyboard inset behavior and the form is inside a
+  SingleChildScrollView. Both must remain unchanged.
+
+
+7. Shared/custom input capability and impact analysis
+-----------------------------------------------------
+
+A. CustomCountryPhoneInputRow (first postpaid phone)
+
+Already supports all needed keyboard hooks:
+
+- nullable TextInputAction? textInputAction, default null;
+- nullable ValueChanged<String>? onSubmitted, default null;
+- nullable external FocusNode, with correct owned-vs-borrowed disposal.
+
+It forwards textInputAction and onSubmitted unchanged to its TextField. No
+shared change is needed for the first-phone Next behavior. This widget has many
+callers across login and guest flows, so its defaults must not be changed.
+
+B. CustomCountryPhoneInputSubmitRow (confirm phone + inline Submit)
+
+Current support:
+
+- FocusNode?: yes, nullable, with correct ownership handling.
+- onSubmitted?: yes, nullable and forwarded through a wrapper.
+- textInputAction: no property and not forwarded to the TextField.
+
+Repository-wide call-site search found this Pay Bills screen as its only
+current caller. A future change should still be additive and default-preserving:
+add nullable TextInputAction? textInputAction with a null default and forward it
+unchanged. Do not hardcode Done in the shared widget.
+
+Important guard issue: the existing onSubmitted callback is not passed through
+_onSubmitTapped. If supplied naively, it would not inherit the inline button's
+loading return or invalid-input SnackBar. Future implementation must explicitly
+reuse the same guarded semantics rather than merely wiring onSubmitted straight
+to _onVerifyPressed.
+
+C. GuestPayBillFocusedTextField (account/username and custom amount)
+
+Current support:
+
+- textInputAction: no;
+- onSubmitted: no;
+- external FocusNode: no;
+- internal private FocusNode: yes, owned/disposed by each instance.
+
+It is local to this Pay Bills module and is used only by this screen. Additive,
+nullable textInputAction and onSubmitted properties can be introduced with
+null defaults and forwarded unchanged. An external FocusNode is not required:
+standard traversal can use the existing internally owned nodes.
+
+D. GuestPayBillInlineVerifyField (ALIV Fibr name)
+
+Current support:
+
+- textInputAction: no;
+- onSubmitted: no;
+- external FocusNode: no;
+- internal private FocusNode: yes, owned/disposed by the widget.
+
+It is local to this screen/module. If keyboard behavior is implemented for all
+service variants, it needs additive nullable action/submission hooks. Its Done
+path must mirror GuestPayBillInlineSubmitButton's loading disablement, enabled
+check, and exact invalid AppToast behavior.
+
+E. Buttons/read-only controls
+
+- GuestPayBillPrimarySubmitButton is not an input widget. It already guards
+  enabled/loading states at onPressed.
+- GuestPayBillReadOnlyBox and amount-due Text are not TextFields and require no
+  keyboard configuration.
+- GuestPayBillServiceDropdown is selection-only and requires no text action.
+
+
+8. Safest keyboard sequence based on current business flow
+----------------------------------------------------------
+
+No implementation is included in this audit.
+
+A. ALIV Postpaid lookup stage
+
+1. Mobile number:
+   - Set TextInputAction.next at the screen call site.
+   - Do not add manual nextFocus/requestFocus.
+   - Flutter's normal traversal will move from _mobileFocusNode to the next
+     focusable TextField, which is _confirmMobileFocusNode.
+
+2. Confirm mobile number:
+   - Add nullable/default-null textInputAction support to
+     CustomCountryPhoneInputSubmitRow and pass TextInputAction.done at this
+     screen call site.
+   - Done must execute the same lookup action as the adjacent inline Submit,
+     using current BLoC state rather than the submitted String.
+   - Done must return during verify loading.
+   - When current state.canVerify is false, it must preserve the same disabled
+     action behavior/message as the inline button; it must not silently dispatch
+     or navigate.
+   - When state.canVerify is true, it should invoke the same screen-local
+     verify callback that adds const GuestPayBillVerifyPressed().
+   - The safest shared implementation is an additive, opt-in submitted path
+     that reuses the existing `_onSubmitTapped` guard semantics; its default
+     must remain off/null. If implemented at the screen instead, the handler
+     must check current verifyStatus/canVerify and reproduce the exact existing
+     disabled feedback without duplicating phone-validation rules.
+
+Confirm Done should perform account lookup, not advance to custom amount. The
+business flow requires verification before final submission, and the current
+nearby Submit is the semantic action for that field. Do not auto-focus the
+amount field after verification; the current screen does not do so.
+
+B. ALIV Fibr lookup stage
+
+For complete service-mode consistency:
+
+1. Account number/username should use TextInputAction.next and normal traversal
+   to the name field.
+2. Name should use TextInputAction.done and invoke the exact guarded inline
+   verify action.
+3. The name Done handler must preserve the inline button's loading no-op,
+   state.canVerify check, and exact invalid AppToast message.
+
+This requires only additive, default-null hooks in the two screen-local field
+widgets. Do not manually manage their private FocusNodes.
+
+C. Custom amount / final submit stage
+
+- Custom amount should use TextInputAction.done.
+- Done should invoke the exact same screen-local final-submit action as the
+  bottom Submit only when the bottom action is currently enabled.
+- The handler must read the current builder state and require state.canSubmit
+  (which includes submitStatus != loading). It may also retain the explicit
+  submit-loading comparison used by the button for clarity, but must not create
+  new business rules.
+- When the button is disabled, amount Done must do nothing. The current bottom
+  button provides no invalid toast, so keyboard Done must not invent one.
+- When enabled, both button tap and Done should call one screen-local callback
+  containing the existing `_onSubmitPressed(context, state)` action.
+- Ignore the TextField.onSubmitted String. State.amountText/amountValue must
+  remain the authoritative value.
+
+Because _onSubmitPressed itself navigates unconditionally, the state.canSubmit
+gate must occur before keyboard Done invokes it. Relying only on the BLoC's
+GuestPayBillSubmitPressed guard is insufficient: the BLoC could reject the
+event while the screen still pushes the confirmation route.
+
+D. REV mode and service selector
+
+- REV has no text fields, so no Next/Done behavior is applicable.
+- Do not add the service selector to the text-input sequence.
+- Do not change the REV continue-to-pay action.
+
+
+9. Loading and duplicate-submit considerations
+-----------------------------------------------
+
+A. Phone/account lookup Submit
+
+Existing protection:
+
+- state.canVerify returns false during GuestPayBillVerifyStatus.loading.
+- CustomCountryPhoneInputSubmitRow._onSubmitTapped explicitly returns while
+  submitLoading is true.
+- The ALIV Fibr inline button sets onPressed null while loading.
+- GuestPayBillBloc._onVerifyPressed checks state.canVerify again before work,
+  then emits loading before awaiting the repository.
+- Editing an identifier clears accountInfo and resets verifyStatus to idle.
+
+Keyboard requirement:
+
+- Confirm/name Done must check the current loading/enabled state before invoking
+  the shared verify callback.
+- It must not bypass the current invalid-input feedback path.
+- Do not add debounce, a new status, or new BLoC concurrency behavior.
+- Do not change the existing race behavior if the user edits fields while an
+  older verification request is in flight; that issue is outside scope.
+
+B. Final bottom Submit
+
+Existing protection:
+
+- state.canSubmit is false when submitStatus is loading.
+- GuestPayBillPrimarySubmitButton sets onPressed null unless enabled and not
+  loading.
+- GuestPayBillBloc._onSubmitPressed checks canSubmit and emits loading before
+  awaiting its repository method.
+
+Important existing boundary:
+
+- The screen callback dispatches the event and pushes confirmation immediately.
+- There is a small pre-loading/rebuild window in which rapid existing button
+  interaction can potentially request the action more than once.
+- Keyboard Done must use the same current semantics and must not redesign that
+  race with debounce, route guards, locks, or new BLoC concurrency behavior.
+- It must still check current canSubmit/loading so it cannot invoke the callback
+  when the visible button is already disabled.
+
+
+10. Regression risks and behavior that must remain unchanged
+------------------------------------------------------------
+
+- Do not conflate the two submit stages: confirm/name Done verifies the account;
+  amount Done performs the bottom-submit/navigation action.
+- Do not make confirm Done advance directly to custom amount or confirmation.
+- Do not call _onSubmitPressed when state.canSubmit is false; it navigates even
+  if the BLoC rejects the event.
+- Preserve exact inline-button invalid feedback, including the different
+  SnackBar/AppToast mechanisms and punctuation used by the two conditional
+  widgets.
+- Preserve verify and submit loading behavior and spinners.
+- Preserve all BLoC guards and event types; do not add or replace events.
+- Preserve mobile and confirm field state, validation order, digit-normalized
+  equality, inline error timing, colors, and focus-border behavior.
+- Preserve BahamasPhoneInputFormatter formatting, 10-digit limit, deletion
+  handling, and repository digit stripping.
+- Preserve LoginPhoneNumberHelper validation, including accepted Bahamas
+  lengths/prefix.
+- Preserve the fixed country UI and disabled country pickers.
+- Preserve the fact that custom amount is editable before verification.
+- Preserve raw amount storage, comma removal, double.tryParse fallback, > 0
+  enablement rule, `$` prefix, and lack of an amount input formatter/error.
+- Preserve account/name raw handling and Fibr uppercase-name API request.
+- Preserve clearing accountInfo/verify state when identifiers change.
+- Preserve service-change resets, including the current fact that amountText is
+  not reset.
+- Preserve static service order/default selection and REV's separate route.
+- Preserve account-status and balance display formatting.
+- Preserve immediate confirmation navigation and exact GuestPayBillConfirmArgs,
+  labels, identifier formatting, amount, and fibrAccountId.
+- Preserve the existing background GuestPayBillSubmitPressed repository flow;
+  do not move, await, remove, or duplicate it.
+- Preserve confirmation/payment/receipt flow completely.
+- Preserve private/external FocusNode ownership and disposal. Do not add manual
+  focus calls when normal TextInputAction.next traversal is sufficient.
+- Preserve SingleChildScrollView, Scaffold keyboard insets, SafeArea, layout,
+  styles, service selector, app-bar behavior, and all other guest screens.
+- Any shared-widget API change must be nullable or opt-in with current defaults,
+  and must not change behavior for callers that omit the new property.
+
+
+Exact files that should be allowed to change during implementation
+------------------------------------------------------------------
+
+For complete Next/Done support across all currently selectable service modes,
+the minimal application allow-list should be:
+
+1. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/
+   guest_pay_bill_screen.dart
+   - Configure field actions at call sites.
+   - Define/reuse screen-local verify/final-submit callbacks.
+   - Gate keyboard callbacks with the same current enabled/loading conditions.
+
+2. lib/resources/widgets/custom_country_phone_input_submit_row.dart
+   - Add nullable/default-null TextInputAction support and forward it.
+   - Ensure an explicitly opted-in keyboard submission uses the existing inline
+     button guard semantics without changing omitted/default behavior.
+
+3. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+   guest_pay_bill_focused_text_field.dart
+   - Add nullable/default-null textInputAction and onSubmitted forwarding for
+     account/username and custom amount.
+
+4. lib/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/
+   guest_pay_bill_inline_verify_field.dart
+   - Add nullable/default-null keyboard hooks for the conditional ALIV Fibr name
+     field and preserve its button guards/feedback.
+
+Recommended targeted test file:
+
+5. test/guest_pay_bill/guest_pay_bill_keyboard_behavior_test.dart
+
+No change should be needed in:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart (already supports
+  Next/onSubmitted/FocusNode);
+- GuestPayBillBloc/event/state/repository/model files;
+- phone validation or formatter files;
+- GuestPayBillPrimarySubmitButton;
+- service dropdown, read-only fields, REV card, theme, router, confirmation,
+  payment, or receipt files;
+- any other guest, login, top-up, purchase-plan, or bill-pay flow.
+
+If a future implementation is explicitly limited to ALIV Postpaid only, file 4
+is not required. However, the screen currently exposes ALIV Fibr from the same
+selector, so complete screen-level keyboard behavior should include its
+account/name lookup sequence rather than leaving a conditional mode inconsistent.

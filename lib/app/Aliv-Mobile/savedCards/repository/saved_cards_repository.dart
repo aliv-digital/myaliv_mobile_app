@@ -1,0 +1,142 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import '../models/saved_card_model.dart';
+import 'saved_cards_exception.dart';
+import 'services/saved_cards_api_client.dart';
+
+/// Abstract repository interface for saved cards operations.
+abstract class SavedCardsRepository {
+  /// Fetches saved credit cards from the API.
+  Future<List<SavedCardModel>> fetchSavedCards();
+
+  /// Deletes a saved credit card by token. Throws on failure.
+  Future<void> deleteCard(String token);
+
+  /// Fetches the postpaid auto-pay card token. Returns `null` when unset.
+  Future<String?> fetchAutoPayToken();
+
+  /// Fetches the prepaid auto-renew card token. Returns `null` when unset.
+  Future<String?> fetchAutoRenewToken();
+
+  /// Saves a card after a 3DS payment. [orderId] from the 3DS callback URL;
+  /// [expirationDate] in MMYY format (e.g. "1030" = October 2030).
+  Future<void> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  });
+}
+
+/// Implementation of [SavedCardsRepository].
+class SavedCardsRepositoryImpl implements SavedCardsRepository {
+  SavedCardsRepositoryImpl({required SavedCardsApiClient apiClient})
+    : _apiClient = apiClient;
+
+  final SavedCardsApiClient _apiClient;
+
+  @override
+  Future<List<SavedCardModel>> fetchSavedCards() async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsRepository: Fetching saved cards');
+    }
+
+    final rawJson = await _apiClient.fetchSavedCards();
+    final cards = _parseCards(rawJson);
+
+    if (kDebugMode) {
+      debugPrint('SavedCardsRepository: Parsed ${cards.length} cards');
+    }
+
+    return cards;
+  }
+
+  @override
+  Future<void> deleteCard(String token) async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsRepository: Deleting card $token');
+    }
+
+    final success = await _apiClient.deleteCard(token);
+    if (!success) {
+      throw const SavedCardsException(
+        type: SavedCardsErrorType.badResponse,
+        serverMessage: 'Failed to delete card',
+      );
+    }
+  }
+
+  @override
+  Future<String?> fetchAutoPayToken() => _apiClient.fetchAutoPayToken();
+
+  @override
+  Future<String?> fetchAutoRenewToken() => _apiClient.fetchAutoRenewToken();
+
+  @override
+  Future<void> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  }) =>
+      _apiClient.saveNewCard(orderId: orderId, expirationDate: expirationDate);
+
+  /// Parses the raw JSON response into a list of [SavedCardModel].
+  ///
+  /// Expected response format:
+  /// ```json
+  /// {
+  ///   "Cards": [
+  ///     { "Token": "...", "Number": "*3686" },
+  ///     { "Token": "...", "Number": "*8244" }
+  ///   ]
+  /// }
+  /// ```
+  List<SavedCardModel> _parseCards(String rawJson) {
+    try {
+      final decoded = jsonDecode(rawJson);
+
+      if (decoded is! Map<String, dynamic>) {
+        throw const SavedCardsException(
+          type: SavedCardsErrorType.invalidResponse,
+          serverMessage: 'Invalid response format: expected object',
+        );
+      }
+
+      final cardsRaw = decoded['Cards'];
+
+      // Handle null or non-list Cards field
+      if (cardsRaw == null) {
+        return [];
+      }
+
+      if (cardsRaw is! List) {
+        throw const SavedCardsException(
+          type: SavedCardsErrorType.invalidResponse,
+          serverMessage: 'Invalid Cards format: expected array',
+        );
+      }
+
+      final List<SavedCardModel> cards = [];
+
+      for (final item in cardsRaw) {
+        if (item is Map<String, dynamic>) {
+          cards.add(SavedCardModel.fromJson(item));
+        } else {
+          // Skip malformed items but log in debug mode
+          if (kDebugMode) {
+            debugPrint(
+              'SavedCardsRepository: Skipping malformed card item: $item',
+            );
+          }
+        }
+      }
+
+      return cards;
+    } catch (e) {
+      if (e is SavedCardsException) rethrow;
+
+      throw SavedCardsException(
+        type: SavedCardsErrorType.invalidResponse,
+        serverMessage: 'Failed to parse saved cards response',
+        debugMessage: e.toString(),
+      );
+    }
+  }
+}

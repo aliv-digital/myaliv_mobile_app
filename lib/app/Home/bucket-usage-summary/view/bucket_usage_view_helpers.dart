@@ -1,0 +1,89 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
+
+/// Presentation-only helpers shared by widgets that render
+/// `PlanBucketUsage` rows (home active-plan section, Usage current-plan tab,
+/// etc.). Pure formatting + classification — no Flutter widget code, no BLoC.
+
+/// Heuristic: roaming buckets carry "roam" in their name (e.g. "Roaming
+/// Data", "RoamEasy"). When the API contract is finalized this can be
+/// tightened to an exact match list.
+bool isRoamingBucket(String bucketName) {
+  return bucketName.toLowerCase().contains('roam');
+}
+
+/// Formats `value unit` (e.g. "0.25 GB", "2.4 GB", "30 mins"). Whole
+/// numbers drop the decimal; fractional values are kept to up to two
+/// decimal places with trailing zeros trimmed (so 0.25 → "0.25", 0.5 →
+/// "0.5", 1 → "1"). Returns the numeric part alone when [unit] is empty.
+String formatBucketAmount(double value, String unit) {
+  final String formatted;
+  if (value == value.roundToDouble()) {
+    formatted = value.toInt().toString();
+  } else {
+    final twoDecimals = value.toStringAsFixed(2);
+    formatted = twoDecimals
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+  if (unit.isEmpty) return formatted;
+  return '$formatted $unit';
+}
+
+/// Icon path + accent color for a bucket name. Case-insensitive contains
+/// matching keeps it resilient to API casing or minor naming variants.
+BucketCardStyle styleForBucket(String bucketName) {
+  final normalized = bucketName.trim().toLowerCase();
+  // Roaming check runs first — "roaming data" must not be styled as local data.
+  if (isRoamingBucket(normalized)) {
+    return BucketCardStyle(
+      icon: AssetConstant.wifiIconsSVG,
+      color: Color(0xFF17B26A),
+    );
+  }
+  if (normalized.contains('data')) {
+    return BucketCardStyle(
+      icon: AssetConstant.dataIconSVG,
+      color: Color(0xFFFF6C36),
+    );
+  }
+  if (normalized.contains('whatsapp')) {
+    return BucketCardStyle(
+      icon: AssetConstant.whatsAppIconSVG,
+      color: HexColor.fromHex('#00C4B3'),
+    );
+  }
+  if (normalized.contains('voice') ||
+      normalized.contains('talk') ||
+      normalized.contains('minute') ||
+      normalized.contains('mins')) {
+    return BucketCardStyle(
+      icon: AssetConstant.phoneCallsIconSVG,
+      color: Color(0xFF00B3E3),
+    );
+  }
+  if (normalized.contains('sms') || normalized.contains('text')) {
+    return const BucketCardStyle(
+      icon: AssetConstant.messageIconSVG, //'assets/icons/message.svg'
+      color: Color(0xFF5045A7),
+    );
+  }
+  if (normalized.contains('aliv to')) {
+    return BucketCardStyle(
+      icon: AssetConstant.textIconSVG, //'assets/icons/message.svg'
+      color: HexColor.fromHex('#FF6C36'),
+    );
+  }
+  return const BucketCardStyle(
+    icon: AssetConstant.dataIconSVG,
+    color: Color(0xFF707070),
+  );
+}
+
+class BucketCardStyle {
+  const BucketCardStyle({required this.icon, required this.color});
+  final String icon;
+  final Color color;
+}

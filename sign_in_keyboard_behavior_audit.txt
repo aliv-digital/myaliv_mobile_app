@@ -1,0 +1,452 @@
+SIGN IN KEYBOARD NEXT/DONE BEHAVIOR AUDIT
+
+Audit scope
+-----------
+Investigation only. No application code, UI, styling, validation, navigation,
+business logic, data flow, or runtime behavior was changed. The only created
+artifact is this audit report. Line numbers refer to the inspected snapshot.
+
+
+1. Exact Sign In screen and directly relevant files
+---------------------------------------------------
+
+Primary screen:
+
+- lib/app/Aliv-Mobile/login/view/login_page.dart
+  - LoginScreen (lines 26-44) provides LoginBloc and the existing biometric
+    security cubit.
+  - _LoginView (lines 46-245) builds the Sign In UI, listens for login results,
+    owns the Sign In button callback, and performs result navigation.
+
+The route is registered at:
+
+- lib/router/app_routes.dart
+  - AppRoutes.logIn is /log-in.
+- lib/router/app_router.dart
+  - Lines 710-713 map AppRoutes.logIn to const LoginScreen().
+
+Input widgets used by this screen:
+
+- lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart
+  - LoginPhoneRow / _LoginPhoneRowState.
+- lib/resources/widgets/custom_country_phone_input_row.dart
+  - Shared CustomCountryPhoneInputRow used by LoginPhoneRow; its internal
+    TextField is the actual editable phone control.
+- lib/app/Aliv-Mobile/login/widgets/login_password_field.dart
+  - LoginPasswordField / _LoginPasswordFieldState; contains the actual password
+    TextField.
+- lib/app/Aliv-Mobile/login/widgets/focused_input_border_wrapper.dart
+  - Paints password focus/error borders only; it does not control keyboard
+    actions or focus traversal.
+- lib/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart
+  - Presentation formatter used by the phone field for Bahamas numbers.
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+  - Live and submit-time phone validation/normalization.
+
+Submission and result flow:
+
+- lib/app/Aliv-Mobile/login/bloc/auth_event.dart
+- lib/app/Aliv-Mobile/login/bloc/auth_state.dart
+- lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart
+- lib/app/Aliv-Mobile/login/repository/auth_repository.dart
+- lib/app/Aliv-Mobile/login/services/auth_completion_service.dart
+  - Invoked by LoginBloc only for direct authenticated login. No keyboard
+    change belongs in this service.
+
+Direct shared button/scaffold behavior:
+
+- lib/resources/widgets/defaultButton.dart
+  - DefaultButton disables the ElevatedButton when isLoading is true or
+    onPressed is null (line 87).
+- lib/resources/widgets/striped_scaffold.dart
+  - The Sign In screen sets resizeToAvoidBottomInset: false and
+    stripesReserveSpace: true. The scaffold hides its stripes while the
+    keyboard is open.
+
+Existing test coverage relevant to submission:
+
+- test/auth/login_bloc_test.dart covers field events, empty-field validation,
+  offline handling, MFA success, direct-login success, invalid credentials,
+  and locked-account errors.
+- No Sign In widget test currently covers keyboard actions or focus traversal.
+
+
+2. Editable input fields and order
+----------------------------------
+
+There are exactly two editable fields on the Sign In screen, in this order:
+
+1. Phone number
+   - LoginPhoneRow at login_page.dart line 147.
+   - CustomCountryPhoneInputRow at login_phone_row.dart lines 75-109.
+   - Actual TextField at custom_country_phone_input_row.dart lines 363-381.
+   - Hint: "eg: (242)-899-9999".
+
+2. Password
+   - LoginPasswordField at login_page.dart line 151.
+   - Actual TextField at login_password_field.dart lines 69-81.
+   - Hint: "enter your password".
+
+The country box beside the phone field is not editable here:
+LoginPhoneRow passes enableCountryPicker: false. Forgot-password, social,
+privacy, and Terms of Use controls are buttons/links, not editable fields.
+
+
+3. Current TextInputAction / keyboard action configuration
+----------------------------------------------------------
+
+Phone field:
+
+- CustomCountryPhoneInputRow defaults keyboardType to TextInputType.phone
+  (constructor line 50) and LoginPhoneRow does not override it.
+- CustomCountryPhoneInputRow has no textInputAction property and its internal
+  TextField does not set textInputAction.
+- The current action is therefore framework/IME-derived. For this default
+  single-line TextField it normally resolves to a completion/Done action, but
+  Sign In does not explicitly request Next.
+
+Password field:
+
+- LoginPasswordField does not set keyboardType, maxLines, or textInputAction.
+- It is therefore a default single-line text input with framework/IME-derived
+  completion behavior, normally represented as Done.
+- Sign In does not explicitly request Done.
+
+No field currently establishes an explicit Next -> Done sequence.
+
+
+4. Current focus and submit-key handling
+----------------------------------------
+
+Phone focus:
+
+- LoginPhoneRow creates _phoneFocusNode at login_phone_row.dart line 21.
+- It installs _handlePhoneFocusChange in initState, removes the listener and
+  disposes the node in dispose, and tracks _hasPhoneFocus for error-border
+  painting (lines 24-45).
+- LoginPhoneRow passes that node to CustomCountryPhoneInputRow at line 76.
+- CustomCountryPhoneInputRow binds the supplied external node as
+  _effectiveFocusNode. Because the node is external, the shared widget listens
+  to it but does not own/dispose it.
+- The shared widget assigns _effectiveFocusNode to its TextField at line 364.
+- CustomCountryPhoneInputRow already accepts and forwards an optional
+  ValueChanged<String>? onSubmitted (constructor line 56, property line 98,
+  TextField line 371), but LoginPhoneRow does not pass one.
+
+Password focus:
+
+- LoginPasswordField creates the private _passwordFocusNode at line 20.
+- It installs/removes its listener and disposes the node at lines 23-34.
+- _onPasswordFocusChanged updates _hasPasswordFocus for the gradient/error
+  border at lines 36-42.
+- The node is assigned to the password TextField at line 70.
+- The node is neither exposed to nor supplied by login_page.dart.
+
+There is currently no:
+
+- TextField.onSubmitted on the password field;
+- TextField.onEditingComplete on either field;
+- TextFormField/onFieldSubmitted (both controls use TextField);
+- FocusScope.nextFocus, FocusNode.requestFocus, nextFocus, previousFocus, or
+  explicit FocusTraversalOrder in the Sign In implementation;
+- keyboard callback that dispatches LoginSubmitted.
+
+The CustomScrollView does not specify keyboardDismissBehavior. The screen's
+StripedScaffold deliberately does not resize for the keyboard, while the
+shared scaffold hides the bottom stripes when MediaQuery reports that the
+keyboard is open.
+
+
+5. Exact existing Sign In button callback/action
+------------------------------------------------
+
+The Sign In control is DefaultButton at login_page.dart lines 199-214. Its
+exact callback at lines 207-211 is:
+
+  context.read<LoginBloc>().add(
+    const LoginSubmitted(),
+  );
+
+There is no validation, API request, credential storage, toast, or navigation
+inside the button callback. Those behaviors remain downstream of the single
+LoginSubmitted event.
+
+The screen computes loading as state.status == LoginStatus.loading and passes
+that to DefaultButton. DefaultButton replaces the label with a progress
+indicator and sets ElevatedButton.onPressed to null while loading. The button
+is otherwise enabled even when the fields are empty or invalid; this permits
+the BLoC's existing validation/error flow to run.
+
+
+6. Current login validation and submit flow
+--------------------------------------------
+
+Field updates:
+
+- Phone onChanged dispatches LoginPhoneChanged(value).
+  LoginBloc stores the raw/formatted value, resets status/outcome and response
+  data, clears errorMessage, and clears phoneFieldError. It does not
+  automatically clear passwordFieldError.
+- Password onChanged dispatches LoginPasswordChanged(value).
+  LoginBloc stores the raw password, resets status/outcome and response data,
+  clears errorMessage, and clears passwordFieldError. It does not
+  automatically clear phoneFieldError.
+
+Live phone behavior:
+
+- For the default Bahamas selection, BahamasPhoneInputFormatter formats typing
+  as "(242) 345-4356" and limits the field to 10 digits. This is presentation
+  only.
+- LoginPhoneNumberHelper.hasLiveValidationError remains quiet while no digits
+  are present. After typing starts, it reuses country-aware validation.
+- Live invalid phone state changes phone text/border styling and can add the
+  inline "invalid phone number" message. It does not submit.
+
+LoginSubmitted processing (LoginBloc._onSubmitted, auth_bloc.dart lines
+103-258):
+
+1. Check phone.trim().isEmpty and password.trim().isEmpty.
+2. If either is empty, emit failure with one of:
+   - "enter phone number and password"
+   - "phone number is required"
+   - "password is required"
+   The matching phone/password field-error flags are set. These local failures
+   do not increment errorToastId, so they remain inline rather than triggering
+   the listener's backend-error toast.
+3. Validate and normalize the phone through
+   LoginPhoneNumberHelper.validateAndBuildApiUsername.
+   - Bahamas accepts seven subscriber digits (prefixes 242 for the API), or
+     ten digits beginning with 242.
+   - Invalid input emits "invalid phone number" (or the helper-provided
+     message) with phoneFieldError true.
+4. Await InternetConnection.hasInternetAccess.
+5. If offline, emit failure "No Internet Connection", clear field-error flags,
+   and increment errorToastId so the error toast is displayed.
+6. If online, emit LoginStatus.loading, clear prior errors/response values, and
+   clear both field-error flags.
+7. Call LoginRepository.login with the normalized API username and the raw
+   state.password. The password is not trimmed before being sent; only the
+   empty check uses trim.
+8. LoginRepository POSTs Api.loginUrl with Username, Password, and Channel,
+   using skipAuth: true.
+9. After a successful response, LoginBloc fire-and-forget saves the normalized
+   phone and raw password to CredentialStore for biometric re-login.
+10. Direct authenticated result:
+    - Complete the session through AuthCompletionService.
+    - Emit success/authenticated.
+    - The screen listener shows "Logged in successfully" and executes
+      context.go(AppRoutes.home).
+11. MFA challenge result:
+    - Emit success/needsOtp with mfaToken and apiPhoneNumber.
+    - The listener shows "OTP sent successfully" and pushes AppRoutes.loginOtp
+      with LoginOtpRouteArgs(mfaToken, state.phone.trim(), apiPhoneNumber).
+    - Missing MFA token/API phone defensive errors remain unchanged.
+12. API/other failures are mapped to the current messages, including invalid
+    number, locked account, and invalid credentials. Backend failures increment
+    errorToastId and are displayed as error toasts.
+
+
+7. Custom/shared TextField influence
+------------------------------------
+
+Phone:
+
+- CustomCountryPhoneInputRow is a shared widget used outside Sign In.
+- It controls the actual TextField, phone keyboard type, formatters,
+  focus-node binding, controller/read-only/autofocus options, visual focus
+  wrapper, onChanged, and onSubmitted.
+- It already forwards onSubmitted but does not expose textInputAction, so the
+  Sign In call site cannot request a Next key today.
+- Any future edit to this shared widget must be an additive nullable
+  textInputAction passthrough whose default is null. Existing callers must
+  receive the same null/default behavior. Do not hardcode Next in the shared
+  widget.
+
+Password:
+
+- LoginPasswordField is Sign-In-specific and directly owns its TextField.
+- It currently exposes no callback/configuration to login_page.dart.
+- It also owns password visibility and focus-border state. Keyboard additions
+  must not replace or externally dispose its FocusNode, change obscureText,
+  change field styling, or alter its eye-icon GestureDetector.
+
+Button:
+
+- DefaultButton controls the existing loading lockout. It should not be
+  changed for this feature because it is shared across the application.
+
+
+8. Safest minimal isolated future integration
+----------------------------------------------
+
+No implementation is included in this audit.
+
+A. Phone keyboard Next -> password focus
+
+1. In CustomCountryPhoneInputRow, add only an optional TextInputAction?
+   textInputAction constructor/property with a null default and forward it
+   unchanged to the internal TextField.
+2. In LoginPhoneRow only, pass TextInputAction.next.
+3. Keep onEditingComplete null and do not add a manual nextFocus callback.
+   Flutter's default completion behavior for TextInputAction.next advances the
+   current FocusScope to the next focusable control. In the present traversal
+   order, the next enabled editable control is the password TextField; the
+   country InkWell is disabled on this screen.
+4. Do not both rely on the default Next behavior and call nextFocus from
+   onSubmitted. Default Next traversal occurs as part of editing completion;
+   another manual traversal can skip past the password field.
+5. Preserve both existing FocusNode listeners and ownership rules so phone and
+   password focused-border states update correctly.
+
+This is less invasive than moving both FocusNodes to the parent solely to call
+requestFocus. A focused widget test should prove the actual traversal target.
+
+B. Password keyboard Done -> exact Sign In action
+
+1. In _LoginView.build, define one screen-local callback whose only submit
+   action is the existing statement:
+   context.read<LoginBloc>().add(const LoginSubmitted()).
+2. Pass that same callback reference to DefaultButton.onPressed and to a new,
+   Sign-In-specific callback property on LoginPasswordField. This removes any
+   need to duplicate the event-dispatch expression and does not move or copy
+   validation/API/navigation logic.
+3. In LoginPasswordField, explicitly set TextInputAction.done and forward the
+   TextField.onSubmitted event to the supplied callback. Ignore the String
+   argument; do not use it to reimplement state updates or validation.
+4. Before the password Done handler invokes the shared callback, read the live
+   LoginBloc state and no-op when status is LoginStatus.loading. This mirrors
+   the DefaultButton loading lockout and prevents the keyboard path from
+   bypassing it. Read at invocation time rather than relying on a stale closure.
+5. Do not gate Done on field validity. The physical Sign In button is enabled
+   for invalid values so LoginSubmitted can produce the existing inline errors;
+   Done must behave identically.
+
+The resulting flow remains:
+
+- Button tap or password Done
+- the same screen-local callback
+- LoginSubmitted
+- the existing LoginBloc validation/network/result flow
+
+No BLoC, repository, route, validation, toast, credential, or navigation code
+should be copied into either input widget.
+
+
+9. Duplicate-submit and loading audit
+-------------------------------------
+
+Existing protection:
+
+- login_page.dart passes isLoading: state.status == LoginStatus.loading.
+- DefaultButton disables its ElevatedButton while isLoading is true.
+
+Existing limitation:
+
+- LoginBloc._onSubmitted does not begin with a loading-status guard.
+- LoginStatus.loading is emitted only after local validation, phone validation,
+  and the awaited internet-connectivity check.
+- Therefore the current button has a pre-existing short window before loading
+  is emitted in which repeated rapid button taps can enqueue more than one
+  LoginSubmitted event. The keyboard feature must not attempt to redesign this
+  BLoC behavior as part of the isolated task.
+
+Required keyboard parity:
+
+- The password Done callback must no-op whenever the live status is loading;
+  otherwise it would remain callable while the visible button is disabled and
+  could create extra login/API requests.
+- Reuse one callback for button and Done so the keyboard cannot drift to a
+  different action.
+- Do not add a second API call, call LoginBloc._onSubmitted directly, invoke
+  LoginRepository from the widget, or synthesize a button tap.
+- A rapid Done press during the pre-loading connectivity window would retain
+  the same existing race boundary as rapid button taps. Fully closing that
+  older race would require a separate, explicitly scoped BLoC/concurrency
+  change and is not part of keyboard integration.
+
+
+10. Regression risks and behavior that must remain unchanged
+------------------------------------------------------------
+
+- Exact action: both button and Done must dispatch const LoginSubmitted() and
+  nothing else at the UI layer.
+- Loading parity: Done must not submit while LoginStatus.loading, when the
+  physical button is disabled and showing progress.
+- Invalid-input parity: Done must still dispatch for empty/invalid fields so
+  the same inline messages and field borders appear. Do not disable Done based
+  on validity.
+- Password fidelity: preserve the raw password for API and CredentialStore;
+  do not trim it or substitute TextField.onSubmitted's value.
+- Phone formatting: retain BahamasPhoneInputFormatter's progressive format,
+  10-digit limit, deletion behavior, and raw-digit normalization.
+- Phone validation: retain seven-digit subscriber and 10-digit 242-prefixed
+  Bahamas handling, country-aware validation, and current inline live error.
+- Error separation: preserve local inline failures versus errorToastId-backed
+  API/network toasts.
+- Navigation/results: preserve both direct-login home navigation and MFA OTP
+  routing with the existing arguments and defensive checks.
+- Authentication completion: do not bypass AuthCompletionService on direct
+  login or alter CredentialStore behavior.
+- Focus visuals: preserve both fields' current FocusNodes/listeners, gradient
+  focus borders, and red error borders when focus changes through Next.
+- Password visibility: preserve eye-icon behavior, obscure state, entered
+  text, selection, and focus.
+- Traversal: do not add a second nextFocus call after Flutter's default Next
+  traversal; it could skip the password and land on Forgot Password or another
+  later focusable control.
+- Shared phone widget: do not hardcode Next or otherwise change defaults for
+  other CustomCountryPhoneInputRow consumers. The optional passthrough must
+  remain null unless a caller explicitly supplies it.
+- Shared button: do not modify DefaultButton; its loading behavior is used by
+  other screens.
+- Layout: preserve resizeToAvoidBottomInset: false, stripe visibility/reserved
+  space, spacing, styles, field sizes, and scrolling behavior.
+- Platform/accessibility behavior: use TextField's standard textInputAction and
+  onSubmitted hooks rather than raw keyboard-event interception.
+- Rebuild behavior: LoginPasswordField's BlocBuilder currently receives status
+  updates. The loading check should still read current bloc state when Done is
+  invoked so it cannot depend on a captured stale status.
+- Tests: add Sign In widget tests for phone Next focusing password, password
+  Done dispatching the existing action, invalid Done following existing local
+  validation, and Done being ignored while loading. Keep existing LoginBloc
+  tests unchanged and passing.
+
+
+Exact files allowed to change in a future implementation
+--------------------------------------------------------
+
+Application files:
+
+1. lib/app/Aliv-Mobile/login/view/login_page.dart
+   - Create/reuse the single existing LoginSubmitted dispatch callback and pass
+     it to the password widget and DefaultButton.
+
+2. lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart
+   - Set TextInputAction.next only for the Sign In phone field.
+
+3. lib/app/Aliv-Mobile/login/widgets/login_password_field.dart
+   - Accept the screen-local callback, set TextInputAction.done, forward Done,
+     and preserve the live loading guard.
+
+4. lib/resources/widgets/custom_country_phone_input_row.dart
+   - Add only the nullable/default-null textInputAction passthrough required by
+     LoginPhoneRow. No default or behavior change for any other caller.
+
+Test file:
+
+5. A new targeted Sign In widget test file, preferably:
+   test/login/sign_in_keyboard_behavior_test.dart
+
+Files that should not change for this feature:
+
+- auth_bloc.dart, auth_event.dart, auth_state.dart
+- auth_repository.dart, auth_completion_service.dart
+- login_phone_number_helper.dart, bahamas_phone_input_formatter.dart
+- focused_input_border_wrapper.dart, login_theme.dart
+- defaultButton.dart, striped_scaffold.dart
+- routes, OTP screens, or any unrelated screen
+
+If implementing textInputAction without touching the shared phone widget is
+not feasible, the strictly additive nullable passthrough described above is
+the only justified shared-file edit. All non-Sign-In callers must retain their
+current null/default action behavior.

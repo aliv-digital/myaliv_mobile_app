@@ -1,0 +1,178 @@
+{
+  "CustomerID": 163463046,
+  "DeviceID": 580468973,
+  "bundle": {
+    "PrimaryPlans": [
+      {
+        "PlanID": "29836",
+        "PlanName": "freedom5",
+        "PlanDescription": "",
+        "PlanAmount": 4.55,
+        "PlanType": "P",
+        "Frequency": "D",
+        "FeatureCodes": null,
+        "StartDate": "07/31/2026 08:37:42 pm +0600",
+        "EndDate": "07/31/2026 08:37:42 pm +0600",
+        "PlanDetails": "",
+        "CreatedBy": "John Dillon",
+        "PublishedBy": "John Dillon",
+        "RetiredBy": null,
+        "AutoRenew": true,
+        "IsEditable": true,
+        "Voice": 60,
+        "Data": 2,
+        "SMS": 60,
+        "MTSubscriptionID": "0",
+        "VoiceUnlimited": false,
+        "DataUnlimited": false,
+        "SMSUnlimited": false,
+        "AvailableBoltOns": [],
+        "CurrentlyAssigned": true,
+        "PlanRenewable": true,
+        "PaymentOption": "PrePay",
+        "CanICB": "False",
+        "HierarchyType": "Consumer",
+        "PlanGroup": "freedom (7 day)",
+        "PlanGroupID": "3",
+        "PlanGroupSortOrder": "4",
+        "ProrateOnActivate": "False",
+        "ProrateOnDeactivate": null,
+        "PlanCapabilities": [
+          {
+            "PlanCapabilityName": "DataCapable",
+            "PlanCapabilityType": "Required"
+          },
+          {
+            "PlanCapabilityName": "PushToTalk",
+            "PlanCapabilityType": "Optional"
+          },
+          {
+            "PlanCapabilityName": "TextCapable",
+            "PlanCapabilityType": "Required"
+          },
+          {
+            "PlanCapabilityName": "VoiceCapable",
+            "PlanCapabilityType": "Required"
+          },
+          {
+            "PlanCapabilityName": "VolteCapable",
+            "PlanCapabilityType": "Optional"
+          },
+          {
+            "PlanCapabilityName": "VolteCertified",
+            "PlanCapabilityType": "Optional"
+          }
+        ],
+        "PlanBuckets": [
+          {
+            "Name": "data",
+            "Amount": 2,
+            "Unit": "GB",
+            "BucketOrder": "0001",
+            "Suppress": "False",
+            "Unlimited": "False",
+            "BucketUnit": "INS_Data"
+          },
+          {
+            "Name": "us/can mins",
+            "Amount": 30,
+            "Unit": "Minutes",
+            "BucketOrder": "0008",
+            "Suppress": "False",
+            "Unlimited": "False",
+            "BucketUnit": "INS_LDI_US_CANADA"
+          },
+          {
+            "Name": "whatsapp text",
+            "Amount": 0.5,
+            "Unit": "Text",
+            "BucketOrder": "0044",
+            "Suppress": "False",
+            "Unlimited": "True",
+            "BucketUnit": "INS_Whatsapp_Text_10201"
+          },
+          {
+            "Name": "minutes",
+            "Amount": 30,
+            "Unit": "Minutes",
+            "BucketOrder": "0046",
+            "Suppress": "False",
+            "Unlimited": "False",
+            "BucketUnit": "INS_Voice_Only_National"
+          },
+          {
+            "Name": "texts",
+            "Amount": 30,
+            "Unit": "Text",
+            "BucketOrder": "0047",
+            "Suppress": "False",
+            "Unlimited": "False",
+            "BucketUnit": "INS_SMS_Only_National"
+          },
+          {
+            "Name": "us/can texts",
+            "Amount": 30,
+            "Unit": "Text",
+            "BucketOrder": "0049",
+            "Suppress": "False",
+            "Unlimited": "False",
+            "BucketUnit": "INS_SMS_US_Canada"
+          }
+        ],
+        "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+        "VIPTypes": "Normal,Test",
+        "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+        "Cugs": "",
+        "Sugs": "",
+        "UnlimitedBuckets": "whatsapp text",
+        "ActiveCCard": "False",
+        "SubscriberLines": "0",
+        "PurchaseLimit": "0",
+        "PurchaseLimitStartDate": "",
+        "PurchaseLimitEndDate": "",
+        "ContractAge": "0",
+        "ActivatedAge": "0",
+        "ContractTerm": "0",
+        "Islands": "",
+        "Rank": "0",
+        "CreditClass": "",
+        "VATAmount": 0.41,
+        "PlanSortOrder": "2",
+        "DataRules": { "PlanId": 29836, "RequireAltContactPhone": false }
+      }
+    ],
+    "SecondaryPlans": [],
+    "StandAlonePlans": []
+  },
+  "paymentinfo": {
+    "ccardName": "",
+    "ccardNumber": "d7c7cb3a-d000-476f-9995-3d2b73012b2e",
+    "ccardExpiration": "01/01/30",
+    "ccardSecurityCode": "",
+    "PaymentInstrument": "Token",
+    "authorizationToken": "",
+    "ccardType": "",
+    "PaymentAmount": 4.5,
+    "VoucherNumber": "",
+    "PIN": "",
+    "KountSessionID": "1d6a229dba8246a4b970ac1f70ee8e96",
+    "IntervalID": ""
+  },
+  "ForceNow": false,
+  "Note": "MyAlivDebitCreditCardandChangeBundle",
+  "SaveCCard": false,
+  "UseAsRenewalCCard": false,
+  "bonusUsed": [],
+  "promocodeused": [
+    {
+      "DiscountAmount": 0.46,
+      "PromoCodeID": 2061,
+      "Plan": 29836,
+      "ExternalRefID": ""
+    }
+  ],
+  "Token": "027BA54E-973F-45DD-897B-F635E6C3EEBC",
+  "Ticket": "db09c1ce-9969-43d3-a346-a5cb18f1d366FhTAQv+d2ekSLWH8K6EQQyTk4qCtBZ/R6JVdNUWBezal3ti/KTE0KG+PyD6E+ZA1N1HVN/5a0S94BF3MacpGVw=="
+}
+
+

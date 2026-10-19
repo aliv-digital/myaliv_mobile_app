@@ -1,0 +1,2101 @@
+{
+  "PrimaryPlans": [
+    {
+      "PlanID": "29916",
+      "PlanName": "liberty40",
+      "PlanDescription": "$40.00 5 GB data, unlimited local talk minutes (fair use policy applies), 330 US/Can talk minutes, unlimited local text messages (fair use policy applies), 330 US/Can text message, 40 Multimedia (MMS) texts and unlimited WhatsApp messaging* (fair use policy applies).",
+      "PlanAmount": 36.36,
+      "PlanType": "P",
+      "Frequency": "M",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-13 08:18:14",
+      "EndDate": "2026-04-12 08:18:14",
+      "PlanDetails": "<p>\n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tTalk minutes and text messages outbound to The Bahamas, Canada and the USA (mobile and landline).<br /> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tReceive voice calls or text messages free from anywhere in the world. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tCharges per voice second from the first billable second and per data megabyte from the first billable kilobyte. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\t30-day plan, renews automatically, except when customer changes plan or fails to pay. \n</p>\n<p>\n\t<br />\n</p>",
+      "CreatedBy": "John Dillon",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 7830.0000000000,
+      "Data": 5.0000000000,
+      "SMS": 4870,
+      "MTSubscriptionID": "2046685305",
+      "VoiceUnlimited": true,
+      "DataUnlimited": false,
+      "SMSUnlimited": true,
+      "AvailableBoltOns": [
+        {
+          "PlanID": "6813",
+          "PlanName": "liberty data1",
+          "PlanDescription": "1 GB data ",
+          "PlanAmount": 4.55,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-02-01 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Admin",
+          "PublishedBy": "John Francis",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 1.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 1.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0.45",
+          "PlanSortOrder": "11",
+          "DataRules": {
+            "PlanId": 6813,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "7643",
+          "PlanName": "liberty data2",
+          "PlanDescription": "2 GB data",
+          "PlanAmount": 14.54,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-03-08 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": null,
+          "PublishedBy": "John Dillon",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 2.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 2.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "1.46",
+          "PlanSortOrder": "13",
+          "DataRules": {
+            "PlanId": 7643,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "8133",
+          "PlanName": "liberty data3",
+          "PlanDescription": "3 GB data",
+          "PlanAmount": 14.54,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-02-01 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Admin",
+          "PublishedBy": "Denise Grimes",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 3.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 3.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "1.46",
+          "PlanSortOrder": "17",
+          "DataRules": {
+            "PlanId": 8133,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "6793",
+          "PlanName": "liberty data10",
+          "PlanDescription": "10 GB data ",
+          "PlanAmount": 28.18,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-03-08 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\texpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": null,
+          "PublishedBy": "Zander Krause",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 10.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 10.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierII,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "2.82",
+          "PlanSortOrder": "19",
+          "DataRules": {
+            "PlanId": 6793,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "7653",
+          "PlanName": "liberty talk100",
+          "PlanDescription": "100 talk minutes",
+          "PlanAmount": 4.54,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-03-08 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": null,
+          "PublishedBy": "Denise Grimes",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 100.0000000000,
+          "Data": 0.0,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "minutes",
+              "Amount": 100.0000000000,
+              "Unit": "Minutes",
+              "BucketOrder": "0003",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Voice_Nat_US"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0.46",
+          "PlanSortOrder": "25",
+          "DataRules": {
+            "PlanId": 7653,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "6903",
+          "PlanName": "liberty text100",
+          "PlanDescription": "100 text messages",
+          "PlanAmount": 4.54,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2017-03-08 05:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": null,
+          "PublishedBy": "Denise Grimes",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 0.0,
+          "SMS": 100,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "add-ons",
+          "PlanGroupID": "4",
+          "PlanGroupSortOrder": "500",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "texts",
+              "Amount": 100.0000000000,
+              "Unit": "Text",
+              "BucketOrder": "0005",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Sms_Nat_US"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+          "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+          "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "0",
+          "PurchaseLimitStartDate": "",
+          "PurchaseLimitEndDate": "",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0.46",
+          "PlanSortOrder": "26",
+          "DataRules": {
+            "PlanId": 6903,
+            "RequireAltContactPhone": false
+          }
+        },
+        {
+          "PlanID": "22457",
+          "PlanName": "liberty BONUS data2",
+          "PlanDescription": "2 GB data",
+          "PlanAmount": 0.00,
+          "PlanType": "S",
+          "Frequency": "M",
+          "FeatureCodes": null,
+          "StartDate": "2021-07-23 04:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t<span style=\"color: rgb(17, 17, 17); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">30-day add-on plan.</span> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Denise Grimes",
+          "PublishedBy": "John Dillon",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 2.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "promotion BONUS data add-ons",
+          "PlanGroupID": "45",
+          "PlanGroupSortOrder": "998",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 2.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,IVR,Kiosk,MMS,Salesforce,Seamless,SelfCare,Website,Wholesale",
+          "VIPTypes": "Normal,Test",
+          "Roles": "Admin,ITSuperAdmin,ITSuperAdminTierII,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "1",
+          "PurchaseLimitStartDate": "1/29/2023 1:31:00 PM",
+          "PurchaseLimitEndDate": "6/30/2023 1:34:00 PM",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0",
+          "PlanSortOrder": "33",
+          "DataRules": {
+            "PlanId": 22457,
+            "RequireAltContactPhone": false
+          }
+        }
+      ],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": true,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "liberty (30 day)",
+      "PlanGroupID": "5",
+      "PlanGroupSortOrder": "6",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 5.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        },
+        {
+          "Name": "us/can mins",
+          "Amount": 330.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0008",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_LDI_US_CANADA"
+        },
+        {
+          "Name": "ALIV to ALIV mms",
+          "Amount": 40.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0016",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_MMS_Nat_US"
+        },
+        {
+          "Name": "whatsapp text",
+          "Amount": 0.5000000000,
+          "Unit": "Text",
+          "BucketOrder": "0044",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_Whatsapp_Text_10201"
+        },
+        {
+          "Name": "minutes",
+          "Amount": 7500.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0046",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_Voice_Only_National"
+        },
+        {
+          "Name": "texts",
+          "Amount": 4500.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0047",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_SMS_Only_National"
+        },
+        {
+          "Name": "us/can texts",
+          "Amount": 330.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0049",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_US_Canada"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Normal,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": "texts|minutes|whatsapp text",
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "3.64",
+      "PlanSortOrder": "6",
+      "DataRules": {
+        "PlanId": 29916,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "29836",
+      "PlanName": "freedom5",
+      "PlanDescription": "$5.00 ONE day plan - 2 GB data, 30 local talk minutes, 30 local text messages, 30 US/Can talk minutes, 30 US/Can text messages, unlimited WhatsApp messaging* (fair use policy applies).",
+      "PlanAmount": 4.55,
+      "PlanType": "P",
+      "Frequency": "D",
+      "FeatureCodes": [],
+      "StartDate": "2026-04-12 08:18:15",
+      "EndDate": "2026-04-13 08:18:15",
+      "PlanDetails": "<p>\n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tTalk minutes and text messages outbound to The Bahamas (mobile and landline).<br /> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tReceive voice calls or text messages free from anywhere in the world. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tCharges per voice second from the first billable second and per data megabyte from the first billable kilobyte. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\t1-day plan, renews automatically, except when customer changes plan or fails to pay. \n</p>\n<p>\n\t<br />\n</p>",
+      "CreatedBy": "John Dillon",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 60.0000000000,
+      "Data": 2.0000000000,
+      "SMS": 60,
+      "MTSubscriptionID": "1438130293",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [
+        {
+          "PlanID": "22427",
+          "PlanName": "freedom4 BONUS data2",
+          "PlanDescription": "2 GB data",
+          "PlanAmount": 0.00,
+          "PlanType": "S",
+          "Frequency": "D",
+          "FeatureCodes": null,
+          "StartDate": "2021-07-23 04:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t<span style=\"color: rgb(17, 17, 17); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">1-day add-on plan.</span> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Denise Grimes",
+          "PublishedBy": "John Dillon",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 2.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "promotion BONUS data add-ons",
+          "PlanGroupID": "45",
+          "PlanGroupSortOrder": "998",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 2.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,IVR,Kiosk,MMS,Salesforce,Seamless,SelfCare,USSD,Website,Wholesale",
+          "VIPTypes": "Normal,Test",
+          "Roles": "Admin,ITSuperAdmin,ITSuperAdminTierII,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "1",
+          "PurchaseLimitStartDate": "1/29/2023 1:23:00 PM",
+          "PurchaseLimitEndDate": "4/30/2023 1:23:00 PM",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0",
+          "PlanSortOrder": "1015",
+          "DataRules": {
+            "PlanId": 22427,
+            "RequireAltContactPhone": false
+          }
+        }
+      ],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": true,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "freedom (7 day)",
+      "PlanGroupID": "3",
+      "PlanGroupSortOrder": "4",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 2.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        },
+        {
+          "Name": "us/can mins",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0008",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_LDI_US_CANADA"
+        },
+        {
+          "Name": "whatsapp text",
+          "Amount": 0.5000000000,
+          "Unit": "Text",
+          "BucketOrder": "0044",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_Whatsapp_Text_10201"
+        },
+        {
+          "Name": "minutes",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0046",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Voice_Only_National"
+        },
+        {
+          "Name": "texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0047",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_Only_National"
+        },
+        {
+          "Name": "us/can texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0049",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_US_Canada"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Normal,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": "whatsapp text",
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.45",
+      "PlanSortOrder": "2",
+      "DataRules": {
+        "PlanId": 29836,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "29836",
+      "PlanName": "freedom5",
+      "PlanDescription": "$5.00 ONE day plan - 2 GB data, 30 local talk minutes, 30 local text messages, 30 US/Can talk minutes, 30 US/Can text messages, unlimited WhatsApp messaging* (fair use policy applies).",
+      "PlanAmount": 4.55,
+      "PlanType": "P",
+      "Frequency": "D",
+      "FeatureCodes": [],
+      "StartDate": "2026-04-13 08:18:16",
+      "EndDate": "2026-04-14 08:18:16",
+      "PlanDetails": "<p>\n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tTalk minutes and text messages outbound to The Bahamas (mobile and landline).<br /> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tReceive voice calls or text messages free from anywhere in the world. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tCharges per voice second from the first billable second and per data megabyte from the first billable kilobyte. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\t1-day plan, renews automatically, except when customer changes plan or fails to pay. \n</p>\n<p>\n\t<br />\n</p>",
+      "CreatedBy": "John Dillon",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 60.0000000000,
+      "Data": 2.0000000000,
+      "SMS": 60,
+      "MTSubscriptionID": "314451719",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [
+        {
+          "PlanID": "22427",
+          "PlanName": "freedom4 BONUS data2",
+          "PlanDescription": "2 GB data",
+          "PlanAmount": 0.00,
+          "PlanType": "S",
+          "Frequency": "D",
+          "FeatureCodes": null,
+          "StartDate": "2021-07-23 04:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t<span style=\"color: rgb(17, 17, 17); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">1-day add-on plan.</span> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Denise Grimes",
+          "PublishedBy": "John Dillon",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 2.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "promotion BONUS data add-ons",
+          "PlanGroupID": "45",
+          "PlanGroupSortOrder": "998",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 2.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,IVR,Kiosk,MMS,Salesforce,Seamless,SelfCare,USSD,Website,Wholesale",
+          "VIPTypes": "Normal,Test",
+          "Roles": "Admin,ITSuperAdmin,ITSuperAdminTierII,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "1",
+          "PurchaseLimitStartDate": "1/29/2023 1:23:00 PM",
+          "PurchaseLimitEndDate": "4/30/2023 1:23:00 PM",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0",
+          "PlanSortOrder": "1015",
+          "DataRules": {
+            "PlanId": 22427,
+            "RequireAltContactPhone": false
+          }
+        }
+      ],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": true,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "freedom (7 day)",
+      "PlanGroupID": "3",
+      "PlanGroupSortOrder": "4",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 2.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        },
+        {
+          "Name": "us/can mins",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0008",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_LDI_US_CANADA"
+        },
+        {
+          "Name": "whatsapp text",
+          "Amount": 0.5000000000,
+          "Unit": "Text",
+          "BucketOrder": "0044",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_Whatsapp_Text_10201"
+        },
+        {
+          "Name": "minutes",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0046",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Voice_Only_National"
+        },
+        {
+          "Name": "texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0047",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_Only_National"
+        },
+        {
+          "Name": "us/can texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0049",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_US_Canada"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Normal,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": "whatsapp text",
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.45",
+      "PlanSortOrder": "2",
+      "DataRules": {
+        "PlanId": 29836,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "29836",
+      "PlanName": "freedom5",
+      "PlanDescription": "$5.00 ONE day plan - 2 GB data, 30 local talk minutes, 30 local text messages, 30 US/Can talk minutes, 30 US/Can text messages, unlimited WhatsApp messaging* (fair use policy applies).",
+      "PlanAmount": 4.55,
+      "PlanType": "P",
+      "Frequency": "D",
+      "FeatureCodes": [],
+      "StartDate": "2026-04-14 08:18:17",
+      "EndDate": "2026-04-15 08:18:17",
+      "PlanDetails": "<p>\n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tTalk minutes and text messages outbound to The Bahamas (mobile and landline).<br /> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tReceive voice calls or text messages free from anywhere in the world. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tCharges per voice second from the first billable second and per data megabyte from the first billable kilobyte. \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\t1-day plan, renews automatically, except when customer changes plan or fails to pay. \n</p>\n<p>\n\t<br />\n</p>",
+      "CreatedBy": "John Dillon",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 60.0000000000,
+      "Data": 2.0000000000,
+      "SMS": 60,
+      "MTSubscriptionID": "346437747",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [
+        {
+          "PlanID": "22427",
+          "PlanName": "freedom4 BONUS data2",
+          "PlanDescription": "2 GB data",
+          "PlanAmount": 0.00,
+          "PlanType": "S",
+          "Frequency": "D",
+          "FeatureCodes": null,
+          "StartDate": "2021-07-23 04:00:00",
+          "EndDate": "2106-01-01 05:00:00",
+          "PlanDetails": "<p>\n\t<span style=\"color: rgb(17, 17, 17); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">1-day add-on plan.</span> \n</p>\n<p style=\"margin: 0px; padding: 0px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(17, 17, 17); line-height: 1.25; overflow: visible; min-height: 1.25em; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+          "CreatedBy": "Denise Grimes",
+          "PublishedBy": "John Dillon",
+          "RetiredBy": null,
+          "AutoRenew": false,
+          "IsEditable": true,
+          "Voice": 0.0,
+          "Data": 2.0000000000,
+          "SMS": 0,
+          "MTSubscriptionID": "0",
+          "VoiceUnlimited": false,
+          "DataUnlimited": false,
+          "SMSUnlimited": false,
+          "AvailableBoltOns": null,
+          "CurrentlyAssigned": false,
+          "PlanRenewable": false,
+          "PaymentOption": "PrePay",
+          "CanICB": "False",
+          "HierarchyType": "Consumer",
+          "PlanGroup": "promotion BONUS data add-ons",
+          "PlanGroupID": "45",
+          "PlanGroupSortOrder": "998",
+          "ProrateOnActivate": "False",
+          "ProrateOnDeactivate": null,
+          "PlanCapabilities": [
+            {
+              "PlanCapabilityName": "DataCapable",
+              "PlanCapabilityType": "Required"
+            },
+            {
+              "PlanCapabilityName": "PushToTalk",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "TextCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VoiceCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCapable",
+              "PlanCapabilityType": "Optional"
+            },
+            {
+              "PlanCapabilityName": "VolteCertified",
+              "PlanCapabilityType": "Optional"
+            }
+          ],
+          "PlanBuckets": [
+            {
+              "Name": "data",
+              "Amount": 2.0000000000,
+              "Unit": "GB",
+              "BucketOrder": "0001",
+              "Suppress": "False",
+              "Unlimited": "False",
+              "BucketUnit": "INS_Data"
+            }
+          ],
+          "ChannelTypes": "AgentPortal,IVR,Kiosk,MMS,Salesforce,Seamless,SelfCare,USSD,Website,Wholesale",
+          "VIPTypes": "Normal,Test",
+          "Roles": "Admin,ITSuperAdmin,ITSuperAdminTierII,Super User",
+          "Cugs": "",
+          "Sugs": "",
+          "UnlimitedBuckets": null,
+          "ActiveCCard": "False",
+          "SubscriberLines": "0",
+          "PurchaseLimit": "1",
+          "PurchaseLimitStartDate": "1/29/2023 1:23:00 PM",
+          "PurchaseLimitEndDate": "4/30/2023 1:23:00 PM",
+          "ContractAge": "0",
+          "ActivatedAge": "0",
+          "ContractTerm": "0",
+          "Islands": "",
+          "Rank": "0",
+          "CreditClass": "",
+          "VATAmount": "0",
+          "PlanSortOrder": "1015",
+          "DataRules": {
+            "PlanId": 22427,
+            "RequireAltContactPhone": false
+          }
+        }
+      ],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": true,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "freedom (7 day)",
+      "PlanGroupID": "3",
+      "PlanGroupSortOrder": "4",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 2.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        },
+        {
+          "Name": "us/can mins",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0008",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_LDI_US_CANADA"
+        },
+        {
+          "Name": "whatsapp text",
+          "Amount": 0.5000000000,
+          "Unit": "Text",
+          "BucketOrder": "0044",
+          "Suppress": "False",
+          "Unlimited": "True",
+          "BucketUnit": "INS_Whatsapp_Text_10201"
+        },
+        {
+          "Name": "minutes",
+          "Amount": 30.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0046",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Voice_Only_National"
+        },
+        {
+          "Name": "texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0047",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_Only_National"
+        },
+        {
+          "Name": "us/can texts",
+          "Amount": 30.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0049",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_SMS_US_Canada"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Normal,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": "whatsapp text",
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.45",
+      "PlanSortOrder": "2",
+      "DataRules": {
+        "PlanId": 29836,
+        "RequireAltContactPhone": false
+      }
+    }
+  ],
+  "SecondaryPlans": [
+    {
+      "PlanID": "7643",
+      "PlanName": "liberty data2",
+      "PlanDescription": "2 GB data",
+      "PlanAmount": 14.54,
+      "PlanType": "S",
+      "Frequency": "M",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-13 08:18:14",
+      "EndDate": "2026-04-12 08:18:14",
+      "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+      "CreatedBy": null,
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 0.0,
+      "Data": 2.0000000000,
+      "SMS": 0,
+      "MTSubscriptionID": "598236463",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "add-ons",
+      "PlanGroupID": "4",
+      "PlanGroupSortOrder": "500",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 2.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "1.46",
+      "PlanSortOrder": "13",
+      "DataRules": {
+        "PlanId": 7643,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "7653",
+      "PlanName": "liberty talk100",
+      "PlanDescription": "100 talk minutes",
+      "PlanAmount": 4.54,
+      "PlanType": "S",
+      "Frequency": "M",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-13 19:06:55",
+      "EndDate": "2026-04-12 08:18:14",
+      "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+      "CreatedBy": null,
+      "PublishedBy": "Denise Grimes",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 100.0000000000,
+      "Data": 0.0,
+      "SMS": 0,
+      "MTSubscriptionID": "1458250684",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "add-ons",
+      "PlanGroupID": "4",
+      "PlanGroupSortOrder": "500",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "minutes",
+          "Amount": 100.0000000000,
+          "Unit": "Minutes",
+          "BucketOrder": "0003",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Voice_Nat_US"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.46",
+      "PlanSortOrder": "25",
+      "DataRules": {
+        "PlanId": 7653,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "6903",
+      "PlanName": "liberty text100",
+      "PlanDescription": "100 text messages",
+      "PlanAmount": 4.54,
+      "PlanType": "S",
+      "Frequency": "M",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-13 19:08:33",
+      "EndDate": "2026-04-12 08:18:14",
+      "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+      "CreatedBy": null,
+      "PublishedBy": "Denise Grimes",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 0.0,
+      "Data": 0.0,
+      "SMS": 100,
+      "MTSubscriptionID": "1477904646",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "add-ons",
+      "PlanGroupID": "4",
+      "PlanGroupSortOrder": "500",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "texts",
+          "Amount": 100.0000000000,
+          "Unit": "Text",
+          "BucketOrder": "0005",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Sms_Nat_US"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.46",
+      "PlanSortOrder": "26",
+      "DataRules": {
+        "PlanId": 6903,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "6813",
+      "PlanName": "liberty data1",
+      "PlanDescription": "1 GB data ",
+      "PlanAmount": 4.55,
+      "PlanType": "S",
+      "Frequency": "M",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-13 08:18:14",
+      "EndDate": "2026-04-12 08:18:14",
+      "PlanDetails": "<p>\n\t30-day add-on plan. \n</p>\n<p>\n\tExpires when primary plan expires and does not renew automatically.\n</p>",
+      "CreatedBy": "Admin",
+      "PublishedBy": "John Francis",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 0.0,
+      "Data": 1.0000000000,
+      "SMS": 0,
+      "MTSubscriptionID": "1839234486",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "add-ons",
+      "PlanGroupID": "4",
+      "PlanGroupSortOrder": "500",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "data",
+          "Amount": 1.0000000000,
+          "Unit": "GB",
+          "BucketOrder": "0001",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,IVR,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,Normal,Preferred,Premiere,Test",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "0.45",
+      "PlanSortOrder": "11",
+      "DataRules": {
+        "PlanId": 6813,
+        "RequireAltContactPhone": false
+      }
+    }
+  ],
+  "StandAlonePlans": [
+    {
+      "PlanID": "11285",
+      "PlanName": "roam20 7-day",
+      "PlanDescription": "roam20 7-day 250 MB roaming data Roaming data for use in the US, Canada, United Kingdom and Digicel Caribbean markets. 7-day data only plan, expires independent of primary and add-on plans. Plan does not renew, but may be purchased multiple times to start on user specified dates.  Regional Availability US, Canada, United Kingdom and Digicel Caribbean countries: Anguilla, Antigua and Barbuda, Aruba, Barbados, Bermuda Is., British Virgin Islands, Cayman Is., Dominica, El Salvador, French Guiana, Grenada, Guadeloupe, Guyana, Haiti, Jamaica, Montserrat, Netherlands Antilles/Curacao, Panama, Saint Lucia, Saint Vincent & the Grenadines, St. Kitts and Nevis, Suriname, Trinidad and Tobago, Turks and Caicos Islands",
+      "PlanAmount": 18.18,
+      "PlanType": "A",
+      "Frequency": "W",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-31 20:12:16",
+      "EndDate": "2026-04-07 20:12:16",
+      "PlanDetails": "<p>\n\tRoaming data for use in the US, Canada, UK and Digicel Caribbean markets.<br /> \n</p>\n<p>\n\t7-day data only plan, expires independent of primary and add-on plans. \n</p>\n<p>\n\tPlan does not renew, but may be purchased multiple times to start on user specified dates.\n</p>",
+      "CreatedBy": "Denise Grimes",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 0.0,
+      "Data": 0.2500000000,
+      "SMS": 0,
+      "MTSubscriptionID": "282233934",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "roaming",
+      "PlanGroupID": "1",
+      "PlanGroupSortOrder": "8",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "roaming data",
+          "Amount": 0.2500000000,
+          "Unit": "GB",
+          "BucketOrder": "0017",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data_roam_as_home_v2"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,InternalUse,Normal,Platinum,Preferred,Premiere,PremiereFree,Test,VIPPlus",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "1.82",
+      "PlanSortOrder": "1010",
+      "DataRules": {
+        "PlanId": 11285,
+        "RequireAltContactPhone": false
+      }
+    },
+    {
+      "PlanID": "11325",
+      "PlanName": "roam30 7-day",
+      "PlanDescription": "roam30 7-day 500 MB Roaming data Roaming data for use in the US, Canada, United Kingdom and Digicel Caribbean markets. 7-day data only plan, expires independent of primary and add-on plans. Plan does not renew, but may be purchased multiple times to start on user specified dates.  Regional Availability US, Canada, United Kingdom and Digicel Caribbean countries: Anguilla, Antigua and Barbuda, Aruba, Barbados, Bermuda Is., British Virgin Islands, Cayman Is., Dominica, El Salvador, French Guiana, Grenada, Guadeloupe, Guyana, Haiti, Jamaica, Montserrat, Netherlands Antilles/Curacao, Panama, Saint Lucia, Saint Vincent & the Grenadines, St. Kitts and Nevis, Suriname, Trinidad and Tobago, Turks and Caicos Islands",
+      "PlanAmount": 27.27,
+      "PlanType": "A",
+      "Frequency": "W",
+      "FeatureCodes": [],
+      "StartDate": "2026-03-31 20:17:39",
+      "EndDate": "2026-04-07 20:17:39",
+      "PlanDetails": "<div class=\"\" style=\"text-align: center;\">\n\t<div style=\"text-align: left;\">\n\t\troaming data for use in the US, Canada, UK and Digicel Caribbean markets. \n\t</div>\n\t<div style=\"text-align: left;\">\n\t\t7-day data only plan, expires independent of primary and add-on plans. \n\t</div>\n\t<div style=\"text-align: left;\">\n\t\tplan does not renew, but may be purchased multiple times to start on user specified dates. \n\t</div>\n</div>",
+      "CreatedBy": "Denise Grimes",
+      "PublishedBy": "John Dillon",
+      "RetiredBy": null,
+      "AutoRenew": false,
+      "IsEditable": true,
+      "Voice": 0.0,
+      "Data": 0.5000000000,
+      "SMS": 0,
+      "MTSubscriptionID": "712232503",
+      "VoiceUnlimited": false,
+      "DataUnlimited": false,
+      "SMSUnlimited": false,
+      "AvailableBoltOns": [],
+      "CurrentlyAssigned": false,
+      "PlanRenewable": false,
+      "PaymentOption": "PrePay",
+      "CanICB": "False",
+      "HierarchyType": "Consumer",
+      "PlanGroup": "roaming",
+      "PlanGroupID": "1",
+      "PlanGroupSortOrder": "8",
+      "ProrateOnActivate": "False",
+      "ProrateOnDeactivate": null,
+      "PlanCapabilities": [
+        {
+          "PlanCapabilityName": "DataCapable",
+          "PlanCapabilityType": "Required"
+        },
+        {
+          "PlanCapabilityName": "PushToTalk",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "TextCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VoiceCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCapable",
+          "PlanCapabilityType": "Optional"
+        },
+        {
+          "PlanCapabilityName": "VolteCertified",
+          "PlanCapabilityType": "Optional"
+        }
+      ],
+      "PlanBuckets": [
+        {
+          "Name": "roaming data",
+          "Amount": 0.5000000000,
+          "Unit": "GB",
+          "BucketOrder": "0017",
+          "Suppress": "False",
+          "Unlimited": "False",
+          "BucketUnit": "INS_Data_roam_as_home_v2"
+        }
+      ],
+      "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,ECommerce,MMS,Seamless,SelfCare,USSD,Website",
+      "VIPTypes": "Affiliate,Employee,InternalUse,Normal,Platinum,Preferred,Premiere,PremiereFree,Test,VIPPlus",
+      "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+      "Cugs": "",
+      "Sugs": "",
+      "UnlimitedBuckets": null,
+      "ActiveCCard": "False",
+      "SubscriberLines": "0",
+      "PurchaseLimit": "0",
+      "PurchaseLimitStartDate": "",
+      "PurchaseLimitEndDate": "",
+      "ContractAge": "0",
+      "ActivatedAge": "0",
+      "ContractTerm": "0",
+      "Islands": "",
+      "Rank": "0",
+      "CreditClass": "",
+      "VATAmount": "2.73",
+      "PlanSortOrder": "1015",
+      "DataRules": {
+        "PlanId": 11325,
+        "RequireAltContactPhone": false
+      }
+    }
+  ]
+}

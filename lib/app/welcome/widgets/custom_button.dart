@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
+
+class CustomButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const CustomButton({super.key, required this.label, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 200,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(
+            Colors.white,
+          ), // Light purple color
+          padding: WidgetStateProperty.all(
+            EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          ),
+          elevation: WidgetStateProperty.all(0), // No shadow
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: ColorManager.welcomeScreenBloc, // Text color
+            fontSize: 15,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w700, // Font weight
+          ),
+        ),
+      ),
+    );
+  }
+}

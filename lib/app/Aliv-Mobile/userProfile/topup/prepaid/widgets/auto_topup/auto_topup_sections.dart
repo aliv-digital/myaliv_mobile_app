@@ -1,0 +1,182 @@
+import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
+import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
+import '../../logic/auto_top_up_validation.dart';
+import '../../theme/top_up_prepaid_theme.dart';
+import 'auto_topup_amount_grid.dart';
+import 'auto_topup_widgets.dart';
+
+/// Card selection section for auto top-up.
+class AutoTopupCardSection extends StatelessWidget {
+  final SavedCardModel? selectedCard;
+  final ValueChanged<SavedCardModel?> onCardSelected;
+
+  /// ATOP-001 inline error, with an add-card action beneath it.
+  final String? errorText;
+  final VoidCallback? onAddNewCard;
+
+  const AutoTopupCardSection({
+    super.key,
+    required this.selectedCard,
+    required this.onCardSelected,
+    this.errorText,
+    this.onAddNewCard,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final error = errorText;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AutoTopupSectionLabel('select card'),
+        SavedCardDropdown(
+          selectedCard: selectedCard,
+          onCardSelected: onCardSelected,
+        ),
+        if (error != null) ...[
+          const SizedBox(height: 8),
+          Text(error, style: TopUpPrepaidTheme.amountError()),
+          if (onAddNewCard != null)
+            TextButton(
+              onPressed: onAddNewCard,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: TopUpPrepaidTheme.purple,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'add a new card',
+                  style: TextStyle(fontFamily: 'CircularPro', fontSize: 15),
+                ),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Balance threshold section for auto top-up.
+class AutoTopupThresholdSection extends StatelessWidget {
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+
+  /// The account's current threshold from the API. No longer drives the
+  /// helper, which now states the fixed ATOP-002 range.
+  final double minThreshold;
+
+  /// When set, the ATOP-002 helper is shown as an inline error.
+  final String? errorText;
+
+  const AutoTopupThresholdSection({
+    super.key,
+    this.controller,
+    this.onChanged,
+    this.minThreshold = 0,
+    this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AutoTopupSectionLabel('when balance falls below'),
+        TopUpFormInputField(
+          hint: 'enter threshold amount',
+          isAmountType: true,
+          controller: controller,
+          onChanged: onChanged,
+        ),
+        const SizedBox(height: 8),
+        // ATOP-002: the helper and the inline error share the same copy; an
+        // invalid threshold turns the helper into the error.
+        Text(
+          errorText ?? autoTopUpThresholdRangeMessage,
+          style: TextStyle(
+            color: errorText != null
+                ? TopUpPrepaidTheme.amountError().color
+                : const Color(0xFF707070),
+            fontSize: 14,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w500,
+            height: 1.43,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Amount selection section for auto top-up.
+class AutoTopupAmountSection extends StatelessWidget {
+  /// Selected amount. Null means no selection.
+  final int? selectedAmount;
+  final ValueChanged<int> onAmountSelected;
+
+  /// Whether the section is enabled. Disabled when custom amount is entered.
+  final bool enabled;
+
+  const AutoTopupAmountSection({
+    super.key,
+    this.selectedAmount,
+    required this.onAmountSelected,
+    this.enabled = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      ignoring: !enabled,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AutoTopupSectionLabel('select a top-up amount'),
+            AutoTopupAmountGrid(
+              selectedAmount: selectedAmount,
+              onAmountSelected: onAmountSelected,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom amount input section for auto top-up.
+class AutoTopupCustomAmountSection extends StatelessWidget {
+  /// Controller for the custom amount input field.
+  final TextEditingController? controller;
+
+  /// Callback when the custom amount value changes.
+  final ValueChanged<String>? onChanged;
+
+  const AutoTopupCustomAmountSection({
+    super.key,
+    this.controller,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AutoTopupSectionLabel('custom amount'),
+        TopUpFormInputField(
+          hint: 'enter a custom amount',
+          isAmountType: true,
+          controller: controller,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}

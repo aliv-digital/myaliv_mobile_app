@@ -11,6 +11,8 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+notes/
+/TRELLO_TASK_*.txt
 
 # IntelliJ related
 *.iml
@@ -33,6 +35,10 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# FVM — local SDK cache (keep .fvmrc tracked, ignore the cache dir)
+.fvm/
+!.fvmrc
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +49,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/CLAUDE.md
+/Card information.pdf

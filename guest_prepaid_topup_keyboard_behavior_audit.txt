@@ -1,0 +1,559 @@
+GUEST PREPAID TOP-UP KEYBOARD BEHAVIOR AUDIT
+
+Audit scope
+-----------
+
+Investigation only. No application code, UI, validation, formatting, BLoC,
+repository, API, navigation, or shared-widget behavior was changed. The only
+new artifact created by this audit is this report.
+
+The audit covers the Guest module's "prepaid - top-up" screen, its three actual
+editable TextFields, the existing Next action, and the direct confirmation-route
+boundary. Line numbers refer to the inspected snapshot.
+
+
+1. Exact screen and directly related files
+------------------------------------------
+
+Primary screen:
+
+- lib/app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart
+  - GuestTopUpScreen creates GuestTopUpBloc and dispatches GuestTopUpStarted
+    (lines 24-40).
+  - _GuestTopUpViewState contains phone validation/matching and the exact Next
+    callback (lines 50-124).
+  - _buildPhoneField constructs both phone inputs using the shared
+    CustomCountryPhoneInputRow (lines 164-210).
+  - build renders the three inputs and Next button in visual order (lines
+    212-350).
+
+Amount widget actually rendered by the screen:
+
+- lib/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart
+  - GradientInputField owns the amount controller and display sanitization.
+
+Shared phone widget actually rendered twice:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart
+
+State and startup flow:
+
+- lib/app/Aliv-Mobile-Guest/guestTopUp/bloc/guest_topup_bloc.dart
+- lib/app/Aliv-Mobile-Guest/guestTopUp/bloc/guest_topup_event.dart
+- lib/app/Aliv-Mobile-Guest/guestTopUp/bloc/guest_topup_state.dart
+- lib/app/Aliv-Mobile-Guest/guestTopUp/repository/guest_topup_repository.dart
+
+Direct validation/formatting dependencies:
+
+- lib/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+- lib/app/Aliv-Mobile/login/model/login_country_selection.dart
+
+Button and styling dependencies:
+
+- lib/resources/widgets/defaultButton.dart
+- lib/app/Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart
+- lib/app/Aliv-Mobile-Guest/guestTopUp/data/guest_topup_data.dart
+
+Direct navigation boundary:
+
+- lib/router/app_routes.dart
+- lib/router/app_router.dart (Guest Top-up routes at lines 777-799)
+- lib/app/Aliv-Mobile-Guest/confirmGuestTopUp/view/
+  confirm_guest_top_up_screen.dart
+
+Opening screen:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart
+  - The Guest splash "top-up" button pushes AppRoutes.guestTopUp (lines
+    189-193).
+
+Legacy/model detail:
+
+- lib/app/Aliv-Mobile-Guest/guestTopUp/widgets/phone_number_input.dart
+  defines LabeledInputField and CountryInfo.
+- The current screen imports CountryInfo from this file, but it does not render
+  LabeledInputField. Therefore LabeledInputField's private FocusNode and
+  TextField are not part of the current screen's input/focus behavior.
+
+
+2. Editable fields in actual visual/focus order
+-----------------------------------------------
+
+There are exactly three rendered editable TextFields, in this order:
+
+1. Prepaid mobile number
+   - Label: "please enter an active prepaid number to top-up".
+   - First CustomCountryPhoneInputRow, built by _buildPhoneField and inserted in
+     the first SliverToBoxAdapter at screen lines 242-270.
+
+2. Confirm mobile number
+   - Label: "confirm mobile number".
+   - Second CustomCountryPhoneInputRow, inserted in the second
+     SliverToBoxAdapter at lines 272-303.
+
+3. Top-up amount
+   - Label: "enter top-up amount".
+   - GradientInputField containing one TextField at gradient_input_field.dart
+     lines 140-156, inserted in the third SliverToBoxAdapter at screen lines
+     305-317.
+
+The country-code boxes are disabled InkWell/container UI, not editable inputs.
+The Next button is a button, not an input field.
+
+
+3. Current configuration for each field
+----------------------------------------
+
+A. Prepaid mobile number
+
+- Actual widget: CustomCountryPhoneInputRow -> internal TextField.
+- TextInputAction: the screen does not pass it; shared nullable default is null.
+- keyboardType: shared default TextInputType.phone.
+- FocusNode: the screen passes none. CustomCountryPhoneInputRow creates and owns
+  an internal _effectiveFocusNode, listens to it for focused-border styling,
+  and disposes it.
+- onSubmitted: not passed; shared default null.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- autofocus: shared default false.
+- readOnly: shared default false.
+- enabled: TextField.enabled is not set, so it is enabled.
+- controller: none is supplied. The TextField manages its own editable state.
+- formatter: BahamasPhoneInputFormatter because the fixed country is BS.
+- onChanged: dispatches GuestActivePrepaidNumberEvent with the formatted field
+  string.
+- The `_buildPhoneField` `value` argument is currently unused, so BLoC state is
+  not fed back through a controller or initialValue.
+
+B. Confirm mobile number
+
+- Actual widget: a second CustomCountryPhoneInputRow -> internal TextField.
+- TextInputAction: not passed; shared nullable default null.
+- keyboardType: shared default TextInputType.phone.
+- FocusNode: no external node. This second shared-widget instance creates,
+  owns, listens to, and disposes its own independent FocusNode.
+- onSubmitted: not passed; shared default null.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- autofocus: shared default false.
+- readOnly: shared default false.
+- enabled: TextField.enabled is not set, so it is enabled.
+- controller: none supplied; field-local editable state.
+- formatter: the same BahamasPhoneInputFormatter.
+- onChanged: dispatches GuestActivePrepaidNumberConfirmEvent with the formatted
+  field string.
+- Its `_buildPhoneField` `value` argument is also unused.
+
+C. Top-up amount
+
+- Actual widget: GradientInputField -> internal TextField.
+- It is a real TextField inside a custom visual amount widget, not a group of
+  amount buttons or a non-editable display.
+- TextInputAction: not exposed or set; explicit value is null.
+- keyboardType: const TextInputType.numberWithOptions(decimal: false).
+  This requests a number keyboard without a decimal key even though the custom
+  sanitizer accepts dot characters when they arrive from another input source.
+- FocusNode: GradientInputField does not provide a FocusNode. The TextField uses
+  its framework-managed internal focus node.
+- onSubmitted: not exposed or set.
+- onEditingComplete: not configured.
+- nextFocus/requestFocus: none.
+- autofocus: not set, therefore false.
+- readOnly: not set, therefore false.
+- enabled: not set, therefore enabled.
+- controller: private TextEditingController _controller owned by
+  _GradientInputFieldState.
+- The existing widget does not currently override dispose to dispose this
+  controller. That lifecycle behavior is outside this keyboard task and must
+  not be refactored as part of it.
+- initialValue: optional. When non-empty it initializes the controller as
+  `$<initialValue>`. The Guest screen does not pass initialValue, so its amount
+  starts visually empty with hint "$00".
+- inputFormatters: none.
+- custom formatter behavior: on every change, _keepDigitsAndDot removes every
+  character except ASCII digits and dots. The controller is rewritten to
+  `$<cleaned>`, and its selection is moved to the end.
+- BLoC value: widget.onChanged receives the cleaned value without `$`.
+- Empty cleaned input clears the controller and dispatches an empty amount.
+- Multiple dots are not prevented by the sanitizer; later double parsing
+  determines validity.
+
+No current field defines an explicit IME action or keyboard submission. No
+manual focus traversal exists anywhere in this screen.
+
+
+4. Exact existing Next button callback/action
+---------------------------------------------
+
+The visible control is DefaultButton at guest_topup_screen.dart lines 325-337.
+
+Configuration:
+
+- onPressed: () => _handleNextPressed(state)
+- isLoading: false (constant)
+- onPressed is always non-null
+
+DefaultButton only disables itself when isLoading is true or onPressed is null.
+Consequently, this Next button is always enabled, including while
+GuestTopUpStatus.loading and when input is empty/invalid.
+
+Exact _handleNextPressed sequence (screen lines 89-124):
+
+1. Compute phoneInvalid with _isPhoneInvalid(state.phoneNumber).
+2. Compute mismatch with digit-normalized _isMismatch(phone, confirm).
+3. Compute confirmEmpty from confirmPhoneNumber.isEmpty.
+4. If phone is empty or invalid:
+   - AppToast.show GuestTopUpTheme.invalidPhoneMessage
+     ("invalid phone number") as ToastType.error.
+   - Return.
+5. If confirm is empty or mismatched:
+   - AppToast.show GuestTopUpTheme.phoneMismatchMessage
+     ("phone numbers do not match") as ToastType.error.
+   - Return.
+6. Parse amount by removing all characters except digits and dots, calling
+   double.tryParse, and falling back to 0.
+7. If parsedAmount <= 0, return silently. There is no amount toast or inline
+   error in this callback.
+8. Otherwise call:
+
+   context.push(
+     AppRoutes.confirmGuestTopUp,
+     extra: {
+       'phoneNumber': state.phoneNumber,
+       'amount': parsedAmount,
+     },
+   )
+
+No BLoC submit event, repository call, API call, or loading transition occurs
+inside the Next callback.
+
+
+5. Complete current validation and submission flow
+--------------------------------------------------
+
+A. Startup
+
+1. Guest splash pushes AppRoutes.guestTopUp.
+2. GuestTopUpScreen creates GuestTopUpBloc with const GuestTopUpRepository.
+3. It immediately dispatches GuestTopUpStarted.
+4. The BLoC emits GuestTopUpStatus.loading and calls repository.initialize().
+5. The repository performs only a 300 ms delay; there is no API request.
+6. On success the BLoC emits ready. On error it emits failure with null
+   errorMessage, and the screen listener shows the fallback error toast.
+7. The form and Next button are not replaced or disabled during startup
+   loading. Status is not checked by _handleNextPressed.
+
+B. Fixed country and phone formatting
+
+- _selectedCountry is the fixed Bahamas CountryInfo: flag 🇧🇸, dial code 1,
+  ISO BS.
+- Country selection is parked/commented out; both displayed country boxes use
+  enableCountryPicker: false.
+- Both phone fields receive BahamasPhoneInputFormatter.
+- It keeps at most 10 digits and displays progressive formatting ending in
+  `(242) 345-4356`.
+- It has special deletion handling so backspacing across punctuation still
+  removes a real digit.
+- The formatted display strings are stored directly in GuestTopUpState.
+
+C. Phone validation
+
+- _isPhoneInvalid delegates to
+  LoginPhoneNumberHelper.hasLiveValidationError with the fixed Bahamas
+  LoginCountrySelection.
+- Live validation stays quiet when a phone contains no digits.
+- Bahamas validation accepts either seven subscriber digits or ten digits
+  beginning with 242.
+- A typed invalid first phone changes its border/text color and displays the
+  inline "invalid phone number" message.
+- Next separately treats an empty first phone as invalid and shows the same
+  message as an error toast.
+
+D. Confirm matching
+
+- _isMismatch returns false while confirm is exactly empty.
+- Otherwise it removes every non-digit from both values and compares the digit
+  strings.
+- Formatting differences do not cause a mismatch.
+- A mismatch changes confirm border/text styling and shows the inline
+  "phone numbers do not match" message.
+- Next checks confirm empty or mismatch only after the first-phone validation.
+  It shows the same mismatch message as an error toast and returns.
+- There is no separate confirm-phone helper-validation call in
+  _handleNextPressed. Existing validation order and logic must remain exact.
+
+E. Amount display, state, and validation
+
+- GradientInputField displays a `$` prefix by rewriting its private controller.
+- It passes the cleaned digits/dots string to GuestTopUpAmountEvent.
+- GuestTopUpBloc stores that string unchanged in state.amount.
+- Next removes non-digits/non-dots again and calls double.tryParse.
+- Empty, malformed (including multiple-dot), zero, and negative/unparseable
+  results become or compare as <= 0 and stop silently.
+- A positive parsed double is accepted.
+- There is no maximum, minimum above zero, decimal-place limit, or API-side
+  validation on this screen.
+
+F. BLoC/state updates
+
+- GuestActivePrepaidNumberEvent replaces state.phoneNumber.
+- GuestActivePrepaidNumberConfirmEvent replaces state.confirmPhoneNumber.
+- GuestTopUpAmountEvent replaces state.amount.
+- These field events do not set a loading status, clear fields, validate, or
+  call the repository.
+- Each phone area has a selective BlocBuilder. Amount widget itself is outside a
+  BlocBuilder and retains its controller state.
+- The Next button is inside a BlocBuilder and receives the latest emitted state
+  in its current callback closure.
+
+G. Navigation and route arguments
+
+- Valid Next pushes AppRoutes.confirmGuestTopUp.
+- Route extra key `phoneNumber` receives state.phoneNumber exactly as stored,
+  including Bahamas display formatting; it is not reformatted for navigation.
+- Route extra key `amount` receives the parsed double.
+- app_router.dart accepts a Map, defaults missing phone to empty and amount to
+  zero, converts numeric amount to double, and constructs:
+
+  GuestConfirmTopUpScreen(phoneNumber: phoneNumber, amount: amount)
+
+- The confirmation screen seeds its own GuestConfirmTopUpBloc from these route
+  arguments and later owns the terms/payment/receipt flow.
+- That later payment flow is not part of the Prepaid Top-up keyboard feature and
+  must remain unchanged.
+- App-bar back on the input screen calls context.pop.
+
+
+6. Shared/custom input capability and impact analysis
+-----------------------------------------------------
+
+A. CustomCountryPhoneInputRow
+
+Used for both phone fields. It already supports everything needed:
+
+- nullable TextInputAction? textInputAction, default null;
+- nullable ValueChanged<String>? onSubmitted, default null;
+- nullable FocusNode? focusNode;
+- internal FocusNode creation/ownership when the caller passes null;
+- forwarding of textInputAction and onSubmitted unchanged to TextField.
+
+This shared widget has many callers across login and guest/app flows. No change
+is needed for this feature. The Guest screen should configure its existing
+properties only at the two call sites.
+
+B. GradientInputField
+
+Used for top-up amount. Current capability:
+
+- textInputAction: not supported;
+- onSubmitted: not supported;
+- external FocusNode: not supported;
+- controller: private internally owned controller;
+- formatter: custom controller-rewrite logic in onChanged.
+
+GradientInputField is not exclusive to this Guest screen. Repository-wide
+call-site search found a second use in:
+
+- lib/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/
+  send_top_up_placeholder_tab.dart (lines 252-259)
+
+That logged-in prepaid top-up caller supplies initialValue and onChanged. A
+future shared-widget change must therefore be strictly additive:
+
+- nullable TextInputAction? textInputAction with default null;
+- nullable ValueChanged<String>? onSubmitted with default null;
+- forward both unchanged to the internal TextField;
+- do not change controller initialization, sanitization, cursor placement,
+  keyboardType, visuals, or the logged-in caller's behavior.
+
+No external FocusNode is needed for the requested sequence. Standard Flutter
+focus traversal can target the amount TextField's existing framework-managed
+focus node.
+
+C. LabeledInputField in phone_number_input.dart
+
+This legacy/local widget has its own private FocusNode but is not rendered by
+GuestTopUpScreen. It must not be modified for this feature. The screen only uses
+the CountryInfo class from its file.
+
+D. DefaultButton
+
+DefaultButton already implements its current loading/disabled behavior. No
+change is needed or permitted. Keyboard submission should share the screen's
+Next action rather than adding keyboard behavior to the global button widget.
+
+
+7. Safest minimal keyboard sequence
+-----------------------------------
+
+The expected sequence matches the current visual order and business flow.
+
+A. Prepaid mobile -> Next -> Confirm mobile
+
+- Extend the screen-local _buildPhoneField parameters so the first call can
+  pass TextInputAction.next to CustomCountryPhoneInputRow.
+- Leave onSubmitted/onEditingComplete unset for this field.
+- Do not add manual nextFocus, requestFocus, or a new FocusNode.
+- Flutter's standard Next completion behavior will traverse from the first
+  shared widget's owned node to the second phone TextField.
+
+B. Confirm mobile -> Next -> Top-up amount
+
+- Pass TextInputAction.next to the second phone field through the same
+  screen-local builder parameter.
+- Leave its onSubmitted/onEditingComplete unset.
+- Use standard traversal. The next editable node in widget order is the
+  GradientInputField TextField, even though the fields live in separate
+  SliverToBoxAdapters.
+- Do not submit or validate on confirm-field Next; current business flow expects
+  amount entry before the visible Next action.
+
+C. Top-up amount -> Done -> exact Next action
+
+- Add only nullable/default-null textInputAction and onSubmitted support to
+  GradientInputField and forward them unchanged.
+- At the Guest call site set TextInputAction.done.
+- Define/reuse one screen-local action that reads the current
+  GuestTopUpBloc.state and invokes the existing _handleNextPressed with that
+  state.
+- Use that same screen-local action for DefaultButton.onPressed and amount
+  onSubmitted.
+- The amount onSubmitted callback must ignore its submitted String. Existing
+  controller sanitization plus GuestTopUpState.amount remain authoritative.
+- Do not copy validation or navigation into the amount widget/callback.
+
+This creates one parity path:
+
+- button tap or amount Done
+- same screen-local Next action
+- same first-phone validation/toast
+- same confirm matching/toast
+- same amount parse and silent invalid-amount return
+- same route and route extras
+
+
+8. Amount-input integration details
+-----------------------------------
+
+The amount control is a real TextField nested inside GradientInputField.
+
+The safe integration point is the internal TextField at
+gradient_input_field.dart lines 140-156:
+
+- forward a nullable textInputAction property;
+- forward a nullable onSubmitted property;
+- do not modify _handleInputChange;
+- do not pass the submitted display string (which contains `$`) into business
+  logic;
+- do not replace or externally control _controller;
+- do not change selection/cursor behavior;
+- do not add an input formatter or change decimal keyboard configuration as
+  part of the keyboard-action task.
+
+Because this widget is also used by logged-in prepaid top-up, both new
+properties must default to null so the existing caller is behaviorally
+unchanged.
+
+
+9. Loading/disabled-state considerations
+-----------------------------------------
+
+Current screen behavior:
+
+- GuestTopUpStatus.loading exists only for the 300 ms initialization delay.
+- The screen does not show a form-level loader, disable fields, or pass loading
+  into the Next button.
+- DefaultButton receives isLoading: false unconditionally.
+- DefaultButton.onPressed is always non-null.
+- The Next action is therefore always available during initial, loading, ready,
+  and failure states.
+- There is no submission loading state, in-flight API call, debounce, lock, or
+  duplicate-navigation guard on this screen.
+
+Keyboard parity requirement:
+
+- Amount Done should not add a status/loading gate that the button does not
+  have.
+- It should always invoke the same Next action, just like the always-enabled
+  button.
+- Invalid first phone must produce the existing invalid-phone error toast.
+- Empty/mismatched confirm must produce the existing mismatch error toast.
+- Invalid/non-positive amount must remain a silent no-op.
+- Repeated Done has the same current duplicate-navigation boundary as repeated
+  button taps. Do not add debounce, locks, or route guards.
+
+There is therefore no disabled/loading state for keyboard Done to bypass in the
+current Next flow. The protection requirement is satisfied by exact callback
+reuse, not by inventing a new gate.
+
+
+10. Regression risks and behavior that must remain unchanged
+------------------------------------------------------------
+
+- Use the latest GuestTopUpBloc state for amount Done; do not use a stale state
+  snapshot or the submitted String.
+- Reuse _handleNextPressed. Do not duplicate its validation/navigation body.
+- Preserve validation order: first phone, then confirm, then amount.
+- Preserve exact AppToast messages and ToastType.error.
+- Preserve the silent return for invalid/non-positive amount.
+- Preserve `_isMismatch` digit normalization and its empty-confirm behavior.
+- Preserve LoginPhoneNumberHelper's Bahamas rules and live-validation timing.
+- Preserve BahamasPhoneInputFormatter's 10-digit limit, display punctuation,
+  and deletion behavior.
+- Preserve formatted phone strings in BLoC state and route extra; do not replace
+  them with the helper's API username or the submitted raw text.
+- Preserve both phone fields' internally owned FocusNodes, listeners, focused
+  gradients, disposal, and lack of controllers.
+- Do not combine standard TextInputAction.next with manual nextFocus; double
+  traversal could skip a field.
+- Preserve fixed Bahamas country UI and disabled country selection.
+- Preserve GradientInputField's private controller, `$` rewrite, allowed
+  digits/dots, empty clearing, cursor-at-end behavior, initialValue behavior,
+  and current decimal:false keyboardType.
+- Preserve amount parsing with non-digit/non-dot removal, double.tryParse,
+  fallback zero, and > 0 requirement.
+- Keep the logged-in GradientInputField caller unchanged through nullable,
+  default-null additions only.
+- Preserve GuestTopUpStarted's delayed initialization, status transitions, and
+  fallback failure toast.
+- Preserve the always-enabled, never-loading Next button semantics.
+- Preserve AppRoutes.confirmGuestTopUp and exact extra keys/types.
+- Preserve the confirmation/payment/receipt flow.
+- Preserve CustomScrollView/Sliver ordering, Scaffold keyboard insets, SafeArea,
+  layout, styling, and app-bar navigation.
+- Do not modify LabeledInputField merely because CountryInfo shares its file; it
+  is not the rendered phone widget.
+- Do not modify CustomCountryPhoneInputRow defaults or any other Guest/App flow.
+
+
+Exact files that should be allowed to change during implementation
+------------------------------------------------------------------
+
+Minimal application allow-list:
+
+1. lib/app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart
+   - Configure first/confirm actions at existing phone call sites.
+   - Configure amount Done.
+   - Create/reuse one screen-local current-state Next callback for both button
+     tap and amount submission.
+
+2. lib/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart
+   - Add nullable/default-null textInputAction and onSubmitted properties and
+     forward them unchanged to the existing amount TextField.
+
+Recommended targeted test file:
+
+3. test/guest_top_up/guest_prepaid_topup_keyboard_behavior_test.dart
+
+No change should be needed in:
+
+- lib/resources/widgets/custom_country_phone_input_row.dart;
+- lib/resources/widgets/defaultButton.dart;
+- GuestTopUpBloc/event/state/repository;
+- LoginPhoneNumberHelper or BahamasPhoneInputFormatter;
+- phone_number_input.dart / LabeledInputField;
+- theme/data files;
+- router or confirmation/payment/receipt files;
+- the logged-in prepaid top-up caller;
+- any other Guest or App screen.

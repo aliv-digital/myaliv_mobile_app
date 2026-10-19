@@ -1,0 +1,162 @@
+SIGN IN KEYBOARD NEXT/DONE IMPLEMENTATION REPORT
+
+Summary
+-------
+Implemented keyboard Next/Done behavior only for the Sign In screen, following
+sign_in_keyboard_behavior_audit.txt. No login validation, API, navigation,
+credential, BLoC, layout, styling, or unrelated behavior was changed.
+
+
+Files changed
+-------------
+
+Application files:
+
+1. lib/resources/widgets/custom_country_phone_input_row.dart
+2. lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart
+3. lib/app/Aliv-Mobile/login/widgets/login_password_field.dart
+4. lib/app/Aliv-Mobile/login/view/login_page.dart
+
+Test file:
+
+5. test/login/sign_in_keyboard_behavior_test.dart
+
+Report file:
+
+6. sign_in_keyboard_behavior_implementation_report.txt
+
+
+Exact behavior implemented
+--------------------------
+
+Phone field:
+
+- The Sign In phone field now passes TextInputAction.next.
+- Pressing the keyboard Next action uses Flutter's standard focus traversal and
+  moves focus from the phone TextField to the password TextField.
+- No manual nextFocus, requestFocus, raw-key listener, or new FocusNode was
+  added.
+- The existing phone FocusNode, formatter, validation, styles, error border,
+  and lifecycle remain unchanged.
+
+Password field:
+
+- The Sign In password TextField now uses TextInputAction.done.
+- LoginPasswordField accepts one VoidCallback from its parent screen.
+- Its onSubmitted handler ignores the submitted String and invokes that
+  callback when the current LoginBloc status is not loading.
+- The existing private FocusNode, focused/error border behavior, obscureText,
+  visibility toggle, styling, entered text, and lifecycle remain unchanged.
+
+
+Shared Sign In action
+---------------------
+
+_LoginView.build in login_page.dart now defines one screen-local submitLogin
+callback. Its only action is the existing event dispatch:
+
+  context.read<LoginBloc>().add(const LoginSubmitted());
+
+The same submitLogin callback reference is used by:
+
+- DefaultButton.onPressed; and
+- LoginPasswordField for keyboard Done.
+
+No validation, API, navigation, toast, CredentialStore, MFA, or authentication
+completion logic was moved or duplicated. Button tap and keyboard Done both
+enter the existing flow through LoginSubmitted.
+
+
+Shared phone widget isolation
+-----------------------------
+
+CustomCountryPhoneInputRow received only one new optional property:
+
+  TextInputAction? textInputAction
+
+Its default remains null and it is forwarded unchanged to the internal
+TextField. Only LoginPhoneRow supplies TextInputAction.next. Every other caller
+continues to omit the property and therefore retains the previous null/default
+keyboard action behavior. No existing shared-widget default was changed.
+
+
+Loading and duplicate-submit protection
+---------------------------------------
+
+Before keyboard Done invokes the shared submitLogin callback,
+LoginPasswordField reads the current LoginBloc state through context.read.
+
+- If state.status == LoginStatus.loading, Done does nothing.
+- Otherwise, Done invokes the same callback used by the Sign In button.
+
+This prevents keyboard Done from bypassing DefaultButton's existing loading
+lockout. No BLoC concurrency behavior was added or redesigned, and the existing
+pre-loading race boundary was intentionally left unchanged.
+
+Done is not gated by validity. Empty or invalid input still dispatches
+LoginSubmitted and follows the existing inline validation/error path exactly
+like a Sign In button tap.
+
+
+Tests added
+-----------
+
+test/login/sign_in_keyboard_behavior_test.dart contains four focused widget
+tests:
+
+1. Phone Next focuses Password.
+2. Password Done dispatches the existing LoginSubmitted action.
+3. Invalid input through Done produces the existing empty-field validation
+   state and does not call the repository.
+4. Done dispatches no LoginSubmitted event while LoginStatus is loading.
+
+
+Checks run and results
+----------------------
+
+Targeted analysis:
+
+  flutter analyze \
+    lib/app/Aliv-Mobile/login/view/login_page.dart \
+    lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart \
+    lib/app/Aliv-Mobile/login/widgets/login_password_field.dart \
+    lib/resources/widgets/custom_country_phone_input_row.dart \
+    test/login/sign_in_keyboard_behavior_test.dart
+
+Result: No issues found.
+
+Targeted widget test:
+
+  flutter test test/login/sign_in_keyboard_behavior_test.dart
+
+Result: 4 tests passed.
+
+Relevant existing login/auth tests plus the new widget tests:
+
+  flutter test \
+    test/auth/login_bloc_test.dart \
+    test/models/login_state_test.dart \
+    test/login/sign_in_keyboard_behavior_test.dart
+
+Result: 25 tests passed.
+
+Diff validation:
+
+- git diff --check passed with no whitespace errors.
+- LoginPasswordField has no application caller other than login_page.dart.
+- Only the four explicitly allowed application files and the allowed new test
+  file were changed for the implementation.
+
+
+Non-regression confirmation
+---------------------------
+
+No changes were made to LoginBloc, events, state, repository,
+AuthCompletionService, phone formatter/helper, DefaultButton,
+StripedScaffold, routes, OTP screens, or any unrelated screen.
+
+The existing phone formatting and validation, raw password handling, inline
+errors, backend/network toasts, login API behavior, MFA flow, direct-login
+flow, CredentialStore behavior, AuthCompletionService behavior, navigation,
+focus/error borders, password visibility, layout, and scaffold/keyboard
+behavior remain unchanged.

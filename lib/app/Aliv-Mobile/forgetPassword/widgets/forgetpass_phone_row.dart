@@ -1,0 +1,125 @@
+import 'package:country_picker/country_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
+import '../theme/forget_password_theme.dart';
+import '../../login/theme/login_theme.dart';
+import '../../login/model/login_country_selection.dart';
+import '../../login/utils/login_phone_number_helper.dart';
+import '../bloc/forget_password_bloc.dart';
+import '../bloc/forget_password_event.dart';
+
+class ForgetPasswordPhoneRow extends StatefulWidget {
+  const ForgetPasswordPhoneRow({super.key, required this.focusNode});
+
+  final FocusNode focusNode;
+
+  @override
+  State<ForgetPasswordPhoneRow> createState() => _LoginPhoneRowState();
+}
+
+class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
+  Country? _selectedCountry;
+
+  String get _flagEmoji =>
+      _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
+
+  String get _dialCode {
+    final raw = _selectedCountry?.phoneCode ?? '1';
+    // Handles both "1-242" and "1 242" forms and keeps first non-empty segment.
+    final normalized = raw.replaceAll('-', ' ');
+    return normalized
+        .split(' ')
+        .firstWhere((part) => part.trim().isNotEmpty, orElse: () => '1');
+  }
+
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
+  void _openCountryPicker() {
+    showCountryPicker(
+      context: context,
+      showPhoneCode: true,
+      onSelect: (country) {
+        setState(() {
+          _selectedCountry = country;
+        });
+      },
+    );
+  }
+  */
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFormatError = context.select(
+      (ForgetPasswordBloc bloc) =>
+          const LoginPhoneNumberHelper().hasLiveValidationError(
+            rawPhoneNumber: bloc.state.phone,
+            selectedCountry: LoginCountrySelection.defaultBahamas,
+          ),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomCountryPhoneInputRow(
+          focusNode: widget.focusNode,
+          hintText: 'eg: (242)-899-9999',
+          flagEmoji: _flagEmoji,
+          dialCode: _dialCode,
+          countryIsoCode: _selectedCountry?.countryCode ?? 'BS',
+          enableCountryPicker: false,
+          inputFormatters: const [BahamasPhoneInputFormatter()],
+          onChanged: (value) => context.read<ForgetPasswordBloc>().add(
+            ForgetPasswordPhoneChanged(value),
+          ),
+          backgroundColor: ForgetPasswordColors.pageBackground,
+          unfocusedBorderColor: hasFormatError
+              ? AuthModuleColors.errorRed
+              : ForgetPasswordColors.fieldBorder,
+          focusedBorderGradient: ForgetPasswordGradients.focusedInputBorder,
+          borderRadius: ForgetPasswordSizes.fieldRadius,
+          borderWidth: ForgetPasswordSizes.fieldBorderWidth,
+          fieldHeight: ForgetPasswordSizes.fieldHeight,
+          countryPickerWidth: ForgetPasswordSizes.countryWidth,
+          countryToPhoneGap: ForgetPasswordSizes.countryToPhoneGap,
+          countryPickerPadding: ForgetPasswordPaddings.countryHorizontal8,
+          showCountryPickerBorder: true,
+          countryPickerBorderColor: ForgetPasswordColors.fieldBorder,
+          countryPickerBorderWidth: ForgetPasswordSizes.fieldBorderWidth,
+          phoneInputPadding: ForgetPasswordPaddings.fieldHorizontal14,
+          countryFlagToDialGap: ForgetPasswordSizes.countryFlagToCodeGap,
+          countryDialToArrowGap: ForgetPasswordSizes.countryCodeToArrowGap,
+          countryArrowIconSize: ForgetPasswordSizes.countryArrowSize,
+          //countryArrowWidth: 19,
+          //countryArrowHeight: 12,
+          countryArrowColor: ForgetPasswordColors.hintGrey,
+          flagStyle: ForgetPasswordTheme.countryFlag,
+          dialCodeStyle: ForgetPasswordTheme.dialCode,
+          phoneInputStyle: hasFormatError
+              ? ForgetPasswordTheme.phoneInput.copyWith(
+                  color: AuthModuleColors.errorRed,
+                )
+              : ForgetPasswordTheme.phoneInput,
+          phoneHintStyle: ForgetPasswordTheme.phoneHint,
+        ),
+        if (hasFormatError) ...[
+          const SizedBox(height: 6),
+          Padding(
+            padding: EdgeInsets.only(
+              left:
+                  ForgetPasswordSizes.countryWidth +
+                  ForgetPasswordSizes.countryToPhoneGap +
+                  ForgetPasswordPaddings.fieldHorizontal14.left,
+            ),
+            child: const Text(
+              'invalid Format',
+              style: AuthModuleTextStyles.invalidCredentials,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

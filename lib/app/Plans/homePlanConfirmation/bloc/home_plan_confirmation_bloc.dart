@@ -1,0 +1,264 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import '../models/home_plan_confirmation_models.dart';
+import '../repository/home_plan_confirmation_repository.dart';
+import 'home_plan_confirmation_event.dart';
+import 'home_plan_confirmation_state.dart';
+
+class HomePlanConfirmationBloc
+    extends Bloc<HomePlanConfirmationEvent, HomePlanConfirmationState> {
+  final HomePlanConfirmationRepository repository;
+  final DeviceLimitsCubit deviceLimitsCubit;
+  // Context edits invalidate pending promo results without cancelling transport.
+  int _promoRevision = 0;
+
+  HomePlanConfirmationBloc({
+    required this.repository,
+    required this.deviceLimitsCubit,
+  }) : super(HomePlanConfirmationState.initial()) {
+    on<HomePlanConfirmationStarted>(_onStarted);
+    on<HomePlanConfirmationRemoveItemPressed>(_onRemoveItem);
+    on<HomePlanConfirmationPromoCodeChanged>(_onPromoCodeChanged);
+    on<HomePlanConfirmationPromoApplyPressed>(_onPromoApply);
+    on<HomePlanConfirmationTermsPressed>(_onTerms);
+    on<HomePlanConfirmationTermsCheckboxToggled>(_onTermsCheckboxToggled);
+    on<HomePlanConfirmationPayNowPressed>(_onPayNow);
+  }
+
+  Future<void> _onStarted(
+    HomePlanConfirmationStarted event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) async {
+    _promoRevision++;
+    emit(
+      state.copyWith(
+        promoStatus: HomePlanConfirmationPromoStatus.idle,
+        promoResponse: null,
+        promoErrorMessage: '',
+      ),
+    );
+    emit(state.copyWith(status: HomePlanConfirmationStatus.loading));
+
+    try {
+      final data = await repository.load(args: event.args);
+      emit(
+        state.copyWith(
+          status: HomePlanConfirmationStatus.ready,
+          data: data,
+          isTermsChecked: event.args.defaultTermsChecked,
+          forceNow: event.args.forceNow,
+          purchaseContext: event.args.purchaseContext,
+          selectedBeginDate: _parseDate(event.args.futurePlanStartDate),
+          marketingOptIn: event.args.marketingOptIn,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: HomePlanConfirmationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  DateTime? _parseDate(String rawDate) {
+    final trimmed = rawDate.trim();
+    if (trimmed.isEmpty) return null;
+    return DateTime.tryParse(trimmed.replaceFirst(' ', 'T'));
+  }
+
+  void _onRemoveItem(
+    HomePlanConfirmationRemoveItemPressed event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    _promoRevision++;
+    if (state.promoStatus == HomePlanConfirmationPromoStatus.applying) {
+      emit(state.copyWith(promoStatus: HomePlanConfirmationPromoStatus.idle));
+    }
+    final data = state.data;
+    if (data == null) return;
+
+    final updatedItems = data.items.where((x) => x.id != event.itemId).toList();
+
+    final totals = PurchaseTotals(
+      subTotal: updatedItems.fold<double>(0, (s, x) => s + x.price),
+      vat: updatedItems.fold<double>(0, (s, x) => s + x.vatAmount),
+    );
+
+    final response = state.promoResponse;
+    final exceeds =
+        state.promoStatus == HomePlanConfirmationPromoStatus.applied &&
+        response != null &&
+        PromoSubtotalValidation.exceedsSubtotal(
+          discount: PromoSubtotalValidation.monetaryDiscount(
+            unitType: response.definition.unitType,
+            unitQty: response.definition.unitQty,
+            subtotal: totals.subTotal,
+          ),
+          subtotal: totals.subTotal,
+        );
+
+    emit(
+      state.copyWith(
+        promoStatus: exceeds
+            ? HomePlanConfirmationPromoStatus.failure
+            : state.promoStatus,
+        promoErrorMessage: exceeds
+            ? PromoSubtotalValidation.errorMessage
+            : state.promoErrorMessage,
+        promoResponse: exceeds ? null : state.promoResponse,
+        data: HomePlanConfirmationData(
+          phoneNumber: data.phoneNumber,
+          headerTitle: data.headerTitle,
+          beginsOnDateText: data.beginsOnDateText,
+          items: updatedItems,
+          totals: totals,
+        ),
+      ),
+    );
+  }
+
+  void _onPromoCodeChanged(
+    HomePlanConfirmationPromoCodeChanged event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    _promoRevision++;
+    emit(
+      state.copyWith(
+        promoCode: event.value,
+        promoStatus: HomePlanConfirmationPromoStatus.idle,
+        promoErrorMessage: '',
+        promoResponse: null,
+      ),
+    );
+  }
+
+  Future<void> _onPromoApply(
+    HomePlanConfirmationPromoApplyPressed event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) async {
+    if (!state.canApplyPromo) return;
+
+    final revision = ++_promoRevision;
+    final promoCode = state.promoCode.trim();
+
+    emit(
+      state.copyWith(
+        promoCode: promoCode,
+        promoStatus: HomePlanConfirmationPromoStatus.applying,
+        promoErrorMessage: '',
+        promoResponse: null,
+      ),
+    );
+
+    try {
+      final deviceId = await _resolveDeviceId();
+
+      debugPrint('HomePlanConfirmationBloc: promo code=$promoCode');
+
+      final response = await repository.applyPromo(
+        code: promoCode,
+        deviceAcId: deviceId,
+      );
+
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
+      if (response.isApplied &&
+          PromoSubtotalValidation.exceedsSubtotal(
+            discount: PromoSubtotalValidation.monetaryDiscount(
+              unitType: response.definition.unitType,
+              unitQty: response.definition.unitQty,
+              subtotal: state.data?.totals.subTotal ?? 0,
+            ),
+            subtotal: state.data?.totals.subTotal ?? 0,
+          )) {
+        emit(
+          state.copyWith(
+            promoStatus: HomePlanConfirmationPromoStatus.failure,
+            promoErrorMessage: PromoSubtotalValidation.errorMessage,
+            promoResponse: null,
+          ),
+        );
+        return;
+      }
+
+      debugPrint('HomePlanConfirmationBloc: apply promo response=$response');
+
+      debugPrint('is Applied : ${response.isApplied}');
+
+      emit(
+        state.copyWith(
+          promoStatus: response.isApplied
+              ? HomePlanConfirmationPromoStatus.applied
+              : HomePlanConfirmationPromoStatus.failure,
+          promoErrorMessage: response.isApplied ? '' : 'Invalid promo',
+          promoResponse: response,
+        ),
+      );
+    } catch (e) {
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
+      emit(
+        state.copyWith(
+          promoStatus: HomePlanConfirmationPromoStatus.failure,
+          promoErrorMessage: _extractErrorMessage(e),
+        ),
+      );
+    }
+  }
+
+  Future<int> _resolveDeviceId() async {
+    if (deviceLimitsCubit.state.isLoading) {
+      await deviceLimitsCubit.stream.firstWhere((state) => !state.isLoading);
+    }
+
+    if (!deviceLimitsCubit.state.hasDeviceLimits) {
+      await deviceLimitsCubit.loadDeviceLimits();
+    }
+
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
+      throw Exception('Device ID not found.');
+    }
+
+    return deviceId;
+  }
+
+  String _extractErrorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'Exception:';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length).trim();
+    }
+    return raw.trim().isEmpty ? 'Failed to apply promo code.' : raw.trim();
+  }
+
+  void _onTerms(
+    HomePlanConfirmationTermsPressed event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    emit(state.copyWith(openTermsRequestId: state.openTermsRequestId + 1));
+  }
+
+  void _onTermsCheckboxToggled(
+    HomePlanConfirmationTermsCheckboxToggled event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    emit(state.copyWith(isTermsChecked: event.isChecked));
+  }
+
+  void _onPayNow(
+    HomePlanConfirmationPayNowPressed event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    if (!state.isTermsChecked) return;
+
+    // Future: call API to create payment intent etc.
+    emit(state.copyWith(payNowRequestId: state.payNowRequestId + 1));
+  }
+}

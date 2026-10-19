@@ -1,0 +1,874 @@
+[
+  {
+    "PlanID": "30937",
+    "PlanName": "3GB Bonus Roaming Data US/Can",
+    "PlanDescription": "3GB Bonus Roaming Data US/Can",
+    "PlanAmount": 0.00,
+    "PlanType": "S",
+    "Frequency": "M",
+    "FeatureCodes": null,
+    "StartDate": "2026-03-01 21:58:00",
+    "EndDate": "2026-08-31 20:58:00",
+    "PlanDetails": "",
+    "CreatedBy": "Jacquelyn Mcfalls",
+    "PublishedBy": "Jacquelyn Mcfalls",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 3.0000000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "promotion BONUS data add-ons",
+    "PlanGroupID": "45",
+    "PlanGroupSortOrder": "998",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roam data us/can",
+        "Amount": 3.0000000000,
+        "Unit": "GB",
+        "BucketOrder": "0010",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_US_Canada"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,CiscoWhatsApp,DeviceApp,Kiosk,SelfCare,Website",
+    "VIPTypes": "Normal,Test",
+    "Roles": "Admin,AffinitySales,Agent,alivoperations,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,CblRestricted,CollectionsManager,CollectionsOfficer,commercialproducts,Concierge,corp_admin,corp_deptadmin,corp_finance,corp_securityadmin,Corporate (MetraView),Corporate ReadOnly,CorporateSales,CorporateSalesTierII,CorporateSalesTierIII,CSR (EdgeCare),DeliveryAgent,engineering,Finance Staff,FinanceTierI,FinanceTierII,FinanceTierIII,FinanceTierIV,InventoryManager,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Junior Adjustment Manager,LoyaltyManager,Manager,MarketingSendMessage,Operations,Operations Staff (EdgeControl),Partition Account Manager,Partition Operations Manager,Partition Pricing Manager,Product,Product Administrator (EdgeOffer),ReadOnly,RetailAgent,RetailDirector,RetailManager,RevAssuranceTierI,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Sales,Senior Adjustment Manager,StoreLocationAdmin,Subscriber (EdgeView),Subscriber ReadOnly,Super User,testrole1,Wholesale Agent",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": "",
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "0",
+    "PlanSortOrder": "99",
+    "DataRules": {
+      "PlanId": 30937,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "30957",
+    "PlanName": "1.5GB bonus roaming data us/can",
+    "PlanDescription": "1.5GB bonus roaming data us/can",
+    "PlanAmount": 0.00,
+    "PlanType": "S",
+    "Frequency": "M",
+    "FeatureCodes": null,
+    "StartDate": "2026-03-01 22:09:00",
+    "EndDate": "2026-08-31 21:09:00",
+    "PlanDetails": "",
+    "CreatedBy": "Jacquelyn Mcfalls",
+    "PublishedBy": "Jacquelyn Mcfalls",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 1.5000000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "promotion BONUS data add-ons",
+    "PlanGroupID": "45",
+    "PlanGroupSortOrder": "998",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roam data us/can",
+        "Amount": 1.5000000000,
+        "Unit": "GB",
+        "BucketOrder": "0010",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_US_Canada"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,DeviceApp,Kiosk,SelfCare,Website",
+    "VIPTypes": "Normal,Test",
+    "Roles": "Admin,AffinitySales,Agent,alivoperations,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,CblRestricted,CollectionsManager,CollectionsOfficer,commercialproducts,Concierge,corp_admin,corp_deptadmin,corp_finance,corp_securityadmin,Corporate (MetraView),Corporate ReadOnly,CorporateSales,CorporateSalesTierII,CorporateSalesTierIII,CSR (EdgeCare),DeliveryAgent,engineering,Finance Staff,FinanceTierI,FinanceTierII,FinanceTierIII,FinanceTierIV,InventoryManager,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Junior Adjustment Manager,LoyaltyManager,Manager,MarketingSendMessage,Operations,Operations Staff (EdgeControl),Partition Account Manager,Partition Operations Manager,Partition Pricing Manager,Product,Product Administrator (EdgeOffer),ReadOnly,RetailAgent,RetailDirector,RetailManager,RevAssuranceTierI,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Sales,Senior Adjustment Manager,StoreLocationAdmin,Subscriber (EdgeView),Subscriber ReadOnly,Super User,testrole1,Wholesale Agent",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": "",
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "0",
+    "PlanSortOrder": "99",
+    "DataRules": {
+      "PlanId": 30957,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "30967",
+    "PlanName": "750mb bonus roaming data ",
+    "PlanDescription": "750mb bonus roaming data ",
+    "PlanAmount": 0.00,
+    "PlanType": "S",
+    "Frequency": "M",
+    "FeatureCodes": null,
+    "StartDate": "2026-03-01 22:17:00",
+    "EndDate": "2026-07-31 21:17:00",
+    "PlanDetails": "",
+    "CreatedBy": "Jacquelyn Mcfalls",
+    "PublishedBy": "Jacquelyn Mcfalls",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 0.7500000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "promotion BONUS data add-ons",
+    "PlanGroupID": "45",
+    "PlanGroupSortOrder": "998",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roaming data",
+        "Amount": 0.7500000000,
+        "Unit": "GB",
+        "BucketOrder": "0017",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_as_home"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,CiscoWhatsApp,DeviceApp,Kiosk,Seamless,SelfCare,Website",
+    "VIPTypes": "Normal,Test",
+    "Roles": "Admin,AffinitySales,Agent,alivoperations,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,CblRestricted,CollectionsManager,CollectionsOfficer,commercialproducts,Concierge,corp_admin,corp_deptadmin,corp_finance,corp_securityadmin,Corporate (MetraView),Corporate ReadOnly,CorporateSales,CorporateSalesTierII,CorporateSalesTierIII,CSR (EdgeCare),DeliveryAgent,engineering,Finance Staff,FinanceTierI,FinanceTierII,FinanceTierIII,FinanceTierIV,InventoryManager,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Junior Adjustment Manager,LoyaltyManager,Manager,MarketingSendMessage,Operations,Operations Staff (EdgeControl),Partition Account Manager,Partition Operations Manager,Partition Pricing Manager,Product,Product Administrator (EdgeOffer),ReadOnly,RetailAgent,RetailDirector,RetailManager,RevAssuranceTierI,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Sales,Senior Adjustment Manager,StoreLocationAdmin,Subscriber (EdgeView),Subscriber ReadOnly,Super User,testrole1,Wholesale Agent",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": "",
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "0",
+    "PlanSortOrder": "99",
+    "DataRules": {
+      "PlanId": 30967,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "12210",
+    "PlanName": "travel20 7-day",
+    "PlanDescription": "travel20 7-day data only plan, expires independent of primary and add-on plans. Plan does not renew, but may be purchased multiple times to start on user specified dates.  Regional Availability US, Canada, United Kingdom and Digicel Caribbean countries: Anguilla, Antigua and Barbuda, Aruba, Barbados, Bermuda Is., British Virgin Islands, Cayman Is., Dominica, El Salvador, French Guiana, Grenada, Guadeloupe, Guyana, Haiti, Jamaica, Montserrat, Netherlands Antilles/Curacao, Panama, Saint Lucia, Saint Vincent & the Grenadines, St. Kitts and Nevis, Suriname, Trinidad and Tobago, Turks and Caicos Islands",
+    "PlanAmount": 18.18,
+    "PlanType": "A",
+    "Frequency": "W",
+    "FeatureCodes": null,
+    "StartDate": "2026-03-25 04:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "<p>\n\tRoaming data for use in the US, Canada, UK and Digicel Caribbean markets.<br /> \n</p>\n<p>\n\t7-day data only plan, expires independent of primary and add-on plans. \n</p>\n<p>\n\tPlan does not renew, but may be purchased multiple times to start on user specified dates.\n</p>",
+    "CreatedBy": "Denise Grimes",
+    "PublishedBy": "Christa Baccas",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 1.0000000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "roaming",
+    "PlanGroupID": "1",
+    "PlanGroupSortOrder": "8",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roam data us/can",
+        "Amount": 0.7500000000,
+        "Unit": "GB",
+        "BucketOrder": "0010",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_US_Canada"
+      },
+      {
+        "Name": "roaming data",
+        "Amount": 0.2500000000,
+        "Unit": "GB",
+        "BucketOrder": "0017",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_as_home_v2"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,ECommerce,IVR,MMS,SelfCare,Website",
+    "VIPTypes": "Affiliate,Employee,Normal,Platinum,Preferred,Premiere,PremiereFree,VIPPlus",
+    "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Subscriber ReadOnly,Super User",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": null,
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "1.82",
+    "PlanSortOrder": "1010",
+    "DataRules": {
+      "PlanId": 12210,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "18933",
+    "PlanName": "travel30 7-day",
+    "PlanDescription": "travel30 7-day data only plan, expires independent of primary and add-on plans. Plan does not renew, but may be purchased multiple times to start on user specified dates.  Regional Availability US, Canada, and Digicel Caribbean countries: Anguilla, Antigua and Barbuda, Aruba, Barbados, Bermuda Is., British Virgin Islands, Cayman Is., Dominica, El Salvador, French Guiana, Grenada, Guadeloupe, Guyana, Haiti, Jamaica, Montserrat, Netherlands Antilles/Curacao, Panama, Saint Lucia, Saint Vincent & the Grenadines, St. Kitts and Nevis, Suriname, Trinidad and Tobago, Turks and Caicos Island",
+    "PlanAmount": 27.27,
+    "PlanType": "A",
+    "Frequency": "W",
+    "FeatureCodes": null,
+    "StartDate": "2026-03-24 04:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "<p>\n\tRoaming data for use in the US, Canada, UK and Digicel Caribbean markets.<br /> \n</p>\n<p>\n\t7-day data only plan, expires independent of primary and add-on plans. \n</p>\n<p>\n\tPlan does not renew, but may be purchased multiple times to start on user specified dates.\n</p>",
+    "CreatedBy": "Denise Grimes",
+    "PublishedBy": "Christa Baccas",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 2.0000000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "roaming",
+    "PlanGroupID": "1",
+    "PlanGroupSortOrder": "8",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": "False",
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roam data us/can",
+        "Amount": 1.5000000000,
+        "Unit": "GB",
+        "BucketOrder": "0010",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_US_Canada"
+      },
+      {
+        "Name": "roaming data",
+        "Amount": 0.5000000000,
+        "Unit": "GB",
+        "BucketOrder": "0017",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_as_home_v2"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,ECommerce,IVR,MMS,SelfCare,Website",
+    "VIPTypes": "Affiliate,Employee,Normal,Platinum,Preferred,Premiere,PremiereFree,Test,VIPPlus",
+    "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Super User",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": null,
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "2.73",
+    "PlanSortOrder": "1025",
+    "DataRules": {
+      "PlanId": 18933,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "19201",
+    "PlanName": "travel50 14-day",
+    "PlanDescription": "travel50 1 GB roaming data 14-day data only plan, expires independent of primary and add-on plans Plan does not renew, but may be purchased multiple times to start on user specified dates  Regional Availability US, Canada, and Digicel Caribbean countries: Anguilla, Antigua and Barbuda, Aruba, Barbados, Bermuda Is., British Virgin Islands, Cayman Is., Dominica, El Salvador, French Guiana, Grenada, Guadeloupe, Guyana, Haiti, Jamaica, Montserrat, Netherlands Antilles/Curacao, Panama, Saint Lucia, Saint Vincent & the Grenadines, St. Kitts and Nevis, Suriname, Trinidad and Tobago, Turks and Caicos Islands",
+    "PlanAmount": 45.45,
+    "PlanType": "A",
+    "Frequency": "B",
+    "FeatureCodes": null,
+    "StartDate": "2019-11-19 05:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "<p>\n\tRoaming data for use in the US, Canada, UK and Digicel Caribbean markets.<br /> \n</p>\n<p>\n\t7-day data only plan, expires independent of primary and add-on plans. \n</p>\n<p>\n\tPlan does not renew, but may be purchased multiple times to start on user specified dates.\n</p>",
+    "CreatedBy": "Lam Do",
+    "PublishedBy": "Ed Lierz",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 4.0000000000,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "roaming",
+    "PlanGroupID": "1",
+    "PlanGroupSortOrder": "8",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": "False",
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Required"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roam data us/can",
+        "Amount": 3.0000000000,
+        "Unit": "GB",
+        "BucketOrder": "0010",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_US_Canada"
+      },
+      {
+        "Name": "roaming data",
+        "Amount": 1.0000000000,
+        "Unit": "GB",
+        "BucketOrder": "0017",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": "INS_Data_roam_as_home_v2"
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,ECommerce,IVR,MMS,SelfCare,Website",
+    "VIPTypes": "Affiliate,Employee,Normal,Platinum,Preferred,Premiere,PremiereFree,Test,VIPPlus",
+    "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,RetailManager,RevAssuranceTierII,RevenueOpsTierI,RevenueOpsTierII,Super User",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": null,
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "4.55",
+    "PlanSortOrder": "1030",
+    "DataRules": {
+      "PlanId": 19201,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "23115",
+    "PlanName": "TEST - Active CC Required [Postpaid Consumer Standalone]",
+    "PlanDescription": "TEST - Active CC Required [Postpaid Consumer Standalone]",
+    "PlanAmount": 5.00,
+    "PlanType": "A",
+    "Frequency": "B",
+    "FeatureCodes": null,
+    "StartDate": "2021-09-01 04:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "<p>\n\tTEST - Active CC Required [Postpaid Consumer Standalone]<br />\n</p>",
+    "CreatedBy": "Denise Grimes",
+    "PublishedBy": "Denise Grimes",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 0.0,
+    "SMS": 100,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "TEST - standalone plans",
+    "PlanGroupID": "39",
+    "PlanGroupSortOrder": "999",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roaming texts",
+        "Amount": 100.0000000000,
+        "Unit": "Text",
+        "BucketOrder": "0012",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": null
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,ECommerce,IVR,MMS,SelfCare",
+    "VIPTypes": "Affiliate,Business,ContractualPartnership,Employee,Government,InternalUse,M2M,Normal,Preferred,Premiere,PremiereFree,PublicService,Reseller,SpecialUse,StoreDisplay,Test,Visitor,Wholesale",
+    "Roles": "Admin,AffinitySales,Agent,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,CblRestricted,CollectionsManager,CollectionsOfficer,Concierge,corp_admin,corp_deptadmin,corp_finance,corp_securityadmin,Corporate (MetraView),Corporate ReadOnly,CorporateSales,CorporateSalesTierII,CorporateSalesTierIII,CSR (EdgeCare),DeliveryAgent,Finance Staff,FinanceTierI,FinanceTierII,FinanceTierIII,FinanceTierIV,InventoryManager,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Junior Adjustment Manager,LoyaltyManager,Manager,MarketingSendMessage,Operations,Operations Staff (EdgeControl),Partition Account Manager,Partition Operations Manager,Partition Pricing Manager,Product,Product Administrator (EdgeOffer),ReadOnly,RetailAgent,RetailDirector,RetailManager,RevAssuranceTierI,RevAssuranceTierII,Sales,Senior Adjustment Manager,StoreLocationAdmin,Subscriber (EdgeView),Subscriber ReadOnly,Super User,testrole1,Wholesale Agent,RevenueOpsTierI,RevenueOpsTierII",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": null,
+    "ActiveCCard": "True",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "0.5",
+    "PlanSortOrder": "2050",
+    "DataRules": {
+      "PlanId": 23115,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "23238",
+    "PlanName": "TEST - Purchase Limit 1 [Postpaid Consumer Standalone]",
+    "PlanDescription": "TEST - Purchase Limit 1 [Postpaid Consumer Standalone]",
+    "PlanAmount": 10.00,
+    "PlanType": "A",
+    "Frequency": "B",
+    "FeatureCodes": null,
+    "StartDate": "2021-09-01 04:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "<p>\n\tTEST - Purchase Limit 1 [Postpaid Consumer Standalone]<br />\n</p>",
+    "CreatedBy": "Denise Grimes",
+    "PublishedBy": "Matthew Tracy",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 0.0,
+    "SMS": 100,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "TEST - standalone plans",
+    "PlanGroupID": "39",
+    "PlanGroupSortOrder": "999",
+    "ProrateOnActivate": "True",
+    "ProrateOnDeactivate": "True",
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [
+      {
+        "Name": "roaming texts",
+        "Amount": 100.0000000000,
+        "Unit": "Text",
+        "BucketOrder": "0012",
+        "Suppress": "False",
+        "Unlimited": "False",
+        "BucketUnit": null
+      }
+    ],
+    "ChannelTypes": "AgentPortal,BeALIV,ECommerce,IVR,MMS,SelfCare",
+    "VIPTypes": "Affiliate,Business,ContractualPartnership,Employee,Government,InternalUse,M2M,Normal,Preferred,Premiere,PremiereFree,PublicService,Reseller,SpecialUse,StoreDisplay,Test,Visitor,Wholesale",
+    "Roles": "Admin,AffinitySales,Agent,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,CblRestricted,CollectionsManager,CollectionsOfficer,Concierge,corp_admin,corp_deptadmin,corp_finance,corp_securityadmin,Corporate (MetraView),Corporate ReadOnly,CorporateSales,CorporateSalesTierII,CorporateSalesTierIII,CSR (EdgeCare),DeliveryAgent,Finance Staff,FinanceTierI,FinanceTierII,FinanceTierIII,FinanceTierIV,InventoryManager,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Junior Adjustment Manager,LoyaltyManager,Manager,MarketingSendMessage,Operations,Operations Staff (EdgeControl),Partition Account Manager,Partition Operations Manager,Partition Pricing Manager,Product,Product Administrator (EdgeOffer),ReadOnly,RetailAgent,RetailDirector,RetailManager,RevAssuranceTierI,RevAssuranceTierII,Sales,Senior Adjustment Manager,StoreLocationAdmin,Subscriber (EdgeView),Subscriber ReadOnly,Super User,testrole1,Wholesale Agent,RevenueOpsTierI,RevenueOpsTierII",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": null,
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "3",
+    "PurchaseLimitStartDate": "9/1/2021 4:37:00 PM",
+    "PurchaseLimitEndDate": "10/30/2021 4:37:00 PM",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "1",
+    "PlanSortOrder": "2060",
+    "DataRules": {
+      "PlanId": 23238,
+      "RequireAltContactPhone": false
+    }
+  },
+  {
+    "PlanID": "24700",
+    "PlanName": "TEST - 60 day postpaid consumer plan",
+    "PlanDescription": "TEST - 60 day postpaid consumer plan",
+    "PlanAmount": 25.00,
+    "PlanType": "A",
+    "Frequency": "S",
+    "FeatureCodes": null,
+    "StartDate": "2022-02-13 05:00:00",
+    "EndDate": "2106-01-01 05:00:00",
+    "PlanDetails": "",
+    "CreatedBy": "Denise Grimes",
+    "PublishedBy": "Denise Grimes",
+    "RetiredBy": null,
+    "AutoRenew": false,
+    "IsEditable": true,
+    "Voice": 0.0,
+    "Data": 0.0,
+    "SMS": 0,
+    "MTSubscriptionID": "0",
+    "VoiceUnlimited": false,
+    "DataUnlimited": false,
+    "SMSUnlimited": false,
+    "AvailableBoltOns": null,
+    "CurrentlyAssigned": false,
+    "PlanRenewable": false,
+    "PaymentOption": "PostPay",
+    "CanICB": "False",
+    "HierarchyType": "Consumer",
+    "PlanGroup": "TEST - standalone plans",
+    "PlanGroupID": "39",
+    "PlanGroupSortOrder": "999",
+    "ProrateOnActivate": "False",
+    "ProrateOnDeactivate": null,
+    "PlanCapabilities": [
+      {
+        "PlanCapabilityName": "DataCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "PushToTalk",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "TextCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VoiceCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCapable",
+        "PlanCapabilityType": "Optional"
+      },
+      {
+        "PlanCapabilityName": "VolteCertified",
+        "PlanCapabilityType": "Optional"
+      }
+    ],
+    "PlanBuckets": [],
+    "ChannelTypes": "AgentPortal,BeALIV,IVR,MMS,Seamless,SelfCare",
+    "VIPTypes": "Normal,Preferred,Premiere,Test",
+    "Roles": "Admin,CallCenterAdmin,CallCenterAgent,CallCenterDirector,CallCenterManager,CallCenterManagerMonitor,CallCenterSupport,ITAdmin,ITAdminNoCorp,ITMNPSupport,ITSuperAdmin,ITSuperAdminTierII,ITSupport,Super User",
+    "Cugs": "",
+    "Sugs": "",
+    "UnlimitedBuckets": "",
+    "ActiveCCard": "False",
+    "SubscriberLines": "0",
+    "PurchaseLimit": "0",
+    "PurchaseLimitStartDate": "",
+    "PurchaseLimitEndDate": "",
+    "ContractAge": "0",
+    "ActivatedAge": "0",
+    "ContractTerm": "0",
+    "Islands": "",
+    "Rank": "0",
+    "CreditClass": "",
+    "VATAmount": "2.5",
+    "PlanSortOrder": "2065",
+    "DataRules": {
+      "PlanId": 24700,
+      "RequireAltContactPhone": false
+    }
+  }
+]

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAuFy864ZPmVYRvFg5Ip9heAdV9vevJWYA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>25251187409</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.app.aliv</string>
+	<key>PROJECT_ID</key>
+	<string>myalivphoneapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>myalivphoneapp.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:25251187409:ios:5341397e76f13cbcae53f0</string>
+	<key>DATABASE_URL</key>
+	<string>https://myalivphoneapp.firebaseio.com</string>
+</dict>
+</plist>

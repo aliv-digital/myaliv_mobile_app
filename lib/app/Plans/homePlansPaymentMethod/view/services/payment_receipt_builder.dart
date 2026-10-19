@@ -1,0 +1,164 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+
+/// Builds the `extra` payload pushed to the purchase-receipt route. Pure
+/// logic; no UI. Centralises the receipt's wording so screens don't drift.
+class PaymentReceiptBuilder {
+  PaymentReceiptBuilder._();
+
+  static Map<String, dynamic> build(
+    BuildContext context,
+    HomePlansPaymentMethodState state,
+  ) {
+    final now = DateTime.now();
+    final date = DateFormat('MMM d, yyyy').format(now);
+    final time = DateFormat('h:mm a').format(now).toLowerCase();
+    final account = context.read<AccountInfoCubit>().state.accountInfo;
+    final phone = _phoneNumber(state, account);
+    final email = _firstNonEmpty([account?.email]);
+    final method = _paymentMethodLabel(state);
+    final replacementPlanTitle = state.replacementPrimaryPlanTitle;
+
+    // Only carry the card into the receipt when the user just entered a
+    // new one — saved-card / wallet / charge-to-my-account paths have no
+    // card to save.
+    final cardToSave = state.paymentMode == HomePlansPaymentMode.payWithCard
+        ? state.lastNewCardDetails
+        : null;
+
+    return <String, dynamic>{
+      'phoneNumber': phone,
+      'amount': state.amount,
+      'dateText': date,
+      'timeText': time,
+      'paymentMethod': method,
+      'statusMessage':
+          state.status == HomePlansPaymentMethodStatus.success &&
+              replacementPlanTitle != null
+          ? 'Your $replacementPlanTitle was added successfully.'
+          : 'It will take a few moments for the plan to appear on the account.',
+      'leftType': 'service',
+      'rightType': state.isPrepaidUser ? 'prepaid' : 'postpaid',
+      'details': _details(state, date, time, phone, email, method),
+      'subscriberType': state.subscriberType,
+      'selectedItems': state.selectedItems,
+      'selectedMethodId': state.selectedMethodId,
+      'paymentMethods': state.methods,
+      'cardToSave': ?cardToSave,
+      if (state.orderId != null) 'orderId': state.orderId,
+      if (state.walletPaymentSucceeded &&
+          state.status == HomePlansPaymentMethodStatus.success &&
+          state.navTarget == HomePlansPaymentMethodNavTarget.paid)
+        'walletPaymentSuccess': WalletPaymentSuccess.fromCurrentUser(
+          account: context.read<AccountInfoCubit>().state,
+        ),
+    };
+  }
+
+  static List<HomePlanPurchaseReceiptDetailItem> _details(
+    HomePlansPaymentMethodState state,
+    String date,
+    String time,
+    String phone,
+    String email,
+    String method,
+  ) {
+    final items = <HomePlanPurchaseReceiptDetailItem>[
+      for (final item in state.selectedItems)
+        HomePlanPurchaseReceiptDetailItem(
+          label: item.label.trim().isEmpty
+              ? _planTypeLabel(item.planType)
+              : item.label,
+          value: item.planType == HomePlansPaymentPlanType.standalone
+              ? PlanNameFormatterService.format(item.title)
+              : item.title,
+        ),
+      HomePlanPurchaseReceiptDetailItem(label: 'date', value: date),
+      HomePlanPurchaseReceiptDetailItem(label: 'time', value: time),
+    ];
+    if (phone.isNotEmpty) {
+      items.add(
+        HomePlanPurchaseReceiptDetailItem(label: 'phone no.', value: phone),
+      );
+    }
+    if (email.isNotEmpty) {
+      items.add(
+        HomePlanPurchaseReceiptDetailItem(label: 'email address', value: email),
+      );
+    }
+    items.add(
+      HomePlanPurchaseReceiptDetailItem(label: 'payment method', value: method),
+    );
+    return items;
+  }
+
+  /// Wallet-funded paths render as 'wallet'; saved-card shows brand+ending;
+  /// new-card (`payWithCard`) is always Visa per the current factory.
+  static String _paymentMethodLabel(HomePlansPaymentMethodState state) {
+    switch (state.paymentMode) {
+      case HomePlansPaymentMode.payFromWallet:
+        return 'wallet';
+      case HomePlansPaymentMode.chargeToMyAccount:
+        return 'my account';
+      case HomePlansPaymentMode.card:
+        return _selectedMethodLabel(state);
+      case HomePlansPaymentMode.payWithCard:
+        return 'visa';
+    }
+  }
+
+  static String _selectedMethodLabel(HomePlansPaymentMethodState state) {
+    final id = state.selectedMethodId;
+    HomePlansSavedPaymentMethod? m;
+    for (final item in state.methods) {
+      if (item.id == id) {
+        m = item;
+        break;
+      }
+    }
+    if (m == null) return 'credit card';
+    if (m.isChargeToMyAccount) return 'my account';
+    return switch (m.brand) {
+      HomePlansCardBrand.visa => 'visa ending ${m.ending}',
+      HomePlansCardBrand.mastercard => 'mastercard ending ${m.ending}',
+      HomePlansCardBrand.unknown => 'card ending ${m.ending}',
+    };
+  }
+
+  static String _planTypeLabel(HomePlansPaymentPlanType type) => switch (type) {
+    HomePlansPaymentPlanType.primary => 'primary plan',
+    HomePlansPaymentPlanType.secondary => 'secondary plan',
+    HomePlansPaymentPlanType.standalone => 'plan',
+  };
+
+  static String _phoneNumber(
+    HomePlansPaymentMethodState state,
+    AccountInfoModel? account,
+  ) {
+    final raw = _firstNonEmpty([
+      state.phoneNumber,
+      account?.phoneNumber,
+      account?.primaryPhoneNumber,
+      account?.username,
+    ]);
+    if (raw.isEmpty) return raw;
+    return PhoneNumberFormatterService.format(raw);
+  }
+
+  static String _firstNonEmpty(List<String?> values) {
+    for (final v in values) {
+      final t = v?.trim() ?? '';
+      if (t.isNotEmpty) return t;
+    }
+    return '';
+  }
+}

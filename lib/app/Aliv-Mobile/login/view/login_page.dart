@@ -1,0 +1,349 @@
+// lib/login/login_screen.dart
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../loginOtp/model/login_otp_route_args.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
+import '../repository/auth_repository.dart';
+import '../theme/login_theme.dart';
+import '../widgets/login_bottom_texts.dart';
+import '../widgets/login_header.dart';
+import '../widgets/login_keyboard_next_toolbar.dart';
+import '../widgets/login_password_field.dart';
+import '../widgets/login_phone_row.dart';
+import '../widgets/login_privacy_policy_link.dart';
+import '../widgets/login_social_buttons.dart';
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => LoginBloc(
+            repository: LoginRepository(),
+            appUiConfigCubit: context.read<AppUiConfigCubit>(),
+          )..add(const LoginInitialized()),
+        ),
+        BlocProvider.value(value: instance<FingerFaceSecurityCubit>()),
+      ],
+      child: const _LoginView(),
+    );
+  }
+}
+
+class _LoginView extends StatefulWidget {
+  const _LoginView();
+
+  @override
+  State<_LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _phoneFocusNode = FocusNode(debugLabel: 'loginPhone');
+  final FocusNode _passwordFocusNode = FocusNode(debugLabel: 'loginPassword');
+  int _lastPrefillVersion = 0;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _phoneFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _submitLogin() {
+    context.read<LoginBloc>().add(const LoginSubmitted());
+  }
+
+  void _focusPassword() {
+    _passwordFocusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void submitLogin() => _submitLogin();
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AuthModuleColors.pageBackground,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: AuthModuleColors.pageBackground,
+        systemNavigationBarDividerColor: AuthModuleColors.pageBackground,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
+      ),
+    );
+
+    final page = StripedScaffold(
+      // ✅ Keyboard উঠলেও body resize হবে না (BottomStripes নড়বে না)
+      resizeToAvoidBottomInset: false,
+      stripesReserveSpace: true,
+
+      body: SafeArea(
+        child: BlocListener<LoginBloc, LoginState>(
+          listenWhen: (previous, current) {
+            final bool loginSuccessChanged =
+                previous.status != current.status &&
+                current.status == LoginStatus.success;
+
+            final bool errorToastTriggered =
+                previous.errorToastId != current.errorToastId;
+
+            final bool prefillTriggered =
+                previous.prefillVersion != current.prefillVersion;
+
+            return loginSuccessChanged ||
+                errorToastTriggered ||
+                prefillTriggered;
+          },
+          listener: (context, state) {
+            if (state.prefillVersion != _lastPrefillVersion) {
+              _lastPrefillVersion = state.prefillVersion;
+              _phoneController.text = state.phone;
+              _passwordController.text = state.password;
+            }
+
+            if (state.status == LoginStatus.success) {
+              // Direct-login path: server returned a Ticket, session already
+              // completed by LoginBloc via AuthCompletionService.
+              if (state.outcome == LoginOutcome.authenticated) {
+                AppToast.show(
+                  message: 'Logged in successfully',
+                  type: ToastType.success,
+                );
+                context.go(AppRoutes.home);
+                return;
+              }
+
+              // 2FA path: forward mfa_token to the OTP screen.
+              AppToast.show(
+                message: 'OTP sent successfully',
+                type: ToastType.success,
+              );
+
+              final String? mfaToken = state.mfaToken;
+              if (mfaToken == null || mfaToken.isEmpty) {
+                AppToast.show(
+                  message: 'MFA token is missing from login response.',
+                  type: ToastType.error,
+                );
+                return;
+              }
+
+              final String? apiPhoneNumber = state.apiPhoneNumber;
+              if (apiPhoneNumber == null || apiPhoneNumber.isEmpty) {
+                AppToast.show(
+                  message: 'Phone number is missing from login state.',
+                  type: ToastType.error,
+                );
+                return;
+              }
+
+              context.push(
+                AppRoutes.loginOtp,
+                extra: LoginOtpRouteArgs(
+                  clearCodeOnResend: true,
+                  mfaToken: mfaToken,
+                  phoneNumber: state.phone.trim(),
+                  apiPhoneNumber: apiPhoneNumber,
+                ),
+              );
+            }
+            if (state.status == LoginStatus.failure &&
+                state.errorMessage != null &&
+                state.errorMessage!.isNotEmpty) {
+              AppToast.show(
+                message: state.errorMessage.toString(),
+                type: ToastType.error,
+              );
+              //context.push(AppRoutes.loginOtp);
+            }
+          },
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              const SliverToBoxAdapter(child: LoginHeader()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: AuthModulePaddings.pageHorizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
+                      LoginPhoneRow(
+                        controller: _phoneController,
+                        focusNode: _phoneFocusNode,
+                        onNext: _focusPassword,
+                      ),
+                      const SizedBox(
+                        height: AuthModuleSizes.phoneToPasswordGap,
+                      ),
+                      LoginPasswordField(
+                        controller: _passwordController,
+                        focusNode: _passwordFocusNode,
+                        onSubmitted: submitLogin,
+                      ),
+                      const SizedBox(
+                        height: AuthModuleSizes.passwordToErrorRowGap,
+                      ),
+                      BlocBuilder<LoginBloc, LoginState>(
+                        builder: (context, state) {
+                          final biometricInformation = context
+                              .select<FingerFaceSecurityCubit, String?>(
+                                (cubit) => cubit.state.informationalMessage,
+                              );
+                          final hasFieldError =
+                              state.status == LoginStatus.failure &&
+                              state.errorMessage != null &&
+                              (state.phoneFieldError ||
+                                  state.passwordFieldError);
+                          return Row(
+                            children: [
+                              Expanded(
+                                child:
+                                    hasFieldError ||
+                                        biometricInformation != null
+                                    ? Text(
+                                        hasFieldError
+                                            ? state.errorMessage ??
+                                                  'invalid credentials!'
+                                            : biometricInformation!,
+                                        style: hasFieldError
+                                            ? AuthModuleTextStyles
+                                                  .invalidCredentials
+                                            : AuthModuleTextStyles
+                                                  .saveMyPassword,
+                                      )
+                                    : GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () =>
+                                            context.read<LoginBloc>().add(
+                                              LoginSaveMyPasswordToggled(
+                                                !state.saveMyPassword,
+                                              ),
+                                            ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: Checkbox(
+                                                value: state.saveMyPassword,
+                                                materialTapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                activeColor:
+                                                    AuthModuleColors.alivPurple,
+                                                side: const BorderSide(
+                                                  color: AuthModuleColors
+                                                      .alivPurple,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                onChanged: (val) => context
+                                                    .read<LoginBloc>()
+                                                    .add(
+                                                      LoginSaveMyPasswordToggled(
+                                                        val ?? false,
+                                                      ),
+                                                    ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'save my password',
+                                              style: AuthModuleTextStyles
+                                                  .saveMyPassword,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              ),
+                              TextButton(
+                                style: AuthModuleButtonStyles.inlineTextLink,
+                                onPressed: () {
+                                  context.push(AppRoutes.forgetPassword);
+                                },
+                                child: const Text(
+                                  'forgot password?',
+                                  style: AuthModuleTextStyles.forgotPassword,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(
+                        height: AuthModuleSizes.errorRowToSignInGap,
+                      ),
+                      BlocBuilder<LoginBloc, LoginState>(
+                        builder: (context, state) {
+                          final loading = state.status == LoginStatus.loading;
+                          return DefaultButton(
+                            label: 'sign in',
+                            isLoading: loading,
+                            height: AuthModuleSizes.fieldHeight,
+                            textStyle: AuthModuleTextStyles.signInButton,
+                            onPressed: submitLogin,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: AuthModuleSizes.signInToSocialGap),
+                      const LoginSocialButtons(),
+                      const SizedBox(height: AuthModuleSizes.socialToBottomGap),
+                      LoginBottomTexts(),
+                      // Previous bottom spacer is intentionally preserved but
+                      // hidden because the privacy footer now fills the
+                      // remaining space and stays above the colored stripes.
+                      // const SizedBox(
+                      //   height: AuthModuleSizes.bottomScrollSafeGap,
+                      // ),
+                    ],
+                  ),
+                ),
+              ),
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Spacer(),
+                    LoginPrivacyPolicyLink(),
+                    SizedBox(height: AuthModuleSizes.privacyPolicyBottomGap),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return LoginKeyboardNextToolbar(
+      phoneFocusNode: _phoneFocusNode,
+      onNext: _focusPassword,
+      child: page,
+    );
+  }
+}

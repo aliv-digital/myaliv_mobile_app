@@ -1,0 +1,122 @@
+import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
+import '../model/home_plans_payment_method_models.dart';
+
+abstract class HomePlansPaymentMethodEvent extends Equatable {
+  const HomePlansPaymentMethodEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
+  final HomePlansSubscriberType subscriberType;
+  final String phoneNumber;
+  final double? amount;
+  final String? vatNote;
+  final List<HomePlansPaymentSelectedItem> selectedItems;
+  final List<PlanPurchasePromoCode> promoCodes;
+  final List<PlanPurchaseBonus> bonuses;
+  final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
+  final DateTime? selectedBeginDate;
+
+  const HomePlansPaymentMethodStarted({
+    required this.subscriberType,
+    this.phoneNumber = '',
+    this.amount,
+    this.vatNote,
+    this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.promoCodes = const <PlanPurchasePromoCode>[],
+    this.bonuses = const <PlanPurchaseBonus>[],
+    this.forceNow = false,
+    this.purchaseContext = PlanPurchaseContext.regular,
+    this.selectedBeginDate,
+  });
+
+  @override
+  List<Object?> get props => [
+    subscriberType,
+    phoneNumber,
+    amount,
+    vatNote,
+    selectedItems,
+    promoCodes,
+    bonuses,
+    forceNow,
+    purchaseContext,
+    selectedBeginDate,
+  ];
+}
+
+class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
+  final String methodId;
+  const HomePlansPaymentMethodSelected(this.methodId);
+
+  @override
+  List<Object?> get props => [methodId];
+}
+
+class HomePlansChargeToAccountSelected extends HomePlansPaymentMethodEvent {
+  final String methodId;
+  const HomePlansChargeToAccountSelected(this.methodId);
+
+  @override
+  List<Object?> get props => [methodId];
+}
+
+class HomePlansPayWithCardPressed extends HomePlansPaymentMethodEvent {
+  const HomePlansPayWithCardPressed();
+}
+
+class HomePlansPayFromWalletPressed extends HomePlansPaymentMethodEvent {
+  const HomePlansPayFromWalletPressed();
+}
+
+class HomePlansPayFromWalletConfirmed extends HomePlansPaymentMethodEvent {
+  final double walletBalance;
+
+  const HomePlansPayFromWalletConfirmed({required this.walletBalance});
+
+  @override
+  List<Object?> get props => [walletBalance];
+}
+
+/// Requests a direct postpaid account charge without using wallet balance.
+class HomePlansChargeToAccountRequested extends HomePlansPaymentMethodEvent {
+  const HomePlansChargeToAccountRequested();
+}
+
+class HomePlansPaySavedCardConfirmed extends HomePlansPaymentMethodEvent {
+  const HomePlansPaySavedCardConfirmed();
+}
+
+class HomePlansPayWithCardConfirmed extends HomePlansPaymentMethodEvent {
+  final NewCardDetails details;
+  const HomePlansPayWithCardConfirmed(this.details);
+
+  @override
+  List<Object?> get props => [details];
+}
+
+class HomePlansPayNowPressed extends HomePlansPaymentMethodEvent {
+  const HomePlansPayNowPressed();
+}
+
+class HomePlansPaymentNavConsumed extends HomePlansPaymentMethodEvent {
+  const HomePlansPaymentNavConsumed();
+}
+
+/// Fired when the 3DS WebView completes successfully. The [orderId] (from
+/// the callback URL query params) is stored in state so the receipt screen
+/// can offer the save-card affordance via POST /CreditCard/savenew.
+class HomePlans3DSPayWithCardSucceeded extends HomePlansPaymentMethodEvent {
+  final String? orderId;
+  const HomePlans3DSPayWithCardSucceeded({this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}

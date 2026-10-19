@@ -1,0 +1,24 @@
+<svg width="55" height="28" viewBox="0 0 55 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_10672_62270)">
+<rect width="55" height="28" rx="14" fill="white"/>
+<g filter="url(#filter0_d_10672_62270)">
+<rect x="3" y="2" width="24" height="24" rx="12" fill="white"/>
+</g>
+<path d="M34.3163 14.16C34.3163 15.64 35.3083 16.4 36.3643 16.4C37.4203 16.4 38.4123 15.64 38.4123 14.16C38.4123 12.68 37.4203 11.928 36.3643 11.928C35.3083 11.928 34.3163 12.68 34.3163 14.16ZM33.5163 14.16C33.5163 12.264 34.9403 11.208 36.3643 11.208C37.7883 11.208 39.2123 12.264 39.2123 14.16C39.2123 16.056 37.7883 17.12 36.3643 17.12C34.9403 17.12 33.5163 16.056 33.5163 14.16ZM44.3543 11.888C44.0903 11.888 43.7463 12.016 43.7463 12.544V13.152H44.6743V13.832H43.7463V17H42.9703V13.832H41.2183V17H40.4423V13.832H39.7303V13.152H40.4423V12.504C40.4423 11.648 41.0103 11.184 41.7063 11.184C41.9623 11.184 42.1223 11.24 42.1543 11.264V11.936C42.1143 11.92 42.0183 11.888 41.8263 11.888C41.5623 11.888 41.2183 12.016 41.2183 12.544V13.152H42.9703V12.504C42.9703 11.648 43.5383 11.184 44.2343 11.184C44.4903 11.184 44.6503 11.24 44.6823 11.264V11.936C44.6423 11.92 44.5463 11.888 44.3543 11.888Z" fill="#707070"/>
+</g>
+<rect x="0.357143" y="0.357143" width="54.2857" height="27.2857" rx="13.6429" stroke="#E2E2E2" stroke-width="0.714286"/>
+<defs>
+<filter id="filter0_d_10672_62270" x="-5" y="-3" width="40" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="3"/>
+<feGaussianBlur stdDeviation="4"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.149 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_10672_62270"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_10672_62270" result="shape"/>
+</filter>
+<clipPath id="clip0_10672_62270">
+<rect width="55" height="28" rx="14" fill="white"/>
+</clipPath>
+</defs>
+</svg>

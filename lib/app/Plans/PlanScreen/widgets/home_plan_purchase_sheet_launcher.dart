@@ -1,0 +1,452 @@
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+
+import '../../../../core/utils/app_session.dart';
+import '../../homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
+import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
+import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
+import '../models/base_plan_model.dart';
+import '../models/plan_model.dart';
+import '../models/plan_purchase_context.dart';
+import '../repository/enums/plan_group.dart';
+import '../repository/plan_types.dart';
+import 'roam_bottom_sheet.dart';
+import 'wallet_payment_activate_bottom_sheet.dart';
+import 'wallet_payment_activate_or_future_bottom_sheet.dart';
+
+Future<void> showHomePlanPurchaseBottomSheet({
+  required BuildContext context,
+  required HomePlanModel plan,
+  required HomePlanTab selectedTab,
+  BasePlanModel? selectedApiPlan,
+  int? selectedIndex,
+}) {
+  final plansState = context.read<PlansCubit>().state;
+  final hasActivePlan = plansState.earliestAddOnsPrimaryPlan != null;
+  // Chain start: end of the *latest* known primary plan (active + any
+  // already-purchased future primary). Ensures future#2 starts when future#1
+  // ends, not when the currently-active plan ends.
+  final chainStartDate = plansState.latestPrimaryPlanEndDate;
+  final futurePlanStartDate = chainStartDate?.toIso8601String() ?? '';
+  final selectedPlanExtra = _selectedPlanRouteExtra(
+    selectedApiPlan: selectedApiPlan,
+    selectedIndex: selectedIndex,
+    activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
+    purchaseContext:
+        (selectedTab == HomePlanTab.daily ||
+                selectedTab == HomePlanTab.weekly ||
+                selectedTab == HomePlanTab.monthly) &&
+            selectedApiPlan?.planType.trim().toUpperCase() == 'P' &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) !=
+                PlanGroup.mifi &&
+            instance<AccountInfoCubit>().state.isPrepaid
+        ? PlanPurchaseContext.prepaidImmediatePrimaryReplacement
+        : PlanPurchaseContext.regular,
+  );
+
+  return showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.45),
+    isScrollControlled: true,
+    builder: (sheetContext) {
+      if (selectedTab == HomePlanTab.roaming ||
+          selectedTab == HomePlanTab.roameasy ||
+          selectedTab == HomePlanTab.libertyGlobal) {
+        return HomePlanRoamBottomSheet(
+          onBackPressed: () => Navigator.of(sheetContext).pop(),
+          onDateApplied: (pickedDate) {
+            Navigator.of(sheetContext).pop();
+            context.push(
+              AppRoutes.homeRoamingConfirmation,
+              extra: _roamingConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                showDateField: true,
+                beginDate: pickedDate,
+                forceNow: false,
+              ),
+            );
+          },
+          onActivateNowPressed: () {
+            Navigator.of(sheetContext).pop();
+            context.push(
+              AppRoutes.homeRoamingConfirmation,
+              extra: _roamingConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                showDateField: false,
+                beginDate: DateTime.now(),
+                forceNow: true,
+              ),
+            );
+          },
+        );
+      }
+
+      // Row 5: active primary + 1+ future primary → schedule only, whether or
+      // not a standalone exists. All other cases keep their sheet.
+      if (plansState.hasActivePrimaryWithFuturePrimaryPlans) {
+        final lastPlanEndDate = plansState.latestPurchasedPlanEndDate;
+        // Do not invent a schedule date if the API supplied no valid end date.
+        if (lastPlanEndDate != null) {
+          final dateText = DateFormat('MM-dd-yy').format(lastPlanEndDate);
+          return HomePlanWalletPaymentActivateBottomSheet(
+            warningText:
+                'you can activate your plan when your current plan ends on $dateText.',
+            buttonLabel: 'activate my new plan on $dateText',
+            planName: plan.title,
+            planDurationText: plan.subtitle,
+            planPriceText: _priceText(plan.price),
+            onBackPressed: () => Navigator.of(sheetContext).pop(),
+            onActivateNowPressed: () => _continueWithFuturePlan(
+              context: context,
+              sheetContext: sheetContext,
+              selectedTab: selectedTab,
+              selectedApiPlan: selectedApiPlan,
+              fallbackPlan: plan,
+              futurePlanStartDate: lastPlanEndDate.toIso8601String(),
+            ),
+          );
+        }
+      }
+
+      if (hasActivePlan) {
+        final endDateText = chainStartDate != null
+            ? ' on ${DateFormat('MM-dd-yy').format(chainStartDate)}'
+            : '';
+
+        final standAloneFuturePlanMessage =
+            'you can activate your plan when your current plan ends$endDateText.';
+        final activePlanMessage =
+            'activating now replaces your current plan. '
+            'you can also activate your plan when your current plan ends$endDateText.';
+
+        final hasStandAloneAndFuturePlan =
+            !plansState.hasActivePrimaryPlan &&
+            plansState.standAlonePlans.isNotEmpty &&
+            plansState.hasFuturePlans;
+        // MIFI-006: a MiFi purchase over an active MiFi plan. MiFi is the same
+        // PlanGroup rule that builds the MiFi tab; a missing group falls back
+        // to the existing copy.
+        final hasActiveMifiPlan =
+            selectedTab == HomePlanTab.mifi &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) ==
+                PlanGroup.mifi;
+        final String warningText;
+        if (hasActiveMifiPlan) {
+          warningText =
+              'you already have an active mifi plan. '
+              'buying this plan will replace it immediately.';
+        } else if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
+          // Row 4: active primary + no future primary → replace or schedule.
+          // Client chart copy, verbatim (including "active your plan").
+          warningText =
+              'activating now replaces your current plan, '
+              'you can also active your plan when your current plan ends$endDateText.';
+        } else {
+          warningText = hasStandAloneAndFuturePlan
+              ? standAloneFuturePlanMessage
+              : activePlanMessage;
+        }
+
+        return HomePlanWalletPaymentActivateOrFutureBottomSheet(
+          warningText: warningText,
+          planName: plan.title,
+          planDurationText: plan.subtitle,
+          planPriceText: _priceText(plan.price),
+          onBackPressed: () => Navigator.of(sheetContext).pop(),
+          onActivateNowPressed: () {
+            Navigator.of(sheetContext).pop();
+            if (selectedTab == HomePlanTab.mifi) {
+              _pushMifiAltContact(
+                context: context,
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: true,
+                futurePlanStartDate: '',
+              );
+              return;
+            }
+            if (selectedTab == HomePlanTab.libertyGlobal) {
+              context.push(
+                AppRoutes.homePlanConfirmationScreen,
+                extra: _futurePlanConfirmationRouteArgs(
+                  selectedApiPlan: selectedApiPlan,
+                  fallbackPlan: plan,
+                  forceNow: true,
+                  futurePlanStartDate: '',
+                ),
+              );
+              return;
+            }
+            context.push(
+              AppRoutes.homePurchasePlanAddOns,
+              extra: selectedPlanExtra,
+            );
+          },
+          /* Previous inline future-plan workflow retained for reference.
+          onFuturePlanPressed: () {
+            // Option A guard: block back-to-back future purchases while the
+            // previous /bundles refresh is still in-flight. Without this,
+            // the optimistic single-slot would overwrite the pending
+            // future#1 before it lands in addOnsApiPrimaryPlans, causing
+            // future#1 to briefly disappear and the chain start date to
+            // fall back to the active plan's expiry.
+            if (context.read<PlansCubit>().state.isRefreshingBundles) {
+              AppToast.show(
+                message: 'updating your plans, please try again in a moment',
+                type: ToastType.error,
+              );
+              return;
+            }
+            Navigator.of(sheetContext).pop();
+            if (selectedTab == HomePlanTab.mifi) {
+              debugPrint('MIFI: Future plan pressed');
+              _pushMifiAltContact(
+                context: context,
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: false,
+                futurePlanStartDate: futurePlanStartDate,
+              );
+              return;
+            }
+            context.push(
+              AppRoutes.homePlanConfirmationScreen,
+              extra: _futurePlanConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: false,
+                futurePlanStartDate: futurePlanStartDate,
+              ),
+            );
+          },
+          */
+          onFuturePlanPressed: () => _continueWithFuturePlan(
+            context: context,
+            sheetContext: sheetContext,
+            selectedTab: selectedTab,
+            selectedApiPlan: selectedApiPlan,
+            fallbackPlan: plan,
+            futurePlanStartDate: futurePlanStartDate,
+          ),
+        );
+      }
+
+      return HomePlanWalletPaymentActivateBottomSheet(
+        warningText:
+            'you have no active plan, so your new plan will start immediately.',
+        planName: plan.title,
+        planDurationText: plan.subtitle,
+        planPriceText: _priceText(plan.price),
+        onBackPressed: () => Navigator.of(sheetContext).pop(),
+        onActivateNowPressed: () {
+          AppSession.appRoute = 'prepaidPlan';
+          Navigator.of(sheetContext).pop();
+          if (selectedTab == HomePlanTab.mifi) {
+            _pushMifiAltContact(
+              context: context,
+              selectedApiPlan: selectedApiPlan,
+              fallbackPlan: plan,
+              forceNow: true,
+              futurePlanStartDate: '',
+            );
+            return;
+          }
+          if (selectedTab == HomePlanTab.libertyGlobal) {
+            context.push(
+              AppRoutes.homePlanConfirmationScreen,
+              extra: _futurePlanConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: true,
+                futurePlanStartDate: '',
+              ),
+            );
+            return;
+          }
+          context.push(
+            AppRoutes.homePurchasePlanAddOns,
+            extra: selectedPlanExtra,
+          );
+        },
+      );
+    },
+  );
+}
+
+/// Both the dated action and the existing future-plan button use this flow.
+void _continueWithFuturePlan({
+  required BuildContext context,
+  required BuildContext sheetContext,
+  required HomePlanTab selectedTab,
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+  required String futurePlanStartDate,
+}) {
+  // Keep the sheet open while bundles refresh so pending purchases stay intact.
+  if (context.read<PlansCubit>().state.isRefreshingBundles) {
+    AppToast.show(
+      message: 'updating your plans, please try again in a moment',
+      type: ToastType.error,
+    );
+    return;
+  }
+  Navigator.of(sheetContext).pop();
+  if (selectedTab == HomePlanTab.mifi) {
+    _pushMifiAltContact(
+      context: context,
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: false,
+      futurePlanStartDate: futurePlanStartDate,
+    );
+    return;
+  }
+  context.push(
+    AppRoutes.homePlanConfirmationScreen,
+    extra: _futurePlanConfirmationRouteArgs(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: false,
+      futurePlanStartDate: futurePlanStartDate,
+    ),
+  );
+}
+
+void _pushMifiAltContact({
+  required BuildContext context,
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+  required bool forceNow,
+  required String futurePlanStartDate,
+}) {
+  final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+  final existingAltNumber = accountInfo?.altPhoneNumber.trim() ?? '';
+
+  // If the account already has an alt number on file, skip the alt-contact
+  // screen and go straight to confirmation. Marketing opt-in defaults to
+  // false since the prompt is skipped.
+  if (existingAltNumber.isNotEmpty) {
+    context.push(
+      AppRoutes.homePlanConfirmationScreen,
+      extra: _futurePlanConfirmationRouteArgs(
+        selectedApiPlan: selectedApiPlan,
+        fallbackPlan: fallbackPlan,
+        forceNow: forceNow,
+        futurePlanStartDate: futurePlanStartDate,
+        altContactNumber: existingAltNumber,
+      ),
+    );
+    return;
+  }
+
+  context.push(
+    AppRoutes.homePlanMifiAltContact,
+    extra: MifiAltContactRouteArgs(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: forceNow,
+      futurePlanStartDate: futurePlanStartDate,
+      prefilledAltNumber: existingAltNumber,
+    ),
+  );
+}
+
+HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
+  required BasePlanModel? selectedApiPlan,
+  required bool showDateField,
+  required DateTime beginDate,
+  required bool forceNow,
+}) {
+  final accountState = instance<AccountInfoCubit>().state;
+
+  return HomeRoamingConfirmationRouteArgs(
+    phoneNumber: _accountPhoneNumber(accountState),
+    selectedPlan: selectedApiPlan,
+    beginDate: beginDate,
+    showDateField: showDateField,
+    forceNow: forceNow,
+  );
+}
+
+PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
+  required BasePlanModel? selectedApiPlan,
+  required int? selectedIndex,
+  required BasePlanModel? activePrimaryPlan,
+  required PlanPurchaseContext purchaseContext,
+}) {
+  return PlanPurchasePlanAddOnsRouteArgs(
+    selectedApiPlan: selectedApiPlan,
+    selectedIndex: selectedIndex,
+    forceNow: true,
+    activePrimaryPlan: activePrimaryPlan,
+    purchaseContext: purchaseContext,
+  );
+}
+
+String _priceText(double price) => AppUtils.formatPrice(price);
+
+HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+  required bool forceNow,
+  required String futurePlanStartDate,
+  String altContactNumber = '',
+  bool marketingOptIn = false,
+}) {
+  final accountState = instance<AccountInfoCubit>().state;
+
+  return HomePlanConfirmationRouteArgs(
+    phoneNumber: _accountPhoneNumber(accountState),
+    accountHolderName: resolveUserDisplayName(account: accountState),
+    primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
+    primaryPlanName: _primaryPlanName(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+    ),
+    primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? 'P',
+    primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
+    primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
+    futurePlanStartDate: futurePlanStartDate,
+    flow: HomePlanConfirmationEntryFlow.skip,
+    forceNow: forceNow,
+    altContactNumber: altContactNumber,
+    marketingOptIn: marketingOptIn,
+  );
+}
+
+String _accountPhoneNumber(AccountInfoState accountState) {
+  final accountInfo = accountState.accountInfo;
+  // final username = accountInfo?.username.trim() ?? '';
+  // if (username.isNotEmpty) return username;
+  final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
+  if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
+
+  final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
+  return phoneNumber.isEmpty ? '--' : phoneNumber;
+}
+
+String _primaryPlanName({
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+}) {
+  final selectedPlanName = selectedApiPlan?.planName.trim();
+  if (selectedPlanName != null && selectedPlanName.isNotEmpty) {
+    return selectedPlanName;
+  }
+
+  return fallbackPlan.title;
+}

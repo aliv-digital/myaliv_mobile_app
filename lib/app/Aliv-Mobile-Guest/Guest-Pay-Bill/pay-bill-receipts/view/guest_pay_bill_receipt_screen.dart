@@ -1,0 +1,164 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+
+import '../../../../../core/utils/app_session.dart';
+import '../bloc/guest_pay_bill_receipt_bloc.dart';
+import '../bloc/guest_pay_bill_receipt_event.dart';
+import '../bloc/guest_pay_bill_receipt_state.dart';
+import '../model/guest_pay_bill_receipt_args.dart';
+import '../repository/guest_pay_bill_receipt_repository.dart';
+import '../theme/theme.dart';
+
+class GuestPayBillReceiptScreen extends StatelessWidget {
+  const GuestPayBillReceiptScreen({super.key, required this.args});
+
+  final GuestPayBillReceiptArgs args;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedServiceName = args.serviceName.trim().toUpperCase();
+    final identifierLabelForReceipt = normalizedServiceName == 'REV'
+        ? 'account no.'
+        : args.identifierLabel;
+
+    final receiptData = GuestPayBillReceiptData(
+      leftType: 'service',
+      rightType: args.serviceName,
+      dateText: args.dateText,
+      timeText: args.timeText,
+      phoneNumber: args.identifierValue,
+      identifierLabel: identifierLabelForReceipt,
+      paymentMethod: args.paymentMethod,
+      amount: args.amount,
+    );
+
+    return RepositoryProvider(
+      create: (_) => GuestPayBillReceiptRepository(),
+      child: BlocProvider(
+        create: (ctx) => GuestPayBillReceiptBloc(
+          repository: ctx.read<GuestPayBillReceiptRepository>(),
+        )..add(GuestPayBillReceiptStarted(receiptData)),
+        child: _GuestPayBillReceiptView(orderId: args.orderId),
+      ),
+    );
+  }
+}
+
+class _GuestPayBillReceiptView extends StatelessWidget {
+  const _GuestPayBillReceiptView({this.orderId});
+
+  final String? orderId;
+
+  void _onBackHomePressed(BuildContext context) {
+    context.read<GuestPayBillReceiptBloc>().add(
+      const GuestPayBillReceiptBackToHomePressed(),
+    );
+  }
+
+  GuestPurchasePlanReceiptData _toDefaultReceiptData(
+    GuestPayBillReceiptData data,
+    String? orderId,
+  ) {
+    return GuestPurchasePlanReceiptData(
+      leftType: data.leftType,
+      rightType: data.rightType,
+      dateText: data.dateText,
+      timeText: data.timeText,
+      phoneNumber: data.phoneNumber,
+      paymentMethod: data.paymentMethod,
+      amount: data.amount,
+      details: <ReceiptDetailItem>[
+        ReceiptDetailItem(label: data.leftType, value: data.rightType),
+        if (orderId != null && orderId.isNotEmpty)
+          ReceiptDetailItem(
+            label: 'order reference',
+            value: orderId,
+            valueBold: false,
+          ),
+        ReceiptDetailItem(label: 'date', value: data.dateText),
+        ReceiptDetailItem(label: 'time', value: data.timeText),
+        ReceiptDetailItem(label: data.identifierLabel, value: data.phoneNumber),
+        ReceiptDetailItem(label: 'payment method', value: data.paymentMethod),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
+      listenWhen: (previousState, currentState) {
+        return previousState.backHomeRequestId !=
+            currentState.backHomeRequestId;
+      },
+      listener: (context, state) {
+        if (state.backHomeRequestId > 0) {
+          if (AppSession.appRoute == 'postpaidPayment') {
+            AppSession.resetAppRoute();
+            context.go(AppRoutes.home);
+          } else {
+            // BILL-018: a guest returns to the guest home, rebuilt on top of
+            // welcome exactly as it was first opened, so its back arrow works.
+            GoRouter.of(context)
+              ..go(AppRoutes.welcome)
+              ..push(AppRoutes.guestSplash);
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: GuestPayBillReceiptTheme.screenBackground,
+        body: SafeArea(
+          top: false,
+          child: CustomScrollView(
+            slivers: [
+              // Top app bar
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  backgroundColor: GuestPayBillReceiptTheme.appBarColor,
+                  showBackArrow: false,
+                  title: 'my receipt',
+                  onBack: () {},
+                  onHomeTap: () => context.go(AppRoutes.home),
+                ),
+              ),
+
+              // Main receipt card container
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: GuestPayBillReceiptTheme.contentPadding,
+                  child: BlocBuilder<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
+                    builder: (context, state) {
+                      final data = state.data;
+                      if (data == null) return const SizedBox.shrink();
+
+                      return DefaultReceiptSuccessCard(
+                        data: _toDefaultReceiptData(data, orderId),
+                        pageBackground:
+                            GuestPayBillReceiptTheme.screenBackground,
+                        statusMessage:
+                            data.rightType.trim().toUpperCase() == 'ALIVFIBR'
+                            ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
+                                  'has been successfully processed for account ${data.phoneNumber}'
+                            : 'It will take a few moments for the payment to appear on the account.',
+                        // BILL-018: always "home" for bill payments.
+                        backButtonText: 'back to home page',
+                        onBackHome: () {
+                          _onBackHomePressed(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

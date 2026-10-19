@@ -1,0 +1,176 @@
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+class LocalStorage {
+  static const String _accountInfoKey = 'account_info_json';
+
+  // Store an integer value
+  static Future<void> storeIntValue({
+    required String key,
+    required int value,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(key, value);
+  }
+
+  static Future<void> storeAccountID({required String accountID}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accountID', accountID);
+  }
+
+  static Future<String?> getAccountID() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accountID');
+  }
+
+  /// Stores the complete account response map as JSON.
+  static Future<void> storeAccountInfoMap({
+    required Map<String, dynamic> accountInfo,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_accountInfoKey, jsonEncode(accountInfo));
+  }
+
+  // Get an integer value
+  static Future<int?> getSelectedActiveEventId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('activeEventID');
+  }
+
+  // Get an integer value
+  static Future<int?> getIntValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(key);
+  }
+
+  // Store a String value
+  static Future<void> storeStringValue({
+    required String key,
+    required String value,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
+  // Get a String value
+  static Future<String?> getStringValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
+  }
+
+  // Store a boolean value
+  static Future<void> storeBoolValue({
+    required String key,
+    required bool value,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+
+  // Get a boolean value
+  static Future<bool?> getBoolValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key);
+  }
+
+  // Store a double value
+  static Future<void> storeDoubleValue({
+    required String key,
+    required double value,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(key, value);
+  }
+
+  // Get a double value
+  static Future<double?> getDoubleValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(key);
+  }
+
+  // Store a list of strings
+  static Future<void> storeStringListValue({
+    required String key,
+    required List<String> value,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(key, value);
+  }
+
+  // Get a list of strings
+  static Future<List<String>?> getStringListValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(key);
+  }
+
+  // Remove a specific key-value pair
+  static Future<void> removeValue({required String key}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+  }
+
+  // Clear all stored data
+  static Future<void> clearAll() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+  // Clear all stored data except the specified keys
+  static Future<void> clearAllExcept(Set<String> keysToPreserve) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final keysToRemove = prefs.getKeys().difference(keysToPreserve);
+    for (final key in keysToRemove) {
+      await prefs.remove(key);
+    }
+  }
+
+  static Map<String, dynamic> _decodeJsonMap(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return <String, dynamic>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) {
+        final mapped = <String, dynamic>{};
+        for (final entry in decoded.entries) {
+          mapped[entry.key.toString()] = entry.value;
+        }
+        return mapped;
+      }
+      return <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
+  static dynamic _readValueByPath(Map<String, dynamic> source, String path) {
+    if (path.trim().isEmpty) return null;
+    dynamic current = source;
+
+    for (final segment in path.split('.')) {
+      if (current is Map<String, dynamic>) {
+        if (current.containsKey(segment)) {
+          current = current[segment];
+          continue;
+        }
+
+        // Fallback: allow case-insensitive key lookup.
+        final lowerSegment = segment.toLowerCase();
+        String? matchedKey;
+        for (final key in current.keys) {
+          if (key.toLowerCase() == lowerSegment) {
+            matchedKey = key;
+            break;
+          }
+        }
+        if (matchedKey == null) return null;
+        current = current[matchedKey];
+        continue;
+      }
+
+      return null;
+    }
+
+    return current;
+  }
+}

@@ -1,0 +1,352 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: ["develop", "main"]
+  pull_request:
+
+env:
+  FLUTTER_VERSION: "3.47.6"
+  JAVA_VERSION: "17"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # 1. Analyze & Format
+  # ─────────────────────────────────────────────────────────────────
+  analyze:
+    name: Analyze & Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Dart format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Flutter analyze
+        run: flutter analyze --no-fatal-infos
+
+  # ─────────────────────────────────────────────────────────────────
+  # 2. Test & Coverage
+  # ─────────────────────────────────────────────────────────────────
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    needs: analyze
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+
+      - name: Print coverage summary
+        run: lcov --summary coverage/lcov.info
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────
+  # 3a. Build Android Debug APK
+  # ─────────────────────────────────────────────────────────────────
+  build-android-debug:
+    name: Build Android (Debug APK)
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────
+  # 3b. Build Android Release APK + distribute to Firebase (push only)
+  # ─────────────────────────────────────────────────────────────────
+  build-android-release:
+    name: Build & Distribute Android (Release)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/jks
+
+          # 1. Verify the secret is set and non-trivial
+          B64_LEN=$(printf %s "$KEYSTORE_BASE64" | wc -c | tr -d ' ')
+          echo "KEYSTORE_BASE64 length: $B64_LEN chars"
+          if [ "$B64_LEN" -lt 100 ]; then
+            echo "ERROR: KEYSTORE_BASE64 secret is empty or too short."
+            echo "       Expected ~3500 chars for a 2 KB keystore."
+            exit 1
+          fi
+
+          # 2. Decode (tolerant of embedded whitespace/newlines)
+          printf %s "$KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > android/app/jks/key.jks
+
+          # 3. Verify output — accept both JKS (feedfeed) and PKCS12 (3082...) magic
+          OUT_SIZE=$(wc -c < android/app/jks/key.jks | tr -d ' ')
+          echo "Decoded keystore size: $OUT_SIZE bytes"
+          MAGIC=$(head -c 4 android/app/jks/key.jks | od -An -tx1 | tr -d ' \n')
+          echo "First 4 bytes: $MAGIC"
+
+          case "$MAGIC" in
+            feedfeed*) echo "Format: JKS (legacy Java KeyStore). OK." ;;
+            3082*)     echo "Format: PKCS12. OK." ;;
+            *)
+              echo "ERROR: Unrecognized keystore format (magic bytes: $MAGIC)."
+              echo "       Re-copy base64 locally and update the KEYSTORE_BASE64 secret:"
+              echo "         base64 -i android/app/jks/key.jks | pbcopy"
+              exit 1
+              ;;
+          esac
+
+      - name: Write key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=../../android/app/jks/key.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+
+      - name: Distribute to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: build/app/outputs/flutter-apk/app-release.apk
+          releaseNotes: |
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            ${{ github.event.head_commit.message }}
+
+  # ─────────────────────────────────────────────────────────────────
+  # 3c. Build Android AAB (main branch, for Play Store)
+  # ─────────────────────────────────────────────────────────────────
+  build-android-aab:
+    name: Build Android (Release AAB)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    outputs:
+      build_number: ${{ steps.build_num.outputs.build_number }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/jks
+          B64_LEN=$(printf %s "$KEYSTORE_BASE64" | wc -c | tr -d ' ')
+          if [ "$B64_LEN" -lt 100 ]; then
+            echo "ERROR: KEYSTORE_BASE64 secret is empty or too short."
+            exit 1
+          fi
+          printf %s "$KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > android/app/jks/key.jks
+          MAGIC=$(head -c 4 android/app/jks/key.jks | od -An -tx1 | tr -d ' \n')
+          case "$MAGIC" in
+            feedfeed*|3082*) echo "Keystore OK (format magic: $MAGIC)" ;;
+            *) echo "ERROR: Unrecognized keystore format ($MAGIC)."; exit 1 ;;
+          esac
+
+      - name: Write key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=../../android/app/jks/key.jks
+          EOF
+
+      # versionCode must be strictly monotonic across all Play Store uploads.
+      # The first manual upload used versionCode 11; offset by +1000 so the
+      # auto-incremented CI number is always safely above any prior manual value.
+      - name: Compute build number
+        id: build_num
+        run: |
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + 1000))
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "Using versionCode=$BUILD_NUMBER"
+
+      - name: Build release AAB
+        run: flutter build appbundle --release --build-number=${{ steps.build_num.outputs.build_number }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  # ─────────────────────────────────────────────────────────────────
+  # 3d. Deploy AAB to Play Store (internal track, draft) — gated
+  # ─────────────────────────────────────────────────────────────────
+  deploy-play-store:
+    name: Deploy to Play Store (internal, draft)
+    runs-on: ubuntu-latest
+    needs: build-android-aab
+    environment: production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/
+
+      - name: Upload AAB to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
+          packageName: new.app.myaliv
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: draft
+          releaseName: "v${{ needs.build-android-aab.outputs.build_number }} (${{ github.sha }})"
+
+  # ─────────────────────────────────────────────────────────────────
+  # 4. Build iOS (no codesign)
+  # ─────────────────────────────────────────────────────────────────
+  build-ios:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --no-codesign --debug

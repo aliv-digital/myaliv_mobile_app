@@ -1,0 +1,1116 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/guest_pay_bill_confirm_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/view/add_ons_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/view/rev_landing_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_route_observer.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_visit_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/model/mifi_alt_contact_route_args.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/view/mifi_alt_contact_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
+import 'package:myaliv_mobile_app/app/Support/view/support_screen.dart';
+import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/view/plan_purchase_plan_add_ons_screen.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
+import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_route_args.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewPage/postpaid/view/auto_pay_postpaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/otp/prepaid/view/otp_prepaid_screen.dart';
+import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
+import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/view/forget_password_otp_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/view/password_recovery_create_password_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/model/password_recovery_otp_challenge.dart';
+import '../app/Aliv-Mobile/login/view/login_page.dart';
+import '../app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
+import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/refer_friend_prepaid_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/success_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
+import '../app/Aliv-Mobile/revBillPay/paymentMethod/prepaid/view/rev_payment_method_prepaid_screen.dart';
+import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
+import '../app/Aliv-Mobile/settings/faceIdSecurity/view/face_id_security_screen.dart';
+import '../app/Aliv-Mobile/settings/fingerPrintSecurity/view/fingerprint_security_screen.dart';
+import '../app/Aliv-Mobile/settings/help/view/help_screen.dart';
+import '../app/Aliv-Mobile/settings/privacy/view/privacy_screen.dart';
+import '../app/Aliv-Mobile/settings/security/view/security_screen.dart';
+import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
+import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
+import '../app/Aliv-Mobile/userProfile/purchaseAddOns/view/purchase_add_ons_screen.dart';
+import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
+import '../app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import '../app/Aliv-Mobile/userProfile/receipt/view/user_profile_receipt_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topUpPayment/prepaid/view/top_up_payment_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
+import 'package:core/core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finger_face_security/finger_face_security.dart';
+import '../app/Home/home/all_best_plan_screen.dart';
+import '../app/Home/home/home_screen.dart';
+import '../app/Home/widgets/bottom_shell.dart';
+import '../app/Notifications/notification_screen.dart';
+
+//import '../app/Plans/view/home_plan_screen.dart';
+//import '../app/Plans/view/plans_entry_screen.dart';
+//import '../app/Plans/view/purchase_confirmation_screen.dart';
+import '../app/Security/menu_screen.dart';
+import '../app/Security/secuirity_common_password_screen.dart';
+import '../app/Security/secuirity_common_verification_code_page.dart';
+import '../app/Support/view/chatbot_screen.dart';
+import '../app/Support/view/quick_help_screen.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/upgrade_credit_limit_screen.dart';
+import '../app/Usage/usage_screen.dart';
+import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
+import '../app/splash/view/splash_page.dart';
+import '../resources/widgets/top_toast.dart';
+import 'app_routes.dart';
+
+//I/flutter (24566): Login API status: 202, body: {"TwoFactorKey":"b5aa1c17-10a9-48b9-9370-b0653917f888"}
+class AppRouter {
+  late final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey, // ✅ REQUIRED
+    observers: [historyRouteObserver, reviewInvoiceRouteObserver],
+    initialLocation: AppRoutes.splash,
+    routes: [
+      GoRoute(
+        path: AppRoutes.homePlanConfirmationScreen,
+        builder: (context, state) {
+          final extra = state.extra;
+          final HomePlanConfirmationRouteArgs args;
+          if (extra is HomePlanConfirmationRouteArgs) {
+            args = extra;
+          } else {
+            args = const HomePlanConfirmationRouteArgs(
+              phoneNumber: '242-801-1616',
+              accountHolderName: 'Jade Turnquest',
+              primaryPlanName: 'liberty70',
+              primaryPlanPrice: 70,
+              flow: HomePlanConfirmationEntryFlow.proceed,
+              selectedAddOns: <HomePlanConfirmationSelectedAddOn>[
+                HomePlanConfirmationSelectedAddOn(
+                  id: 'addon1',
+                  title: 'liberty data 1',
+                  price: 5,
+                ),
+              ],
+            );
+          }
+          return HomePlanConfirmationScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.homePlanMifiAltContact,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! MifiAltContactRouteArgs) {
+            return const Scaffold(
+              body: Center(child: Text('missing mifi plan context')),
+            );
+          }
+          return MifiAltContactScreen(args: extra);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addOnsConfirmation,
+        builder: (context, state) =>
+            const AddOnsConfirmationScreen(phoneNumber: '242-801-1616'),
+      ),
+      GoRoute(
+        path: AppRoutes.roamingPlanConfirmation,
+        builder: (context, state) {
+          // Read optional route flag from navigation extras.
+          final extra = state.extra;
+          bool showDateField = true;
+          if (extra is Map<String, dynamic>) {
+            final value = extra['showDateField'];
+            if (value is bool) {
+              showDateField = value;
+            } else if (value is String) {
+              showDateField = value.toLowerCase() == 'true';
+            }
+          }
+
+          return RoamingPlanConfirmationScreen(
+            phoneNumber: '242-801-1616',
+            showDateField: showDateField,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.homeRoamingConfirmation,
+        builder: (context, state) {
+          final extra = state.extra;
+          HomeRoamingConfirmationRouteArgs args =
+              const HomeRoamingConfirmationRouteArgs(
+                phoneNumber: '242-801-1616',
+                showDateField: true,
+              );
+
+          if (extra is HomeRoamingConfirmationRouteArgs) {
+            args = extra;
+          }
+
+          // Backward-compatible handling for older callers that still send
+          // only a showDateField map.
+          if (extra is Map<String, dynamic>) {
+            final value = extra['showDateField'];
+            if (value is bool) {
+              args = HomeRoamingConfirmationRouteArgs(
+                phoneNumber: args.phoneNumber,
+                showDateField: value,
+              );
+            } else if (value is String) {
+              args = HomeRoamingConfirmationRouteArgs(
+                phoneNumber: args.phoneNumber,
+                showDateField: value.toLowerCase() == 'true',
+              );
+            }
+          }
+
+          return HomeRoamingConfirmationScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.revPaymentMethodPrepaidScreen,
+        builder: (context, state) => const REVPaymentMethodPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.faceIdSecurityScreen,
+        builder: (context, state) => const FaceIdSecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.fingerPrintSecurityScreen,
+        builder: (context, state) => const FingerPrintSecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.helpScreen,
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacyScreen,
+        builder: (context, state) => const PrivacyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.securityScreen,
+        builder: (context, state) => const SecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settingsScreen,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revConfirmationPrepaidScreen,
+        builder: (context, state) => const RevConfirmationPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentConfirmationPostpaidScreen,
+        builder: (context, state) =>
+            const MakePaymentConfirmationPostPaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentPostpaidScreen,
+        builder: (context, state) => const MakePaymentPostPaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revBillPayPrepaidScreen,
+        builder: (context, state) => const RevPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revLandingPrepaidScreen,
+        builder: (context, state) => const RevLandingPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.referFriendResponsePrepaidScreen,
+        builder: (context, state) => const ReferFriendResponsePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.referFriendPrepaidScreen,
+        builder: (context, state) => const ReferFriendPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.otpAutoRenewPrepaidScreen,
+        builder: (context, state) => const OtpAutoRenewPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
+        builder: (context, state) =>
+            const EnterPasswordAutoRenewPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.autoRenewAuthPrepaidScreen,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! AutoRenewAuthArgs) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Authorization details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return AutoRenewAuthPrepaidScreen(
+            paymentMethod: extra.paymentMethod,
+            cardToken: extra.cardToken,
+            cardLastDigits: extra.cardLastDigits,
+            verifiedResult: extra.verifiedResult,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.accountActionOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! ActionOtpRouteArgs<ProtectedAccountAction> ||
+              !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return ActionOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.autoRenewAuthorizationOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! AutoRenewAuthorizationOtpRouteArgs || !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return AutoRenewAuthorizationOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.autoRenewPrepaidScreen,
+        builder: (context, state) => const AutoRenewPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.autoPayPostpaidScreen,
+        builder: (context, state) => const AutoPayPostpaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.otpReviewInvoicePostPaidScreen,
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
+      ),
+      GoRoute(
+        path: AppRoutes.enterPasswordReviewInvoicePostpaidScreen,
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
+      ),
+      GoRoute(
+        path: AppRoutes.reviewInvoicePostPaidScreen,
+        builder: (context, state) => const ReviewInvoiceVisitScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.reviewInvoiceOtp,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! ReviewInvoiceOtpRouteArgs || !extra.isValid) {
+            return const ReviewInvoiceVerificationGateScreen();
+          }
+          return ReviewInvoiceOtpScreen(
+            initialMfaToken: extra.mfaToken,
+            apiPhoneNumber: extra.apiPhoneNumber,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.topUpPaymentPrepaidScreen,
+        builder: (context, state) {
+          final amountString = state.uri.queryParameters['amount'];
+          final recipientPhone = state.uri.queryParameters['recipientPhone'];
+          final amount = amountString == null
+              ? null
+              : double.tryParse(amountString);
+          return TopUpPaymentScreen(
+            amount: amount,
+            recipientPhone: recipientPhone,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.userProfileReceiptScreen,
+        builder: (context, state) {
+          final extra = state.extra;
+          final args = extra is UserProfileReceiptRouteArgs
+              ? extra
+              : UserProfileReceiptRouteArgs.fromQuery(
+                  state.uri.queryParameters,
+                );
+
+          return UserProfileReceiptScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
+        builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
+      ),
+      GoRoute(
+        path: AppRoutes.topUpPrepaidScreen,
+        builder: (context, state) {
+          final tabParam = state.uri.queryParameters['tab'];
+          final initialTab = int.tryParse(tabParam ?? '0') ?? 0;
+
+          return TopUpPrepaidScreen(initialTab: initialTab);
+        },
+      ),
+      // GoRoute(
+      //   path: AppRoutes.topUpPrepaidScreen,
+      //   builder: (context, state) => const TopUpPrepaidScreen(),
+      // ),
+      GoRoute(
+        path: AppRoutes.addOrEditCardsPrepaidScreen,
+        builder: (context, state) => const AddOrEditCardsPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.purchasesPrepaidScreen,
+        builder: (context, state) => const PurchasesPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.rewardDetailsPrepaidScreen,
+        builder: (context, state) {
+          final reward = state.extra as RewardModel?;
+          return RewardDetailsPrepaidScreen(reward: reward);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.rewardPrepaidScreen,
+        builder: (context, state) => const RewardPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.otpProfilePrepaidScreen,
+        builder: (context, state) => const OtpProfilePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.changePasswordPrepaidScreen,
+        builder: (context, state) => const ChangePasswordPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.enterPassWordPrepaidScreen,
+        builder: (context, state) => const EnterPasswordPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editEmailPrepaidScreen,
+        builder: (context, state) => const EditEmailPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.myProfilePrepaidScreen,
+        builder: (context, state) => const MyProfilePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profilePostpaidScreen,
+        builder: (context, state) => const ProfilePostpaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profilePrepaidScreen,
+        builder: (context, state) => const ProfilePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.callLogs,
+        builder: (context, state) {
+          final destination = HistoryDestination.fromTabParameter(
+            state.uri.queryParameters['tab'],
+          );
+
+          final initialTab = destination == HistoryDestination.callLogs
+              ? CallLogsTabType.callLogs
+              : CallLogsTabType.transactions;
+
+          return CallLogsScreen(initialTab: initialTab);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.callLogsVerification,
+        builder: (context, state) => CallLogsVerificationGateScreen(
+          destination: state.extra is HistoryDestination
+              ? state.extra! as HistoryDestination
+              : state.uri.queryParameters['tab'] == 'transactions'
+              ? HistoryDestination.transactions
+              : HistoryDestination.callLogs,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.callLogsOtp,
+        builder: (context, state) {
+          final extra = state.extra;
+          final args = extra is CallLogsOtpRouteArgs
+              ? extra
+              : const CallLogsOtpRouteArgs(mfaToken: '', apiPhoneNumber: '');
+          return CallLogsOtpScreen(
+            initialMfaToken: args.mfaToken,
+            apiPhoneNumber: args.apiPhoneNumber,
+            destination: args.destination,
+            returnInPlace: args.returnInPlace,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanReceipt,
+        builder: (context, state) {
+          final now = DateTime.now();
+          String phoneNumber = '';
+          double amount = 0;
+          String dateText = DateFormat('MMM d, yyyy').format(now);
+          String timeText = DateFormat('h:mm a').format(now).toLowerCase();
+          String? planName;
+          List<String> addOnNames = const <String>[];
+          String emailAddress = 'guest';
+          String paymentMethod = 'credit card';
+          String? orderId;
+
+          final extra = state.extra;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? phoneNumber;
+            final rawAmount = extra['amount'];
+            if (rawAmount is num) {
+              amount = rawAmount.toDouble();
+            } else if (rawAmount is String) {
+              amount = double.tryParse(rawAmount) ?? amount;
+            }
+            dateText = (extra['dateText'] as String?) ?? dateText;
+            timeText = (extra['timeText'] as String?) ?? timeText;
+            planName = extra['planName'] as String?;
+            final rawAddOns = extra['addOnNames'];
+            if (rawAddOns is List) {
+              addOnNames = rawAddOns.whereType<String>().toList(
+                growable: false,
+              );
+            }
+            emailAddress = (extra['emailAddress'] as String?) ?? emailAddress;
+            paymentMethod =
+                (extra['paymentMethod'] as String?) ?? paymentMethod;
+            orderId = extra['orderId'] as String?;
+          }
+
+          return GuestPurchasePlanReceiptScreen(
+            phoneNumber: phoneNumber,
+            amount: amount,
+            dateText: dateText,
+            timeText: timeText,
+            planName: planName,
+            addOnNames: addOnNames,
+            emailAddress: emailAddress,
+            paymentMethod: paymentMethod,
+            orderId: orderId,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.homePlanPurchaseReceiptScreen,
+        builder: (context, state) {
+          final Object? extra = state.extra;
+          String phoneNumber = '242-801-1616';
+          double amount = 75;
+          String dateText = 'Mar 12, 2023';
+          String timeText = '7:30 am';
+          String paymentMethod = 'credit card';
+          String statusMessage =
+              'It will take a few moments for the top-up to appear on the account. ';
+          String leftType = 'service';
+          String rightType = 'REV';
+          List<HomePlanPurchaseReceiptDetailItem>? details;
+          NewCardDetails? cardToSave;
+          String? orderId;
+          WalletPaymentSuccess? walletPaymentSuccess;
+
+          if (extra is Map<String, dynamic>) {
+            // Payment failure — show failure ticket, skip all other fields.
+            if (extra['isPaymentFailed'] == true) {
+              final String phone = (extra['phoneNumber'] is String)
+                  ? extra['phoneNumber'] as String
+                  : phoneNumber;
+              return HomePlanPurchaseReceiptScreen(
+                phoneNumber: phone,
+                amount: 0,
+                dateText: '',
+                timeText: '',
+                isPaymentFailed: true,
+              );
+            }
+
+            final dynamic cardToSaveValue = extra['cardToSave'];
+            if (cardToSaveValue is NewCardDetails) {
+              cardToSave = cardToSaveValue;
+            }
+
+            final success = extra['walletPaymentSuccess'];
+            if (success is WalletPaymentSuccess) {
+              walletPaymentSuccess = success;
+            }
+
+            final dynamic orderIdValue = extra['orderId'];
+            if (orderIdValue is String && orderIdValue.isNotEmpty) {
+              orderId = orderIdValue;
+            }
+
+            final dynamic phoneValue = extra['phoneNumber'];
+            if (phoneValue is String && phoneValue.trim().isNotEmpty) {
+              phoneNumber = phoneValue;
+            }
+
+            final dynamic amountValue = extra['amount'];
+            if (amountValue is num) {
+              amount = amountValue.toDouble();
+            } else if (amountValue is String) {
+              amount = double.tryParse(amountValue) ?? amount;
+            }
+
+            final dynamic dateValue = extra['dateText'];
+            if (dateValue is String && dateValue.trim().isNotEmpty) {
+              dateText = dateValue;
+            }
+
+            final dynamic timeValue = extra['timeText'];
+            if (timeValue is String && timeValue.trim().isNotEmpty) {
+              timeText = timeValue;
+            }
+
+            final dynamic paymentMethodValue = extra['paymentMethod'];
+            if (paymentMethodValue is String &&
+                paymentMethodValue.trim().isNotEmpty) {
+              paymentMethod = paymentMethodValue;
+            }
+
+            final dynamic statusMessageValue = extra['statusMessage'];
+            if (statusMessageValue is String &&
+                statusMessageValue.trim().isNotEmpty) {
+              statusMessage = statusMessageValue;
+            }
+
+            final dynamic leftTypeValue = extra['leftType'];
+            if (leftTypeValue is String && leftTypeValue.trim().isNotEmpty) {
+              leftType = leftTypeValue;
+            }
+
+            final dynamic rightTypeValue = extra['rightType'];
+            if (rightTypeValue is String && rightTypeValue.trim().isNotEmpty) {
+              rightType = rightTypeValue;
+            }
+
+            final dynamic detailsValue = extra['details'];
+            if (detailsValue is List) {
+              details = detailsValue
+                  .whereType<HomePlanPurchaseReceiptDetailItem>()
+                  .toList(growable: false);
+            }
+          }
+
+          return HomePlanPurchaseReceiptScreen(
+            phoneNumber: phoneNumber,
+            amount: amount,
+            dateText: dateText,
+            timeText: timeText,
+            paymentMethod: paymentMethod,
+            statusMessage: statusMessage,
+            leftType: leftType,
+            rightType: rightType,
+            details: details,
+            cardToSave: cardToSave,
+            walletPaymentSuccess: walletPaymentSuccess,
+            orderId: orderId,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanConfirmation,
+        builder: (context, state) {
+          final Object? extra = state.extra;
+          final GuestPurchasePlanConfirmationRouteArgs args;
+
+          if (extra is GuestPurchasePlanConfirmationRouteArgs) {
+            args = extra;
+          } else {
+            args = const GuestPurchasePlanConfirmationRouteArgs(
+              phoneNumber: '242-801-1616',
+              accountHolderName: 'guest purchase a plan',
+              primaryPlanName: 'liberty70',
+              primaryPlanPrice: 70,
+              flow: GuestPurchasePlanConfirmationEntryFlow.proceed,
+              selectedAddOns: <GuestPurchasePlanConfirmationSelectedAddOn>[
+                GuestPurchasePlanConfirmationSelectedAddOn(
+                  id: 'a1',
+                  title: 'liberty data 1',
+                  price: 5.00,
+                ),
+              ],
+            );
+          }
+
+          return GuestPurchasePlanConfirmationScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanAddOns,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! GuestPurchasePlanAddOnsRouteArgs) {
+            return const Scaffold(
+              body: Center(child: Text('missing guest plan context')),
+            );
+          }
+          return GuestPurchasePlanAddOnsScreen(args: extra);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.homePurchasePlanAddOns,
+        builder: (context, state) {
+          final extra = state.extra;
+          final routeArgs = extra is PlanPurchasePlanAddOnsRouteArgs
+              ? extra
+              : null;
+
+          return PlanPurchasePlanAddOnsScreen(routeArgs: routeArgs);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.purchaseAddOns,
+        builder: (context, state) => const PurchaseAddOnsScreen(),
+      ),
+      GoRoute(
+        //
+        path: AppRoutes.guestPayBillReceipt,
+        builder: (context, state) {
+          final receiptArgs = state.extra;
+
+          if (receiptArgs is GuestPayBillReceiptArgs) {
+            return GuestPayBillReceiptScreen(args: receiptArgs);
+          }
+
+          return const GuestPayBillReceiptScreen(
+            args: GuestPayBillReceiptArgs(
+              serviceName: 'ALIV Postpaid',
+              identifierLabel: 'phone no.',
+              identifierValue: '242-801-0000',
+              amount: 200.00,
+              dateText: 'Mar 22, 2023',
+              timeText: '07:30 am',
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPayBillConfirm,
+        builder: (context, state) {
+          final confirmArgs = state.extra;
+
+          if (confirmArgs is GuestPayBillConfirmArgs) {
+            return GuestPayBillConfirmScreen(args: confirmArgs);
+          }
+
+          // Fallback for direct route access without navigation args.
+          return const GuestPayBillConfirmScreen(
+            args: GuestPayBillConfirmArgs(
+              serviceName: 'ALIV Postpaid',
+              identifierLabel: 'phone no.',
+              identifierValue: '242-801-0000',
+              amount: 200.00,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPayBill,
+        builder: (context, state) => const GuestPayBillScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlan,
+        builder: (context, state) {
+          String phoneNumber = '';
+          final extra = state.extra;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? '';
+          }
+          return GuestPurchasePlanScreen(phoneNumber: phoneNumber);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestTopUpReceipt,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return GuestTopUpReceiptScreen(
+            phoneNumber: extra?['phoneNumber'] as String? ?? '',
+            amount: (extra?['amount'] as num?)?.toDouble() ?? 0,
+            dateText: extra?['dateText'] as String? ?? '',
+            timeText: extra?['timeText'] as String? ?? '',
+            orderId: extra?['orderId'] as String?,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.logIn,
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.loginOtp,
+        builder: (context, state) {
+          // Typed route payload keeps navigation data explicit and safe.
+          final extra = state.extra;
+          final args = extra is LoginOtpRouteArgs
+              ? extra
+              : const LoginOtpRouteArgs(
+                  mfaToken: '',
+                  phoneNumber: '',
+                  apiPhoneNumber: '',
+                );
+
+          return LoginOtpScreen(
+            clearCodeOnResend: args.clearCodeOnResend,
+            initialMfaToken: args.mfaToken,
+            initialPhoneNumber: args.phoneNumber,
+            initialApiPhoneNumber: args.apiPhoneNumber,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.forgetPassword,
+        builder: (context, state) => const ForgetPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgetPasswordOtp,
+        builder: (context, state) {
+          final args = state.extra is LoginOtpRouteArgs
+              ? state.extra as LoginOtpRouteArgs
+              : const LoginOtpRouteArgs(
+                  mfaToken: '',
+                  phoneNumber: '',
+                  apiPhoneNumber: '',
+                );
+          return ForgetPasswordOtpScreen(
+            challenge: args is PasswordRecoveryOtpChallenge
+                ? args
+                : PasswordRecoveryOtpChallenge(
+                    mfaToken: args.mfaToken,
+                    phoneNumber: args.phoneNumber,
+                    apiPhoneNumber: args.apiPhoneNumber,
+                  ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.createPassword,
+        builder: (context, state) {
+          final fromForgotPassword = state.extra == true;
+          return fromForgotPassword
+              ? const PasswordRecoveryCreatePasswordScreen()
+              : const CreatePasswordScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestSplash,
+        builder: (context, state) => const GuestSplashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.whyAliv,
+        builder: (context, state) => const WhyAlivScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.guestTopUp,
+        builder: (context, state) => const GuestTopUpScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.confirmGuestTopUp,
+        builder: (context, state) {
+          final extra = state.extra;
+          String phoneNumber = '';
+          double amount = 0;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? '';
+            final rawAmount = extra['amount'];
+            if (rawAmount is num) {
+              amount = rawAmount.toDouble();
+            } else if (rawAmount is String) {
+              amount = double.tryParse(rawAmount) ?? 0;
+            }
+          }
+          return GuestConfirmTopUpScreen(
+            phoneNumber: phoneNumber,
+            amount: amount,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.biometricLock,
+        builder: (context, state) {
+          final cubit = instance<FingerFaceSecurityCubit>();
+          return BlocProvider.value(
+            value: cubit,
+            child: BiometricLockScreen(
+              appName: 'MyAliv',
+              lockSubtitle: 'Verify your identity to continue',
+              showFingerprint: cubit.state.fingerprintEnabled,
+              showFaceId: cubit.state.faceIdEnabled,
+              onAuthSuccess: () {
+                cubit.markSessionAuthenticated();
+                SessionTimeoutService().markActive();
+                router.go(AppRoutes.home);
+              },
+            ),
+          );
+        },
+      ),
+
+      ShellRoute(
+        builder: (context, state, child) {
+          return BottomShell(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            builder: (context, state) => const HomeScreen(),
+          ),
+          // GoRoute(
+          //   path: AppRoutes.usage,
+          //   builder: (context, state) => const UsageScreen(),
+          // ),
+          //
+          GoRoute(
+            path: AppRoutes.usage,
+            builder: (context, state) => const UsageScreen(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.upgradeCreditLimit,
+            builder: (context, state) {
+              return const UpgradeCreditLimitScreen();
+            },
+          ),
+
+          // GoRoute(
+          //   path: AppRoutes.plans,
+          //   builder: (context, state) => const HomePlanScreen(),
+          // ),
+          // need to change here
+          GoRoute(
+            path: AppRoutes.plans,
+            builder: (context, state) {
+              final tabParam = state.uri.queryParameters['tab'];
+              return PlansEntryScreen(initialTab: _parsePlanTab(tabParam));
+            },
+          ),
+
+          GoRoute(
+            path: AppRoutes.menu,
+            builder: (context, state) => const MenuScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.allBestPlans,
+        builder: (context, state) => const AllBestPlansScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.notificationScreen,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.supportScreen,
+        builder: (context, state) => const SupportScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.chatScreen,
+        builder: (context, state) => const ChatBotScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.callSupportScreen,
+        builder: (context, state) => const QuickHelpScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.enterPassword,
+        pageBuilder: (context, state) {
+          final title = state.uri.queryParameters['title'] ?? 'enter password';
+          final continueRoute =
+              state.uri.queryParameters['continue'] ?? AppRoutes.home;
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: CommonEnterPasswordPage(
+              appBarTitle: title,
+              continueRoute: continueRoute,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.verificationCode,
+        pageBuilder: (context, state) {
+          final nextRoute = state.uri.queryParameters['next'] ?? AppRoutes.home;
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: VerificationCodePage(nextRoute: nextRoute),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.verifyEmail,
+        pageBuilder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: VerifyEmailPage(email: email),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestPaymentMethodScreen,
+        builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.homePlansPaymentMethodScreen,
+        builder: (context, state) {
+          final Object? extra = state.extra;
+
+          HomePlansPaymentMethodRouteArgs routeArgs =
+              const HomePlansPaymentMethodRouteArgs();
+          if (extra is HomePlansPaymentMethodRouteArgs) {
+            routeArgs = extra;
+          }
+
+          return HomePlansPaymentMethodScreen(args: routeArgs);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.confirmation,
+        pageBuilder: (context, state) {
+          final showBeginOn =
+              state.uri.queryParameters['showBeginOn'] == 'true';
+          final extra = state.extra;
+          final postpaidPlan = extra is HomePlansPostPaidPlanModel
+              ? extra
+              : null;
+
+          final beginDateString = state.uri.queryParameters['beginDate'];
+
+          DateTime? beginDate;
+          if (beginDateString != null) {
+            beginDate = DateTime.tryParse(beginDateString);
+          }
+
+          final amountString = state.uri.queryParameters['amount'];
+          final topUpAmount = amountString == null
+              ? null
+              : double.tryParse(amountString);
+
+          final recipientPhone = state.uri.queryParameters['recipient'];
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: ConfirmationScreen(
+              showBeginOn: showBeginOn,
+              beginDate: beginDate,
+              plan: postpaidPlan,
+              topUpAmount: topUpAmount,
+              recipientPhone: recipientPhone,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.invitingSuccess,
+        pageBuilder: (context, state) {
+          final referralCode = state.uri.queryParameters['code'] ?? '';
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: InvitingSuccessScreen(referralCode: referralCode),
+          );
+        },
+      ),
+    ],
+  );
+}
+
+HomePlanTab? _parsePlanTab(String? value) {
+  if (value == null || value.isEmpty) return null;
+  for (final tab in HomePlanTab.values) {
+    if (tab.name == value) return tab;
+  }
+  return null;
+}

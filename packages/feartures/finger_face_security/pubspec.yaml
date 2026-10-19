@@ -1,0 +1,22 @@
+name: finger_face_security
+description: Fingerprint and Face ID security feature for MyAliv app.
+version: 0.0.1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: '>=3.10.1'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.7
+  # Biometric Authentication
+  local_auth: ^3.0.2
+  shared_preferences: ^2.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:

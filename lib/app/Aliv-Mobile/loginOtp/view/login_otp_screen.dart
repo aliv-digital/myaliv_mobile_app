@@ -1,0 +1,215 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import '../../../../router/app_routes.dart';
+import '../bloc/login_otp_bloc.dart';
+import '../bloc/login_otp_state.dart';
+import '../repository/login_otp_repository.dart';
+import '../theme/login_otp_theme.dart';
+import '../widgets/otp_header.dart';
+import '../widgets/otp_code_fields.dart';
+import '../widgets/otp_bottom_actions.dart';
+
+class LoginOtpScreen extends StatelessWidget {
+  const LoginOtpScreen({
+    super.key,
+    this.initialMfaToken = '',
+    this.initialPhoneNumber = '',
+    this.initialApiPhoneNumber = '',
+    this.onSuccess,
+    this.successMessage,
+    this.clearCodeOnResend = false,
+    this.resetValidationOnResend = false,
+  });
+
+  /// mfa_token issued by the login endpoint; seeded into the bloc so the
+  /// verify request can reference it.
+  final String initialMfaToken;
+
+  /// Phone number passed from login route.
+  final String initialPhoneNumber;
+
+  /// API-formatted phone number used for OTP verify/resend requests.
+  final String initialApiPhoneNumber;
+
+  /// Optional override called on success instead of the default home navigation.
+  final void Function(BuildContext context)? onSuccess;
+
+  /// Optional toast message shown on success. Defaults to 'OTP verified successfully.'.
+  final String? successMessage;
+
+  /// Clears entered digits on resend for flows that opt in.
+  final bool clearCodeOnResend;
+
+  /// Forgot Password clears previous verification errors when requesting a code.
+  final bool resetValidationOnResend;
+
+  @protected
+  LoginOtpBloc createBloc(BuildContext context) => LoginOtpBloc(
+    repository: LoginOtpRepository(),
+    appUiConfigCubit: context.read<AppUiConfigCubit>(),
+    initialMfaToken: initialMfaToken,
+    initialPhoneNumber: initialPhoneNumber,
+    initialApiPhoneNumber: initialApiPhoneNumber,
+    resetValidationOnResend: resetValidationOnResend,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: createBloc,
+      child: _LoginOtpView(
+        onSuccess: onSuccess,
+        successMessage: successMessage,
+        clearCodeOnResend: clearCodeOnResend,
+      ),
+    );
+  }
+}
+
+class _LoginOtpView extends StatefulWidget {
+  const _LoginOtpView({
+    this.onSuccess,
+    this.successMessage,
+    required this.clearCodeOnResend,
+  });
+
+  final void Function(BuildContext context)? onSuccess;
+  final String? successMessage;
+
+  final bool clearCodeOnResend;
+
+  @override
+  State<_LoginOtpView> createState() => _LoginOtpViewState();
+}
+
+class _LoginOtpViewState extends State<_LoginOtpView> {
+  final _codeFieldsKey = GlobalKey<OtpCodeFieldsState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return StripedScaffold(
+      resizeToAvoidBottomInset: true,
+      stripesReserveSpace: true,
+      body: SafeArea(
+        child: BlocListener<LoginOtpBloc, LoginOtpState>(
+          listenWhen: (previous, current) {
+            return previous.status != current.status ||
+                previous.resendStatus != current.resendStatus ||
+                previous.errorMessage != current.errorMessage;
+          },
+          listener: (context, state) {
+            if (state.status == LoginOtpStatus.success) {
+              AppToast.show(
+                message: widget.successMessage ?? 'OTP verified successfully.',
+                type: ToastType.success,
+              );
+              instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
+              if (widget.onSuccess != null) {
+                widget.onSuccess!(context);
+              } else {
+                context.go(AppRoutes.home);
+              }
+            }
+
+            if (state.status == LoginOtpStatus.failure &&
+                state.errorMessage != null) {
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
+            }
+
+            if (state.resendStatus == LoginOtpResendStatus.done) {
+              AppToast.show(
+                message: 'Verification code resent successfully.',
+                type: ToastType.success,
+              );
+            }
+
+            if (state.resendStatus == LoginOtpResendStatus.idle &&
+                state.status != LoginOtpStatus.failure &&
+                state.errorMessage != null) {
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
+            }
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(child: OtpHeader()),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: LoginOtpPaddings.contentHorizontal,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(height: LoginOtpSizes.contentTopGap),
+                            OtpCodeFields(
+                              key: _codeFieldsKey,
+                              boxHeight: LoginOtpSizes.otpBoxHeight,
+                              gap: LoginOtpSizes.otpBoxGap,
+                            ),
+                            SizedBox(
+                              height: LoginOtpSizes.otpToBottomActionsGap,
+                            ),
+                            OtpBottomActions(
+                              clearCodeOnResend: widget.clearCodeOnResend,
+                              onResendPressed: widget.clearCodeOnResend
+                                  ? () =>
+                                        _codeFieldsKey.currentState?.clearCode()
+                                  : null,
+                            ),
+                            SizedBox(height: LoginOtpSizes.contentBottomGap),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Keep the action outside the scrollable form and above stripes.
+              const Padding(
+                padding: EdgeInsets.fromLTRB(
+                  LoginOtpSizes.contentHorizontalPadding,
+                  LoginOtpSizes.contentBottomGap,
+                  LoginOtpSizes.contentHorizontalPadding,
+                  LoginOtpSizes.changePhoneBottomOffset,
+                ),
+                child: _ChangePhoneNumberAction(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChangePhoneNumberAction extends StatelessWidget {
+  const _ChangePhoneNumberAction();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).maybePop(),
+      child: Text(
+        'change phone number',
+        textAlign: TextAlign.center,
+        style: LoginOtpTheme.changePhoneText,
+      ),
+    );
+  }
+}

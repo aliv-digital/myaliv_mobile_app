@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import '../theme/profile_prepaid_theme.dart';
+
+class ProfileMenuItemTile extends StatelessWidget {
+  const ProfileMenuItemTile({
+    super.key,
+    required this.title,
+    required this.enabled,
+    required this.onTap,
+    this.showDivider = true,
+    this.trailing,
+    this.isTapEnabled = true,
+  });
+
+  final String title;
+  final bool enabled;
+  final VoidCallback onTap;
+  final bool showDivider;
+  final Widget? trailing;
+  final bool isTapEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
+    final chevronColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
+
+    return Column(
+      children: [
+        InkWell(
+          onTap: enabled && isTapEnabled ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ProfilePrepaidTheme.menuItemText.copyWith(
+                      color: titleColor,
+                    ),
+                  ),
+                ),
+                trailing ??
+                    Icon(Icons.chevron_right, size: 22, color: chevronColor),
+              ],
+            ),
+          ),
+        ),
+        if (showDivider)
+          const Divider(
+            height: 1,
+            thickness: 1,
+            indent: 20,
+            endIndent: 20,
+            color: ProfilePrepaidTheme.divider,
+          ),
+      ],
+    );
+  }
+}

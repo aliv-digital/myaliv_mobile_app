@@ -1,0 +1,172 @@
+import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/repository/plan_bundle_mapper.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+
+import '../model/home_plans_payment_method_models.dart';
+import 'home_plans_payment_method_repository.dart';
+
+/// Thin adapter that delegates every payment call to [ChangeBundleService].
+/// Keeps the bloc/cubit talking through this feature's repository interface
+/// while the actual API + body building lives in the shared service.
+class HomePlansPaymentMethodRepositoryImpl
+    implements HomePlansPaymentMethodRepository {
+  HomePlansPaymentMethodRepositoryImpl({ChangeBundleService? service})
+    : _service = service ?? instance<ChangeBundleService>();
+
+  final ChangeBundleService _service;
+
+  @override
+  Future<List<HomePlansSavedPaymentMethod>> fetchPaymentMethods({
+    required HomePlansSubscriberType subscriberType,
+  }) async {
+    // This is mock data for now. Replace with API integration later.
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    const List<HomePlansSavedPaymentMethod> commonMethods =
+        <HomePlansSavedPaymentMethod>[
+          HomePlansSavedPaymentMethod(
+            id: 'visa-1234',
+            brand: HomePlansCardBrand.visa,
+            ending: '1234',
+            expiry: '06/2024',
+            logoSvgAsset: AssetConstant.visaCardSVG,
+          ),
+          HomePlansSavedPaymentMethod(
+            id: 'mc-1234',
+            brand: HomePlansCardBrand.mastercard,
+            ending: '1234',
+            expiry: '06/2024',
+            logoSvgAsset: AssetConstant.masterCardSVG,
+          ),
+        ];
+
+    if (subscriberType == HomePlansSubscriberType.prepaid) {
+      return commonMethods;
+    }
+
+    return <HomePlansSavedPaymentMethod>[
+      const HomePlansSavedPaymentMethod(
+        id: 'charge-account',
+        brand: HomePlansCardBrand.unknown,
+        ending: '',
+        expiry: '',
+        logoSvgAsset: '',
+        isChargeToMyAccount: true,
+      ),
+      ...commonMethods,
+    ];
+  }
+
+  @override
+  Future<void> payNow({required String methodId}) async {
+    // Mock placeholder for the unused saved-card "pay now" path.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+  }
+
+  @override
+  Future<int?> payFromWallet({
+    required double amount,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) async {
+    final result = await _service.payFromWallet(
+      amount: amount,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      promoCodes: promoCodes,
+      bonuses: bonuses,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return _unwrap(result);
+  }
+
+  @override
+  Future<int?> chargeToAccount({
+    required double amount,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) async {
+    // This wallet-flavoured call is the explicit postpaid account-charge path;
+    // ChangeBundleService routes only this path to /Order/payment.
+    final result = await _service.payFromWallet(
+      amount: amount,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      promoCodes: promoCodes,
+      bonuses: bonuses,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return _unwrap(result);
+  }
+
+  @override
+  Future<int?> payWithSavedCard({
+    required double amount,
+    required String cardToken,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) async {
+    final isPostpaid = !instance<AccountInfoCubit>().state.isPrepaid;
+    final result = await _service.payWithSavedCard(
+      amount: amount,
+      cardToken: cardToken,
+      bundle: PlanBundleMapper.fromSelectedItems(
+        selectedItems,
+        isPostpaid: isPostpaid,
+      ),
+      promoCodes: promoCodes,
+      bonuses: bonuses,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return _unwrap(result);
+  }
+
+  @override
+  Future<int?> payWithCardDetails({
+    required double amount,
+    required NewCardDetails details,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) async {
+    final result = await _service.payWithNewCard(
+      amount: amount,
+      details: details,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      promoCodes: promoCodes,
+      bonuses: bonuses,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return _unwrap(result);
+  }
+
+  /// Returns the [OrderId] from a successful result, or null when the API did
+  /// not include one. Throws on failure so the bloc's try/catch surfaces it.
+  int? _unwrap(ChangeBundleResult result) {
+    switch (result) {
+      case ChangeBundleSuccess(:final orderId):
+        return orderId;
+      case ChangeBundleFailure(:final message):
+        throw Exception(message);
+    }
+  }
+}

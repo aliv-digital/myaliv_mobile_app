@@ -1,0 +1,22 @@
+{
+  "CardPayment": {
+    "Amount": 5.0,
+    "KountSessionId": "9c61063f-283d-4cdb-80e4-dc36ed57d179",
+    "PaymentInstrument": "Token",
+    "CardNumber": "d7c7cb3a-d000-476f-9995-3d2b73012b2e",
+    "CardExpiration": "",
+    "CardSecurityCode": "",
+    "CardHolderName": ""
+  },
+  "Bundle": {
+    "PrimaryPlans": [29836],
+    "SecondaryPlans": [],
+    "StandalonePlans": []
+  },
+  "ForceNow": true,
+  "SaveCard": false,
+  "UseAsRenewalCard": false,
+  "Bonuses": [],
+  "PromoCodes": [],
+  "Note": "Payment"
+}

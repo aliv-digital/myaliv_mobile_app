@@ -1,0 +1,452 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+
+/// DefaultAppBar (Reusable)
+/// - Back optional
+/// - Right actions: skip/text button OR custom widget OR icons (home/notification)
+class DefaultAppBar extends StatelessWidget {
+  const DefaultAppBar({
+    super.key,
+    required this.title,
+
+    // Layout
+    this.height = 64,
+    this.backgroundColor,
+    this.horizontalPadding = 24,
+    this.leadingToTitleSpacing = 12,
+    this.titleAlignment = AppBarTitleAlignment.left,
+    this.centerTitle = false,
+
+    // Back
+    this.showBackArrow = true,
+    this.onBack,
+    this.backIconAssetPath = AssetConstant.leftArrowSVG,
+    this.backIconSize = 24,
+    this.backSplashRadius = 22,
+    this.backIconAlignment = Alignment.centerLeft,
+    this.leadingWidth,
+    this.leading,
+
+    // Right side (actions)
+    this.trailing,
+    this.actionText,
+    this.onActionTextTap,
+    this.actionTextStyle,
+
+    // ✅ Home (NEW)
+    this.showHome = false,
+    this.homeIcon = Icons.home_outlined,
+    this.onHomeTap,
+    this.homeCount,
+
+    // Notification
+    this.showNotification = false,
+    this.notificationIcon = Icons.notifications_none_rounded,
+    this.onNotificationTap,
+    this.notificationCount,
+    this.showNotificationDotWhenZero = false,
+
+    // Divider / shadow
+    this.showBottomDivider = false,
+    this.bottomDividerColor = const Color(0x1AFFFFFF),
+    this.elevationShadow = false,
+  });
+
+  final String title;
+
+  // Layout
+  final double height;
+  final Color? backgroundColor;
+  final double horizontalPadding;
+  final double leadingToTitleSpacing;
+  final AppBarTitleAlignment titleAlignment;
+  final bool centerTitle;
+
+  // Back / Leading
+  final bool showBackArrow;
+  final VoidCallback? onBack;
+  final String backIconAssetPath;
+  final double backIconSize;
+  final double backSplashRadius;
+  final AlignmentGeometry backIconAlignment;
+  final double? leadingWidth;
+  final Widget? leading;
+
+  // Trailing / Actions
+  final Widget? trailing;
+  final String? actionText;
+  final VoidCallback? onActionTextTap;
+  final TextStyle? actionTextStyle;
+
+  // ✅ Home (NEW)
+  final bool showHome;
+  final IconData homeIcon;
+  final VoidCallback? onHomeTap;
+  final int? homeCount;
+
+  // Notification
+  final bool showNotification;
+  final IconData notificationIcon;
+  final VoidCallback? onNotificationTap;
+  final int? notificationCount;
+  final bool showNotificationDotWhenZero;
+
+  // Divider / shadow
+  final bool showBottomDivider;
+  final Color bottomDividerColor;
+  final bool elevationShadow;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = const TextStyle(
+      fontSize: 17,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+    );
+
+    final resolvedBackground = backgroundColor ?? ColorManager.primaryPurple;
+
+    // Match the OS status bar to the app bar. Light icons over purple.
+    // On Android <15 the OS paints statusBarColor directly. On Android 15+
+    // (edge-to-edge) statusBarColor is ignored, so we also paint into any
+    // top inset that's still unclaimed by an ancestor SafeArea — that way
+    // the purple visibly extends behind the transparent status bar.
+    final overlay = SystemUiOverlayStyle(
+      statusBarColor: resolvedBackground,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    );
+
+    // padding.top is what's left after ancestor SafeAreas. If an ancestor
+    // already consumed the inset (SafeArea(top: true)) this is 0 and we
+    // add nothing — otherwise we bleed the Material into the status bar.
+    final topInset = MediaQuery.of(context).padding.top;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlay,
+      child: Material(
+        color: resolvedBackground,
+        elevation: elevationShadow ? 6 : 0,
+        child: Padding(
+          padding: EdgeInsets.only(top: topInset),
+          child: Container(
+            height: height,
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      _buildLeading(context),
+                      if (_hasVisibleLeading)
+                        SizedBox(width: leadingToTitleSpacing),
+                      Expanded(
+                        child: Align(
+                          alignment: _titleAlign(),
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: titleStyle,
+                            textAlign: centerTitle
+                                ? TextAlign.left
+                                : TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      _buildTrailing(context),
+                    ],
+                  ),
+                ),
+                if (showBottomDivider)
+                  Container(
+                    height: 1,
+                    width: double.infinity,
+                    color: bottomDividerColor,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Alignment _titleAlign() {
+    if (centerTitle || titleAlignment == AppBarTitleAlignment.center) {
+      return Alignment.center;
+    }
+    return Alignment.centerLeft;
+  }
+
+  bool get _hasVisibleLeading {
+    return leading != null || showBackArrow;
+  }
+
+  Widget _buildLeading(BuildContext context) {
+    if (leading != null) return leading!;
+
+    if (!showBackArrow) {
+      return const SizedBox.shrink();
+    }
+
+    final resolvedLeadingWidth = leadingWidth ?? backIconSize;
+
+    return SizedBox(
+      width: resolvedLeadingWidth,
+      height: 44,
+      child: Align(
+        alignment: backIconAlignment,
+        child: InkResponse(
+          onTap: onBack ?? () => Navigator.of(context).maybePop(),
+          radius: backSplashRadius,
+          child: SizedBox(
+            width: backIconSize,
+            height: backIconSize,
+            child: SvgPicture.asset(
+              backIconAssetPath,
+              width: backIconSize,
+              height: backIconSize,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrailing(BuildContext context) {
+    if (trailing != null) {
+      return SizedBox(
+        width: 88,
+        child: Align(alignment: Alignment.centerRight, child: trailing),
+      );
+    }
+
+    final actions = <Widget>[];
+
+    // ✅ Home (notification এর মতো)
+    if (showHome) {
+      actions.add(
+        _HomeButton(icon: homeIcon, count: homeCount, onTap: onHomeTap),
+      );
+    }
+
+    // Notification
+    if (showNotification) {
+      actions.add(
+        _NotificationButton(
+          icon: notificationIcon,
+          count: notificationCount,
+          onTap: onNotificationTap,
+          showDotWhenZero: showNotificationDotWhenZero,
+        ),
+      );
+    }
+
+    // Text action (e.g., "skip")
+    if (actionText != null && actionText!.trim().isNotEmpty) {
+      actions.add(
+        GestureDetector(
+          onTap: onActionTextTap,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            child: Text(
+              actionText!,
+              style:
+                  actionTextStyle ??
+                  const TextStyle(
+                    fontFamily: AppConstants.defaultFontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (actions.isEmpty) {
+      // No trailing actions — collapse so the title claims the space instead
+      // of ellipsing behind a phantom 88px reserve (Figma app-bar strings like
+      // "auto renew authorization form" don't fit otherwise).
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      width: 88,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Row(mainAxisSize: MainAxisSize.min, children: actions),
+      ),
+    );
+  }
+}
+
+class _HomeButton extends StatelessWidget {
+  const _HomeButton({
+    required this.icon,
+    required this.count,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final int? count;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final showBadge = (count ?? 0) > 0;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: SvgPicture.asset(
+                AssetConstant.homeIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                placeholderBuilder: (_) =>
+                    Icon(icon, color: Colors.white, size: 24),
+              ),
+            ),
+            if (showBadge)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE62B2F),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: Colors.white, width: 1.2),
+                  ),
+                  child: Text(
+                    count! > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      fontFamily: AppConstants.defaultFontFamily,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationButton extends StatelessWidget {
+  const _NotificationButton({
+    required this.icon,
+    required this.count,
+    required this.onTap,
+    required this.showDotWhenZero,
+  });
+
+  final IconData icon;
+  final int? count;
+  final VoidCallback? onTap;
+  final bool showDotWhenZero;
+
+  @override
+  Widget build(BuildContext context) {
+    final countValue = count ?? 0;
+    final showCountBadge = countValue > 0;
+    final showDotBadge = countValue == 0 && showDotWhenZero;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: SvgPicture.asset(
+                AssetConstant.notificationIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                placeholderBuilder: (_) =>
+                    Icon(icon, color: Colors.white, size: 24),
+              ),
+            ),
+            if (showCountBadge)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE62B2F),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: Colors.white, width: 1.2),
+                  ),
+                  child: Text(
+                    countValue > 99 ? '99+' : '$countValue',
+                    style: const TextStyle(
+                      fontFamily: AppConstants.defaultFontFamily,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            if (showDotBadge)
+              const Positioned(
+                right: 0,
+                top: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEE3434),
+                    shape: BoxShape.circle,
+                  ),
+                  child: SizedBox(width: 8, height: 8),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum AppBarTitleAlignment { left, center }
