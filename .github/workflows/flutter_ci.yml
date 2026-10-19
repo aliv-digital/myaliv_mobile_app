@@ -165,19 +165,22 @@ jobs:
           # 2. Decode (tolerant of embedded whitespace/newlines)
           printf %s "$KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > android/app/jks/key.jks
 
-          # 3. Verify output
+          # 3. Verify output — accept both JKS (feedfeed) and PKCS12 (3082...) magic
           OUT_SIZE=$(wc -c < android/app/jks/key.jks | tr -d ' ')
           echo "Decoded keystore size: $OUT_SIZE bytes"
-          echo "file(1) says:"
-          file android/app/jks/key.jks
+          MAGIC=$(head -c 4 android/app/jks/key.jks | od -An -tx1 | tr -d ' \n')
+          echo "First 4 bytes: $MAGIC"
 
-          if ! file android/app/jks/key.jks | grep -qi "Java KeyStore"; then
-            echo "ERROR: Decoded file is not a valid Java KeyStore."
-            echo "       Re-copy base64 locally and update the KEYSTORE_BASE64 secret:"
-            echo "         base64 -i android/app/jks/key.jks | pbcopy"
-            exit 1
-          fi
-          echo "Keystore decoded OK."
+          case "$MAGIC" in
+            feedfeed*) echo "Format: JKS (legacy Java KeyStore). OK." ;;
+            3082*)     echo "Format: PKCS12. OK." ;;
+            *)
+              echo "ERROR: Unrecognized keystore format (magic bytes: $MAGIC)."
+              echo "       Re-copy base64 locally and update the KEYSTORE_BASE64 secret:"
+              echo "         base64 -i android/app/jks/key.jks | pbcopy"
+              exit 1
+              ;;
+          esac
 
       - name: Write key.properties
         run: |
