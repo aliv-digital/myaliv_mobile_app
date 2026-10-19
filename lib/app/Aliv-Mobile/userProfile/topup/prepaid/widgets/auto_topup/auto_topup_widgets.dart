@@ -166,6 +166,7 @@ class AutoTopupSectionLabel extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
+          color: Color(0xFF707070),
           fontSize: 14,
           fontFamily: 'CircularPro',
           fontWeight: FontWeight.w700,
@@ -181,7 +182,7 @@ class AutoTopupOrDivider extends StatelessWidget {
   const AutoTopupOrDivider({super.key});
 
   static const _divider = Expanded(
-    child: Divider(height: 1, thickness: 1, color: Color(0xFF8A8A8F)),
+    child: Divider(height: 1, thickness: 1, color: TopUpPrepaidTheme.divider),
   );
 
   @override
@@ -195,10 +196,10 @@ class AutoTopupOrDivider extends StatelessWidget {
             'or',
             style: TextStyle(
               fontFamily: 'CircularPro',
-              color: Color(0xFF8A8A8F),
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              height: 1.56,
+              color: TopUpPrepaidTheme.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
             ),
           ),
         ),

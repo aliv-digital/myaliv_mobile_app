@@ -10,7 +10,7 @@ class TransactionTileNew extends StatelessWidget {
 
   const TransactionTileNew({super.key, required this.transaction});
 
-  static const Color _credit = Color(0xFF27AE60);
+  static const Color _credit = Color(0xFF00C4B3);
   static const Color _debit = Color(0xFFE94408);
   static const Color _iconBg = Color(0xFFF2F1FB);
 
@@ -100,13 +100,17 @@ class TransactionTileNew extends StatelessWidget {
 
   Widget _buildAmountAndDate() {
     final amountColor = transaction.isCredit ? _credit : _debit;
-    final sign = transaction.isCredit ? '+' : '';
+    final absAmount = transaction.amount.abs();
+    final formattedAmount = NumberFormat('#,##0.00').format(absAmount);
+    final displayAmount = transaction.isCredit
+        ? '+\$$formattedAmount'
+        : '-\$$formattedAmount';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          '$sign\$${NumberFormat('#,##0.00').format(transaction.amount)}',
+          displayAmount,
           style: TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 14,

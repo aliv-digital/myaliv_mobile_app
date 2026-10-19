@@ -8,7 +8,7 @@ class PurchasePrepaidTheme {
   static const Color text = Color(0xFF2B2B2B);
   static const Color chevron = Color(0xFF2B2B2B);
 
-  static const double horizontalPad = 16;
+  static const double horizontalPad = 20;
 
   static TextStyle itemTextStyle() => const TextStyle(
     color: text,

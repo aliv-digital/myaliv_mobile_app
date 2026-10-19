@@ -91,7 +91,10 @@ class _SavedCardDropdownState extends State<SavedCardDropdown> {
       return const Icon(Icons.credit_card_off, color: Color(0xFF707070));
     }
 
-    return Icon(_isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down);
+    return Icon(
+      _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+      color: dropdownSelectedAccent,
+    );
   }
 
   VoidCallback? _getEmptyTapHandler(SavedCardsState state) {

@@ -94,14 +94,18 @@ class InvitingSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // ===== DESCRIPTION =====
-                Text(
-                  'Thank you for inviting your friend to join the ALIV network! once they’re on the network for three months, you will receive your cash back reward.',
+                const Text(
+                  "Thank you for inviting your friend to join\n"
+                  "the ALIV network! once they’re on the\n"
+                  "network for three months, you will\n"
+                  "receive your cash back reward.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: const Color(0xFF707070),
+                    color: Color(0xFF707070),
                     fontSize: 16,
+                    height: 1.45,
                     fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
 
@@ -135,7 +139,7 @@ class InvitingSuccessScreen extends StatelessWidget {
                     context.go(AppRoutes.home);
                   },
                   child: Container(
-                    width: 200,
+                    constraints: const BoxConstraints(minWidth: 200),
                     height: 48,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -193,13 +197,14 @@ class _ReferralCodeBox extends StatelessWidget {
       constraints: BoxConstraints(minWidth: 160, maxWidth: maxWidth),
       child: Container(
         height: 48,
-        padding: const EdgeInsets.only(left: 16, right: 4),
+        padding: const EdgeInsets.only(left: 16, right: 8),
         decoration: BoxDecoration(
           border: Border.all(color: const Color(0xFFF1F1F8)),
           borderRadius: BorderRadius.circular(100),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
               child: Text(
@@ -237,9 +242,14 @@ class _ReferralCodeBox extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/icons/copy2.svg'),
-                    const SizedBox(width: 4),
+                    SvgPicture.asset(
+                      'assets/icons/copy2.svg',
+                      width: 16,
+                      height: 16,
+                    ),
+                    const SizedBox(width: 6),
                     const Text(
                       'copy',
                       style: TextStyle(
@@ -247,6 +257,7 @@ class _ReferralCodeBox extends StatelessWidget {
                         color: Color(0xFF645D9C),
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
+                        height: 1.0,
                       ),
                     ),
                   ],

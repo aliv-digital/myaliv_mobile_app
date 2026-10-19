@@ -50,9 +50,9 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                   fontSize: 18,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
+                  height: 1.1,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
                 senderPhone,
                 style: const TextStyle(
@@ -60,6 +60,7 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
+                  height: 1.1,
                 ),
               ),
             ],
@@ -78,12 +79,12 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                       'top-up prepaid number',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 10,
+                        fontSize: 16,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       recipient,
                       style: const TextStyle(

@@ -128,71 +128,67 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                       );
                     }
 
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: Column(
-                        children: [
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: ProfilePrepaidTheme.divider,
-                          ),
-                          ...state.items.map((item) {
-                            return ProfileMenuItemTile(
-                              title: item.title,
-                              enabled: item.enabled,
-                              isTapEnabled:
-                                  item.id != 'call_logs' ||
-                                  !_requestingCallLogsChallenge,
-                              trailing:
-                                  item.id == 'call_logs' &&
-                                      _requestingCallLogsChallenge
-                                  ? const SizedBox.square(
-                                      dimension: 22,
-                                      child: Center(
-                                        child: SizedBox.square(
-                                          dimension: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color:
-                                                ProfilePrepaidTheme.textBlack,
-                                          ),
+                    return Column(
+                      children: [
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          indent: 20,
+                          endIndent: 20,
+                          color: ProfilePrepaidTheme.divider,
+                        ),
+                        ...state.items.map((item) {
+                          return ProfileMenuItemTile(
+                            title: item.title,
+                            enabled: item.enabled,
+                            isTapEnabled:
+                                item.id != 'call_logs' ||
+                                !_requestingCallLogsChallenge,
+                            trailing:
+                                item.id == 'call_logs' &&
+                                    _requestingCallLogsChallenge
+                                ? const SizedBox.square(
+                                    dimension: 22,
+                                    child: Center(
+                                      child: SizedBox.square(
+                                        dimension: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: ProfilePrepaidTheme.textBlack,
                                         ),
                                       ),
-                                    )
-                                  : null,
-                              onTap: () async {
-                                if (item.id == 'my_profile') {
-                                  context.push(
-                                    AppRoutes.myProfilePrepaidScreen,
-                                  );
-                                }
-                                if (item.id == 'my_plans') {
-                                  context
-                                      .read<AppUiConfigCubit>()
-                                      .showCurrentPlansView();
-                                  context.go(AppRoutes.usage);
-                                }
+                                    ),
+                                  )
+                                : null,
+                            onTap: () async {
+                              if (item.id == 'my_profile') {
+                                context.push(AppRoutes.myProfilePrepaidScreen);
+                              }
+                              if (item.id == 'my_plans') {
+                                context
+                                    .read<AppUiConfigCubit>()
+                                    .showCurrentPlansView();
+                                context.go(AppRoutes.usage);
+                              }
 
-                                if (item.id == 'call_logs') {
-                                  if (_requestingCallLogsChallenge) return;
-                                  context.read<ProfilePrepaidBloc>().add(
-                                    ProfilePrepaidItemPressed(item),
-                                  );
-                                  await _openCallLogs();
-                                  return;
-                                }
-                                if (item.id == 'rewards') {
-                                  context.push(AppRoutes.rewardPrepaidScreen);
-                                }
+                              if (item.id == 'call_logs') {
+                                if (_requestingCallLogsChallenge) return;
                                 context.read<ProfilePrepaidBloc>().add(
                                   ProfilePrepaidItemPressed(item),
                                 );
-                              },
-                            );
-                          }),
-                        ],
-                      ),
+                                await _openCallLogs();
+                                return;
+                              }
+                              if (item.id == 'rewards') {
+                                context.push(AppRoutes.rewardPrepaidScreen);
+                              }
+                              context.read<ProfilePrepaidBloc>().add(
+                                ProfilePrepaidItemPressed(item),
+                              );
+                            },
+                          );
+                        }),
+                      ],
                     );
                   },
                 ),

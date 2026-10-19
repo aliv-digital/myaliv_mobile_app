@@ -139,7 +139,6 @@ class AutoTopupAmountSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AutoTopupSectionLabel('select a top-up amount'),
-            const SizedBox(height: 10),
             AutoTopupAmountGrid(
               selectedAmount: selectedAmount,
               onAmountSelected: onAmountSelected,
@@ -171,7 +170,6 @@ class AutoTopupCustomAmountSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AutoTopupSectionLabel('custom amount'),
-        const SizedBox(height: 8),
         TopUpFormInputField(
           hint: 'enter a custom amount',
           isAmountType: true,

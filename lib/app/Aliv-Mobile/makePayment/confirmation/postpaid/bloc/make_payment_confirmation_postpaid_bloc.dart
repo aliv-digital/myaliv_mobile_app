@@ -36,9 +36,9 @@ class MakePaymentConfirmationPostPaidBloc
     final balanceState = instance<BalanceCubit>().state;
 
     final customerName = resolveUserDisplayName(devices: deviceLimitsState);
-    final accountNumber = _formatPhone(
-      deviceLimitsState.deviceLimits?.tn ?? '',
-    );
+    final tn = deviceLimitsState.deviceLimits?.tn.trim();
+    final rawPhone = (tn != null && tn.isNotEmpty) ? tn : data.accountNumber;
+    final accountNumber = _formatPhone(rawPhone);
     final amount = BalanceCurrencyFormatterService.format(
       balanceState.walletBalance,
     );
@@ -63,10 +63,10 @@ class MakePaymentConfirmationPostPaidBloc
     if (phone.isEmpty) return '';
     final digits = phone.replaceAll(RegExp(r'\D'), '');
     if (digits.length == 10) {
-      return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+      return '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
     }
     if (digits.length == 11 && digits.startsWith('1')) {
-      return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+      return '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
     }
     return phone;
   }

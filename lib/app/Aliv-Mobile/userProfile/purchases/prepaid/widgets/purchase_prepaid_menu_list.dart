@@ -19,6 +19,13 @@ class PurchasePrepaidMenuList extends StatelessWidget {
       color: PurchasePrepaidTheme.tileBg,
       child: Column(
         children: [
+          const Divider(
+            height: 1,
+            thickness: 1,
+            indent: PurchasePrepaidTheme.horizontalPad,
+            endIndent: PurchasePrepaidTheme.horizontalPad,
+            color: PurchasePrepaidTheme.divider,
+          ),
           for (int i = 0; i < items.length; i++) ...[
             PurchasePrepaidMenuTile(
               title: items[i].title,

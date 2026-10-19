@@ -55,7 +55,7 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
     final showMismatchError = widget.hasMismatchError;
     final phoneBorderColor = !_hasPhoneFocus && showMismatchError
         ? AuthModuleColors.errorRed
-        : AuthModuleColors.loginFieldBorderColor;
+        : Colors.transparent;
     final phoneInputStyle = showMismatchError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
@@ -73,7 +73,7 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
         const SizedBox(height: 8),
         CustomCountryPhoneInputRow(
           focusNode: _phoneFocusNode,
-          hideUnfocusedInputBorder: false,
+          hideUnfocusedInputBorder: !_hasPhoneFocus && !showMismatchError,
           hintText: 'eg: (242)-899-9999',
           flagEmoji: selectedCountry.flagEmoji,
           dialCode: selectedCountry.dialCode,
@@ -82,17 +82,17 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
           enableCountryPicker: false,
           onChanged: widget.onChanged,
           inputFormatters: const [BahamasPhoneInputFormatter()],
-          backgroundColor: AuthModuleColors.pageBackground,
+          backgroundColor: TopUpPrepaidNumberPostPaidTheme.fieldBg,
           unfocusedBorderColor: phoneBorderColor,
-          borderRadius: AuthModuleSizes.fieldRadius,
+          borderRadius: TopUpPrepaidNumberPostPaidTheme.radius,
           borderWidth: AuthModuleSizes.fieldBorderWidth,
           fieldHeight: AuthModuleSizes.fieldHeight,
           countryPickerWidth: AuthModuleSizes.countryWidth,
           countryToPhoneGap: AuthModuleSizes.countryToPhoneGap,
           countryPickerPadding: AuthModulePaddings.countryHorizontal8,
-          showCountryPickerBorder: true,
-          countryPickerBorderColor: AuthModuleColors.loginFieldBorderColor,
-          countryPickerBorderWidth: AuthModuleSizes.fieldBorderWidth,
+          showCountryPickerBorder: false,
+          countryPickerBorderColor: Colors.transparent,
+          countryPickerBorderWidth: 0,
           phoneInputPadding: AuthModulePaddings.fieldHorizontal14,
           countryFlagToDialGap: AuthModuleSizes.countryFlagToCodeGap,
           countryDialToArrowGap: AuthModuleSizes.countryCodeToArrowGap,

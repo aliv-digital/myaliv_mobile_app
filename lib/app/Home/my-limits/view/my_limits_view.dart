@@ -49,22 +49,19 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: instance<ConsumptionLimitCubit>(),
-      child: Container(
-        color: Colors.white,
-        child: BlocBuilder<ConsumptionLimitCubit, ConsumptionLimitState>(
-          builder: (context, state) {
-            if (state.isLoading && !state.hasLimits) {
-              return const MyLimitsLoadingState();
-            }
-            if (state.hasError && !state.hasLimits) {
-              return MyLimitsErrorState(
-                errorMessage: state.errorMessage,
-                onRetry: _loadLimits,
-              );
-            }
-            return _buildContent(state);
-          },
-        ),
+      child: BlocBuilder<ConsumptionLimitCubit, ConsumptionLimitState>(
+        builder: (context, state) {
+          if (state.isLoading && !state.hasLimits) {
+            return const MyLimitsLoadingState();
+          }
+          if (state.hasError && !state.hasLimits) {
+            return MyLimitsErrorState(
+              errorMessage: state.errorMessage,
+              onRetry: _loadLimits,
+            );
+          }
+          return _buildContent(state);
+        },
       ),
     );
   }
@@ -74,17 +71,28 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
       color: MyLimitsTab.purple,
       onRefresh: _refreshLimits,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+        padding: const EdgeInsets.only(bottom: 32),
         children: [
-          ...state.limits.map(
-            (limit) => Column(
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
               children: [
-                LimitRow(limit: limit),
-                const Divider(color: MyLimitsTab.divider),
+                for (int i = 0; i < state.limits.length; i++) ...[
+                  LimitRow(limit: state.limits[i]),
+                  if (i < state.limits.length - 1)
+                    const Divider(color: MyLimitsTab.divider)
+                  else
+                    const SizedBox(height: 16),
+                ],
+                if (!state.hasLimits && !state.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: MyLimitsEmptyState(),
+                  ),
               ],
             ),
           ),
-          if (!state.hasLimits && !state.isLoading) const MyLimitsEmptyState(),
           const SizedBox(height: 32),
           _buildUpdateButton(),
         ],

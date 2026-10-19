@@ -16,11 +16,11 @@ import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_postpaid.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_usage_section.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/home_header.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/home_quick_actions.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/no_active_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
@@ -427,83 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _quickActions(BuildContext context, HomeUiConfig config) {
     return _section(
       title: 'quick actions',
-      // onViewMore: () {
-      //   context.push(AppRoutes.allBestPlans);
-      // },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-        child: GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          children: [
-            if (!config.isRestricted)
-              GestureDetector(
-                onTap: () {
-                  context.go(AppRoutes.plans);
-                },
-                child: const ActionTile(
-                  'assets/icons/ListStarQuick.svg',
-                  'buy\nplans',
-                ),
-              ),
-            if (!config.isRestricted)
-              config.userType == UserType.postpaid
-                  ? GestureDetector(
-                      onTap: () {
-                        context.read<AppUiConfigCubit>().showMyLimitsView();
-                        context.go(AppRoutes.usage);
-                      },
-                      child: const ActionTile(
-                        'assets/icons/SortDescending.svg',
-                        'update\ncredit limit',
-                      ),
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        context.push(AppRoutes.addOrEditCardsPrepaidScreen);
-                      },
-                      child: const ActionTile(
-                        'assets/icons/add_credit_card.svg',
-                        'add\ncredit card',
-                      ),
-                    ),
-            GestureDetector(
-              onTap: () {
-                context.push(AppRoutes.myProfilePrepaidScreen);
-              },
-              child: const ActionTile('assets/icons/At.svg', 'update\nemail'),
-            ),
-            GestureDetector(
-              onTap: () {
-                context.push(AppRoutes.referFriendPrepaidScreen);
-              },
-              child: const ActionTile(
-                'assets/icons/UsersThree.svg',
-                'refer a friend',
-              ),
-            ),
-            GestureDetector(
-              onTap: _openAlivDeals,
-              child: const ActionTile(
-                'assets/icons/aliv_quick.svg',
-                'ALIV deals',
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                context.push(AppRoutes.callSupportScreen);
-              },
-              child: const ActionTile(
-                'assets/icons/headphone.svg',
-                'help & support',
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: HomeQuickActions(config: config, onOpenAlivDeals: _openAlivDeals),
       color: null,
     );
   }

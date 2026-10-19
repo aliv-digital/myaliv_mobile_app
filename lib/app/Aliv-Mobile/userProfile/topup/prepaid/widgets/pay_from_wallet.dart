@@ -40,13 +40,13 @@ class _PayFromWalletSheetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SafeArea(
+        top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(

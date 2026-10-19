@@ -16,23 +16,29 @@ class ReferFriendPrepaidTabs extends StatelessWidget {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.only(top: 10),
-      child: Row(
+      child: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
-          _TabItem(
-            label: 'refer a friend',
-            active: selectedIndex == 0,
-            onTap: () => onChanged(0),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Divider(height: 1, thickness: 1, color: Color(0xFFE6E6EC)),
           ),
-          _TabItem(
-            label: 'redeem referral',
-            active: selectedIndex == 1,
-            onTap: () => onChanged(1),
+          Row(
+            children: [
+              _TabItem(
+                label: 'refer a friend',
+                active: selectedIndex == 0,
+                onTap: () => onChanged(0),
+              ),
+              _TabItem(
+                label: 'redeem referral',
+                active: selectedIndex == 1,
+                onTap: () => onChanged(1),
+              ),
+            ],
           ),
-          // _TabItem(
-          //   label: 'refer history',
-          //   active: selectedIndex == 2,
-          //   onTap: () => onChanged(2),
-          // ),
         ],
       ),
     );

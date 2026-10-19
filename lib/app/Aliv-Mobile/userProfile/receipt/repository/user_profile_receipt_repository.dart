@@ -9,18 +9,22 @@ import '../models/user_profile_receipt_route_args.dart';
 class UserProfileReceiptRepository {
   UserProfileReceiptData buildReceipt(UserProfileReceiptRouteArgs args) {
     final createdAt = args.createdAt ?? DateTime.now();
-    final phoneNumber = _formatPhoneNumber(
-      _firstNonEmpty([args.phoneNumber, _loggedInPhoneNumber()]),
-    );
+    final rawPhone =
+        (args.phoneNumber != null && args.phoneNumber!.trim().isNotEmpty)
+        ? args.phoneNumber!
+        : _loggedInPhoneNumber();
+    final phoneNumber = _formatPhoneNumber(rawPhone);
 
     return UserProfileReceiptData(
       typeLabel: args.receiptTypeLabel,
       topUpType: args.topUpType,
       dateText: DateFormat('MMM d, yyyy').format(createdAt),
       timeText: DateFormat('h:mm a').format(createdAt).toLowerCase(),
-      phoneNumber: args.recipientPhone == null
-          ? phoneNumber
-          : _formatPhoneNumber(args.recipientPhone!),
+      phoneNumber:
+          (args.recipientPhone != null &&
+              args.recipientPhone!.trim().isNotEmpty)
+          ? _formatPhoneNumber(args.recipientPhone!)
+          : phoneNumber,
       paymentMethod: args.paymentMethod,
       amount: args.amount,
       title: args.title,
@@ -30,6 +34,7 @@ class UserProfileReceiptRepository {
   }
 
   String _loggedInPhoneNumber() {
+    if (!instance.isRegistered<AccountInfoCubit>()) return '';
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     if (accountInfo == null) return '';
 
@@ -76,13 +81,13 @@ class UserProfileReceiptRepository {
     if (digitsOnly.isEmpty) return trimmed;
 
     if (digitsOnly.length == 10) {
-      return '${digitsOnly.substring(0, 3)}-'
+      return '(${digitsOnly.substring(0, 3)})-'
           '${digitsOnly.substring(3, 6)}-'
           '${digitsOnly.substring(6)}';
     }
 
     if (digitsOnly.length == 11 && digitsOnly.startsWith('1')) {
-      return '${digitsOnly.substring(1, 4)}-'
+      return '(${digitsOnly.substring(1, 4)})-'
           '${digitsOnly.substring(4, 7)}-'
           '${digitsOnly.substring(7)}';
     }

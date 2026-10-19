@@ -33,7 +33,7 @@ class ProfileMenuItemTile extends StatelessWidget {
         InkWell(
           onTap: enabled && isTapEnabled ? onTap : null,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 18, 16, 18),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             child: Row(
               children: [
                 Expanded(
@@ -56,6 +56,8 @@ class ProfileMenuItemTile extends StatelessWidget {
           const Divider(
             height: 1,
             thickness: 1,
+            indent: 20,
+            endIndent: 20,
             color: ProfilePrepaidTheme.divider,
           ),
       ],

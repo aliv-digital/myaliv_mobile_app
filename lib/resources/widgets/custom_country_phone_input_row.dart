@@ -424,23 +424,23 @@ class _FocusedInputBorderWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool showBorder =
+        isFocused ||
+        (!hideUnfocusedBorder && unfocusedBorderColor != Colors.transparent);
     return Container(
       decoration: BoxDecoration(
         gradient: isFocused ? focusedBorderGradient : null,
-        border: isFocused
-            ? null
-            : (hideUnfocusedBorder
+        border: showBorder
+            ? (isFocused
                   ? null
-                  : Border.all(
-                      color: unfocusedBorderColor,
-                      width: borderWidth,
-                    )),
+                  : Border.all(color: unfocusedBorderColor, width: borderWidth))
+            : null,
         borderRadius: BorderRadius.circular(radius),
       ),
-      padding: EdgeInsets.all(borderWidth),
+      padding: showBorder ? EdgeInsets.all(borderWidth) : EdgeInsets.zero,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(
-          (radius - borderWidth).clamp(0.0, radius),
+          showBorder ? (radius - borderWidth).clamp(0.0, radius) : radius,
         ),
         child: child,
       ),
