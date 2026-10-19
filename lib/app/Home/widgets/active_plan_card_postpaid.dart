@@ -1,8 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -13,8 +11,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
-import '../../../core/appConfig/app_ui_config_cubit.dart';
-import '../../../router/app_routes.dart';
+import 'upgrade_credit_limit_button.dart';
 
 /// Active plan card for postpaid users connected to PlansCubit for real-time data.
 ///
@@ -111,39 +108,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
         const SizedBox(height: 14),
 
         // ================= CTA =================
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              context.read<AppUiConfigCubit>().showMyLimitsView();
-              context.go(AppRoutes.usage);
-            },
-            icon: SvgPicture.asset(
-              'assets/icons/card-add.svg',
-              colorFilter: const ColorFilter.mode(
-                Color(0xFFEF3A4B),
-                BlendMode.srcIn,
-              ),
-            ),
-            label: const Text(
-              'upgrade credit limit',
-              style: TextStyle(
-                color: Color(0xFFEF3A4B),
-                fontSize: 15,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: lightBg,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32),
-              ),
-            ),
-          ),
-        ),
+        const UpgradeCreditLimitButton(),
       ],
     );
   }

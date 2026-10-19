@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/upgrade_credit_limit_button.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 
@@ -9,8 +10,13 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 /// Displays plan name, active/expire dates from PrimaryPlans[0] (earliest plan).
 class PostpaidCurrentPlan extends StatelessWidget {
   final bool showRenewButton;
+  final bool showUpgradeCreditLimitButton;
 
-  const PostpaidCurrentPlan({super.key, this.showRenewButton = true});
+  const PostpaidCurrentPlan({
+    super.key,
+    this.showRenewButton = true,
+    this.showUpgradeCreditLimitButton = false,
+  });
 
   static const Color red = Color(0xFFD94B4B);
   static const Color redDark = Color(0xFFCC3F3F);
@@ -29,7 +35,9 @@ class PostpaidCurrentPlan extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Container(
-            height: 151,
+            constraints: BoxConstraints(
+              minHeight: showUpgradeCreditLimitButton ? 200 : 151,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
             decoration: BoxDecoration(
               image: const DecorationImage(
@@ -42,7 +50,7 @@ class PostpaidCurrentPlan extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTopRow(activePlan?.planName),
-                const SizedBox(height: 20),
+                SizedBox(height: showUpgradeCreditLimitButton ? 12 : 20),
                 _buildDatesRow(
                   activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
                   expireDate: _displayExpiry(
@@ -50,6 +58,10 @@ class PostpaidCurrentPlan extends StatelessWidget {
                     isPostpaid: true,
                   ).formatDdMmYy(),
                 ),
+                if (showUpgradeCreditLimitButton) ...[
+                  const SizedBox(height: 14),
+                  const UpgradeCreditLimitButton(),
+                ],
               ],
             ),
           ),
@@ -63,48 +75,50 @@ class PostpaidCurrentPlan extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'active',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w700,
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'active',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: ' plan',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
+                    TextSpan(
+                      text: ' plan',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Text(
-              planName?.trim().isNotEmpty == true
-                  ? planName!
-                  : 'no active plan',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
+              Text(
+                planName?.trim().isNotEmpty == true
+                    ? planName!
+                    : 'no active plan',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
