@@ -30,10 +30,9 @@ class PostpaidActivePlanCard extends StatelessWidget {
 
   // Postpaid plans carry far-future sentinel EndDates (2036-01-01, 2106-01-01…).
   // Always show billing-cycle end (last day of current month) instead.
-  String _formatExpireDate() {
+  DateTime _expiryDateTime() {
     final now = DateTime.now();
-    final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-    return DateFormat('dd/MM/yy').format(endOfMonth);
+    return DateTime(now.year, now.month + 1, 0, 23, 59, 59);
   }
 
   @override
@@ -49,7 +48,8 @@ class PostpaidActivePlanCard extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
-            height: 200,
+            height: (state.isLoading || state.isInitial) ? 216 : null,
+            constraints: const BoxConstraints(minHeight: 216),
             padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
             decoration: BoxDecoration(
               image: const DecorationImage(
@@ -68,6 +68,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
+    final expiry = _expiryDateTime();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -91,6 +92,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
 
         // Dates
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _DateBlock(
               label: 'active',
@@ -100,7 +102,8 @@ class PostpaidActivePlanCard extends StatelessWidget {
             const Spacer(),
             _DateBlock(
               label: 'expire',
-              value: _formatExpireDate(),
+              value: expiry.formatDdMmYy(),
+              subtitle: expiry.formatHmAOrEmpty(),
               alignRight: true,
             ),
           ],
@@ -117,11 +120,13 @@ class PostpaidActivePlanCard extends StatelessWidget {
 class _DateBlock extends StatelessWidget {
   final String label;
   final String value;
+  final String subtitle;
   final bool alignRight;
 
   const _DateBlock({
     required this.label,
     required this.value,
+    this.subtitle = '',
     required this.alignRight,
   });
 
@@ -152,6 +157,18 @@ class _DateBlock extends StatelessWidget {
             letterSpacing: 2.25,
           ),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }

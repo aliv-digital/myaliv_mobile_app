@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -71,10 +72,15 @@ void main() {
     child: child,
   );
 
-  for (final size in [const Size(320, 700), const Size(430, 932)]) {
+  for (final (size, textScale) in [
+    (const Size(320, 700), 1.0),
+    (const Size(430, 932), 1.0),
+    (const Size(320, 700), 1.3),
+    (const Size(430, 932), 1.3),
+  ]) {
     for (final fromHome in [false, true]) {
       testWidgets(
-        '${fromHome ? 'Home' : 'Usage'} credit limit button opens my limits at $size',
+        '${fromHome ? 'Home' : 'Usage'} expiry and credit limit button at $size, text scale $textScale',
         (tester) async {
           await tester.binding.setSurfaceSize(size);
           addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -96,11 +102,39 @@ void main() {
           );
           addTearDown(router.dispose);
           await tester.pumpWidget(
-            provide(MaterialApp.router(routerConfig: router)),
+            provide(
+              MaterialApp.router(
+                routerConfig: router,
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(textScaler: TextScaler.linear(textScale)),
+                  child: child!,
+                ),
+              ),
+            ),
           );
           await tester.pumpAndSettle();
 
           expect(find.text('liberty prime 24m sr'), findsOneWidget);
+          final now = DateTime.now();
+          final monthEnd = DateTime(now.year, now.month + 1, 0);
+          final expiryDate = find.text(DateFormat('dd/MM/yy').format(monthEnd));
+          final expiryTime = find.text('11:59 PM');
+          expect(expiryDate, findsOneWidget);
+          expect(expiryTime, findsOneWidget);
+          expect(
+            tester.getTopLeft(expiryTime).dy,
+            greaterThan(tester.getBottomLeft(expiryDate).dy),
+          );
+          expect(
+            tester.getTopRight(expiryTime).dx,
+            tester.getTopRight(expiryDate).dx,
+          );
+          expect(
+            tester.getTopLeft(find.text('active')).dy,
+            tester.getTopLeft(find.text('expire')).dy,
+          );
           expect(find.byType(UpgradeCreditLimitButton), findsOneWidget);
           final button = find.widgetWithText(
             ElevatedButton,
@@ -110,6 +144,7 @@ void main() {
           expect(rect.left, greaterThanOrEqualTo(40));
           expect(rect.right, lessThanOrEqualTo(size.width - 40));
           expect(rect.height, 50);
+          expect(rect.top, greaterThan(tester.getBottomLeft(expiryTime).dy));
           expect(tester.takeException(), isNull);
 
           await tester.tap(button);

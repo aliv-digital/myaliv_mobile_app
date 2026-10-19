@@ -31,12 +31,16 @@ class PostpaidCurrentPlan extends StatelessWidget {
       },
       builder: (context, state) {
         final activePlan = state.earliestAddOnsPrimaryPlan;
+        final expiry = _displayExpiry(
+          planEndDate: activePlan?.endDateTime,
+          isPostpaid: true,
+        );
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Container(
             constraints: BoxConstraints(
-              minHeight: showUpgradeCreditLimitButton ? 200 : 151,
+              minHeight: showUpgradeCreditLimitButton ? 216 : 151,
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
             decoration: BoxDecoration(
@@ -53,10 +57,8 @@ class PostpaidCurrentPlan extends StatelessWidget {
                 SizedBox(height: showUpgradeCreditLimitButton ? 12 : 20),
                 _buildDatesRow(
                   activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
-                  expireDate: _displayExpiry(
-                    planEndDate: activePlan?.endDateTime,
-                    isPostpaid: true,
-                  ).formatDdMmYy(),
+                  expireDate: expiry.formatDdMmYy(),
+                  expireTime: expiry.formatHmAOrEmpty(),
                 ),
                 if (showUpgradeCreditLimitButton) ...[
                   const SizedBox(height: 14),
@@ -127,12 +129,19 @@ class PostpaidCurrentPlan extends StatelessWidget {
   Widget _buildDatesRow({
     required String activeDate,
     required String expireDate,
+    required String expireTime,
   }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _DateBlock(title: 'active', value: activeDate),
         const Spacer(),
-        _DateBlock(title: 'expire', value: expireDate, alignRight: true),
+        _DateBlock(
+          title: 'expire',
+          value: expireDate,
+          subtitle: expireTime,
+          alignRight: true,
+        ),
       ],
     );
   }
@@ -161,11 +170,13 @@ DateTime _displayExpiry({
 class _DateBlock extends StatelessWidget {
   final String title;
   final String value;
+  final String subtitle;
   final bool alignRight;
 
   const _DateBlock({
     required this.title,
     required this.value,
+    this.subtitle = '',
     this.alignRight = false,
   });
 
@@ -196,6 +207,18 @@ class _DateBlock extends StatelessWidget {
             letterSpacing: 2.25,
           ),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
