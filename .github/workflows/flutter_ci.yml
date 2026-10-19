@@ -147,10 +147,37 @@ jobs:
         run: flutter pub get
 
       - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          set -euo pipefail
           mkdir -p android/app/jks
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/jks/key.jks
-          file android/app/jks/key.jks | grep -qi "Java KeyStore"
+
+          # 1. Verify the secret is set and non-trivial
+          B64_LEN=$(printf %s "$KEYSTORE_BASE64" | wc -c | tr -d ' ')
+          echo "KEYSTORE_BASE64 length: $B64_LEN chars"
+          if [ "$B64_LEN" -lt 100 ]; then
+            echo "ERROR: KEYSTORE_BASE64 secret is empty or too short."
+            echo "       Expected ~3500 chars for a 2 KB keystore."
+            exit 1
+          fi
+
+          # 2. Decode (tolerant of embedded whitespace/newlines)
+          printf %s "$KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > android/app/jks/key.jks
+
+          # 3. Verify output
+          OUT_SIZE=$(wc -c < android/app/jks/key.jks | tr -d ' ')
+          echo "Decoded keystore size: $OUT_SIZE bytes"
+          echo "file(1) says:"
+          file android/app/jks/key.jks
+
+          if ! file android/app/jks/key.jks | grep -qi "Java KeyStore"; then
+            echo "ERROR: Decoded file is not a valid Java KeyStore."
+            echo "       Re-copy base64 locally and update the KEYSTORE_BASE64 secret:"
+            echo "         base64 -i android/app/jks/key.jks | pbcopy"
+            exit 1
+          fi
+          echo "Keystore decoded OK."
 
       - name: Write key.properties
         run: |
