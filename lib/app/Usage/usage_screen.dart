@@ -129,6 +129,9 @@ class _UsageScreenState extends State<UsageScreen>
     final views = _tabViews(config);
     final controller = _tabController!;
     final title = _titleForIndex(controller.index, config);
+    final backgroundColor = config.isPostpaid && controller.index == 2
+        ? const Color(0xFFF1F2FA)
+        : UsageTabBar.dividerBg;
 
     return BlocListener<AppUiConfigCubit, HomeUiConfig>(
       listenWhen: (p, c) =>
@@ -137,7 +140,7 @@ class _UsageScreenState extends State<UsageScreen>
           (!p.isCurrentPlan && c.isCurrentPlan),
       listener: (_, state) => _handleNavigationIntent(state),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F6FB),
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           centerTitle: false,
           backgroundColor: UsageScreen.purple,
@@ -176,7 +179,11 @@ class _UsageScreenState extends State<UsageScreen>
           ],
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(82),
-            child: UsageTabBar(tabs: tabs, controller: controller),
+            child: UsageTabBar(
+              tabs: tabs,
+              controller: controller,
+              dividerColor: backgroundColor,
+            ),
           ),
         ),
         body: TabBarView(controller: controller, children: views),
@@ -191,8 +198,14 @@ class UsageTabBar extends StatelessWidget {
   static const Color dividerBg = Color(0xFFF4F6FB);
   final List<Tab> tabs;
   final TabController controller;
+  final Color dividerColor;
 
-  const UsageTabBar({super.key, required this.tabs, required this.controller});
+  const UsageTabBar({
+    super.key,
+    required this.tabs,
+    required this.controller,
+    this.dividerColor = dividerBg,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +239,7 @@ class UsageTabBar extends StatelessWidget {
           ),
 
           // Divider background (important!)
-          Container(height: 24, color: dividerBg),
+          Container(height: 24, color: dividerColor),
         ],
       ),
     );
