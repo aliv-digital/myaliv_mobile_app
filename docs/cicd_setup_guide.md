@@ -22,7 +22,7 @@
 `android/app/build.gradle.kts` currently has:
 ```kotlin
 namespace = "com.example.myaliv_mobile_app"   // ← placeholder
-applicationId = "org.app.myaliv"              // ← real ID
+applicationId = "new.app.myaliv"              // ← real ID
 ```
 
 The namespace should match the applicationId. Fix it before setting up any signing or Firebase, or you will get mismatched app entries in Google Play and Firebase consoles.

@@ -1,4 +1,4 @@
-name: Flutter CI — Phase 1
+name: Flutter CI — Phase 2
 
 on:
   push:
@@ -6,10 +6,9 @@ on:
   pull_request:
 
 env:
-  FLUTTER_VERSION: "3.41.5"
+  FLUTTER_VERSION: "3.47.6"
   JAVA_VERSION: "17"
 
-# Cancel in-progress runs on the same branch when a new push arrives
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -83,7 +82,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────
   # 3a. Build Android Debug APK
   # ─────────────────────────────────────────────────────────────────
-  build-android:
+  build-android-debug:
     name: Build Android (Debug APK)
     runs-on: ubuntu-latest
     needs: test
@@ -119,7 +118,73 @@ jobs:
           retention-days: 7
 
   # ─────────────────────────────────────────────────────────────────
-  # 3b. Build iOS (no codesign)
+  # 3b. Build Android Release APK + distribute to Firebase (push only)
+  # ─────────────────────────────────────────────────────────────────
+  build-android-release:
+    name: Build & Distribute Android (Release)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode keystore
+        run: |
+          mkdir -p android/app/jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/jks/key.jks
+          file android/app/jks/key.jks | grep -qi "Java KeyStore"
+
+      - name: Write key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=../../android/app/jks/key.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+
+      - name: Distribute to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: build/app/outputs/flutter-apk/app-release.apk
+          releaseNotes: |
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            ${{ github.event.head_commit.message }}
+
+  # ─────────────────────────────────────────────────────────────────
+  # 4. Build iOS (no codesign)
   # ─────────────────────────────────────────────────────────────────
   build-ios:
     name: Build iOS (no codesign)

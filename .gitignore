@@ -35,6 +35,10 @@ notes/
 /build/
 /coverage/
 
+# FVM — local SDK cache (keep .fvmrc tracked, ignore the cache dir)
+.fvm/
+!.fvmrc
+
 # Symbolication related
 app.*.symbols
 
