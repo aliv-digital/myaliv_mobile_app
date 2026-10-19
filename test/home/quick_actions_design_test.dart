@@ -35,14 +35,13 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: HomeQuickActions(config: config),
-          ),
+          home: Scaffold(body: HomeQuickActions(config: config)),
         ),
       );
 
-      final tiles =
-          tester.widgetList<ActionTile>(find.byType(ActionTile)).toList();
+      final tiles = tester
+          .widgetList<ActionTile>(find.byType(ActionTile))
+          .toList();
 
       expect(tiles.length, 6);
 
@@ -81,14 +80,13 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: HomeQuickActions(config: config),
-          ),
+          home: Scaffold(body: HomeQuickActions(config: config)),
         ),
       );
 
-      final tiles =
-          tester.widgetList<ActionTile>(find.byType(ActionTile)).toList();
+      final tiles = tester
+          .widgetList<ActionTile>(find.byType(ActionTile))
+          .toList();
 
       expect(tiles.length, 6);
 
@@ -128,9 +126,7 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: HomeQuickActions(config: config),
-          ),
+          home: Scaffold(body: HomeQuickActions(config: config)),
         ),
       );
 
