@@ -38,7 +38,14 @@ class HomePlanSectionHeader extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
+      padding: EdgeInsets.fromLTRB(
+        31,
+        selectedTab == HomePlanTab.postpaidRoaming
+            ? HomePlanTheme.postpaidRoamingIntroTopSpacing
+            : 20,
+        16,
+        0,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(

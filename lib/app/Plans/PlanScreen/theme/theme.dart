@@ -63,6 +63,9 @@ class HomePlanTheme {
   static final Color mmsColor = HexColor.fromHex('#00C4B3');
 
   // Section title above plan list
+  static const double postpaidRoamingIntroTopSpacing = 24;
+  static const double postpaidRoamingIntroBottomSpacing = 16;
+
   static final TextStyle sectionTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 12,
