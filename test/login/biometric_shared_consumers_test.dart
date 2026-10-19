@@ -216,8 +216,7 @@ void main() {
     final bloc = SplashBloc();
     addTearDown(bloc.close);
     bloc.add(SplashStarted());
-    final state = await bloc.stream.first;
-    //expect(state, isA<BiometricLockRequired>());
+    await bloc.stream.first;
     expect(biometrics.state.isSessionAuthenticated, isFalse);
     verify(() => auth.currentSession).called(1);
     verifyNoMoreInteractions(auth);
