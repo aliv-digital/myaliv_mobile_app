@@ -78,15 +78,17 @@ class ConfirmationPlanCardPostpaidContent extends StatelessWidget {
                       typeLabel,
                       style: const TextStyle(
                         fontSize: 10,
+                        height: 1,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       title,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
+                        height: 1,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                       ),
@@ -96,6 +98,7 @@ class ConfirmationPlanCardPostpaidContent extends StatelessWidget {
                       style: const TextStyle(
                         color: Color(0xFF707070),
                         fontSize: 10,
+                        //height: 1,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
                       ),
