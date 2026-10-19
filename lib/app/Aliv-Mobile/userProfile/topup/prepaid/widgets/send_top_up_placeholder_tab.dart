@@ -21,7 +21,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
-import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
+import 'top_up_prepaid_amount_box.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
 class SendTopUpPlaceholderTab extends StatefulWidget {
@@ -145,7 +145,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     final showInlineError = forceError;
     final phoneBorderColor = !hasFocus && forceError
         ? AuthModuleColors.errorRed
-        : AuthModuleColors.loginFieldBorderColor;
+        : Colors.transparent;
     final phoneInputStyle = highlightInvalidInput && forceError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
@@ -164,14 +164,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
           hideUnfocusedInputBorder: false,
           labelText: labelText,
           labelStyle: labelStyle,
-          hintText: '(242)-345-4356',
+          hintText: GuestTopUpTheme.phoneHintText,
           flagEmoji: _selectedCountry.flagEmoji,
           dialCode: _selectedCountry.dialCode,
           countryIsoCode: _selectedCountry.isoCode,
           enableCountryPicker: false,
           onChanged: onChanged,
           inputFormatters: const [BahamasPhoneInputFormatter()],
-          backgroundColor: AuthModuleColors.pageBackground,
+          backgroundColor: const Color(0xFFF2F1F9),
           unfocusedBorderColor: phoneBorderColor,
           borderRadius: AuthModuleSizes.fieldRadius,
           borderWidth: AuthModuleSizes.fieldBorderWidth,
@@ -179,8 +179,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
           countryPickerWidth: AuthModuleSizes.countryWidth,
           countryToPhoneGap: AuthModuleSizes.countryToPhoneGap,
           countryPickerPadding: AuthModulePaddings.countryHorizontal8,
-          showCountryPickerBorder: true,
-          countryPickerBorderColor: AuthModuleColors.loginFieldBorderColor,
+          showCountryPickerBorder: false,
+          countryPickerBorderColor: Colors.transparent,
           countryPickerBorderWidth: AuthModuleSizes.fieldBorderWidth,
           phoneInputPadding: AuthModulePaddings.fieldHorizontal14,
           countryFlagToDialGap: AuthModuleSizes.countryFlagToCodeGap,
@@ -273,24 +273,40 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               ),
               const SizedBox(height: 18),
 
-              GradientInputField(
-                label: GuestTopUpTheme.amountLabel,
-                hint: GuestTopUpTheme.amountHintText,
-                initialValue: _amount,
-                onChanged: (value) {
-                  setState(() {
-                    _amount = value;
-                    _amountError = null;
-                  });
-                },
-              ),
-              if (_amountError != null) ...[
-                const SizedBox(height: 6),
-                Text(
-                  _amountError!,
-                  style: AuthModuleTextStyles.invalidCredentials,
+              Center(
+                child: Column(
+                  children: [
+                    const Text(
+                      'enter top-up amount',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 12,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    TopUpPrepaidAmountBox(
+                      value: _amount,
+                      onChanged: (value) {
+                        setState(() {
+                          _amount = value;
+                          _amountError = null;
+                        });
+                      },
+                    ),
+                    if (_amountError != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        _amountError!,
+                        textAlign: TextAlign.center,
+                        style: TopUpPrepaidTheme.amountError(),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
+              ),
 
               const SizedBox(height: 30),
               BlocBuilder<BalanceCubit, BalanceState>(

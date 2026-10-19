@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/models/consumption_limit_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/animated_usage_progress.dart';
-import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 class LimitRow extends StatelessWidget {
   final ConsumptionLimitModel limit;
 
   const LimitRow({super.key, required this.limit});
+
+  static String _formatAmount(num value) {
+    return NumberFormat.currency(
+      locale: 'en_US',
+      symbol: r'$',
+      decimalDigits: 2,
+    ).format(value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +38,13 @@ class LimitRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${AppUtils.formatPrice(limit.remainingAmount)} of '
-                  '${AppUtils.formatPrice(limit.initialAmount)} remaining',
+                  '${_formatAmount(limit.remainingAmount)} of '
+                  '${_formatAmount(limit.initialAmount)} remaining',
                   style: const TextStyle(
                     color: Color(0xFF707070),
                     fontSize: 12,
                     fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],

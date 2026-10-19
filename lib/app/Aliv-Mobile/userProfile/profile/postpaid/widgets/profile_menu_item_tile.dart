@@ -31,7 +31,7 @@ class ProfilePostpaidMenuItemTile extends StatelessWidget {
           child: SizedBox(
             height: 56,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
                   Expanded(
@@ -56,6 +56,8 @@ class ProfilePostpaidMenuItemTile extends StatelessWidget {
           const Divider(
             height: 1,
             thickness: 1,
+            indent: 20,
+            endIndent: 20,
             color: ProfilePostpaidTheme.divider,
           ),
       ],

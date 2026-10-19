@@ -42,7 +42,6 @@ class ConfirmationPlanCardMyNumberContent extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
                 ownPhone,
                 style: const TextStyle(

@@ -19,14 +19,15 @@ class AutoTopupAmountGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: presetAmounts.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1.24,
       ),
       itemBuilder: (context, index) {
         final amount = presetAmounts[index];
@@ -67,13 +68,13 @@ class _AmountTile extends StatelessWidget {
                   end: Alignment.bottomRight,
                 )
               : null,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(2),
         child: Container(
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white : TopUpPrepaidTheme.lightBg,
-            borderRadius: BorderRadius.circular(8),
+            color: isSelected ? Colors.white : TopUpPrepaidTheme.amountTileBg,
+            borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
           child: Text(

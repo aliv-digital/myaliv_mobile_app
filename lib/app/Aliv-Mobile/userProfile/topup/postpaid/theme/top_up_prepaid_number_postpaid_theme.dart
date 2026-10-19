@@ -9,7 +9,7 @@ class TopUpPrepaidNumberPostPaidTheme {
   static const Color textDark = Color(0xFF111827);
   static const Color textMuted = Color(0xFF6B7280);
 
-  static const Color fieldBg = Color(0xFFEFF0F7);
+  static const Color fieldBg = Color(0xFFF2F1F9);
 
   static const double radius = 10;
 

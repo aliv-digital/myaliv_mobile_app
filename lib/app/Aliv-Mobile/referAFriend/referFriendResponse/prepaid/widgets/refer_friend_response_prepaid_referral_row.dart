@@ -53,6 +53,7 @@ class ReferFriendResponsePrepaidReferralRow extends StatelessWidget {
               border: Border.all(color: ReferFriendResponsePrepaidTheme.border),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Icon(
                   Icons.copy,
@@ -67,6 +68,7 @@ class ReferFriendResponsePrepaidReferralRow extends StatelessWidget {
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
                     color: ReferFriendResponsePrepaidTheme.brand,
+                    height: 1.0,
                   ),
                 ),
               ],

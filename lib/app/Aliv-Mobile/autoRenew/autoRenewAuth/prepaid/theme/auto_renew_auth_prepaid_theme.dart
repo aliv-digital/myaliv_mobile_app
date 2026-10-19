@@ -48,9 +48,9 @@ class AutoRenewAuthPrepaidTheme {
 
   // ==================== Vertical Gaps ====================
   // Used in the body content section order.
-  static const double paragraphToConsentHeaderGap = 18.0;
-  static const double consentHeaderToParagraphGap = 10.0;
-  static const double paragraphToSignatureGap = 18.0;
+  static const double paragraphToConsentHeaderGap = 14.0;
+  static const double consentHeaderToParagraphGap = 14.0;
+  static const double paragraphToSignatureGap = 14.0;
   static const double signatureToNameLabelGap = 26.0;
   static const double nameLabelToInputGap = 10.0;
   static const double inputToSubmitButtonGap = 24.0;
@@ -104,7 +104,7 @@ class AutoRenewAuthPrepaidTheme {
     color: textNeutral,
     fontSize: 14,
     fontFamily: fontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
     height: 1.43,
   );
 

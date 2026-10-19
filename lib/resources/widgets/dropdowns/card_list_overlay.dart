@@ -47,7 +47,7 @@ class CardListOverlay extends StatelessWidget {
                       card: cards[index],
                       isSelected: cards[index].token == selectedToken,
                       isFirst: index == 0,
-                      isLast: false,
+                      isLast: onAddNewCard == null && index == cards.length - 1,
                       onTap: () => onCardSelected(cards[index]),
                     ),
                   ),
@@ -82,11 +82,19 @@ class _AddNewCardFooter extends StatelessWidget {
             children: [
               TextSpan(
                 text: '+ ',
-                style: TextStyle(fontFamily: 'CircularPro', fontSize: 18),
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 18,
+                  color: Colors.black,
+                ),
               ),
               TextSpan(
                 text: 'add new card',
-                style: TextStyle(fontFamily: 'CircularPro', fontSize: 15),
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 15,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -126,11 +134,37 @@ class _CardListItem extends StatelessWidget {
             Expanded(
               child: Text(
                 card.displayLabel,
-                style: const TextStyle(fontFamily: 'CircularPro', fontSize: 15),
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                  color: isSelected ? dropdownSelectedAccent : Colors.black,
+                ),
               ),
             ),
-            if (isSelected)
-              const Icon(Icons.check_circle, color: dropdownSelectedAccent),
+            isSelected
+                ? Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      color: dropdownSelectedAccent,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.check,
+                      size: 13,
+                      color: Colors.white,
+                    ),
+                  )
+                : Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE0E0E0),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
           ],
         ),
       ),

@@ -123,9 +123,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           24,
-          20,
+          16,
           24,
-          32 + MediaQuery.of(context).viewInsets.bottom,
+          20 + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,12 +139,12 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
               errorText: _cardError,
               onAddNewCard: _onAddNewCard,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             AutoTopupAnyTimeToggle(
               value: _anyTimeEnabled,
               onChanged: _onAnyTimeChanged,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _buildConfigSection(),
           ],
         ),
@@ -165,7 +165,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
             minThreshold: _minThreshold,
             errorText: _thresholdError,
           ),
-          const SizedBox(height: 26),
+          const SizedBox(height: 16),
           AutoTopupAmountSection(
             selectedAmount: _selectedAmount,
             onAmountSelected: (v) => setState(() {
@@ -189,7 +189,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
             const SizedBox(height: 8),
             Text(_amountError!, style: TopUpPrepaidTheme.amountError()),
           ],
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
           AutoTopupApplyButton(enabled: _anyTimeEnabled, onPressed: _onApply),
         ],
       ),

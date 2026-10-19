@@ -7,7 +7,7 @@ class MakePaymentConfirmationPostPaidRepositoryImpl
     return const MakePaymentConfirmationPostPaidData(
       title: 'confirmation and payment',
       customerName: 'Alicia Major',
-      accountNumber: '242-801-1616',
+      accountNumber: '(242)-801-1616',
       headerLabel: 'amount due',
       amountPill: r'$ 129.00',
       subtotal: r'$ 129.00',

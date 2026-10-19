@@ -18,6 +18,7 @@ class TopUpPrepaidTheme {
   static const Color purple = Color(0xFF645D9C);
   static const Color purple4 = Color(0xFF5045A7);
   static const Color lightBg = Color(0xFFF1F1F8);
+  static const Color amountTileBg = Color(0xFFF9F8FC);
   static const Color inputBorder = Color(0xFFE0E0E0);
 
   static const double radius = 14;
@@ -67,7 +68,7 @@ class TopUpPrepaidTheme {
   );
 
   // Shared form input field sizing
-  static const double formInputHeight = 52;
+  static const double formInputHeight = 48;
   static const double formInputRadius = 8;
   static const double formInputBorderWidth = 1;
   static const EdgeInsets formInputHorizontalPadding = EdgeInsets.symmetric(
@@ -113,14 +114,14 @@ class TopUpPrepaidTheme {
   );
 
   static TextStyle amountText() => const TextStyle(
-    color: const Color(0xFF5045A7),
+    color: Color(0xFF5146A8),
     fontSize: 40,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
-  static TextStyle amountHint() => TextStyle(
-    color: const Color(0xFF5045A7),
+  static TextStyle amountHint() => const TextStyle(
+    color: Color(0xFF5146A8),
     fontSize: 40,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,

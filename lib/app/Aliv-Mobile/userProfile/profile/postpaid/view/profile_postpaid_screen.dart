@@ -80,6 +80,8 @@ class _ProfilePostpaidView extends StatelessWidget {
                         const Divider(
                           height: 1,
                           thickness: 1,
+                          indent: 20,
+                          endIndent: 20,
                           color: ProfilePostpaidTheme.divider,
                         ),
                         ...state.items.map((item) {

@@ -27,6 +27,10 @@ class CallLogsScreen extends StatefulWidget {
     this.initialTab = CallLogsTabType.transactions,
   });
 
+  @visibleForTesting
+  static Widget buildTabBarForTesting(TabController controller) =>
+      _CallLogsTabBar(controller: controller);
+
   @override
   State<CallLogsScreen> createState() => _CallLogsScreenState();
 }
@@ -221,8 +225,7 @@ class _CallLogsTabBar extends StatelessWidget {
   const _CallLogsTabBar({required this.controller});
 
   static const Color _purple = Color(0xFF645D9C);
-  static const Color _grey = Color(0xFF9E9E9E);
-  static const Color _black = Color(0xFF21232A);
+  static const Color _grey = Color(0xFF707070);
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +238,7 @@ class _CallLogsTabBar extends StatelessWidget {
           borderSide: BorderSide(color: _purple, width: 2),
           insets: EdgeInsets.symmetric(horizontal: 32),
         ),
-        labelColor: _black,
+        labelColor: _purple,
         unselectedLabelColor: _grey,
         labelStyle: const TextStyle(
           fontFamily: 'CircularPro',

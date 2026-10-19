@@ -508,6 +508,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         // Stays tappable so an unchecked submit can show PLAN-006 inline.
         enabled: true,
         onContinue: _continuePressed,
+        useBottomSafeArea: widget.topUpAmount != null,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

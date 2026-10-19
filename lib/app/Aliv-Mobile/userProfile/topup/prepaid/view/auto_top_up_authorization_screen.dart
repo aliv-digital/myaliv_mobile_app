@@ -189,14 +189,15 @@ class _AutoTopUpAuthorizationScreenState
                 'I am certifying I am the payment method owner or have '
                 'authorization to use the payment method information provided '
                 'for the automatic charging of plan renewal costs.',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'CircularPro',
                   fontSize: 14,
-                  height: 1.5,
+                  fontWeight: FontWeight.w400,
+                  height: 1.43,
                   color: Color(0xFF707070),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               const Text(
                 'electronic communication consent',
                 style: TextStyle(
@@ -207,11 +208,11 @@ class _AutoTopUpAuthorizationScreenState
                   color: Color(0xFF707070),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               const Text(
                 'by entering my pin, full name matching the name displayed and '
                 'clicking agree, I am providing my electronic signature as '
-                'evidence that I understand the terms I am agreeing. '
+                'evidence that I understand the terms I am to which I am agreeing. '
                 'In addition, I understand this automatic payment authorization '
                 'will remain in effect until canceled by me via the myALIV app. '
                 'The complete ALIV automatic payment policy will be sent to your '
@@ -219,14 +220,16 @@ class _AutoTopUpAuthorizationScreenState
                 style: TextStyle(
                   fontFamily: 'CircularPro',
                   fontSize: 14,
-                  height: 1.5,
+                  fontWeight: FontWeight.w400,
+                  height: 1.43,
                   color: Color(0xFF707070),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 14),
               Text(
                 _expectedName,
                 style: const TextStyle(
+                  color: Color(0xFF707070),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,

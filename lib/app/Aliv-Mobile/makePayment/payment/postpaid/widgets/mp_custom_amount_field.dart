@@ -89,7 +89,10 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
             alignment: Alignment.centerLeft,
             child: Row(
               children: [
-                Text(r'$ ', style: MakePaymentPostPaidTheme.customAmountText),
+                Text(r'$', style: MakePaymentPostPaidTheme.currencySymbolText),
+                const SizedBox(
+                  width: MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
+                ),
                 Expanded(
                   child: TextField(
                     controller: _controller,
@@ -100,6 +103,7 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
+                      contentPadding: EdgeInsets.zero,
                       hintText: '0.00',
                       hintStyle: MakePaymentPostPaidTheme.customAmountHint,
                     ),

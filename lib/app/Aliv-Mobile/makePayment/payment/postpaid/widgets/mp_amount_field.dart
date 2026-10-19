@@ -21,7 +21,7 @@ class MpAmountField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(r'$', style: MakePaymentPostPaidTheme.amountText),
+          Text(r'$', style: MakePaymentPostPaidTheme.currencySymbolText),
           SizedBox(
             width: MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
           ),

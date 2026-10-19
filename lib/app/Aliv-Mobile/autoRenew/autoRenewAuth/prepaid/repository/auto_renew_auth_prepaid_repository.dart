@@ -85,10 +85,10 @@ class AutoRenewAuthPrepaidRepositoryImpl
     return AutoRenewAuthContent(
       title: 'auto renew authorization form',
       paragraph1:
-          'by providing my credit card ending *$displayedCardDigits as payment method, i authorize ALIV and/or its agents to store my payment method information and to automatically charge plan renewal costs of qualifying plans for all subscriber lines on my account. i am certifying i am the payment method owner or have authorization to use the payment method information provided for the automatic charging of plan renewal costs.',
+          'by providing my credit card ending *$displayedCardDigits as payment method, I authorize ALIV and/or its agents to store my payment method information and to automatically charge plan renewal costs of qualifying plans for all subscriber lines on my account. I am certifying I am the payment method owner or have authorization to use the payment method information provided for the automatic charging of plan renewal costs.',
       consentTitle: 'electronic communication consent',
       paragraph2:
-          'by entering my pin, full name matching the name displayed and clicking agree, i am providing my electronic signature as evidence that i understand the terms i am to which i am agreeing. in addition, i understand this automatic payment authorization will remain in effect until canceled by me via the myALIV app. the complete ALIV automatic payment policy will be sent to your account email address.',
+          'by entering my pin, full name matching the name displayed and clicking agree, I am providing my electronic signature as evidence that I understand the terms I am to which I am agreeing. In addition, I understand this automatic payment authorization will remain in effect until canceled by me via the myALIV app. The complete ALIV automatic payment policy will be sent to your account email address.',
       signatureName: fullName,
       expectedName: fullName,
       nameLabel: 'name',

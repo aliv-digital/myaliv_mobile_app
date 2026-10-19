@@ -134,6 +134,14 @@ class MakePaymentPostPaidTheme {
     color: Color(0xFF101828),
   );
 
+  static TextStyle get currencySymbolText => const TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF101828),
+  );
+
   static TextStyle get optionText => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
@@ -160,17 +168,17 @@ class MakePaymentPostPaidTheme {
 
   static TextStyle get customAmountText => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 13,
-    height: 1.2,
-    fontWeight: FontWeight.w600,
-    color: textPrimary,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400,
+    color: Color(0xFF101828),
   );
 
   static TextStyle get customAmountHint => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 13,
-    height: 1.2,
-    fontWeight: FontWeight.w500,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400,
     color: textMuted,
   );
 
