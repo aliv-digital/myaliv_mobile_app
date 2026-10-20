@@ -84,7 +84,9 @@ class TransactionTileNew extends StatelessWidget {
           if (transaction.displaySubtitle != null) ...[
             const SizedBox(height: 4),
             Text(
-              transaction.displaySubtitle!,
+              transaction.displaySubtitle == transaction.channel
+                  ? 'Channel: ${transaction.channel}'
+                  : transaction.displaySubtitle!,
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 14,
