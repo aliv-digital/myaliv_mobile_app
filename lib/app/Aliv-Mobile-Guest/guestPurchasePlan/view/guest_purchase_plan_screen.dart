@@ -11,6 +11,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/
     as add_ons_models;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/add_on_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/fair_use_policy_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart'
+    as add_ons_confirmation_models;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/plan_red_image_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
@@ -73,8 +75,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
     GuestPurchasePlanState state,
   ) {
     final BasePlanModel? plan = state.earliestAddOnsPrimaryPlan;
-    final bool hasPlan =
-        plan != null && plan.planName.trim().isNotEmpty;
+    final bool hasPlan = plan != null && plan.planName.trim().isNotEmpty;
 
     return add_ons_models.ActivePlanSummary(
       label: 'active plan',
@@ -486,9 +487,26 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   // Safety guard matching HomePlanAddOnsActions.openConfirmation
                   // (home_plan_add_ons_actions.dart:22-24).
                   if (!hasSelection) return;
+                  final selected = state.addOns
+                      .where(
+                        (addOn) => state.selectedAddOnIds.contains(addOn.id),
+                      )
+                      .map(
+                        (addOn) =>
+                            add_ons_confirmation_models.AddOnsConfirmationSelectedAddOn(
+                              id: addOn.id,
+                              title: addOn.title,
+                              price: addOn.price,
+                            ),
+                      )
+                      .toList(growable: false);
                   context.push(
                     AppRoutes.addOnsConfirmation,
-                    extra: {'phoneNumber': phoneNumber},
+                    extra:
+                        add_ons_confirmation_models.AddOnsConfirmationRouteArgs(
+                          phoneNumber: phoneNumber,
+                          selectedAddOns: selected,
+                        ),
                   );
                 },
               );

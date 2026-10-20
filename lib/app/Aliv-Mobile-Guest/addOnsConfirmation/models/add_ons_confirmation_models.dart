@@ -66,3 +66,38 @@ class AddOnsConfirmationData extends Equatable {
     totals,
   ];
 }
+
+/// One add-on tile the user selected on the catalog add-ons tab.
+class AddOnsConfirmationSelectedAddOn extends Equatable {
+  const AddOnsConfirmationSelectedAddOn({
+    required this.id,
+    required this.title,
+    required this.price,
+  });
+
+  /// Catalog `BasePlanModel.planId` — the numeric id the backend expects
+  /// in `Bundle.SecondaryPlans` on `POST /Guest/purchaseplan`.
+  final String id;
+  final String title;
+  final double price;
+
+  @override
+  List<Object?> get props => [id, title, price];
+}
+
+/// Navigation args for `AppRoutes.addOnsConfirmation`.
+///
+/// Pattern mirrors `GuestPurchasePlanConfirmationRouteArgs` so the two
+/// confirmation screens look / behave the same.
+class AddOnsConfirmationRouteArgs extends Equatable {
+  const AddOnsConfirmationRouteArgs({
+    required this.phoneNumber,
+    required this.selectedAddOns,
+  });
+
+  final String phoneNumber;
+  final List<AddOnsConfirmationSelectedAddOn> selectedAddOns;
+
+  @override
+  List<Object?> get props => [phoneNumber, selectedAddOns];
+}

@@ -1,19 +1,26 @@
 import '../models/add_ons_confirmation_models.dart';
 
 class AddOnsConfirmationRepository {
-  /// Future: call API, build the same data shape, return it.
-  Future<AddOnsConfirmationData> load({required String phoneNumber}) async {
-    // Seeded UI data for the add-ons confirmation mock.
-    final items = <PurchaseLineItem>[
-      const PurchaseLineItem(
-        id: 'addon1',
-        type: PurchaseLineType.addOn,
-        label: 'add-on',
-        title: 'liberty data 1',
-        subtitle: 'begins immediately',
-        price: 5.00,
-      ),
-    ];
+  /// Builds confirmation data from the real add-ons the user selected
+  /// on the catalog add-ons tab. Previously returned a hardcoded
+  /// `liberty data 1 / $5.00` mock regardless of selection.
+  Future<AddOnsConfirmationData> load({
+    required AddOnsConfirmationRouteArgs args,
+  }) async {
+    final items = args.selectedAddOns
+        .map(
+          (addOn) => PurchaseLineItem(
+            id: addOn.id,
+            type: PurchaseLineType.addOn,
+            label: 'add-on',
+            title: addOn.title,
+            // Add-ons always start immediately against the live primary;
+            // they cannot be scheduled (see guestAddOnsBodyFor3DS).
+            subtitle: 'begins immediately',
+            price: addOn.price,
+          ),
+        )
+        .toList(growable: false);
 
     final totals = PurchaseTotals(
       subTotal: items.fold<double>(0, (s, x) => s + x.price),
@@ -21,7 +28,7 @@ class AddOnsConfirmationRepository {
     );
 
     return AddOnsConfirmationData(
-      phoneNumber: phoneNumber,
+      phoneNumber: args.phoneNumber,
       headerTitle: 'guest purchase a plan',
       beginsOnDateText: '',
       items: items,

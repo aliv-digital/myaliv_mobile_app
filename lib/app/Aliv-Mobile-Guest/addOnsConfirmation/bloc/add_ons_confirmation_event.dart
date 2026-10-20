@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../models/add_ons_confirmation_models.dart';
+
 sealed class AddOnsConfirmationEvent extends Equatable {
   const AddOnsConfirmationEvent();
   @override
@@ -7,11 +9,11 @@ sealed class AddOnsConfirmationEvent extends Equatable {
 }
 
 final class AddOnsConfirmationStarted extends AddOnsConfirmationEvent {
-  final String phoneNumber;
-  const AddOnsConfirmationStarted(this.phoneNumber);
+  final AddOnsConfirmationRouteArgs args;
+  const AddOnsConfirmationStarted(this.args);
 
   @override
-  List<Object?> get props => [phoneNumber];
+  List<Object?> get props => [args];
 }
 
 final class AddOnsConfirmationRemoveItemPressed

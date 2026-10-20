@@ -251,6 +251,31 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// Guest add-ons purchase 3DS envelope: POST /Guest/purchaseplan.
+  ///
+  /// Same endpoint as [guestPurchasePlanBodyFor3DS] but with no primary
+  /// plan — the add-ons attach to the entered number's existing active
+  /// primary plan. `ForceNow` is always `true` because an add-on starts
+  /// immediately against the live primary; it cannot be scheduled.
+  static Map<String, dynamic> guestAddOnsBodyFor3DS({
+    required List<int> addOnPlanIds,
+    required String phoneNumber,
+  }) {
+    final rawPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return <String, dynamic>{
+      'Bundle': <String, dynamic>{
+        'PrimaryPlans': <int>[],
+        'SecondaryPlans': addOnPlanIds,
+        'StandalonePlans': <int>[],
+      },
+      'ForceNow': true,
+      'ChannelType': 'SelfCare',
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+      'PhoneNumber': rawPhone,
+    };
+  }
+
   static String? _formatStartDate(DateTime? date) {
     if (date == null) return null;
     String two(int v) => v.toString().padLeft(2, '0');

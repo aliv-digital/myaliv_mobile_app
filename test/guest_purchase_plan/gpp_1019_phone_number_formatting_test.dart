@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/view/add_ons_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/utils/guest_plan_phone_formatter.dart';
@@ -421,8 +422,18 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, state) =>
-                const AddOnsConfirmationScreen(phoneNumber: '2428011616'),
+            builder: (_, state) => const AddOnsConfirmationScreen(
+              args: AddOnsConfirmationRouteArgs(
+                phoneNumber: '2428011616',
+                selectedAddOns: <AddOnsConfirmationSelectedAddOn>[
+                  AddOnsConfirmationSelectedAddOn(
+                    id: 'addon1',
+                    title: 'liberty data 1',
+                    price: 5.00,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       );

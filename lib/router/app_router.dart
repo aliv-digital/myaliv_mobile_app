@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/guest_pay_bill_confirm_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/view/add_ons_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
@@ -172,8 +173,21 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.addOnsConfirmation,
-        builder: (context, state) =>
-            const AddOnsConfirmationScreen(phoneNumber: '242-801-1616'),
+        builder: (context, state) {
+          // Catalog screen pushes AddOnsConfirmationRouteArgs with the real
+          // selected add-ons + phone number; the old fallback hardcoded a
+          // dev phone number because the route didn't exist yet.
+          final extra = state.extra;
+          if (extra is AddOnsConfirmationRouteArgs) {
+            return AddOnsConfirmationScreen(args: extra);
+          }
+          return const AddOnsConfirmationScreen(
+            args: AddOnsConfirmationRouteArgs(
+              phoneNumber: '',
+              selectedAddOns: <AddOnsConfirmationSelectedAddOn>[],
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,

@@ -3,10 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -20,9 +26,9 @@ import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
 
 class AddOnsConfirmationScreen extends StatelessWidget {
-  const AddOnsConfirmationScreen({super.key, required this.phoneNumber});
+  const AddOnsConfirmationScreen({super.key, required this.args});
 
-  final String phoneNumber;
+  final AddOnsConfirmationRouteArgs args;
 
   @override
   Widget build(BuildContext context) {
@@ -31,34 +37,32 @@ class AddOnsConfirmationScreen extends StatelessWidget {
       child: BlocProvider(
         create: (ctx) => AddOnsConfirmationBloc(
           repository: ctx.read<AddOnsConfirmationRepository>(),
-        )..add(AddOnsConfirmationStarted(phoneNumber)),
-        child: const _AddOnsConfirmationView(),
+        )..add(AddOnsConfirmationStarted(args)),
+        child: _AddOnsConfirmationView(args: args),
       ),
     );
   }
 }
 
-class _AddOnsConfirmationView extends StatelessWidget {
-  const _AddOnsConfirmationView();
+class _AddOnsConfirmationView extends StatefulWidget {
+  const _AddOnsConfirmationView({required this.args});
+
+  final AddOnsConfirmationRouteArgs args;
+
+  @override
+  State<_AddOnsConfirmationView> createState() =>
+      _AddOnsConfirmationViewState();
+}
+
+class _AddOnsConfirmationViewState extends State<_AddOnsConfirmationView> {
+  bool _isSubmittingPayment = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AddOnsConfirmationBloc, AddOnsConfirmationState>(
-      listenWhen: (p, c) =>
-          p.openTermsRequestId != c.openTermsRequestId ||
-          p.payNowRequestId != c.payNowRequestId,
+      listenWhen: (p, c) => p.openTermsRequestId != c.openTermsRequestId,
       listener: (context, state) {
-        if (state.openTermsRequestId > 0) {
-          // Future: open terms page / bottom sheet
-          // ignore: avoid_print
-          print('Open Terms & Conditions');
-        }
-
-        if (state.payNowRequestId > 0) {
-          // Future: start payment flow
-          // ignore: avoid_print
-          print('Pay Now pressed');
-        }
+        // Future: open terms page / bottom sheet
       },
       child: Scaffold(
         backgroundColor: AddOnsConfirmationTheme.bg,
@@ -72,50 +76,15 @@ class _AddOnsConfirmationView extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
 
+                final bool isButtonEnabled =
+                    state.isTermsChecked && !_isSubmittingPayment;
+
                 return DefaultBottomPayBar(
                   buttonText: 'continue',
                   isVatExclusive: true,
-                  isButtonEnabled: state.isTermsChecked,
+                  isButtonEnabled: isButtonEnabled,
                   buttonColor: const Color(0xFF645D9C),
-                  onPayNow: () {
-                    context.read<AddOnsConfirmationBloc>().add(
-                      const AddOnsConfirmationPayNowPressed(),
-                    );
-                    final data = state.data!;
-                    final primaryPlanName = data.items
-                        .firstWhere(
-                          (item) => item.type == PurchaseLineType.primaryPlan,
-                          orElse: () => const PurchaseLineItem(
-                            id: '',
-                            type: PurchaseLineType.primaryPlan,
-                            label: '',
-                            title: '',
-                            subtitle: '',
-                            price: 0,
-                          ),
-                        )
-                        .title;
-                    final addOnNames = data.items
-                        .where((item) => item.type == PurchaseLineType.addOn)
-                        .map((item) => item.title)
-                        .toList(growable: false);
-                    final now = DateTime.now();
-                    context.push(
-                      AppRoutes.guestPurchasePlanReceipt,
-                      extra: <String, Object?>{
-                        'phoneNumber': data.phoneNumber,
-                        'amount': data.totals.total,
-                        'planName': primaryPlanName.isEmpty
-                            ? null
-                            : primaryPlanName,
-                        'addOnNames': addOnNames,
-                        'dateText': DateFormat('MMM d, yyyy').format(now),
-                        'timeText': DateFormat(
-                          'h:mm a',
-                        ).format(now).toLowerCase(),
-                      },
-                    );
-                  },
+                  onPayNow: () => _onContinuePressed(context, state),
                   amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
               },
@@ -264,5 +233,109 @@ class _AddOnsConfirmationView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Mirrors `guest_purchase_plan_confirmation_screen.dart:128-260`:
+  /// build the `/Guest/purchaseplan` 3DS body, open PaymentIFrameScreen,
+  /// on success push the receipt with the real orderId.
+  void _onContinuePressed(BuildContext context, AddOnsConfirmationState state) {
+    if (_isSubmittingPayment) return;
+    if (!state.isTermsChecked) return;
+
+    final data = state.data;
+    if (data == null) return;
+
+    // Convert the live confirmation line items back to numeric plan ids —
+    // the user may have removed one via the remove button, so prefer the
+    // currently-displayed items over the original route args.
+    final List<int> addOnPlanIds = data.items
+        .where((item) => item.type == PurchaseLineType.addOn)
+        .map((item) => int.tryParse(item.id))
+        .whereType<int>()
+        .toList(growable: false);
+
+    if (addOnPlanIds.isEmpty || data.totals.total <= 0) {
+      AppToast.show(
+        message: 'No add-ons selected. Please try again.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    final addOnNames = data.items
+        .where((item) => item.type == PurchaseLineType.addOn)
+        .map((item) => item.title)
+        .toList(growable: false);
+    final now = DateTime.now();
+    final receiptExtra = <String, Object?>{
+      'phoneNumber': data.phoneNumber,
+      'amount': data.totals.total,
+      'planName': null,
+      'addOnNames': addOnNames,
+      'dateText': DateFormat('MMM d, yyyy').format(now),
+      'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
+      'emailAddress': 'guest',
+    };
+
+    final body = ChangeBundleRequestFactory.guestAddOnsBodyFor3DS(
+      addOnPlanIds: addOnPlanIds,
+      phoneNumber: data.phoneNumber,
+    );
+
+    final request = PaymentRequest(
+      url: Api.guestPurchasePlanUrl,
+      body: body,
+      redirectScheme: 'myaliv',
+      skipAuth: true,
+    );
+
+    final navigator = Navigator.of(context);
+    final router = GoRouter.of(context);
+
+    setState(() => _isSubmittingPayment = true);
+
+    try {
+      navigator
+          .push(
+            MaterialPageRoute<void>(
+              builder: (_) => PaymentIFrameScreen(
+                request: request,
+                appBarBgColor: Colors.white,
+                title: 'payment',
+                onSuccess: (PaymentSuccess success) {
+                  final orderId = int.tryParse(success.orderId ?? '');
+                  if (orderId == null || orderId <= 0) {
+                    navigator.pop();
+                    AppToast.show(
+                      message:
+                          'Payment could not be confirmed. Please try again.',
+                      type: ToastType.error,
+                    );
+                    return;
+                  }
+                  receiptExtra['orderId'] = success.orderId;
+                  navigator.pop();
+                  router.push(
+                    AppRoutes.guestPurchasePlanReceipt,
+                    extra: receiptExtra,
+                  );
+                },
+                onFailure: (String message) {
+                  navigator.pop();
+                  AppToast.show(message: message, type: ToastType.error);
+                },
+              ),
+            ),
+          )
+          .whenComplete(() {
+            if (mounted) {
+              setState(() => _isSubmittingPayment = false);
+            }
+          });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isSubmittingPayment = false);
+      }
+    }
   }
 }

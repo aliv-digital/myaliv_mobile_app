@@ -24,7 +24,7 @@ class AddOnsConfirmationBloc
     emit(state.copyWith(status: AddOnsConfirmationStatus.loading));
 
     try {
-      final data = await repository.load(phoneNumber: event.phoneNumber);
+      final data = await repository.load(args: event.args);
       emit(state.copyWith(status: AddOnsConfirmationStatus.ready, data: data));
     } catch (e) {
       emit(
