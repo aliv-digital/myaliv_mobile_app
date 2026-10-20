@@ -32,11 +32,7 @@ class GuestPayBillConfirmTheme {
   static const Color termsCheckboxUncheckedColor = Colors.white;
 
   // ===== Layout =====
-  static const EdgeInsets contentPadding = EdgeInsets.only(
-    left: 29,
-    right: 29,
-    top: 21,
-  );
+  static const EdgeInsets contentPadding = EdgeInsets.only(left: 29, right: 29);
   static const double headerTopGap = 20;
   static const double sectionGap = 17;
   static const double breakdownBottomGap = 18;

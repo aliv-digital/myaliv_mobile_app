@@ -33,7 +33,9 @@ class CurrentPlanActiveCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
           child: showActiveCard
               ? (config.isPostpaid
-                    ? const PostpaidCurrentPlan()
+                    ? const PostpaidCurrentPlan(
+                        showUpgradeCreditLimitButton: true,
+                      )
                     : const PrepaidActivePlanCardWithData(
                         showRenewButton: false,
                       ))

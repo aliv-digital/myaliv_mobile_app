@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/widgets/home_plan
 import '../cubit/plans_state.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
+import '../theme/theme.dart';
 import 'daily_plan_card.dart';
 import 'liberty_global_plan_card.dart';
 import 'mifi_plan_card.dart';
@@ -186,7 +187,10 @@ class HomePlanPlansList extends StatelessWidget {
 
     if (state.selectedTab == HomePlanTab.postpaidRoaming) {
       return ListView.builder(
-        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        padding: const EdgeInsets.only(
+          top: HomePlanTheme.postpaidRoamingIntroBottomSpacing,
+          bottom: 14,
+        ),
         itemCount: state.postpaidRoamingApiPlans.length,
         itemBuilder: (context, index) {
           final plan = state.postpaidRoamingApiPlans[index];

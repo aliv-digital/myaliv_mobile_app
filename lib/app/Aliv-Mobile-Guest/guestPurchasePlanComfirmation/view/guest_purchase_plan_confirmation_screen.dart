@@ -122,7 +122,7 @@ class _GuestPurchasePlanConfirmationViewState
                     hasPrimaryPlan && !_isSubmittingPayment;
 
                 return DefaultBottomPayBar(
-                  isVatExclusive: true,
+                  isVatExclusive: false,
                   isButtonEnabled: isButtonEnabled,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {

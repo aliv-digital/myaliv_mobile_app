@@ -278,7 +278,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputRow(
         focusNode: _mobileFocusNode,
-        hideUnfocusedInputBorder: false,
+        hideUnfocusedInputBorder: !showMobileBorderError,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
@@ -322,7 +322,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputSubmitRow(
         focusNode: _confirmMobileFocusNode,
-        hideUnfocusedInputBorder: false,
+        hideUnfocusedInputBorder: !showConfirmBorderError,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
@@ -510,11 +510,14 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               height: GuestPayBillTheme.labelToFieldGap,
                             ),
                             GuestPayBillReadOnlyBox(
-                              text: state.accountInfo != null
-                                  ? LineStatus.fromCode(
+                              text: state.accountInfo == null
+                                  ? GuestPayBillTheme.statusPlaceholderText
+                                  : switch (LineStatus.fromCode(
                                       state.accountInfo!.status,
-                                    ).displayLabel
-                                  : GuestPayBillTheme.statusPlaceholderText,
+                                    )) {
+                                      LineStatus.active => 'Active',
+                                      final status => status.displayLabel,
+                                    },
                             ),
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,
@@ -530,7 +533,12 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               state.accountInfo?.balance == null
                                   ? GuestPayBillTheme.statusPlaceholderText
                                   : _money(state.accountInfo!.balance!),
-                              style: GuestPayBillTheme.accountBalanceValueStyle,
+                              style: state.accountInfo?.balance == null
+                                  ? GuestPayBillTheme.accountBalanceValueStyle
+                                        .copyWith(
+                                          color: GuestPayBillTheme.placeholder,
+                                        )
+                                  : GuestPayBillTheme.accountBalanceValueStyle,
                             ),
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,

@@ -206,7 +206,7 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
       return '5 days';
     }
     if (plan.frequency == 'A') {
-      return '1 year';
+      return '365 days';
     }
 
     return '';

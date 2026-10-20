@@ -23,7 +23,7 @@ class HomePlanSectionHeader extends StatelessWidget {
       case HomePlanTab.addOns:
         return '';
       case HomePlanTab.mifi:
-        return 'choose a prepaid mifi primary plan';
+        return 'choose a prepaid monthly data only plan';
       case HomePlanTab.libertyGlobal:
         return 'choose an international calling plan';
       case HomePlanTab.postpaidRoaming:
@@ -38,7 +38,14 @@ class HomePlanSectionHeader extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
+      padding: EdgeInsets.fromLTRB(
+        31,
+        selectedTab == HomePlanTab.postpaidRoaming
+            ? HomePlanTheme.postpaidRoamingIntroTopSpacing
+            : 20,
+        16,
+        0,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(

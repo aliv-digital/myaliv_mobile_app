@@ -284,6 +284,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                     style: const TextStyle(
                       color: Color(0xFF5045A7),
                       fontSize: 24,
+                      height: 1,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                     ),
@@ -293,6 +294,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 13,
+                      height: 1,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),

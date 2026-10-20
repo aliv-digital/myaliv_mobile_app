@@ -38,83 +38,117 @@ void main() {
       '2099-11-07 18:30:00',
       DateTime.utc(2099, 11, 7, 18, 30),
     ),
+    'US timestamp': ('11/7/2099 6:30:00 PM', DateTime.utc(2099, 11, 7, 18, 30)),
+    'timestamp with offset': (
+      '2099-11-07T18:30:00-05:00',
+      DateTime.utc(2099, 11, 7, 23, 30),
+    ),
+    'compact ISO timestamp': (
+      '20991107T183000Z',
+      DateTime.utc(2099, 11, 7, 18, 30),
+    ),
     'explicit midnight': ('2099-11-07T00:00:00Z', DateTime.utc(2099, 11, 7)),
   };
 
-  for (final future in [false, true]) {
+  for (final (future, userType, planType) in [
+    (false, UserType.postpaid, 'A'),
+    (true, UserType.postpaid, 'A'),
+    (true, UserType.prepaid, 'A'),
+    (true, UserType.postpaid, 'P'),
+    (true, UserType.prepaid, 'P'),
+  ]) {
     for (final entry in cases.entries) {
-      testWidgets('${future ? 'future' : 'standalone'} expiry: ${entry.key}', (
-        tester,
-      ) async {
-        tester.view.physicalSize = const Size(390, 844);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        final plan = BasePlanModel.fromApiMap({
-          'PlanID': '1',
-          'PlanName': 'roameasy usa & can',
-          'PlanType': 'A',
-          'StartDate': '2099-10-31T00:00:00Z',
-          if (entry.value.$1 != null) 'EndDate': entry.value.$1,
-        });
-        final plans = _Plans();
-        final config = AppUiConfigCubit();
-        config.setUserType(UserType.postpaid);
-        when(() => plans.state).thenReturn(PlansState(standAlonePlans: [plan]));
-        addTearDown(plans.close);
-        addTearDown(config.close);
+      if (!future && entry.key == 'compact ISO timestamp') {
+        continue;
+      }
+      testWidgets(
+        '${future ? 'future' : 'standalone'} $userType $planType expiry: ${entry.key}',
+        (tester) async {
+          tester.view.physicalSize = const Size(390, 844);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          final plan = BasePlanModel.fromApiMap({
+            'PlanID': '1',
+            'PlanName': 'roameasy usa & can',
+            'PlanType': planType,
+            'StartDate': '2099-10-31T00:00:00Z',
+            if (entry.value.$1 != null) 'EndDate': entry.value.$1,
+          });
+          final plans = _Plans();
+          final config = AppUiConfigCubit();
+          config.setUserType(userType);
+          when(() => plans.state).thenReturn(
+            PlansState(
+              standAlonePlans: planType == 'A' ? [plan] : [],
+              addOnsApiPrimaryPlans: planType == 'P' ? [plan] : [],
+            ),
+          );
+          addTearDown(plans.close);
+          addTearDown(config.close);
 
-        await tester.pumpWidget(
-          MultiBlocProvider(
-            providers: [
-              BlocProvider<PlansCubit>.value(value: plans),
-              BlocProvider<AppUiConfigCubit>.value(value: config),
-            ],
-            child: MaterialApp(
-              home: Scaffold(
-                body: future
-                    ? const FuturePlansTab()
-                    : Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [UsageRoamingPlanCard(plan: plan)],
+          await tester.pumpWidget(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider<PlansCubit>.value(value: plans),
+                BlocProvider<AppUiConfigCubit>.value(value: config),
+              ],
+              child: MaterialApp(
+                home: Scaffold(
+                  body: future
+                      ? const FuturePlansTab()
+                      : Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [UsageRoamingPlanCard(plan: plan)],
+                          ),
                         ),
-                      ),
+                ),
               ),
             ),
-          ),
-        );
-        await tester.pumpAndSettle();
+          );
+          await tester.pumpAndSettle();
 
-        final expected = entry.value.$2 == null
-            ? '--/--/--'
-            : DateFormat('hh:mm a').format(entry.value.$2!.toLocal());
-        final subtitle = find.byWidgetPredicate(
-          (widget) =>
-              widget is Text &&
-              widget.data == expected &&
-              widget.style?.fontSize == 11,
-        );
-        expect(subtitle, findsOneWidget);
-        final expiryColumn = find
-            .ancestor(of: find.text('expire'), matching: find.byType(Column))
-            .first;
-        final expiryDate = find.descendant(
-          of: expiryColumn,
-          matching: find.byWidgetPredicate(
-            (widget) => widget is Text && widget.style?.fontSize == 15,
-          ),
-        );
-        expect(
-          tester.getTopLeft(subtitle).dy,
-          greaterThan(tester.getBottomLeft(expiryDate).dy),
-        );
-        expect(
-          tester.getTopRight(subtitle).dx,
-          tester.getTopRight(expiryDate).dx,
-        );
-        expect(tester.takeException(), isNull);
-      });
+          final expected = entry.value.$2 == null
+              ? '--/--/--'
+              : DateFormat('hh:mm a').format(entry.value.$2!.toLocal());
+          final subtitle = find.byWidgetPredicate(
+            (widget) =>
+                widget is Text &&
+                widget.data == expected &&
+                widget.style?.fontSize == 11,
+          );
+          expect(subtitle, findsOneWidget);
+          final expiryColumn = find
+              .ancestor(of: find.text('expire'), matching: find.byType(Column))
+              .first;
+          final expiryDate = find.descendant(
+            of: expiryColumn,
+            matching: find.byWidgetPredicate(
+              (widget) => widget is Text && widget.style?.fontSize == 15,
+            ),
+          );
+          final expectedDate = entry.value.$2 != null
+              ? DateFormat('dd/MM/yy').format(entry.value.$2!.toLocal())
+              : entry.key == 'date only'
+              ? (future
+                    ? '07/11/99'
+                    : DateFormat(
+                        'dd/MM/yy',
+                      ).format(DateTime.utc(2099, 11, 7).toLocal()))
+              : '--/--/--';
+          expect(tester.widget<Text>(expiryDate).data, expectedDate);
+          expect(
+            tester.getTopLeft(subtitle).dy,
+            greaterThan(tester.getBottomLeft(expiryDate).dy),
+          );
+          expect(
+            tester.getTopRight(subtitle).dx,
+            tester.getTopRight(expiryDate).dx,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
     }
   }
 

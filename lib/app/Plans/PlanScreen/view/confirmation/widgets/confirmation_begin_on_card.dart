@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/extentions/dateformatter.dart';
 
 import '../../start_plan_bottom_sheet.dart';
+import '../../../theme/theme.dart';
 
 class ConfirmationBeginOnCard extends StatelessWidget {
   final DateTime date;
@@ -48,8 +49,15 @@ class ConfirmationBeginOnCard extends StatelessWidget {
             TextSpan(
               children: [
                 const TextSpan(
-                  text: 'begins on | ',
+                  text: 'begins on ',
                   style: TextStyle(fontSize: 14),
+                ),
+                TextSpan(
+                  text: '| ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: HomePlanTheme.subtitleColor,
+                  ),
                 ),
                 TextSpan(
                   text: formatted,

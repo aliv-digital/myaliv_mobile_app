@@ -63,7 +63,7 @@ class FuturePlanCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _DateBlock(title: 'starts', value: startDate),
+              _DateBlock(title: 'active', value: startDate),
               const Spacer(),
               _DateBlock(
                 title: 'expire',

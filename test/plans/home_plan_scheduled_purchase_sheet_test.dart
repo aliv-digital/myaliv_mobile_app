@@ -157,8 +157,8 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('activate my new plan on $dateText'), findsOneWidget);
-      expect(find.text('future plan'), findsNothing);
+      expect(find.text('activate my new plan on $dateText'), findsNothing);
+      expect(find.text('future plan'), findsOneWidget);
       expect(find.text('activate now'), findsNothing);
       expect(_scheduledButton(), findsOneWidget);
       final button = tester.widget<ElevatedButton>(_scheduledButton());
@@ -198,7 +198,7 @@ void main() {
     );
     final extras = await openSheet(tester, state);
     final dateText = DateFormat('MM-dd-yy').format(finalEnd);
-    expect(find.text('activate my new plan on $dateText'), findsOneWidget);
+    expect(find.text('future plan'), findsOneWidget);
     expect(
       find.textContaining('current plan ends on $dateText.'),
       findsOneWidget,
@@ -335,12 +335,9 @@ void main() {
             ),
             findsOneWidget,
           );
-          expect(
-            find.text('activate my new plan on $dateText'),
-            findsOneWidget,
-          );
+          expect(find.text('activate my new plan on $dateText'), findsNothing);
           expect(find.text('activate now'), findsNothing);
-          expect(find.text('future plan'), findsNothing);
+          expect(find.text('future plan'), findsOneWidget);
           expect(find.textContaining('activating now replaces'), findsNothing);
 
           await tester.tap(_scheduledButton());

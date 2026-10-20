@@ -147,6 +147,53 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (final width in [320.0, 430.0]) {
+    testWidgets('postpaid breakdown omits promo entry at $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final plan = HomePlansPostPaidPlanModel.fromApiMap({
+        'PlanID': 'travel50',
+        'PlanName': 'travel50',
+        'PlanAmount': 45.45,
+        'VATAmount': 4.55,
+        'PlanType': 'A',
+      });
+      await pumpConfirmation(
+        tester,
+        planPurchase: false,
+        postpaid: true,
+        topUp: false,
+        postpaidPlan: plan,
+      );
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.text('promo code'), findsNothing);
+      expect(find.text('apply'), findsNothing);
+      expect(find.text('sub total'), findsOneWidget);
+      expect(find.text('vat'), findsOneWidget);
+      expect(find.text('total'), findsOneWidget);
+      expect(find.text(r'$ 45.45'), findsOneWidget);
+      expect(find.text(r'$ 4.55'), findsOneWidget);
+      expect(find.text(r'$ 50.00'), findsWidgets);
+
+      config.setUserType(UserType.prepaid);
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('apply'), findsOneWidget);
+      config.setUserType(UserType.postpaid);
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+      expect(find.text('apply'), findsNothing);
+      verifyZeroInteractions(network);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   for (final planPurchase in [true, false]) {
     for (final width in [320.0, 360.0, 430.0]) {
       testWidgets(

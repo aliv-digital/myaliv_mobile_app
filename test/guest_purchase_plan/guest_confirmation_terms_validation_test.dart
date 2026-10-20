@@ -379,6 +379,7 @@ void main() {
           .element(find.byType(TermsNotice))
           .read<GuestPurchasePlanConfirmationBloc>();
       final initialState = bloc.state;
+      expect(find.text('VAT inclusive'), findsOneWidget);
       expect(
         tester.widget<TermsNotice>(find.byType(TermsNotice)).isChecked,
         false,

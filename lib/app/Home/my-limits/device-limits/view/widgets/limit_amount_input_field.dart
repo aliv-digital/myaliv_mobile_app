@@ -74,27 +74,37 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.center,
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            onChanged: widget.onChanged,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: RevPrepaidTheme.input,
-            decoration: InputDecoration(
-              prefixText: _hasFocus || _controller.text.isNotEmpty
-                  ? '\$ '
-                  : null,
-              prefixStyle: const TextStyle(
-                color: Color(0xFF344054),
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
+          child: Row(
+            children: [
+              const Text(
+                r'$',
+                style: TextStyle(
+                  color: Color(0xFF344054),
+                  fontSize: 14,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              isDense: true,
-              border: InputBorder.none,
-              hintText: _hasFocus ? ' 0.00' : '\$ 0.00',
-              hintStyle: RevPrepaidTheme.hintText,
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  onChanged: widget.onChanged,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  style: RevPrepaidTheme.input,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    border: InputBorder.none,
+                    hintText: '0.00',
+                    hintStyle: RevPrepaidTheme.hintText,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

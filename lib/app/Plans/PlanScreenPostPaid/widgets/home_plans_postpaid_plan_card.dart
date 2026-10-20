@@ -70,14 +70,16 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        plan.durationText,
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 10,
-                          color: Color(0xFF707070),
-                          fontWeight: FontWeight.w500,
+                      Transform.translate(
+                        offset: const Offset(0, -2),
+                        child: Text(
+                          plan.durationText,
+                          style: const TextStyle(
+                            fontFamily: 'CircularPro',
+                            fontSize: 10,
+                            color: Color(0xFF707070),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],

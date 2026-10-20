@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -34,6 +35,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revConfirmation/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/repository/rev_confirmation_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 class Devices extends Mock implements DeviceLimitsCubit {}
 
@@ -77,8 +79,10 @@ Future<void> tick() => Future<void>.delayed(const Duration(milliseconds: 20));
 
 void main() {
   late Devices devices;
+  late AppUiConfigCubit config;
   setUp(() async {
     await instance.reset();
+    config = AppUiConfigCubit();
     final account = Account();
     when(() => account.state).thenReturn(const AccountInfoState());
     instance.registerSingleton<AccountInfoCubit>(account);
@@ -94,6 +98,7 @@ void main() {
     instance.registerSingleton<DeviceLimitsCubit>(devices);
   });
   tearDown(() async {
+    await config.close();
     await instance.reset();
   });
   group('uncapped monetary validation', () {
@@ -498,7 +503,9 @@ void main() {
     });
   }
   for (final qty in [10.0, 20.0, 25.0]) {
-    testWidgets('postpaid apply $qty against subtotal 20', (tester) async {
+    testWidgets('prepaid confirmation apply $qty against subtotal 20', (
+      tester,
+    ) async {
       final network = Network();
       instance.registerSingleton<NetworkService>(network);
       when(
@@ -515,6 +522,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           navigatorKey: rootNavigatorKey,
+          builder: (_, child) =>
+              BlocProvider.value(value: config, child: child!),
           home: ConfirmationScreen(plan: plan),
         ),
       );
@@ -538,7 +547,7 @@ void main() {
   }
   for (final pendingChange in [false, true]) {
     testWidgets(
-      'postpaid ${pendingChange ? 'pending' : 'applied'} promo and changed plan',
+      'prepaid confirmation ${pendingChange ? 'pending' : 'applied'} promo and changed plan',
       (tester) async {
         final network = Network();
         instance.registerSingleton<NetworkService>(network);
@@ -555,6 +564,8 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             navigatorKey: rootNavigatorKey,
+            builder: (_, child) =>
+                BlocProvider.value(value: config, child: child!),
             home: ConfirmationScreen(plan: plan(30)),
           ),
         );
@@ -573,6 +584,8 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             navigatorKey: rootNavigatorKey,
+            builder: (_, child) =>
+                BlocProvider.value(value: config, child: child!),
             home: ConfirmationScreen(plan: plan(20)),
           ),
         );
