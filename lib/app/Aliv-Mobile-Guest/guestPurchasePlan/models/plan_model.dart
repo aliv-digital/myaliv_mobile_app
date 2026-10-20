@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
 enum PlanBenefitType { data, talkMins, sms, bonusData, intlTalkText, mms }
 
@@ -91,11 +92,29 @@ class GuestPurchasePlanAddOnsRouteArgs extends Equatable {
   const GuestPurchasePlanAddOnsRouteArgs({
     required this.phoneNumber,
     required this.selectedPlan,
+    this.selectedBasePlan,
+    this.existingActivePlan,
   });
 
   final String phoneNumber;
   final GuestPlanDisplayModel selectedPlan;
 
+  /// Raw catalog model for the plan the user picked. Carries
+  /// `availableBoltOns` + `frequency` so the dedicated add-ons screen
+  /// can show the real bolt-on tiles and compute the expiry date.
+  /// Nullable so legacy call sites keep working.
+  final BasePlanModel? selectedBasePlan;
+
+  /// The entered number's currently-active primary plan (from
+  /// /Guest/existingplans), used to compute the start date of the
+  /// about-to-activate plan. When null, the plan starts today.
+  final BasePlanModel? existingActivePlan;
+
   @override
-  List<Object?> get props => [phoneNumber, selectedPlan];
+  List<Object?> get props => [
+    phoneNumber,
+    selectedPlan,
+    selectedBasePlan,
+    existingActivePlan,
+  ];
 }

@@ -1,7 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/mifi_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roameasy_plan_card.dart';
@@ -12,9 +13,13 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/fair_use_policy_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/plan_red_image_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_group.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_purchase_plan_bloc.dart';
@@ -54,19 +59,37 @@ class _GuestPurchasePlanView extends StatelessWidget {
   final String phoneNumber;
 
   static const double _addOnsTabHorizontalPadding = 25;
-  static const String _guestFuturePlanStartDate = '01-06-25';
 
-  add_ons_models.ActivePlanSummary _activePlanSummaryForAddOnsTab() {
-    // Keep this aligned with the approved add-ons tab screenshot content.
-    return const add_ons_models.ActivePlanSummary(
+  static final DateFormat _cardDateFormat = DateFormat('dd/MM/yy');
+
+  /// Builds the add-ons tab summary from the entered number's real
+  /// active primary plan (from /Guest/existingplans). Returns null when
+  /// no active plan exists so the UI can hide the card entirely —
+  /// mirrors prepaid behaviour where the active-plan card only renders
+  /// when `earliestAddOnsPrimaryPlan != null`.
+  add_ons_models.ActivePlanSummary? _activePlanSummaryFromState(
+    GuestPurchasePlanState state,
+  ) {
+    final BasePlanModel? plan = state.earliestAddOnsPrimaryPlan;
+    if (plan == null) return null;
+
+    return add_ons_models.ActivePlanSummary(
       label: 'active plan',
-      name: 'liberty70',
-      autoRenew: true,
+      name: plan.planName,
+      autoRenew: plan.autoRenew,
       activeDateLabel: 'active',
-      activeDate: '20/08/24',
+      activeDate: _formatPlanDate(plan.startDateTime),
       expireDateLabel: 'expire',
-      expireDate: '19/09/24',
+      expireDate: _formatPlanDate(plan.endDateTime),
+      // Prepaid shows the expire time as a subtitle under the date
+      // (active_plan_card_with_data.dart:124). Mirror that for parity.
+      expireTime: plan.endDateTime.formatHmAOrEmpty(),
     );
+  }
+
+  String _formatPlanDate(DateTime? date) {
+    if (date == null) return '--/--/--';
+    return _cardDateFormat.format(date);
   }
 
   add_ons_models.FairUsePolicy _fairUsePolicyForAddOnsTab() {
@@ -129,15 +152,16 @@ class _GuestPurchasePlanView extends StatelessWidget {
   }
 
   GuestPurchasePlanConfirmationRouteArgs _futurePlanConfirmationArgs(
-    GuestPlanDisplayModel plan,
-  ) {
+    GuestPlanDisplayModel plan, {
+    required String futurePlanStartDate,
+  }) {
     return GuestPurchasePlanConfirmationRouteArgs(
       phoneNumber: phoneNumber,
       accountHolderName: 'guest purchase a plan',
       primaryPlanName: plan.title,
       primaryPlanPrice: plan.price,
       selectedPlan: plan,
-      futurePlanStartDate: _guestFuturePlanStartDate,
+      futurePlanStartDate: futurePlanStartDate,
       flow: GuestPurchasePlanConfirmationEntryFlow.skip,
       forceNow: false,
     );
@@ -147,7 +171,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
     BuildContext context,
     GuestPurchasePlanState state,
   ) {
-    final activePlan = _activePlanSummaryForAddOnsTab();
+    final activePlan = _activePlanSummaryFromState(state);
     final fairUsePolicy = _fairUsePolicyForAddOnsTab();
 
     return ListView(
@@ -158,17 +182,20 @@ class _GuestPurchasePlanView extends StatelessWidget {
         16,
       ),
       children: <Widget>[
-        PlanRedImageCard(
-          planLabel: activePlan.label,
-          planName: activePlan.name,
-          activeLabel: activePlan.activeDateLabel,
-          activeDate: activePlan.activeDate,
-          expireLabel: activePlan.expireDateLabel,
-          expireDate: activePlan.expireDate,
-        ),
-        const SizedBox(height: 16),
-        FairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
-        const SizedBox(height: 16),
+        if (activePlan != null) ...[
+          PlanRedImageCard(
+            planLabel: activePlan.label,
+            planName: activePlan.name,
+            activeLabel: activePlan.activeDateLabel,
+            activeDate: activePlan.activeDate,
+            expireLabel: activePlan.expireDateLabel,
+            expireDate: activePlan.expireDate,
+            expireTime: activePlan.expireTime,
+          ),
+          const SizedBox(height: 16),
+          FairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
+          const SizedBox(height: 16),
+        ],
         ...state.addOns.map((addOn) {
           final selected = state.selectedAddOnIds.contains(addOn.id);
           return Padding(
@@ -190,17 +217,43 @@ class _GuestPurchasePlanView extends StatelessWidget {
   }
 
   void _onPurchaseNowPressed(BuildContext context, GuestPlanDisplayModel plan) {
-    context.read<GuestPurchasePlanBloc>().add(
-      GuestPurchasePlanPurchaseNowPressed(plan),
-    );
+    final bloc = context.read<GuestPurchasePlanBloc>();
+    bloc.add(GuestPurchasePlanPurchaseNowPressed(plan));
 
-    final PlanTab selectedTab = context
-        .read<GuestPurchasePlanBloc>()
-        .state
-        .selectedTab;
-    final isLiberty70MonthlyPlan =
-        selectedTab == PlanTab.monthly &&
-        plan.title.toLowerCase() == 'liberty70';
+    final GuestPurchasePlanState currentState = bloc.state;
+
+    // Guard: block the sheet while /Guest/existingplans is still loading.
+    // Without this, hasActivePrimaryPlan would read false and we'd show
+    // the "no active plan" sheet to a number that actually has one —
+    // the user would then silently overwrite their real plan.
+    // Mirrors prepaid's isRefreshingBundles guard
+    // (home_plan_purchase_sheet_launcher.dart:300-306).
+    if (currentState.isLoadingBundles) {
+      AppToast.show(
+        message: 'checking the account plans, please try again in a moment',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    // Store the raw BasePlanModel on state so the activate-now sheet and
+    // the dedicated add-ons screen can access `availableBoltOns`,
+    // `frequency`, etc. Repository lookup is synchronous — the catalog
+    // was already awaited when the tile was rendered.
+    final BasePlanModel? basePlan = bloc.repository.findBasePlanById(plan.id);
+    if (basePlan != null) {
+      bloc.add(GuestPrimaryPlanSelected(basePlan));
+    }
+
+    final PlanTab selectedTab = currentState.selectedTab;
+
+    // Mirror prepaid showHomePlanPurchaseBottomSheet: use the entered
+    // number's /Guest/existingplans data to pick between
+    // WalletPaymentActivateBottomSheet (no active plan OR row 5 schedule-only)
+    // and WalletPaymentActivateOrFutureBottomSheet (row 4 — active with no
+    // future primary).
+    final DateTime? chainStartDate = currentState.latestPrimaryPlanEndDate;
+    final String futurePlanStartDate = chainStartDate?.toIso8601String() ?? '';
 
     showModalBottomSheet<void>(
       context: context,
@@ -240,32 +293,87 @@ class _GuestPurchasePlanView extends StatelessWidget {
           );
         }
 
-        // if (selectedTab == PlanTab.monthly) {
-        //   return RoamBottomSheet(
-        //     onBackPressed: () => Navigator.of(sheetContext).pop(),
-        //     onActivateNowPressed: () {
-        //       Navigator.of(sheetContext).pop();
-        //       context.push(AppRoutes.roamingPlanConfirmation);
-        //     },
-        //   );
-        // }
-        if (isLiberty70MonthlyPlan) {
+        // Row 5: active primary + already-queued future primary →
+        // schedule-only, no "activate now" option. Mirrors prepaid
+        // home_plan_purchase_sheet_launcher.dart:99-122, including the
+        // use of latestPurchasedPlanEndDate (primary + secondary +
+        // standalone) so the next primary waits until EVERY purchased
+        // plan ends, not just the latest primary.
+        if (currentState.hasActivePrimaryWithFuturePrimaryPlans) {
+          final DateTime? lastPlanEndDate =
+              currentState.latestPurchasedPlanEndDate;
+          // Do not invent a schedule date if the API supplied no valid
+          // end date — fall through to Row 4.
+          if (lastPlanEndDate != null) {
+            final String dateText = DateFormat(
+              'MM-dd-yy',
+            ).format(lastPlanEndDate);
+            return WalletPaymentActivateBottomSheet(
+              warningText:
+                  'you can activate your plan when the current plan ends on $dateText.',
+              buttonLabel: 'future plan',
+              planName: plan.title,
+              planDurationText: plan.subtitle,
+              planPriceText: plan.formattedPrice,
+              onBackPressed: () => Navigator.of(sheetContext).pop(),
+              onActivateNowPressed: () {
+                Navigator.of(sheetContext).pop();
+                context.push(
+                  AppRoutes.guestPurchasePlanConfirmation,
+                  extra: _futurePlanConfirmationArgs(
+                    plan,
+                    futurePlanStartDate: lastPlanEndDate.toIso8601String(),
+                  ),
+                );
+              },
+            );
+          }
+        }
+
+        // Row 4: active primary with no future primary → activate-now OR
+        // schedule. Warning text references the real end date, and
+        // special-cases MiFi-on-MiFi (same copy prepaid uses at
+        // home_plan_purchase_sheet_launcher.dart:142-151).
+        if (currentState.hasActivePrimaryPlan) {
+          final String endDateText = chainStartDate != null
+              ? ' on ${DateFormat('MM-dd-yy').format(chainStartDate)}'
+              : '';
+          final bool hasActiveMifiPlan =
+              selectedTab == PlanTab.mifi &&
+              PlanGroup.parse(
+                    currentState.earliestAddOnsPrimaryPlan?.planGroup,
+                  ) ==
+                  PlanGroup.mifi;
+          final String warningText = hasActiveMifiPlan
+              ? 'the account owner already has an active mifi plan. '
+                    'buying this plan will replace it immediately.'
+              : 'activating now replaces the current plan, '
+                    'you can also activate the plan when the current plan ends$endDateText.';
           return WalletPaymentActivateOrFutureBottomSheet(
-            warningText:
-                'activating now replaces the account owner current plan, '
-                'you can activate the account owner plan as a future plan and '
-                'it will start when their current plan ends on XXX.',
+            warningText: warningText,
             planName: plan.title,
             planDurationText: plan.subtitle,
             planPriceText: plan.formattedPrice,
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
+
+              // MiFi plans skip add-ons; go straight to confirmation.
+              if (selectedTab == PlanTab.mifi) {
+                context.push(
+                  AppRoutes.guestPurchasePlanConfirmation,
+                  extra: _mifiConfirmationArgs(plan),
+                );
+                return;
+              }
+
               context.push(
                 AppRoutes.guestPurchasePlanAddOns,
                 extra: GuestPurchasePlanAddOnsRouteArgs(
                   phoneNumber: phoneNumber,
                   selectedPlan: plan,
+                  selectedBasePlan: basePlan,
+                  existingActivePlan: currentState.earliestAddOnsPrimaryPlan,
                 ),
               );
             },
@@ -273,16 +381,16 @@ class _GuestPurchasePlanView extends StatelessWidget {
               Navigator.of(sheetContext).pop();
               context.push(
                 AppRoutes.guestPurchasePlanConfirmation,
-                extra: _futurePlanConfirmationArgs(plan),
+                extra: _futurePlanConfirmationArgs(
+                  plan,
+                  futurePlanStartDate: futurePlanStartDate,
+                ),
               );
             },
           );
         }
 
-        // No guest API exposes the account owner's plans yet, so primary
-        // purchases outside the liberty70 case use the no-active-plan copy.
-        // TODO: Implement Guest Row 4/5 warning selection when account-owner
-        // active/future plan state is available from the backend.
+        // No active primary plan → immediate activation only.
         return WalletPaymentActivateBottomSheet(
           warningText:
               'the account owner has no active plan, so their new plan will start immediately.',

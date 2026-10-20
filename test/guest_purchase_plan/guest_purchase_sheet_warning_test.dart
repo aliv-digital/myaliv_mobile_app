@@ -19,10 +19,6 @@ const _standalone =
     'the account owner standalone plan can start immediately, or on a date of choice.';
 const _ownerStandalone =
     'your standalone plan can start immediately, or on a date of your choice.';
-const _liberty70Warning =
-    'activating now replaces the account owner current plan, '
-    'you can activate the account owner plan as a future plan and '
-    'it will start when their current plan ends on XXX.';
 
 class _FakeNetworkService extends NetworkService {
   _FakeNetworkService(this.plans)
@@ -190,17 +186,22 @@ void main() {
     expect(visited, [AppRoutes.guestPurchasePlanAddOns]);
   });
 
-  testWidgets('liberty70 keeps its existing replacement branch', (
+  testWidgets('without /Guest/existingplans data the sheet falls back to the '
+      'no-active-plan copy for every primary (no plan-name special cases)', (
     tester,
   ) async {
+    // The fake NetworkService only serves the catalog; /Guest/existingplans
+    // yields no bundles, so earliestAddOnsPrimaryPlan is null. The sheet
+    // decision tree must pick WalletPaymentActivateBottomSheet (the "no
+    // active plan" branch) uniformly — no plan-name routing.
     await pumpScreen(tester);
     await purchaseNow(tester, 'liberty70');
 
-    expect(find.byType(WalletPaymentActivateOrFutureBottomSheet), findsOne);
-    expect(find.text(_liberty70Warning), findsOneWidget);
-    expect(find.text(_noActivePlan), findsNothing);
+    expect(find.byType(WalletPaymentActivateBottomSheet), findsOneWidget);
+    expect(find.text(_noActivePlan), findsOneWidget);
+    expect(find.byType(WalletPaymentActivateOrFutureBottomSheet), findsNothing);
     expect(find.text('activate now'), findsOneWidget);
-    expect(find.text('future plan'), findsOneWidget);
+    expect(find.text('future plan'), findsNothing);
   });
 
   testWidgets('standalone uses guest copy with activate now and date picker', (

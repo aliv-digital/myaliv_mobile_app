@@ -31,7 +31,7 @@ class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
       child: BlocProvider(
         create: (ctx) => GuestPurchasePlanAddOnsBloc(
           repository: ctx.read<GuestPurchasePlanAddOnsRepository>(),
-        )..add(const GuestPurchasePlanAddOnsStarted()),
+        )..add(GuestPurchasePlanAddOnsStarted(routeArgs: args)),
         child: _GuestPurchasePlanAddOnsView(args: args),
       ),
     );

@@ -5,13 +5,17 @@ class GuestPurchasePlanConfirmationRepository {
   Future<GuestPurchasePlanConfirmationData> load({
     required GuestPurchasePlanConfirmationRouteArgs args,
   }) async {
+    // An add-on attached to a future primary plan necessarily begins on
+    // the same future date — inherit the primary's begin text.
+    final String beginsText = _planBeginsText(args);
+
     final List<PurchaseLineItem> items = <PurchaseLineItem>[
       PurchaseLineItem(
         id: 'primary',
         type: PurchaseLineType.primaryPlan,
         label: 'primary plan',
         title: args.primaryPlanName,
-        subtitle: _planBeginsText(args),
+        subtitle: beginsText,
         price: args.primaryPlanPrice,
       ),
     ];
@@ -24,7 +28,7 @@ class GuestPurchasePlanConfirmationRepository {
             type: PurchaseLineType.addOn,
             label: 'add-on',
             title: addOn.title,
-            subtitle: 'begins immediately',
+            subtitle: beginsText,
             price: addOn.price,
           ),
         ),

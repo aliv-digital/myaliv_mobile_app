@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../guestPurchasePlan/models/plan_model.dart';
+
 sealed class GuestPurchasePlanAddOnsEvent extends Equatable {
   const GuestPurchasePlanAddOnsEvent();
 
@@ -9,7 +11,16 @@ sealed class GuestPurchasePlanAddOnsEvent extends Equatable {
 
 final class GuestPurchasePlanAddOnsStarted
     extends GuestPurchasePlanAddOnsEvent {
-  const GuestPurchasePlanAddOnsStarted();
+  const GuestPurchasePlanAddOnsStarted({this.routeArgs});
+
+  /// When provided, the bloc builds the ActivePlanSummary + add-ons tiles
+  /// from the real catalog + /Guest/existingplans data instead of the
+  /// legacy hardcoded mock. Nullable so tests and legacy entry points
+  /// still work.
+  final GuestPurchasePlanAddOnsRouteArgs? routeArgs;
+
+  @override
+  List<Object?> get props => [routeArgs];
 }
 
 final class GuestPurchasePlanAddOnsAutoRenewToggled

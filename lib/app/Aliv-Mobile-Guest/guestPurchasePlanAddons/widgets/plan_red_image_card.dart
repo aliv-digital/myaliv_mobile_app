@@ -13,6 +13,7 @@ class PlanRedImageCard extends StatelessWidget {
     required this.activeDate,
     required this.expireLabel,
     required this.expireDate,
+    this.expireTime = '',
     this.topRight,
     this.maxWidth = 340,
     this.height = 150,
@@ -25,6 +26,12 @@ class PlanRedImageCard extends StatelessWidget {
   final String activeDate;
   final String expireLabel;
   final String expireDate;
+
+  /// Optional expire time subtitle (e.g. `"11:59 PM"`), rendered on a
+  /// second line under [expireDate]. Mirrors prepaid's active-plan card
+  /// at `active_plan_card_with_data.dart:124`. Pass empty to hide.
+  final String expireTime;
+
   final Widget? topRight;
 
   final double maxWidth;
@@ -92,6 +99,7 @@ class PlanRedImageCard extends StatelessWidget {
                           _DateBlock(
                             label: expireLabel,
                             value: expireDate,
+                            subtitle: expireTime,
                             alignEnd: true,
                           ),
                         ],
@@ -113,10 +121,12 @@ class _DateBlock extends StatelessWidget {
     required this.label,
     required this.value,
     required this.alignEnd,
+    this.subtitle = '',
   });
 
   final String label;
   final String value;
+  final String subtitle;
   final bool alignEnd;
 
   @override
@@ -145,6 +155,17 @@ class _DateBlock extends StatelessWidget {
             height: 1.0,
           ).copyWith(letterSpacing: 2.25),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: GuestPurchasePlanAddOnsTheme.t(
+              11,
+              weight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ],
     );
   }

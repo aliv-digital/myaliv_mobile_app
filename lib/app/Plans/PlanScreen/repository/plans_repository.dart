@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart'
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_api_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_parser_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_cache_service.dart';
@@ -134,65 +135,23 @@ class PlansRepository {
     Duration cacheTtl = const Duration(hours: 1),
   }) async {
     try {
-      // Fetch bundles
       final bundles = await fetchBundles(
         forceRefresh: forceRefresh,
         cacheTtl: cacheTtl,
       );
 
-      // Extract primary plans
-      final rawPrimaryPlans = _asMapList(bundles['PrimaryPlans']);
-
-      // Parse to BasePlanModel
-      final primaryPlans = rawPrimaryPlans
-          .map((map) => BasePlanModel.fromApiMap(map, includeRawPayload: false))
-          .toList(growable: false);
-
-      // Sort by earliest start date
-      final sortedPrimaryPlans = _sortPrimaryPlansByEarliestStartDate(
-        primaryPlans,
-      );
-
-      // Map bolt-ons from earliest primary plan to UI add-ons
-      final addOns = sortedPrimaryPlans.isNotEmpty
-          ? _mapAvailableBoltOnsToUiAddOns(sortedPrimaryPlans.first)
-          : <HomePlanAddOnModel>[];
-
-      // Extract and parse secondary plans (counted alongside primary for
-      // bucket-usage aggregation).
-      final secondaryPlans = _sortPrimaryPlansByEarliestStartDate(
-        _asMapList(bundles['SecondaryPlans'])
-            .map(
-              (map) => BasePlanModel.fromApiMap(map, includeRawPayload: false),
-            )
-            .toList(growable: false),
-      );
-
-      // Extract and parse stand-alone plans (travel20/30/50 etc.).
-      // Used only as a fallback when both Primary and Secondary are empty.
-      final standAlonePlans = _sortPrimaryPlansByEarliestStartDate(
-        _asMapList(bundles['StandAlonePlans'])
-            .map(
-              (map) => BasePlanModel.fromApiMap(map, includeRawPayload: false),
-            )
-            .toList(growable: false),
-      );
+      final result = BundleResponseParser.parse(bundles);
 
       if (kDebugMode) {
         debugPrint(
-          '✅ PlansRepository: Fetched ${sortedPrimaryPlans.length} primary plans, '
-          '${secondaryPlans.length} secondary plans, '
-          '${standAlonePlans.length} stand-alone plans, '
-          '${addOns.length} add-ons',
+          '✅ PlansRepository: Fetched ${result.primaryPlans.length} primary plans, '
+          '${result.secondaryPlans.length} secondary plans, '
+          '${result.standAlonePlans.length} stand-alone plans, '
+          '${result.addOns.length} add-ons',
         );
       }
 
-      return AddOnsResult(
-        addOns: addOns,
-        primaryPlans: sortedPrimaryPlans,
-        secondaryPlans: secondaryPlans,
-        standAlonePlans: standAlonePlans,
-      );
+      return result;
     } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ PlansRepository: Error fetching add-ons - $e');
@@ -200,135 +159,4 @@ class PlansRepository {
       return const AddOnsResult();
     }
   }
-
-  // ═══════════════════════════════════════════════════════════════════
-  // PRIVATE HELPERS
-  // ═══════════════════════════════════════════════════════════════════
-
-  List<BasePlanModel> _sortPrimaryPlansByEarliestStartDate(
-    List<BasePlanModel> primaryPlans,
-  ) {
-    final sortablePrimaryPlans = primaryPlans
-        .asMap()
-        .entries
-        .map(
-          (entry) =>
-              _SortablePrimaryPlan(originalIndex: entry.key, plan: entry.value),
-        )
-        .toList(growable: false);
-
-    sortablePrimaryPlans.sort((left, right) {
-      final leftStartDate = left.plan.startDateTime;
-      final rightStartDate = right.plan.startDateTime;
-
-      if (leftStartDate == null && rightStartDate == null) {
-        return left.originalIndex.compareTo(right.originalIndex);
-      }
-
-      if (leftStartDate == null) return 1;
-      if (rightStartDate == null) return -1;
-
-      final dateCompare = leftStartDate.compareTo(rightStartDate);
-      if (dateCompare != 0) return dateCompare;
-
-      return left.originalIndex.compareTo(right.originalIndex);
-    });
-
-    return sortablePrimaryPlans
-        .map((sortablePlan) => sortablePlan.plan)
-        .toList(growable: false);
-  }
-
-  List<HomePlanAddOnModel> _mapAvailableBoltOnsToUiAddOns(
-    BasePlanModel primaryPlan,
-  ) {
-    return primaryPlan.availableBoltOns
-        .map(
-          (addOnPlan) => HomePlanAddOnModel(
-            id: addOnPlan.planId,
-            title: addOnPlan.planName,
-            label: _buildAddOnLabel(addOnPlan),
-            value: _buildAddOnValue(addOnPlan),
-            price: addOnPlan.planAmount,
-            vatAmount: addOnPlan.vatAmount,
-            planTypeCode: addOnPlan.planType,
-          ),
-        )
-        .toList(growable: false);
-  }
-
-  String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket = addOnPlan.planBuckets.isEmpty
-        ? null
-        : addOnPlan.planBuckets.first;
-
-    if (firstBucket == null) {
-      return 'balance';
-    }
-
-    final normalizedBucketName = firstBucket.name.trim().toLowerCase();
-    if (normalizedBucketName.isEmpty) {
-      return 'balance';
-    }
-
-    switch (normalizedBucketName) {
-      case 'data':
-        return 'data balance';
-      case 'minutes':
-        return 'minutes balance';
-      case 'texts':
-        return 'text balance';
-      default:
-        return '$normalizedBucketName balance';
-    }
-  }
-
-  String _buildAddOnValue(BasePlanModel addOnPlan) {
-    final firstBucket = addOnPlan.planBuckets.isEmpty
-        ? null
-        : addOnPlan.planBuckets.first;
-
-    if (firstBucket == null) {
-      return '';
-    }
-
-    final amountText = _formatWholeOrDecimal(firstBucket.amount);
-    final unitText = firstBucket.unit.trim().toLowerCase();
-
-    if (unitText.isEmpty) {
-      return amountText;
-    }
-
-    return '$amountText$unitText';
-  }
-
-  String _formatWholeOrDecimal(double value) {
-    if (value == value.truncateToDouble()) {
-      return value.toInt().toString();
-    }
-    return value.toString();
-  }
-
-  List<Map<String, dynamic>> _asMapList(dynamic value) {
-    if (value is! List) {
-      return const <Map<String, dynamic>>[];
-    }
-
-    return value
-        .whereType<Map>()
-        .map(
-          (map) => map.map(
-            (dynamic key, dynamic value) =>
-                MapEntry<String, dynamic>(key.toString(), value),
-          ),
-        )
-        .toList(growable: false);
-  }
-}
-
-class _SortablePrimaryPlan {
-  const _SortablePrimaryPlan({required this.originalIndex, required this.plan});
-
-  final int originalIndex;
-  final BasePlanModel plan;
 }

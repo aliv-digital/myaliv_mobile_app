@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart'
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
@@ -301,28 +302,11 @@ class PlansCubit extends HydratedCubit<PlansState> {
   static String _toApiDateString(DateTime utcDateTime) =>
       '${_apiDateFormat.format(utcDateTime)}Z';
 
-  /// Returns the estimated plan end date based on billing [frequency].
-  /// Returns null for frequencies that don't map to a fixed duration
-  /// (roaming, mifi, liberty-global, etc.).
-  static DateTime? _estimateEndDate(DateTime start, PlanFrequency? frequency) {
-    switch (frequency) {
-      case PlanFrequency.daily:
-        return start.add(const Duration(days: 1));
-      case PlanFrequency.weekly:
-        return start.add(const Duration(days: 7));
-      case PlanFrequency.monthly:
-        return DateTime.utc(
-          start.year,
-          start.month + 1,
-          start.day,
-          start.hour,
-          start.minute,
-          start.second,
-        );
-      case null:
-        return null;
-    }
-  }
+  /// Thin wrapper preserved for in-cubit call sites. Delegates to the
+  /// shared [PlanFrequencyEstimator] so prepaid and guest flows produce
+  /// identical dates.
+  static DateTime? _estimateEndDate(DateTime start, PlanFrequency? frequency) =>
+      PlanFrequencyEstimator.estimateEndDate(start, frequency);
 
   void toggleExpanded(String planId) {
     final next = Set<String>.from(state.expandedPlanIds);

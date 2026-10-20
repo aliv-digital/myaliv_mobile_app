@@ -10,6 +10,7 @@ class WalletPaymentActivateBottomSheet extends StatelessWidget {
     required this.planPriceText,
     required this.onBackPressed,
     required this.onActivateNowPressed,
+    this.buttonLabel,
   });
 
   final String warningText;
@@ -18,6 +19,13 @@ class WalletPaymentActivateBottomSheet extends StatelessWidget {
   final String planPriceText;
   final VoidCallback onBackPressed;
   final VoidCallback onActivateNowPressed;
+
+  /// Optional CTA override. When null the sheet shows the default
+  /// "activate now" label from the theme. Used by Row 5 (schedule-only)
+  /// to show the real scheduled date on the button so the user is not
+  /// misled into thinking it activates immediately. Mirrors the
+  /// prepaid `HomePlanWalletPaymentActivateBottomSheet.buttonLabel`.
+  final String? buttonLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +114,8 @@ class WalletPaymentActivateBottomSheet extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    GuestPurchasePlanTheme.bottomSheetActivateNowLabel,
+                    buttonLabel ??
+                        GuestPurchasePlanTheme.bottomSheetActivateNowLabel,
                     style: GuestPurchasePlanTheme
                         .bottomSheetPrimaryActionSingleStyle,
                   ),

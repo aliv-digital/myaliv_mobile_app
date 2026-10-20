@@ -215,6 +215,12 @@ class Api {
   static const guestAvailablePlansUrl =
       '$baseUrl/v1/myAliv/guest/availableplans';
 
+  /// Guest active bundles: POST /Guest/existingplans
+  /// Body: { "ChannelType": "SelfCare", "PhoneNumber": "digits-only" }
+  /// Response shape identical to GET /device/{deviceId}/bundles —
+  /// { PrimaryPlans, SecondaryPlans, StandAlonePlans }. Unauthenticated.
+  static const guestExistingPlansUrl = '$baseUrl/v1/MyAliv/Guest/existingplans';
+
   /// Guest account balance check: POST /Guest/balance
   /// Body: { "ChannelType": "SelfCare", "PhoneNumber": "digits-only" }
   /// Response: { "Balance": 171.38, "AccountStatus": "AC" }

@@ -8,6 +8,7 @@ class ActivePlanSummary extends Equatable {
   final String activeDate; // "20/08/24"
   final String expireDateLabel; // "expire"
   final String expireDate; // "19/09/24"
+  final String expireTime; // "11:59 PM" — subtitle under expireDate
 
   const ActivePlanSummary({
     required this.label,
@@ -17,6 +18,7 @@ class ActivePlanSummary extends Equatable {
     required this.activeDate,
     required this.expireDateLabel,
     required this.expireDate,
+    this.expireTime = '',
   });
 
   ActivePlanSummary copyWith({bool? autoRenew}) {
@@ -28,6 +30,7 @@ class ActivePlanSummary extends Equatable {
       activeDate: activeDate,
       expireDateLabel: expireDateLabel,
       expireDate: expireDate,
+      expireTime: expireTime,
     );
   }
 
@@ -40,6 +43,7 @@ class ActivePlanSummary extends Equatable {
     activeDate,
     expireDateLabel,
     expireDate,
+    expireTime,
   ];
 }
 

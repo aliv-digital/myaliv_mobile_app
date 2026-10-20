@@ -82,9 +82,17 @@ class AddOnTile extends StatelessWidget {
                             width: GuestPurchasePlanAddOnsTheme
                                 .addOnCardIconToLabelGap,
                           ),
-                          Text(
-                            item.subtitleLabel,
-                            style: GuestPurchasePlanAddOnsTheme.addOnLabel,
+                          // Flexible + ellipsis — real /Guest/existingplans
+                          // bucket names (e.g. "us/can mins balance") can be
+                          // longer than the previous mock data; without this
+                          // the subtitle row overflows next to the price chip.
+                          Flexible(
+                            child: Text(
+                              item.subtitleLabel,
+                              style: GuestPurchasePlanAddOnsTheme.addOnLabel,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
                           const SizedBox(
                             width: GuestPurchasePlanAddOnsTheme
