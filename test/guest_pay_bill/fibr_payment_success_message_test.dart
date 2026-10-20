@@ -257,6 +257,8 @@ void main() {
       );
       expect(find.text(_pending), findsNothing);
       expect(receipt!.identifierValue, account);
+      expect(find.text('account no.'), findsOneWidget);
+      expect(find.text('Acc #'), findsNothing);
       expect(receipt!.amount, (submitted!['CardPayment'] as Map)['Amount']);
       expect(receipts, 1);
       expect(tester.takeException(), isNull);

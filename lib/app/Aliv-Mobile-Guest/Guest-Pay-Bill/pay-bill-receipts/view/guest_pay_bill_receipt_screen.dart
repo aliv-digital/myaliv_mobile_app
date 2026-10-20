@@ -23,7 +23,8 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedServiceName = args.serviceName.trim().toUpperCase();
-    final identifierLabelForReceipt = normalizedServiceName == 'REV'
+    final identifierLabelForReceipt =
+        normalizedServiceName == 'REV' || normalizedServiceName == 'ALIVFIBR'
         ? 'account no.'
         : args.identifierLabel;
 
