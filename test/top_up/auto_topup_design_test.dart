@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widg
 
 void main() {
   group('Bug 33: Auto Top-up Figma Design Verification', () {
-    testWidgets('AutoTopupSectionLabel renders with muted color #707070', (
+    testWidgets('AutoTopupSectionLabel renders with pure black and bold text', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -20,7 +20,7 @@ void main() {
       expect(textFinder, findsOneWidget);
 
       final text = tester.widget<Text>(textFinder);
-      expect(text.style?.color, const Color(0xFF707070));
+      expect(text.style?.color, Colors.black);
       expect(text.style?.fontSize, 14);
       expect(text.style?.fontWeight, FontWeight.w700);
     });

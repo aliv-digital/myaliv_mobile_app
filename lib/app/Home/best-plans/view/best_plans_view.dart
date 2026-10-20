@@ -174,7 +174,7 @@ class _BestPlanCard extends StatelessWidget {
                               Text(
                                 plan.subHeading,
                                 style: const TextStyle(
-                                  color: Color(0xFFE5D0D0),
+                                  color: Colors.white,
                                   fontSize: 13,
                                   fontFamily: 'CircularPro',
                                   fontWeight: FontWeight.w500,

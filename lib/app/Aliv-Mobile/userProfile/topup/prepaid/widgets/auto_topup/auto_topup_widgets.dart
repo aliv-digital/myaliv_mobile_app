@@ -21,9 +21,10 @@ class AutoTopupAnyTimeToggle extends StatelessWidget {
         const Text(
           'any time',
           style: TextStyle(
+            color: Colors.black,
             fontFamily: 'CircularPro',
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
         CommonSwitchButtonLarge(value: value, onChanged: onChanged),
@@ -166,7 +167,7 @@ class AutoTopupSectionLabel extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-          color: Color(0xFF707070),
+          color: Colors.black,
           fontSize: 14,
           fontFamily: 'CircularPro',
           fontWeight: FontWeight.w700,
