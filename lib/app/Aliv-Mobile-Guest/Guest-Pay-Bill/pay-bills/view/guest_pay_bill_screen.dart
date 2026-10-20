@@ -278,7 +278,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputRow(
         focusNode: _mobileFocusNode,
-        hideUnfocusedInputBorder: false,
+        hideUnfocusedInputBorder: !showMobileBorderError,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
@@ -322,7 +322,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputSubmitRow(
         focusNode: _confirmMobileFocusNode,
-        hideUnfocusedInputBorder: false,
+        hideUnfocusedInputBorder: !showConfirmBorderError,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
@@ -530,7 +530,12 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               state.accountInfo?.balance == null
                                   ? GuestPayBillTheme.statusPlaceholderText
                                   : _money(state.accountInfo!.balance!),
-                              style: GuestPayBillTheme.accountBalanceValueStyle,
+                              style: state.accountInfo?.balance == null
+                                  ? GuestPayBillTheme.accountBalanceValueStyle
+                                        .copyWith(
+                                          color: GuestPayBillTheme.placeholder,
+                                        )
+                                  : GuestPayBillTheme.accountBalanceValueStyle,
                             ),
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,

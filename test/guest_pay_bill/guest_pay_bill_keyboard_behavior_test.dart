@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/guest_pay_bill_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/guest_pay_bill_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/theme/guest_pay_bill_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/guest_pay_bill_primary_submit_button.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
@@ -34,6 +35,49 @@ void main() {
   tearDown(() async {
     await instance.reset();
   });
+
+  for (final size in [const Size(320, 800), const Size(430, 932)]) {
+    testWidgets('phone fields are borderless when idle at $size', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await _pumpScreen(tester);
+
+      for (var index = 0; index < 2; index++) {
+        final field = _phoneField(index);
+        expect(_phoneBorderDecoration(tester, field).border, isNull);
+        expect(_phoneBorderDecoration(tester, field).gradient, isNull);
+
+        await tester.ensureVisible(field);
+        await tester.showKeyboard(field);
+        await tester.pump();
+        expect(_phoneBorderDecoration(tester, field).gradient, isNotNull);
+
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        expect(_phoneBorderDecoration(tester, field).border, isNull);
+        expect(_phoneBorderDecoration(tester, field).gradient, isNull);
+      }
+
+      for (var index = 0; index < 2; index++) {
+        final field = _phoneField(index);
+        await tester.ensureVisible(field);
+        await tester.enterText(field, '24255');
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        expect(
+          _phoneBorderDecoration(tester, field).border,
+          Border.all(
+            color: GuestPayBillTheme.errorText,
+            width: GuestPayBillTheme.inputFocusBorderWidth,
+          ),
+        );
+      }
+
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('ALIV Postpaid mobile uses TextInputAction.next', (tester) async {
     await _pumpScreen(tester);
@@ -388,6 +432,19 @@ Finder _phoneField(int index) {
             widget.decoration?.hintText == 'eg: (242)-899-9999',
       )
       .at(index);
+}
+
+BoxDecoration _phoneBorderDecoration(WidgetTester tester, Finder field) {
+  final wrapper = find.ancestor(
+    of: field,
+    matching: find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          widget.child is ClipRRect &&
+          widget.decoration is BoxDecoration,
+    ),
+  );
+  return tester.widget<Container>(wrapper.first).decoration! as BoxDecoration;
 }
 
 Finder _fieldWithHint(String hint) {

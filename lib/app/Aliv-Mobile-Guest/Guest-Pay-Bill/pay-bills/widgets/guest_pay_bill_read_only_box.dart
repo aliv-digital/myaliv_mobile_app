@@ -18,7 +18,14 @@ class GuestPayBillReadOnlyBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
       ),
       alignment: Alignment.centerLeft,
-      child: Text(text, style: GuestPayBillTheme.inputTextStyle),
+      child: Text(
+        text,
+        style: text == GuestPayBillTheme.statusPlaceholderText
+            ? GuestPayBillTheme.inputTextStyle.copyWith(
+                color: GuestPayBillTheme.placeholder,
+              )
+            : GuestPayBillTheme.inputTextStyle,
+      ),
     );
   }
 }
