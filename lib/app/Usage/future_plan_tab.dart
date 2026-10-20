@@ -13,6 +13,8 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/start_future_plan_bottom_she
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
+import 'models/future_plan_expiry.dart';
+
 class FuturePlansTab extends StatelessWidget {
   const FuturePlansTab({super.key});
 
@@ -77,6 +79,20 @@ class _StandAloneFuturePlans extends StatelessWidget {
     return earliestIndex;
   }
 
+  Widget _buildPlanCard(BasePlanModel plan, int index) {
+    final expiry = FuturePlanExpiry.fromApiDate(plan.endDate);
+    return FuturePlanCard(
+      title: plan.isStandAlonePlan
+          ? PlanNameFormatterService.format(plan.planName)
+          : plan.planName,
+      startDate: _formatCardDate(plan.startDateTime),
+      endDate: expiry.date,
+      endTime: expiry.time,
+      image: _planImages[index % _planImages.length],
+      isActivePlan: false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPostpaid = context.watch<AppUiConfigCubit>().state.isPostpaid;
@@ -106,21 +122,7 @@ class _StandAloneFuturePlans extends StatelessWidget {
             for (var i = 0; i < futurePlans.length; i++) ...[
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: FuturePlanCard(
-                  title: futurePlans[i].isStandAlonePlan
-                      ? PlanNameFormatterService.format(futurePlans[i].planName)
-                      : futurePlans[i].planName,
-                  startDate: _formatCardDate(futurePlans[i].startDateTime),
-                  endDate: _formatCardDate(futurePlans[i].endDateTime),
-                  endTime:
-                      RegExp(
-                        r'(?:T|\s)\d{1,2}:\d{2}',
-                      ).hasMatch(futurePlans[i].endDate)
-                      ? futurePlans[i].endDateTime.formatHmAOrEmpty()
-                      : '',
-                  image: _planImages[i % _planImages.length],
-                  isActivePlan: false,
-                ),
+                child: _buildPlanCard(futurePlans[i], i),
               ),
               if (i == startablePlanIndex) ...[
                 const _StartPlanButton(),
