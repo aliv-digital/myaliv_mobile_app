@@ -510,11 +510,14 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               height: GuestPayBillTheme.labelToFieldGap,
                             ),
                             GuestPayBillReadOnlyBox(
-                              text: state.accountInfo != null
-                                  ? LineStatus.fromCode(
+                              text: state.accountInfo == null
+                                  ? GuestPayBillTheme.statusPlaceholderText
+                                  : switch (LineStatus.fromCode(
                                       state.accountInfo!.status,
-                                    ).displayLabel
-                                  : GuestPayBillTheme.statusPlaceholderText,
+                                    )) {
+                                      LineStatus.active => 'Active',
+                                      final status => status.displayLabel,
+                                    },
                             ),
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,

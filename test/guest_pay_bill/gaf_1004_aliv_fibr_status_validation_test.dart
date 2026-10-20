@@ -166,7 +166,7 @@ void main() {
         await verifyFibrAccount(tester);
 
         expect(find.text(r'$150.00'), findsOneWidget);
-        expect(find.text('active'), findsOneWidget);
+        expect(find.text('Active'), findsOneWidget);
 
         await enterAmountAndSubmit(tester, '50');
 
