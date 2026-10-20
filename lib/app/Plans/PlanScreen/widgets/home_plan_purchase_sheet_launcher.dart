@@ -104,7 +104,10 @@ Future<void> showHomePlanPurchaseBottomSheet({
           return HomePlanWalletPaymentActivateBottomSheet(
             warningText:
                 'you can activate your plan when your current plan ends on $dateText.',
-            buttonLabel: 'activate my new plan on $dateText',
+            // Previous dated label retained for reference:
+            // buttonLabel: 'activate my new plan on $dateText',
+            // Only the button copy changes; the scheduling date and action stay the same.
+            buttonLabel: 'future plan',
             planName: plan.title,
             planDurationText: plan.subtitle,
             planPriceText: _priceText(plan.price),
