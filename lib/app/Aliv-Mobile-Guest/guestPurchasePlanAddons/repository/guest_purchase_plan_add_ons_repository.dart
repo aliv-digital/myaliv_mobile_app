@@ -17,11 +17,12 @@ class GuestPurchasePlanAddOnsRepository {
 
   Future<FairUsePolicy> fetchFairUsePolicy() async {
     await Future.delayed(const Duration(milliseconds: 120));
+    // Matches prepaid HomePlanAddOnsTabContent._fairUsePolicy()
+    // (home_plan_add_ons_tab_content.dart:54-60) verbatim.
     return const FairUsePolicy(
       title: 'fair use policy',
       description:
-          "add-ons can only be added to your active primary plan and expires when it ends. "
-          "if you don't want an add-on select skip.",
+          'add-ons can only be added to your active primary plan and expires when it ends.',
     );
   }
 

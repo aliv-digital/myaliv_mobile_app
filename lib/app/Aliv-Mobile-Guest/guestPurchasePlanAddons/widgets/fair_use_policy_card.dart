@@ -17,31 +17,34 @@ class FairUsePolicyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Only the top-right title acts as the tappable link — matches
+    // prepaid PlanPurchaseFairUsePolicyCard
+    // (plan_purchase_fair_use_policy_card.dart:19-45). Having the whole
+    // card tappable (previous behaviour) picked up stray taps on the
+    // description text, which prepaid never did.
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          // Screenshot এর মতো light background feel (page bg এর সাথে blend)
-          padding: const EdgeInsets.fromLTRB(5, 4, 0, 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerRight,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(5, 4, 0, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: onTap,
                 child: Text(
                   policy.title,
                   style: GuestPurchasePlanAddOnsTheme.fairUsePolicyLink,
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                policy.description,
-                style: GuestPurchasePlanAddOnsTheme.fairUsePolicyDescription,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              policy.description,
+              style: GuestPurchasePlanAddOnsTheme.fairUsePolicyDescription,
+            ),
+          ],
         ),
       ),
     );

@@ -21,6 +21,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/guest_purchase_plan_bloc.dart';
 import '../bloc/guest_purchase_plan_event.dart';
@@ -63,27 +64,30 @@ class _GuestPurchasePlanView extends StatelessWidget {
   static final DateFormat _cardDateFormat = DateFormat('dd/MM/yy');
 
   /// Builds the add-ons tab summary from the entered number's real
-  /// active primary plan (from /Guest/existingplans). Returns null when
-  /// no active plan exists so the UI can hide the card entirely —
-  /// mirrors prepaid behaviour where the active-plan card only renders
-  /// when `earliestAddOnsPrimaryPlan != null`.
-  add_ons_models.ActivePlanSummary? _activePlanSummaryFromState(
+  /// active primary plan (from /Guest/existingplans). When no active
+  /// plan exists the card still renders with placeholder content —
+  /// mirrors prepaid `PrepaidActivePlanCardWithData._buildContent`
+  /// (active_plan_card_with_data.dart:102-124) which shows "no active
+  /// plan" + `--/--/--` dates instead of hiding the card.
+  add_ons_models.ActivePlanSummary _activePlanSummaryFromState(
     GuestPurchasePlanState state,
   ) {
     final BasePlanModel? plan = state.earliestAddOnsPrimaryPlan;
-    if (plan == null) return null;
+    final bool hasPlan =
+        plan != null && plan.planName.trim().isNotEmpty;
 
     return add_ons_models.ActivePlanSummary(
       label: 'active plan',
-      name: plan.planName,
-      autoRenew: plan.autoRenew,
+      name: hasPlan ? plan.planName : 'no active plan',
+      autoRenew: hasPlan && plan.autoRenew,
       activeDateLabel: 'active',
-      activeDate: _formatPlanDate(plan.startDateTime),
+      activeDate: _formatPlanDate(plan?.startDateTime),
       expireDateLabel: 'expire',
-      expireDate: _formatPlanDate(plan.endDateTime),
+      expireDate: _formatPlanDate(plan?.endDateTime),
       // Prepaid shows the expire time as a subtitle under the date
-      // (active_plan_card_with_data.dart:124). Mirror that for parity.
-      expireTime: plan.endDateTime.formatHmAOrEmpty(),
+      // (active_plan_card_with_data.dart:124). Empty when no plan —
+      // same semantics as formatHmAOrEmpty() on null.
+      expireTime: plan?.endDateTime.formatHmAOrEmpty() ?? '',
     );
   }
 
@@ -93,11 +97,36 @@ class _GuestPurchasePlanView extends StatelessWidget {
   }
 
   add_ons_models.FairUsePolicy _fairUsePolicyForAddOnsTab() {
-    // This helper text is shown directly under the red card on add-ons tab.
+    // Matches prepaid HomePlanAddOnsTabContent._fairUsePolicy()
+    // (home_plan_add_ons_tab_content.dart:54-60) verbatim.
     return const add_ons_models.FairUsePolicy(
       title: 'fair use policy',
       description:
           'add-ons can only be added to your active primary plan and expires when it ends.',
+    );
+  }
+
+  static final Uri _fairUsePolicyUri = Uri.parse(
+    'https://www.bealiv.com/fair-use-policy/',
+  );
+
+  /// Mirrors prepaid HomePlanAddOnsTabContent._openFairUsePolicy
+  /// (home_plan_add_ons_tab_content.dart:33-48): launches the URL in an
+  /// external browser; falls back to a toast when no handler is
+  /// installed for the URI scheme.
+  Future<void> _openFairUsePolicy() async {
+    try {
+      final launched = await launchUrl(
+        _fairUsePolicyUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched) return;
+    } catch (_) {
+      // launchUrl can throw PlatformException on devices without a browser.
+    }
+    AppToast.show(
+      message: 'could not open fair use policy',
+      type: ToastType.error,
     );
   }
 
@@ -182,20 +211,18 @@ class _GuestPurchasePlanView extends StatelessWidget {
         16,
       ),
       children: <Widget>[
-        if (activePlan != null) ...[
-          PlanRedImageCard(
-            planLabel: activePlan.label,
-            planName: activePlan.name,
-            activeLabel: activePlan.activeDateLabel,
-            activeDate: activePlan.activeDate,
-            expireLabel: activePlan.expireDateLabel,
-            expireDate: activePlan.expireDate,
-            expireTime: activePlan.expireTime,
-          ),
-          const SizedBox(height: 16),
-          FairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
-          const SizedBox(height: 16),
-        ],
+        PlanRedImageCard(
+          planLabel: activePlan.label,
+          planName: activePlan.name,
+          activeLabel: activePlan.activeDateLabel,
+          activeDate: activePlan.activeDate,
+          expireLabel: activePlan.expireDateLabel,
+          expireDate: activePlan.expireDate,
+          expireTime: activePlan.expireTime,
+        ),
+        const SizedBox(height: 16),
+        FairUsePolicyCard(policy: fairUsePolicy, onTap: _openFairUsePolicy),
+        const SizedBox(height: 16),
         ...state.addOns.map((addOn) {
           final selected = state.selectedAddOnIds.contains(addOn.id);
           return Padding(
@@ -443,12 +470,22 @@ class _GuestPurchasePlanView extends StatelessWidget {
               }
 
               final total = _selectedAddOnsTotal(state);
+              final bool hasSelection = state.selectedAddOnIds.isNotEmpty;
 
               return DefaultBottomPayBar(
                 isVatExclusive: true,
                 buttonText: 'proceed',
                 amountText: AppUtils.formatPrice(total),
+                // Mirrors prepaid HomePlanAddOnsBottomPayBar
+                // (home_plan_add_ons_tab_content.dart:146-152): button is
+                // disabled until the user ticks at least one bolt-on. When
+                // there is no active plan the add-ons list is empty, so
+                // selectedAddOnIds stays empty and the CTA stays greyed out.
+                isButtonEnabled: hasSelection,
                 onPayNow: () {
+                  // Safety guard matching HomePlanAddOnsActions.openConfirmation
+                  // (home_plan_add_ons_actions.dart:22-24).
+                  if (!hasSelection) return;
                   context.push(
                     AppRoutes.addOnsConfirmation,
                     extra: {'phoneNumber': phoneNumber},

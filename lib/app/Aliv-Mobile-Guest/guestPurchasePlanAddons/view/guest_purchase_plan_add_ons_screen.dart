@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/app_session.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
@@ -45,6 +47,27 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
 
   static const double _contentHorizontalPadding = 25;
   static const String _defaultAccountHolder = 'guest purchase a plan';
+  static final Uri _fairUsePolicyUri = Uri.parse(
+    'https://www.bealiv.com/fair-use-policy/',
+  );
+
+  /// Mirrors prepaid HomePlanAddOnsTabContent._openFairUsePolicy
+  /// (home_plan_add_ons_tab_content.dart:33-48).
+  Future<void> _openFairUsePolicy() async {
+    try {
+      final launched = await launchUrl(
+        _fairUsePolicyUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched) return;
+    } catch (_) {
+      // launchUrl can throw PlatformException on devices without a browser.
+    }
+    AppToast.show(
+      message: 'could not open fair use policy',
+      type: ToastType.error,
+    );
+  }
 
   GuestPurchasePlanConfirmationRouteArgs _routeArgsFromState(
     GuestPurchasePlanAddOnsState state, {
@@ -203,7 +226,10 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                                   : null,
                             ),
                             const SizedBox(height: 16),
-                            FairUsePolicyCard(policy: policy, onTap: () {}),
+                            FairUsePolicyCard(
+                              policy: policy,
+                              onTap: _openFairUsePolicy,
+                            ),
                             const SizedBox(height: 16),
                             ...state.addOns.map((item) {
                               final selected = state.selectedAddOnIds.contains(
