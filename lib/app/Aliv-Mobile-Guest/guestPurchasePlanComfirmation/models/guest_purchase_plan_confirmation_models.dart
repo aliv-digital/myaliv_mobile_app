@@ -25,6 +25,9 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
   final String accountHolderName;
   final String primaryPlanName;
   final double primaryPlanPrice;
+
+  /// Label-only API base price; [primaryPlanPrice] retains total semantics.
+  final double? primaryPlanBasePrice;
   final String futurePlanStartDate;
   final GuestPurchasePlanConfirmationEntryFlow flow;
   final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
@@ -37,6 +40,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.primaryPlanBasePrice,
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
     this.forceNow = true,
@@ -56,6 +60,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     accountHolderName,
     primaryPlanName,
     primaryPlanPrice,
+    primaryPlanBasePrice,
     futurePlanStartDate,
     flow,
     selectedAddOns,
@@ -79,6 +84,9 @@ class PurchaseLineItem extends Equatable {
 
   final double price;
 
+  /// Label-only base price. Never used to calculate totals or payment amounts.
+  final double? basePrice;
+
   const PurchaseLineItem({
     required this.id,
     required this.type,
@@ -86,10 +94,19 @@ class PurchaseLineItem extends Equatable {
     required this.title,
     required this.subtitle,
     required this.price,
+    this.basePrice,
   });
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+    id,
+    type,
+    label,
+    title,
+    subtitle,
+    price,
+    basePrice,
+  ];
 }
 
 class PurchaseTotals extends Equatable {

@@ -17,6 +17,7 @@ class GuestPurchasePlanConfirmationRepository {
         title: args.primaryPlanName,
         subtitle: beginsText,
         price: args.primaryPlanPrice,
+        basePrice: args.primaryPlanBasePrice ?? args.selectedPlan?.basePrice,
       ),
     ];
 

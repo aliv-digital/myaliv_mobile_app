@@ -56,6 +56,12 @@ class HomeRoamingConfirmationState extends Equatable {
     );
   }
 
+  bool get hasPurchasableItems =>
+      status == HomeRoamingConfirmationStatus.ready &&
+      data != null &&
+      data!.items.isNotEmpty &&
+      data!.totals.total > 0;
+
   bool get canApplyPromo =>
       promoCode.trim().isNotEmpty &&
       promoStatus != HomeRoamingConfirmationPromoStatus.applying;

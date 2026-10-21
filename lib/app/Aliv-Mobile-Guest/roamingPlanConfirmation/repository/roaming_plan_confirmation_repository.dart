@@ -16,6 +16,7 @@ class RoamingPlanConfirmationRepository {
             ? 'begins immediately'
             : 'begins ${_shortDate(args.beginDate)}',
         price: args.planPrice,
+        basePrice: args.planBasePrice,
       ),
     ];
 

@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -176,7 +177,13 @@ void main() {
       expect(find.text('sub total'), findsOneWidget);
       expect(find.text('vat'), findsOneWidget);
       expect(find.text('total'), findsOneWidget);
-      expect(find.text(r'$ 45.45'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(CustomPaymentBreakDownCard),
+          matching: find.text(r'$ 45.45'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text(r'$ 4.55'), findsOneWidget);
       expect(find.text(r'$ 50.00'), findsWidgets);
 

@@ -8,6 +8,9 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
   final String planName;
   final String planDuration;
   final double planPrice;
+
+  /// Label-only API base price; [planPrice] still drives existing totals.
+  final double? planBasePrice;
   final DateTime beginDate;
   final bool showDateField;
   final bool forceNow;
@@ -18,6 +21,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
     required this.planName,
     required this.planDuration,
     required this.planPrice,
+    this.planBasePrice,
     required this.beginDate,
     required this.showDateField,
     required this.forceNow,
@@ -34,6 +38,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
         ? rawBeginDate
         : DateTime.tryParse(rawBeginDate?.toString() ?? '');
     final rawPrice = values['planPrice'];
+    final rawBasePrice = values['planBasePrice'];
     final showDateField = values['showDateField'] is bool
         ? values['showDateField'] as bool
         : fallbackShowDateField;
@@ -44,6 +49,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
       planName: values['planName']?.toString() ?? 'roam20',
       planDuration: values['planDuration']?.toString() ?? '7 days',
       planPrice: rawPrice is num ? rawPrice.toDouble() : 20,
+      planBasePrice: rawBasePrice is num ? rawBasePrice.toDouble() : null,
       beginDate: parsedBeginDate ?? DateTime.now(),
       showDateField: showDateField,
       forceNow: values['forceNow'] is bool
@@ -59,6 +65,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
       planName: planName,
       planDuration: planDuration,
       planPrice: planPrice,
+      planBasePrice: planBasePrice,
       beginDate: beginDate ?? this.beginDate,
       showDateField: showDateField,
       forceNow: forceNow,
@@ -72,6 +79,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
     planName,
     planDuration,
     planPrice,
+    planBasePrice,
     beginDate,
     showDateField,
     forceNow,
@@ -93,6 +101,9 @@ class PurchaseLineItem extends Equatable {
 
   final double price;
 
+  /// Label-only base price. Never used to calculate totals or payment amounts.
+  final double? basePrice;
+
   const PurchaseLineItem({
     required this.id,
     required this.type,
@@ -100,6 +111,7 @@ class PurchaseLineItem extends Equatable {
     required this.title,
     required this.subtitle,
     required this.price,
+    this.basePrice,
   });
 
   PurchaseLineItem copyWith({String? subtitle}) {
@@ -110,11 +122,20 @@ class PurchaseLineItem extends Equatable {
       title: title,
       subtitle: subtitle ?? this.subtitle,
       price: price,
+      basePrice: basePrice,
     );
   }
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+    id,
+    type,
+    label,
+    title,
+    subtitle,
+    price,
+    basePrice,
+  ];
 }
 
 class PurchaseTotals extends Equatable {

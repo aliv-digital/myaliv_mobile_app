@@ -139,10 +139,13 @@ class _HomeRoamingConfirmationViewState
                 return DefaultBottomPayBar(
                   buttonText: 'continue',
                   isVatExclusive: false,
-                  // Allow a tap to show TOP-004 without changing the pay bar.
-                  isButtonEnabled: true,
+                  // Keep nonempty carts tappable for inline terms validation.
+                  isButtonEnabled: state.hasPurchasableItems,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (!state.hasPurchasableItems) {
+                      return;
+                    }
                     if (!state.isTermsChecked) {
                       setState(() => _showTermsValidation = true);
                       return;
