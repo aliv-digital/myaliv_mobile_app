@@ -93,14 +93,18 @@ class _GradientInputFieldState extends State<GradientInputField> {
           const SizedBox(height: GuestTopUpTheme.amountFieldLabelToFieldGap),
           LayoutBuilder(
             builder: (context, constraints) {
+              final fieldWidth = math.min(
+                constraints.maxWidth,
+                GuestTopUpTheme.amountFieldMaxWidth,
+              );
               final startAtTopLeftAngle = math.atan2(
                 -GuestTopUpTheme.amountFieldHeight / 2,
-                -constraints.maxWidth / 2,
+                -fieldWidth / 2,
               );
 
               return SizedBox(
                 height: GuestTopUpTheme.amountFieldHeight,
-                width: double.infinity,
+                width: fieldWidth,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(
@@ -133,8 +137,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(innerRadius),
                       ),
-                      // The editable text area is inset by 68px on both sides
-                      // to match the Figma spacing.
+                      // Leave room for the full amount in the narrower field.
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal:
