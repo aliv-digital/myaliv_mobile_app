@@ -13,24 +13,36 @@ class TransactionTileNew extends StatelessWidget {
   static const Color _credit = Color(0xFF00C4B3);
   static const Color _debit = Color(0xFFE94408);
   static const Color _iconBg = Color(0xFFF2F1FB);
+  static const TextStyle _primaryTextStyle = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 18 / 14,
+    color: Color(0xFF1C1C1C),
+  );
+  static const TextStyle _secondaryTextStyle = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 1.25,
+    color: Color(0xFF707070),
+  );
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            _buildIcon(),
-            const SizedBox(width: 12),
-            _buildContent(),
-            _buildAmountAndDate(),
-            const SizedBox(width: 8),
+            SizedBox(width: 52, height: 52, child: Center(child: _buildIcon())),
+            const SizedBox(width: 16),
+            Expanded(child: _buildContent()),
           ],
         ),
       ),
@@ -69,38 +81,6 @@ class TransactionTileNew extends StatelessWidget {
   }
 
   Widget _buildContent() {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            transaction.displayTitle,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          if (transaction.displaySubtitle != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              transaction.displaySubtitle == transaction.channel
-                  ? 'Channel: ${transaction.channel}'
-                  : transaction.displaySubtitle!,
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF7A7A7A),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAmountAndDate() {
     final amountColor = transaction.isCredit ? _credit : _debit;
     final absAmount = transaction.amount.abs();
     final formattedAmount = NumberFormat('#,##0.00').format(absAmount);
@@ -109,28 +89,95 @@ class TransactionTileNew extends StatelessWidget {
         : '-\$$formattedAmount';
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          displayAmount,
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: amountColor,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Expanded(
+              child: Text(
+                transaction.displayTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: _primaryTextStyle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              displayAmount,
+              style: _primaryTextStyle.copyWith(color: amountColor),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
-        Text(
-          transaction.date.formatDdMmmYyyy(),
-          style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF707070),
-          ),
-        ),
+        _buildSecondaryRow(),
       ],
+    );
+  }
+
+  Widget _buildSecondaryRow() {
+    final subtitle = transaction.displaySubtitle;
+    final isChannel = subtitle != null && subtitle == transaction.channel;
+    final subtitleSpan = TextSpan(
+      style: _secondaryTextStyle.copyWith(letterSpacing: -0.3),
+      text: isChannel ? 'Channel: ' : subtitle,
+      children: [
+        if (isChannel)
+          TextSpan(
+            text: transaction.channel,
+            style: const TextStyle(color: Colors.black),
+          ),
+      ],
+    );
+    final date = transaction.date.formatDdMmmYyyyHm();
+    final dateText = Text(
+      date,
+      textAlign: TextAlign.end,
+      style: _secondaryTextStyle,
+    );
+    if (subtitle == null) {
+      return dateText;
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScaler = MediaQuery.textScalerOf(context);
+        final direction = Directionality.of(context);
+        double measure(InlineSpan text) {
+          final painter = TextPainter(
+            text: text,
+            textDirection: direction,
+            textScaler: textScaler,
+          )..layout();
+          final width = painter.width;
+          painter.dispose();
+          return width;
+        }
+
+        final subtitleText = Text.rich(subtitleSpan);
+        final requiredWidth =
+            measure(subtitleSpan) +
+            8 +
+            measure(TextSpan(text: date, style: _secondaryTextStyle));
+
+        // Keep the Figma row intact when it fits; preserve full text on
+        // smaller screens and when accessibility text scaling is enabled.
+        if (requiredWidth > constraints.maxWidth) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [subtitleText, const SizedBox(height: 4), dateText],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [subtitleText, const SizedBox(width: 8), dateText],
+        );
+      },
     );
   }
 }
