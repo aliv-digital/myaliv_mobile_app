@@ -85,7 +85,7 @@ class HomeRoamingConfirmationBloc
 
     final totals = HomeRoamingConfirmationPurchaseTotals(
       subTotal: updatedItems.fold<double>(0, (s, x) => s + x.price),
-      vat: data.totals.vat,
+      vat: updatedItems.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
     final response = state.promoResponse;
@@ -277,7 +277,9 @@ class HomeRoamingConfirmationBloc
     HomeRoamingConfirmationPayNowPressed event,
     Emitter<HomeRoamingConfirmationState> emit,
   ) {
-    if (!state.isTermsChecked) return;
+    if (!state.isTermsChecked || !state.hasPurchasableItems) {
+      return;
+    }
 
     // Future: call API to create payment intent etc.
     emit(state.copyWith(payNowRequestId: state.payNowRequestId + 1));

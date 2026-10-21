@@ -53,17 +53,9 @@ class HomePlanConfirmationRepository {
       );
     }
 
-    final double primaryVat = args.isPrimaryPlanActive
-        ? 0
-        : args.primaryPlanVatAmount;
-    final double addOnsVat = args.selectedAddOns.fold<double>(
-      0,
-      (sum, addOn) => sum + addOn.vatAmount,
-    );
-
     final totals = PurchaseTotals(
       subTotal: items.fold<double>(0, (s, x) => s + x.price),
-      vat: primaryVat + addOnsVat,
+      vat: items.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
     return HomePlanConfirmationData(

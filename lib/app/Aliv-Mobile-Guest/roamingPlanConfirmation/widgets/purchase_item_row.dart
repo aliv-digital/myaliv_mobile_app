@@ -72,7 +72,7 @@ class PurchaseItemRow extends StatelessWidget {
             ),
           ),
           child: Text(
-            AppUtils.formatPrice(item.price),
+            AppUtils.formatPrice(item.basePrice ?? item.price),
             style: RoamingPlanConfirmationTheme.purchaseItemAmountChipTextStyle,
           ),
         ),

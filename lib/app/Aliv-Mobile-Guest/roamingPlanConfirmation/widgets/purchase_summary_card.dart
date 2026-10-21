@@ -26,6 +26,7 @@ class PurchaseSummaryCard extends StatelessWidget {
       title: item.title,
       subtitle: 'begins immediately',
       price: item.price,
+      basePrice: item.basePrice,
     );
   }
 
