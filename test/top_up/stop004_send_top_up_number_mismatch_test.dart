@@ -17,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widg
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class _SendRepo extends Mock implements SendTopupRepository {}
@@ -142,6 +143,47 @@ void main() {
     expect(confirmation, isNull);
   }
 
+  testWidgets('new Send Top-up screen shows no recipient error', (
+    tester,
+  ) async {
+    await pumpTab(tester);
+
+    expect(find.text('Phone number is required.'), findsNothing);
+    expect(
+      find.text('Invalid phone number. Please enter a 10-digit phone number.'),
+      findsNothing,
+    );
+    expect(find.text(_mismatch), findsNothing);
+    final recipient = tester.widget<CustomCountryPhoneInputRow>(
+      find.byType(CustomCountryPhoneInputRow).first,
+    );
+    expect(recipient.unfocusedBorderColor, Colors.transparent);
+    expect(proceedButton(tester).onPressed, isNull);
+    expectNoDownstream();
+
+    final phone = find.byType(TextField).first;
+    await tester.showKeyboard(phone);
+    tester.widget<TextField>(phone).focusNode!.unfocus();
+    await tester.pumpAndSettle();
+    expect(find.text('Phone number is required.'), findsNothing);
+    expect(proceedButton(tester).onPressed, isNull);
+    expectNoDownstream();
+  });
+
+  testWidgets('editing other fields leaves untouched recipient error hidden', (
+    tester,
+  ) async {
+    await pumpTab(tester);
+    await tester.enterText(find.byType(TextField).at(1), '2428011616');
+    await tester.enterText(find.byType(TextField).at(2), '10');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Phone number is required.'), findsNothing);
+    expect(find.text(_mismatch), findsNothing);
+    expect(proceedButton(tester).onPressed, isNull);
+    expectNoDownstream();
+  });
+
   testWidgets('valid but different numbers show STOP-004 and block', (
     tester,
   ) async {
@@ -200,6 +242,7 @@ void main() {
     tester,
   ) async {
     await pumpTab(tester);
+    await tester.enterText(find.byType(TextField).first, '2428011616');
     await fill(tester, confirm: '2428011616', amount: '10');
     expect(find.text('Phone number is required.'), findsOneWidget);
     expect(find.text(_mismatch), findsNothing);
@@ -258,6 +301,18 @@ void main() {
     'editing clears required/format errors and seven digits proceed',
     (tester) async {
       await pumpTab(tester);
+      expect(find.text('Phone number is required.'), findsNothing);
+      final recipientField = find.byType(TextField).first;
+      await tester.enterText(recipientField, '24280');
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Invalid phone number. Please enter a 10-digit phone number.',
+        ),
+        findsOneWidget,
+      );
+      await tester.enterText(recipientField, '');
+      await tester.pumpAndSettle();
       expect(find.text('Phone number is required.'), findsOneWidget);
       await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
       expect(find.text('Phone number is required.'), findsNothing);
