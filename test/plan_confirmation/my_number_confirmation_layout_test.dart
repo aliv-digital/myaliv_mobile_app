@@ -154,13 +154,14 @@ void main() {
         );
 
         final barFinder = find.byType(ConfirmationBottomBar);
-        final barSize = tester.getSize(barFinder);
-        // Base content height ~50 + padding (16*2) = 82; with 34 safe area inset = 116
-        expect(barSize.height, 116.0);
 
         final continueFinder = find.text('continue');
         final continueRect = tester.getRect(continueFinder);
         final barRect = tester.getRect(barFinder);
+        expect(
+          barRect.bottom - tester.getRect(find.text('no VAT applied')).bottom,
+          34 + 16,
+        );
 
         // Distance from bottom of continue button to physical screen bottom edge
         final bottomClearance = barRect.bottom - continueRect.bottom;
@@ -169,8 +170,11 @@ void main() {
     );
 
     testWidgets(
-      'retains standard 82px height when useBottomSafeArea is true and bottom inset is 0',
+      'keeps compact labels inside 24px horizontal and 16px vertical padding',
       (tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
         await tester.pumpWidget(
           MaterialApp(
             home: MediaQuery(
@@ -192,13 +196,32 @@ void main() {
         );
 
         final barFinder = find.byType(ConfirmationBottomBar);
-        final barSize = tester.getSize(barFinder);
-        expect(barSize.height, 82.0);
+        final barRect = tester.getRect(barFinder);
+        final amountRect = tester.getRect(find.text(r'$ 25.00'));
+        final vatRect = tester.getRect(find.text('no VAT applied'));
+        final buttonRect = tester.getRect(
+          find
+              .ancestor(
+                of: find.text('continue'),
+                matching: find.byType(GestureDetector),
+              )
+              .first,
+        );
+        expect(amountRect.left - barRect.left, 24);
+        expect(amountRect.top - barRect.top, 16);
+        expect(vatRect.top - amountRect.bottom, 0);
+        expect(
+          barRect.bottom - tester.getRect(find.text('no VAT applied')).bottom,
+          16,
+        );
+        expect(buttonRect.top - barRect.top, 16);
+        expect(barRect.right - buttonRect.right, 24);
+        expect(buttonRect.height, 40);
       },
     );
 
     testWidgets(
-      'retains standard 82px height when useBottomSafeArea is false even with 34 inset',
+      'keeps 16px content padding when useBottomSafeArea is false even with 34 inset',
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
@@ -221,8 +244,12 @@ void main() {
         );
 
         final barFinder = find.byType(ConfirmationBottomBar);
-        final barSize = tester.getSize(barFinder);
-        expect(barSize.height, 82.0);
+        final barRect = tester.getRect(barFinder);
+        expect(tester.getRect(find.text(r'$ 25.00')).top - barRect.top, 16);
+        expect(
+          barRect.bottom - tester.getRect(find.text('no VAT applied')).bottom,
+          16,
+        );
       },
     );
   });
