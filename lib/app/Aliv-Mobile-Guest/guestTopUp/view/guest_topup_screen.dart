@@ -220,6 +220,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           inputFormatters: _isBahamas
               ? const [BahamasPhoneInputFormatter()]
               : null,
+          hideUnfocusedInputBorder: !showError,
           unfocusedBorderColor: borderColor,
           phoneInputStyle: inputStyle,
           onChanged: onChanged,

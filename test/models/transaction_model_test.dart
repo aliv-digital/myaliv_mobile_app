@@ -117,7 +117,23 @@ void main() {
       expect(t.amount, 25.0);
       expect(t.channel, 'App');
       expect(t.subId, 42);
+      expect(t.date, DateTime.utc(2026, 1, 15, 10));
     });
+
+    for (final timestamp in [
+      '2026-10-21T17:57:36Z',
+      '2026-10-21T13:57:36-04:00',
+      '2026-10-21T17:57:36',
+      '2026-10-21 17:57:36',
+      '10/21/2026 5:57:36 PM',
+    ]) {
+      test('fromJson preserves transaction time from $timestamp', () {
+        final transaction = TransactionModel.fromJson({'Date': timestamp});
+
+        expect(transaction.date, DateTime.utc(2026, 10, 21, 17, 57, 36));
+        expect(transaction.date.isUtc, isTrue);
+      });
+    }
 
     test('fromJson handles null optional fields gracefully', () {
       final json = {
