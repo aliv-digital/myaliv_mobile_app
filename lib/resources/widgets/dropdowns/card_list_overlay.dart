@@ -105,6 +105,9 @@ class _AddNewCardFooter extends StatelessWidget {
 }
 
 class _CardListItem extends StatelessWidget {
+  static const Color _selectedIndicatorBorder = Color(0xFF9B83CF);
+  static const Color _unselectedIndicatorBorder = Color(0xFFCCCCCC);
+
   final SavedCardModel card;
   final bool isSelected;
   final bool isFirst;
@@ -149,6 +152,9 @@ class _CardListItem extends StatelessWidget {
                     decoration: const BoxDecoration(
                       color: dropdownSelectedAccent,
                       shape: BoxShape.circle,
+                      border: Border.fromBorderSide(
+                        BorderSide(color: _selectedIndicatorBorder),
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: const Icon(
@@ -163,6 +169,9 @@ class _CardListItem extends StatelessWidget {
                     decoration: const BoxDecoration(
                       color: Color(0xFFE0E0E0),
                       shape: BoxShape.circle,
+                      border: Border.fromBorderSide(
+                        BorderSide(color: _unselectedIndicatorBorder),
+                      ),
                     ),
                   ),
           ],
