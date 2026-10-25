@@ -23,9 +23,17 @@ platform :ios do
       force_for_new_devices: false,
     )
 
-    update_project_team(
+    profile_name = ENV["sigh_org.app.aliv_appstore_profile-name"]
+    UI.message("Using provisioning profile: #{profile_name}")
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
       path: "Runner.xcodeproj",
-      teamid: ENV["APPLE_TEAM_ID"],
+      team_id: ENV["APPLE_TEAM_ID"],
+      bundle_identifier: "org.app.aliv",
+      profile_name: profile_name,
+      code_sign_identity: "Apple Distribution",
+      targets: ["Runner"],
     )
 
     build_app(
@@ -36,10 +44,14 @@ platform :ios do
       output_directory: "./build",
       output_name: "MyAliv.ipa",
       clean: true,
+      xcargs: "-allowProvisioningUpdates",
       export_options: {
         provisioningProfiles: {
-          "org.app.aliv" => "match AppStore org.app.aliv",
+          "org.app.aliv" => profile_name,
         },
+        signingStyle: "manual",
+        signingCertificate: "Apple Distribution",
+        teamID: ENV["APPLE_TEAM_ID"],
       },
     )
 
