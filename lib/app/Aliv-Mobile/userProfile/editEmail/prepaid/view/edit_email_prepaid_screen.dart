@@ -18,6 +18,22 @@ import '../widgets/edit_email_prepaid_save_button.dart';
 class EditEmailPrepaidScreen extends StatelessWidget {
   const EditEmailPrepaidScreen({super.key});
 
+  /// Formats phone numbers for read-only display on the Edit Email screen.
+  /// Formats 10-digit Bahamian/NANP numbers (and 11-digit numbers with leading 1)
+  /// as `(XXX)-XXX-XXXX` (e.g. `(242)-899-8866`).
+  /// Gracefully handles spaces, hyphens, parentheses, and leading `+`/`+1`.
+  static String formatDisplayPhone(String phone) {
+    if (phone.trim().isEmpty) return '';
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 10) {
+      return '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
+    }
+    if (digits.length == 11 && digits.startsWith('1')) {
+      return '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
+    }
+    return phone.trim();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -114,7 +130,10 @@ class _EditEmailPrepaidView extends StatelessWidget {
                               const SizedBox(height: 16),
                               EditEmailPrepaidInfoField(
                                 label: 'phone number',
-                                value: data.phoneNumber,
+                                value:
+                                    EditEmailPrepaidScreen.formatDisplayPhone(
+                                      data.phoneNumber,
+                                    ),
                               ),
                               if (data.gender.trim().isNotEmpty) ...[
                                 const SizedBox(height: 16),
