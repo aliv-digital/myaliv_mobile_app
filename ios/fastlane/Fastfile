@@ -18,8 +18,9 @@ platform :ios do
 
     match(
       type: "appstore",
-      readonly: true,
+      readonly: false,
       api_key: api_key,
+      force_for_new_devices: false,
     )
 
     update_project_team(
