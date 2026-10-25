@@ -33,8 +33,8 @@ class TopUpPrepaidTheme {
   ];
 
   // Amount box layout + border behavior
-  static const double amountFieldWidth = 280;
-  static const double amountFieldHeight = 92;
+  static const double amountFieldWidth = 250;
+  static const double amountFieldHeight = 71;
   static const double amountFieldRadius = 10;
   static const double amountFieldBorderWidth = 2;
   static const double amountFieldMinInputWidth = 80;

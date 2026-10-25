@@ -178,12 +178,14 @@ void main() {
         );
 
         final barFinder = find.byType(ConfirmationBottomBar);
-        final barSize = tester.getSize(barFinder);
-        expect(barSize.height, 116.0);
 
         final continueFinder = find.text('continue');
         final continueRect = tester.getRect(continueFinder);
         final barRect = tester.getRect(barFinder);
+        expect(
+          barRect.bottom - tester.getRect(find.text('no VAT applied')).bottom,
+          34 + 16,
+        );
 
         final bottomClearance = barRect.bottom - continueRect.bottom;
         expect(bottomClearance, greaterThanOrEqualTo(34.0 + 16.0));

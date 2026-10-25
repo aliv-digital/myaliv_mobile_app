@@ -4,6 +4,8 @@ class MakePaymentPostPaidTheme {
   MakePaymentPostPaidTheme._();
 
   static const String fontFamily = 'CircularPro';
+  // Use the actual bold face without changing the legacy app-wide mapping.
+  static const String currencyFontFamily = 'CircularProBold';
 
   static const Color bg = Color(0xFFF2F3FA);
   static const Color appBarBg = Color(0xFF655C9A);
@@ -81,8 +83,7 @@ class MakePaymentPostPaidTheme {
   static const EdgeInsets paymentDueAmountFieldPadding = EdgeInsets.symmetric(
     horizontal: 16,
   );
-  static const double paymentDueAmountValueHorizontalPadding = 8;
-  static const double paymentDueCurrencyToValueGap = 8;
+  static const double paymentDueCurrencyToValueGap = 16;
   static const EdgeInsets paymentDueOptionTilePadding = EdgeInsets.all(16);
   static const double paymentDueOptionTextToIndicatorGap = 12;
 
@@ -135,7 +136,7 @@ class MakePaymentPostPaidTheme {
   );
 
   static TextStyle get currencySymbolText => const TextStyle(
-    fontFamily: fontFamily,
+    fontFamily: currencyFontFamily,
     fontSize: 14,
     height: 1.43,
     fontWeight: FontWeight.w700,

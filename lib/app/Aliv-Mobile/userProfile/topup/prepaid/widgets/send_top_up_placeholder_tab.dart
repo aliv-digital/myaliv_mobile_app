@@ -43,6 +43,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   String _amount = '';
   String _phoneNumber = '';
   String _confirmPhoneNumber = '';
+  bool _hasEditedPhoneNumber = false;
   bool _hasPhoneFocus = false;
   bool _hasConfirmPhoneFocus = false;
   bool _isChecking = false;
@@ -241,7 +242,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                 value: _phoneNumber,
                 forceError:
-                    _phoneNumber.trim().isEmpty || _hasPhoneValidationError,
+                    _hasEditedPhoneNumber &&
+                    (_phoneNumber.trim().isEmpty || _hasPhoneValidationError),
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
                 highlightInvalidInput: true,
@@ -249,7 +251,10 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     ? 'Phone number is required.'
                     : 'Invalid phone number. Please enter a 10-digit phone number.',
                 onChanged: (value) {
-                  setState(() => _phoneNumber = value);
+                  setState(() {
+                    _phoneNumber = value;
+                    _hasEditedPhoneNumber = true;
+                  });
                 },
               ),
 

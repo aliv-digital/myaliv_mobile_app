@@ -19,6 +19,9 @@ class MpPayBottomBar extends StatelessWidget {
     return DefaultBottomPayBar(
       amountText: BalanceCurrencyFormatterService.format(
         resolveMpAmountToCharge(state),
+      ).replaceFirst(r'$', r'$ '),
+      amountTextStyle: const TextStyle(
+        fontFamily: MakePaymentPostPaidTheme.currencyFontFamily,
       ),
       isButtonEnabled: state.canPayNow,
       isLoading: state.isBusy,

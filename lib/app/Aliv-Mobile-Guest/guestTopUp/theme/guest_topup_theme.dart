@@ -78,11 +78,12 @@ class GuestTopUpTheme {
 
   // Amount input field dimensions from design.
   static const double amountFieldOuterHorizontalPadding = 48;
+  static const double amountFieldMaxWidth = 250;
   static const double amountFieldHeight = 71;
   static const double amountFieldRadius = 10;
   static const double amountFieldBorderWidth = 3;
   static const double amountFieldLabelToFieldGap = 2;
-  static const double amountFieldTextHorizontalInset = 68;
+  static const double amountFieldTextHorizontalInset = 24;
 
   // Elevation below the amount input card.
   static const Color amountFieldShadowColor = Color(0x1A000000);

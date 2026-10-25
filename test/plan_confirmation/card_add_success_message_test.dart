@@ -197,7 +197,7 @@ void main() {
   ) async {
     final hosted = await openHosted(tester);
     await redirect(tester, hosted);
-    await tester.tap(find.byIcon(Icons.close));
+    await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
     expect(find.text(_success), findsNothing);
     verifyNever(

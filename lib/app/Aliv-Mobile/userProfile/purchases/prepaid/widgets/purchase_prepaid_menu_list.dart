@@ -6,11 +6,13 @@ import 'purchase_prepaid_menu_tile.dart';
 class PurchasePrepaidMenuList extends StatelessWidget {
   final List<PurchasePrepaidMenuItem> items;
   final ValueChanged<PurchasePrepaidMenuItem> onTapItem;
+  final bool showTopDivider;
 
   const PurchasePrepaidMenuList({
     super.key,
     required this.items,
     required this.onTapItem,
+    this.showTopDivider = true,
   });
 
   @override
@@ -19,13 +21,14 @@ class PurchasePrepaidMenuList extends StatelessWidget {
       color: PurchasePrepaidTheme.tileBg,
       child: Column(
         children: [
-          const Divider(
-            height: 1,
-            thickness: 1,
-            indent: PurchasePrepaidTheme.horizontalPad,
-            endIndent: PurchasePrepaidTheme.horizontalPad,
-            color: PurchasePrepaidTheme.divider,
-          ),
+          if (showTopDivider)
+            const Divider(
+              height: 1,
+              thickness: 1,
+              indent: PurchasePrepaidTheme.horizontalPad,
+              endIndent: PurchasePrepaidTheme.horizontalPad,
+              color: PurchasePrepaidTheme.divider,
+            ),
           for (int i = 0; i < items.length; i++) ...[
             PurchasePrepaidMenuTile(
               title: items[i].title,

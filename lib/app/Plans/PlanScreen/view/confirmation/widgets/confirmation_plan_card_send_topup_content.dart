@@ -84,7 +84,6 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
                     Text(
                       recipient,
                       style: const TextStyle(

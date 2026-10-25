@@ -67,3 +67,11 @@ flutter:
         - asset: assets/fonts/CircularPro-Bold.otf
         - asset: assets/fonts/CircularPro-Book.otf
           weight: 700
+    - family: CircularProBold
+      fonts:
+        - asset: assets/fonts/CircularPro-Bold.otf
+          weight: 700
+    - family: CircularProBook
+      fonts:
+        - asset: assets/fonts/CircularPro-Book.otf
+          weight: 400

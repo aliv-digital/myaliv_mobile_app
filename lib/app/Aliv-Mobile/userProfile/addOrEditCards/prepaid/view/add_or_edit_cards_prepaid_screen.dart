@@ -6,12 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_bottom_sheet.dart';
-import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/add_saved_card_flow.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -92,66 +87,9 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
       if (!context.mounted) return;
       bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
 
-      final navigator = Navigator.of(context);
-      final cubit = context.read<SavedCardsCubit>();
-
-      navigator.push<void>(
-        MaterialPageRoute<void>(
-          builder: (_) => PaymentIFrameScreen(
-            request: PaymentRequest(
-              url: Api.addCreditCard,
-              body: ChangeBundleRequestFactory.addCardBodyFor3DS(),
-              redirectScheme: 'myaliv',
-            ),
-            title: 'add card',
-            appBarBgColor: AddOrEditCardsPrepaidTheme.primary,
-            onSuccess: (PaymentSuccess success) async {
-              navigator.pop();
-              FocusManager.instance.primaryFocus?.unfocus();
-
-              if (!context.mounted) return;
-              final expirationDate =
-                  await SaveNewCardBottomSheet.showForExpiryCapture(
-                    context,
-                    rejectPastExpiry: true,
-                  );
-              if (!context.mounted || expirationDate == null) return;
-
-              final orderId = int.tryParse(success.orderId ?? '');
-              if (orderId == null) {
-                AppToast.show(
-                  message: 'Failed to save card. Try again.',
-                  type: ToastType.error,
-                );
-                return;
-              }
-              final ok = await cubit.saveNewCard(
-                orderId: orderId,
-                expirationDate: expirationDate,
-              );
-              if (!context.mounted) return;
-              if (ok) {
-                AppToast.show(
-                  message: 'Payment method added successfully!',
-                  type: ToastType.success,
-                );
-              } else {
-                final msg = cubit.state.errorMessage?.trim();
-                AppToast.show(
-                  message: (msg == null || msg.isEmpty)
-                      ? 'Failed to save card. Try again.'
-                      : msg,
-                  type: ToastType.error,
-                );
-              }
-            },
-            onFailure: (String msg) {
-              navigator.pop();
-              AppToast.show(message: msg, type: ToastType.error);
-            },
-          ),
-        ),
-      );
+      await AddSavedCardFlow(
+        savedCardsCubit: context.read<SavedCardsCubit>(),
+      ).open(context, appBarColor: AddOrEditCardsPrepaidTheme.primary);
       return;
     }
 

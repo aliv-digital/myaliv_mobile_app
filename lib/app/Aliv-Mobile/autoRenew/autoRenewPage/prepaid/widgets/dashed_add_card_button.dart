@@ -4,15 +4,22 @@ import 'dashed_border_painter.dart';
 
 class DashedAddCardButton extends StatelessWidget {
   final VoidCallback onTap;
+  final bool isEnabled;
+  final bool isLoading;
 
-  const DashedAddCardButton({super.key, required this.onTap});
+  const DashedAddCardButton({
+    super.key,
+    required this.onTap,
+    this.isEnabled = true,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     const radius = AutoRenewPrepaidTheme.pillRadius;
 
     return InkWell(
-      onTap: onTap,
+      onTap: isEnabled && !isLoading ? onTap : null,
       borderRadius: BorderRadius.circular(radius),
       child: SizedBox(
         width: double.infinity,
@@ -29,16 +36,26 @@ class DashedAddCardButton extends StatelessWidget {
             width: double.infinity,
             alignment: Alignment.center,
             padding: AutoRenewPrepaidTheme.addCardButtonPadding,
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.add,
-                  color: AutoRenewPrepaidTheme.primary,
-                  size: AutoRenewPrepaidTheme.addCardIconSize,
-                ),
-                SizedBox(width: AutoRenewPrepaidTheme.addCardIconTextGap),
-                Text(
+                if (isLoading)
+                  const SizedBox(
+                    width: AutoRenewPrepaidTheme.addCardIconSize,
+                    height: AutoRenewPrepaidTheme.addCardIconSize,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AutoRenewPrepaidTheme.primary,
+                    ),
+                  )
+                else
+                  const Icon(
+                    Icons.add,
+                    color: AutoRenewPrepaidTheme.primary,
+                    size: AutoRenewPrepaidTheme.addCardIconSize,
+                  ),
+                const SizedBox(width: AutoRenewPrepaidTheme.addCardIconTextGap),
+                const Text(
                   'add a new card',
                   style: AutoRenewPrepaidTheme.addCardButtonTextStyle,
                 ),

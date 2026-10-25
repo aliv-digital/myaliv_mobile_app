@@ -20,21 +20,14 @@ class MpAmountField extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Text(r'$', style: MakePaymentPostPaidTheme.currencySymbolText),
           SizedBox(
             width: MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: MakePaymentPostPaidTheme
-                  .paymentDueAmountValueHorizontalPadding,
-            ),
-            child: Text(
-              sanitizedValue,
-              style: MakePaymentPostPaidTheme.amountText,
-            ),
-          ),
+          Text(sanitizedValue, style: MakePaymentPostPaidTheme.amountText),
         ],
       ),
     );

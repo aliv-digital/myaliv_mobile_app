@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -11,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postp
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/repository/make_payment_confirmation_postpaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/widgets/mp_amount_field.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/widgets/mp_custom_amount_field.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/theme/make_payment_postpaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -126,6 +130,23 @@ void main() {
   });
 
   group('Bug 48: Currency symbol styling on payment screen', () {
+    test('bold currency resolves to the actual bold asset', () async {
+      final manifest =
+          jsonDecode(await rootBundle.loadString('FontManifest.json')) as List;
+      final family = manifest.cast<Map<String, dynamic>>().firstWhere(
+        (entry) =>
+            entry['family'] ==
+            MakePaymentPostPaidTheme.currencySymbolText.fontFamily,
+      );
+
+      expect(
+        family['fonts'],
+        contains(
+          equals({'asset': 'assets/fonts/CircularPro-Bold.otf', 'weight': 700}),
+        ),
+      );
+    });
+
     testWidgets('MpAmountField displays bold dollar sign', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(

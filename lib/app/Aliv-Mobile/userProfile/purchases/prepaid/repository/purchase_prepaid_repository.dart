@@ -8,40 +8,40 @@ class PurchasePrepaidRepository {
     if (isPrepaid) {
       return const [
         PurchasePrepaidMenuItem(
-          title: 'buy plans',
-          action: PurchasePrepaidAction.buyPlans,
-        ),
-        PurchasePrepaidMenuItem(
-          title: 'add-ons',
-          action: PurchasePrepaidAction.addOns,
+          title: 'add/edit credit cards',
+          action: PurchasePrepaidAction.addEditCreditCards,
         ),
         PurchasePrepaidMenuItem(
           title: 'top-up',
           action: PurchasePrepaidAction.topUp,
         ),
         PurchasePrepaidMenuItem(
-          title: 'auto top-up',
-          action: PurchasePrepaidAction.autoTopUp,
-        ),
-        PurchasePrepaidMenuItem(
-          title: 'send top-up',
-          action: PurchasePrepaidAction.sendTopUp,
+          title: 'buy plans',
+          action: PurchasePrepaidAction.buyPlans,
         ),
         PurchasePrepaidMenuItem(
           title: 'future plans',
           action: PurchasePrepaidAction.futurePlans,
         ),
         PurchasePrepaidMenuItem(
-          title: 'auto renew',
-          action: PurchasePrepaidAction.autoRenew,
+          title: 'send top-up',
+          action: PurchasePrepaidAction.sendTopUp,
         ),
         PurchasePrepaidMenuItem(
-          title: 'add/edit credit cards',
-          action: PurchasePrepaidAction.addEditCreditCards,
+          title: 'auto top-up',
+          action: PurchasePrepaidAction.autoTopUp,
         ),
         PurchasePrepaidMenuItem(
           title: 'transaction history',
           action: PurchasePrepaidAction.transactionHistory,
+        ),
+        PurchasePrepaidMenuItem(
+          title: 'auto renew',
+          action: PurchasePrepaidAction.autoRenew,
+        ),
+        PurchasePrepaidMenuItem(
+          title: 'add-ons',
+          action: PurchasePrepaidAction.addOns,
         ),
       ];
     } else {
@@ -55,28 +55,28 @@ class PurchasePrepaidRepository {
           action: PurchasePrepaidAction.makePayment,
         ),
         PurchasePrepaidMenuItem(
-          title: 'top-up a prepaid number',
-          action: PurchasePrepaidAction.topUpPrepaidNumber,
+          title: 'add/edit credit cards',
+          action: PurchasePrepaidAction.addEditCreditCards,
         ),
         PurchasePrepaidMenuItem(
           title: 'future plans',
           action: PurchasePrepaidAction.futurePlans,
         ),
         PurchasePrepaidMenuItem(
-          title: 'review invoices',
-          action: PurchasePrepaidAction.reviewInvoices,
-        ),
-        PurchasePrepaidMenuItem(
           title: 'my limits',
           action: PurchasePrepaidAction.myLimits,
         ),
         PurchasePrepaidMenuItem(
-          title: 'add/edit credit cards',
-          action: PurchasePrepaidAction.addEditCreditCards,
+          title: 'review invoices',
+          action: PurchasePrepaidAction.reviewInvoices,
         ),
         PurchasePrepaidMenuItem(
           title: 'transaction history',
           action: PurchasePrepaidAction.transactionHistory,
+        ),
+        PurchasePrepaidMenuItem(
+          title: 'top-up a prepaid number',
+          action: PurchasePrepaidAction.topUpPrepaidNumber,
         ),
       ];
     }

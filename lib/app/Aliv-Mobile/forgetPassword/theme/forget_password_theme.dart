@@ -52,7 +52,7 @@ class ForgetPasswordSizes {
 
   // Field sizes.
   static const double fieldHeight = 54;
-  static const double fieldRadius = 8;
+  static const double fieldRadius = 4;
   static const double fieldBorderWidth = 1;
   static const double countryWidth = 60;
   static const double countryFlagFontSize = 20;

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ConfirmationBottomBar extends StatelessWidget {
+  static const double _verticalPadding = 16;
+
   final String totalText;
   final String vatLabel;
   final bool enabled;
@@ -25,8 +27,7 @@ class ConfirmationBottomBar extends StatelessWidget {
         ? const Color(0xFFF1F1F8)
         : const Color(0xFF707070);
 
-    return Container(
-      width: 390,
+    return DecoratedBox(
       decoration: const ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(
@@ -38,64 +39,70 @@ class ConfirmationBottomBar extends StatelessWidget {
         left: false,
         right: false,
         bottom: useBottomSafeArea,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      totalText,
-                      style: const TextStyle(
-                        color: Color(0xFF222222),
-                        fontSize: 22,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: double.infinity),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: _verticalPadding,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        totalText,
+                        style: const TextStyle(
+                          color: Color(0xFF222222),
+                          fontSize: 22,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    Text(
-                      vatLabel,
-                      style: const TextStyle(
-                        color: Color(0xFF707070),
-                        fontSize: 12,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
+                      Text(
+                        vatLabel,
+                        style: const TextStyle(
+                          color: Color(0xFF707070),
+                          fontSize: 12,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: enabled ? onContinue : null,
-                child: Container(
-                  width: 170,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: ShapeDecoration(
-                    color: buttonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'continue',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 15,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: enabled ? onContinue : null,
+                  child: Container(
+                    width: 170,
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: ShapeDecoration(
+                      color: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'continue',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 15,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

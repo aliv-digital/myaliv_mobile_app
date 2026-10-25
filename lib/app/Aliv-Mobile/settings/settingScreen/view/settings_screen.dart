@@ -148,7 +148,7 @@ class _SettingsView extends StatelessWidget {
                               iconAsset: AssetConstant.fingerprintIconSVG,
                             ),
                             SettingsToggleTile(
-                              title: 'login with face scan',
+                              title: 'login with face id',
                               value: state.faceScanEnabled,
                               enabled: state.isFaceIdAvailable,
                               onChanged: (v) {
