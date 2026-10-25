@@ -1,0 +1,51 @@
+default_platform(:ios)
+
+platform :ios do
+  before_all do
+    setup_ci if ENV["CI"]
+  end
+
+  desc "Build signed IPA and upload to TestFlight (internal testing)"
+  lane :beta do |options|
+    build_number = options[:build_number] || Time.now.to_i.to_s
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPLE_API_KEY_ID"],
+      issuer_id: ENV["APPLE_API_ISSUER_ID"],
+      key_filepath: ENV["APPLE_API_KEY_PATH"],
+      in_house: false,
+    )
+
+    match(
+      type: "appstore",
+      readonly: true,
+      api_key: api_key,
+    )
+
+    update_project_team(
+      path: "Runner.xcodeproj",
+      teamid: ENV["APPLE_TEAM_ID"],
+    )
+
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "MyAliv.ipa",
+      clean: true,
+      export_options: {
+        provisioningProfiles: {
+          "org.app.aliv" => "match AppStore org.app.aliv",
+        },
+      },
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["RELEASE_NOTES"] || "Build #{build_number}",
+    )
+  end
+end

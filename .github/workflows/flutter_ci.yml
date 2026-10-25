@@ -352,3 +352,152 @@ jobs:
 
       - name: Build iOS (no codesign)
         run: flutter build ios --no-codesign --debug
+
+  # ─────────────────────────────────────────────────────────────────
+  # 5a. Deploy iOS to TestFlight (develop → internal testing)
+  # ─────────────────────────────────────────────────────────────────
+  deploy-ios-testflight-develop:
+    name: Deploy iOS to TestFlight (develop)
+    runs-on: macos-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+          working-directory: ios
+
+      - name: Set up SSH for Fastlane Match
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+
+      - name: Decode App Store Connect API key
+        run: |
+          echo "${{ secrets.APPLE_API_KEY_BASE64 }}" | base64 --decode > ios/AuthKey.p8
+          echo "APPLE_API_KEY_PATH=$(pwd)/ios/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-
+
+      - name: Pod install
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Compute build number
+        id: build_num
+        run: |
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + 1000))
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Build archive via Flutter
+        run: flutter build ios --release --no-codesign --build-number=${{ steps.build_num.outputs.build_number }}
+
+      - name: Fastlane beta → TestFlight
+        working-directory: ios
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          RELEASE_NOTES: |
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            ${{ github.event.head_commit.message }}
+        run: bundle exec fastlane beta build_number:${{ steps.build_num.outputs.build_number }}
+
+  # ─────────────────────────────────────────────────────────────────
+  # 5b. Deploy iOS to TestFlight (main → internal testing, approval-gated)
+  # ─────────────────────────────────────────────────────────────────
+  deploy-ios-testflight-main:
+    name: Deploy iOS to TestFlight (main, gated)
+    runs-on: macos-latest
+    needs: test
+    environment: production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+          working-directory: ios
+
+      - name: Set up SSH for Fastlane Match
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+
+      - name: Decode App Store Connect API key
+        run: |
+          echo "${{ secrets.APPLE_API_KEY_BASE64 }}" | base64 --decode > ios/AuthKey.p8
+          echo "APPLE_API_KEY_PATH=$(pwd)/ios/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-
+
+      - name: Pod install
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Compute build number
+        id: build_num
+        run: |
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + 1000))
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Build archive via Flutter
+        run: flutter build ios --release --no-codesign --build-number=${{ steps.build_num.outputs.build_number }}
+
+      - name: Fastlane beta → TestFlight
+        working-directory: ios
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          RELEASE_NOTES: |
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            ${{ github.event.head_commit.message }}
+        run: bundle exec fastlane beta build_number:${{ steps.build_num.outputs.build_number }}

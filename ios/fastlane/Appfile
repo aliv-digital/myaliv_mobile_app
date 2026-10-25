@@ -1,0 +1,2 @@
+app_identifier("org.app.aliv")
+team_id(ENV["APPLE_TEAM_ID"] || "SW34TFX6LL")
