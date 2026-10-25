@@ -23,14 +23,14 @@ platform :ios do
       force_for_new_devices: false,
     )
 
-    profile_name = ENV["sigh_new.app.aliv_appstore_profile-name"]
+    profile_name = ENV["sigh_new.app.myaliv_appstore_profile-name"]
     UI.message("Using provisioning profile: #{profile_name}")
 
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Runner.xcodeproj",
       team_id: ENV["APPLE_TEAM_ID"],
-      bundle_identifier: "new.app.aliv",
+      bundle_identifier: "new.app.myaliv",
       profile_name: profile_name,
       code_sign_identity: "Apple Distribution",
       targets: ["Runner"],
@@ -47,7 +47,7 @@ platform :ios do
       xcargs: "-allowProvisioningUpdates",
       export_options: {
         provisioningProfiles: {
-          "new.app.aliv" => profile_name,
+          "new.app.myaliv" => profile_name,
         },
         signingStyle: "manual",
         signingCertificate: "Apple Distribution",
