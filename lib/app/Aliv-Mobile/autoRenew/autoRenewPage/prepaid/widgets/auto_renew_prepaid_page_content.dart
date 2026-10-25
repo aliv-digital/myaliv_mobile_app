@@ -5,6 +5,8 @@ import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/add_saved_card_flow.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -22,6 +24,7 @@ import '../models/auto_renew_prepaid_models.dart';
 import '../theme/auto_renew_prepaid_theme.dart';
 import 'auto_renew_payment_method_section.dart';
 import 'auto_renew_prepaid_proceed_action_button.dart';
+import 'dashed_add_card_button.dart';
 
 class AutoRenewPrepaidPageContent extends StatefulWidget {
   const AutoRenewPrepaidPageContent({super.key, this.verificationCoordinator});
@@ -37,6 +40,7 @@ class _AutoRenewPrepaidPageContentState
     extends State<AutoRenewPrepaidPageContent> {
   late final AutoRenewAuthorizationVerificationCoordinator _verification;
   bool _walletActionInProgress = false;
+  bool _addingCard = false;
 
   /// AREN-002: set when continue is tapped with no card or wallet selected.
   bool _showMethodRequiredError = false;
@@ -166,6 +170,7 @@ class _AutoRenewPrepaidPageContentState
         autoRenewPrepaidState.isWalletSelected && isAutoRenewToggling;
     final isNoRenewLoading =
         autoRenewPrepaidState.isNoAutoRenewSelected && isAutoRenewToggling;
+    final isSavingCard = context.watch<SavedCardsCubit>().state.isAddingCard;
 
     final BalanceState balanceState = context.watch<BalanceCubit>().state;
     final String walletBalanceText = BalanceCurrencyFormatterService.format(
@@ -216,20 +221,32 @@ class _AutoRenewPrepaidPageContentState
               ),
             ),
           ),
+        const SizedBox(height: AutoRenewPrepaidTheme.sectionToDashedGap),
+        DashedAddCardButton(
+          onTap: _addNewCard,
+          isLoading: _addingCard && isSavingCard,
+          isEnabled:
+              !_addingCard &&
+              !isSavingCard &&
+              !_walletActionInProgress &&
+              !autoRenewPrepaidState.savingSelection &&
+              !isAutoRenewToggling,
+        ),
         const SizedBox(height: AutoRenewPrepaidTheme.dashedToActionGap),
         AutoRenewPrepaidProceedActionButton(
           // Tappable with no selection so AREN-002 can explain itself; still
           // disabled while a selection is being saved.
           isEnabled:
-              autoRenewPrepaidState.canProceed ||
-              !autoRenewPrepaidState.savingSelection,
+              !_addingCard &&
+              (autoRenewPrepaidState.canProceed ||
+                  !autoRenewPrepaidState.savingSelection),
           isLoading:
               _walletActionInProgress ||
               autoRenewPrepaidState.savingSelection ||
               isWalletRenewLoading ||
               isNoRenewLoading,
           onPressed: () async {
-            if (_walletActionInProgress) {
+            if (_walletActionInProgress || _addingCard) {
               return;
             }
             if (autoRenewPrepaidState.isPayWithCardSelected) {
@@ -272,6 +289,22 @@ class _AutoRenewPrepaidPageContentState
         ),
       ],
     );
+  }
+
+  Future<void> _addNewCard() async {
+    if (_addingCard) {
+      return;
+    }
+    setState(() => _addingCard = true);
+    try {
+      await AddSavedCardFlow(
+        savedCardsCubit: context.read<SavedCardsCubit>(),
+      ).open(context, appBarColor: AutoRenewPrepaidTheme.primary);
+    } finally {
+      if (mounted) {
+        setState(() => _addingCard = false);
+      }
+    }
   }
 
   Future<void> _disableAutoRenew(BuildContext context) async {

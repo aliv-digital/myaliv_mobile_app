@@ -130,7 +130,7 @@ class AutoRenewPrepaidTheme {
   static const TextStyle addCardButtonTextStyle = TextStyle(
     color: primary,
     fontSize: 15,
-    fontFamily: fontFamily,
+    fontFamily: 'CircularProBold',
     fontWeight: FontWeight.w700,
     height: 1.54,
   );
