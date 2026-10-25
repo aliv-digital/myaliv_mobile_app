@@ -55,28 +55,28 @@ class PurchasePrepaidRepository {
           action: PurchasePrepaidAction.makePayment,
         ),
         PurchasePrepaidMenuItem(
-          title: 'top-up a prepaid number',
-          action: PurchasePrepaidAction.topUpPrepaidNumber,
+          title: 'add/edit credit cards',
+          action: PurchasePrepaidAction.addEditCreditCards,
         ),
         PurchasePrepaidMenuItem(
           title: 'future plans',
           action: PurchasePrepaidAction.futurePlans,
         ),
         PurchasePrepaidMenuItem(
-          title: 'review invoices',
-          action: PurchasePrepaidAction.reviewInvoices,
-        ),
-        PurchasePrepaidMenuItem(
           title: 'my limits',
           action: PurchasePrepaidAction.myLimits,
         ),
         PurchasePrepaidMenuItem(
-          title: 'add/edit credit cards',
-          action: PurchasePrepaidAction.addEditCreditCards,
+          title: 'review invoices',
+          action: PurchasePrepaidAction.reviewInvoices,
         ),
         PurchasePrepaidMenuItem(
           title: 'transaction history',
           action: PurchasePrepaidAction.transactionHistory,
+        ),
+        PurchasePrepaidMenuItem(
+          title: 'top-up a prepaid number',
+          action: PurchasePrepaidAction.topUpPrepaidNumber,
         ),
       ];
     }

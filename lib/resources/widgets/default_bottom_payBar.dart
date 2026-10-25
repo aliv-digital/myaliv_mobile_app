@@ -12,6 +12,7 @@ class DefaultBottomPayBar extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.buttonColor = const Color(0xFF6B63A7),
     this.disabledButtonColor,
+    this.amountTextStyle,
   });
 
   final String amountText;
@@ -25,6 +26,7 @@ class DefaultBottomPayBar extends StatelessWidget {
   final Color backgroundColor;
   final Color buttonColor;
   final Color? disabledButtonColor;
+  final TextStyle? amountTextStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +49,18 @@ class DefaultBottomPayBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        amountText,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF111111),
-                          height: 1.0,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          amountText,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111111),
+                            height: 1.0,
+                          ).merge(amountTextStyle),
                         ),
                       ),
                       const SizedBox(height: 2),

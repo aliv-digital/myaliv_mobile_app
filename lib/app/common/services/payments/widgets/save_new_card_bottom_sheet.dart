@@ -6,6 +6,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
+import '../theme/save_card_sheet_theme.dart';
+import 'save_card_sheet_content.dart';
+
 /// Bottom sheet that collects an expiration date (month + year) and calls
 /// POST /CreditCard/savenew with the supplied 3DS [orderId].
 ///
@@ -49,9 +52,6 @@ class SaveNewCardBottomSheet extends StatefulWidget {
 }
 
 class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
-  static const Color _primary = Color(0xFF645D9C);
-  static const Color _dropdownBg = Color(0xFFF5F4F8);
-
   static const List<String> _monthNames = [
     'January',
     'February',
@@ -136,121 +136,11 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
       child: BlocBuilder<SavedCardsCubit, SavedCardsState>(
         buildWhen: (p, c) => p.isAddingCard != c.isAddingCard,
         builder: (context, state) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 32,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFEDE9F9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.credit_card,
-                        color: _primary,
-                        size: 22,
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: const Color(0xFFD0D5DD)),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 16,
-                          color: Color(0xFF344054),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'save card',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F1F1F),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'confirm expiration date',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7E7E8A),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: <Widget>[
-                    Expanded(child: _buildMonthDropdown(_monthNames)),
-                    const SizedBox(width: 12),
-                    Expanded(child: _buildYearDropdown(years)),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: ElevatedButton(
-                    onPressed: state.isAddingCard ? null : _onSave,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                    ),
-                    child: state.isAddingCard
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            'save card',
-                            style: TextStyle(
-                              fontFamily: 'CircularPro',
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
+          return SaveCardSheetContent(
+            monthDropdown: _buildMonthDropdown(_monthNames),
+            yearDropdown: _buildYearDropdown(years),
+            onSave: _onSave,
+            isSaving: state.isAddingCard,
           );
         },
       ),
@@ -258,123 +148,43 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
   }
 
   Widget _buildMonthDropdown(List<String> monthNames) {
-    return DropdownButton2<int>(
-      isExpanded: true,
-      underline: const SizedBox(),
+    return SaveCardExpiryDropdown(
       valueListenable: _monthNotifier,
       items: List.generate(
         12,
         (i) => DropdownItem<int>(
           value: i + 1,
           height: 44,
-          child: Text(
-            monthNames[i],
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          child: Text(monthNames[i], style: SaveCardSheetTheme.fieldText),
         ),
       ),
-      onChanged: (v) {
-        if (v != null) {
-          setState(() => _selectedMonth = v);
-          _monthNotifier.value = v;
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _selectedMonth = value);
+          _monthNotifier.value = value;
         }
       },
-      style: const TextStyle(
-        fontFamily: 'CircularPro',
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFF1F1F1F),
-      ),
-      buttonStyleData: ButtonStyleData(
-        decoration: BoxDecoration(
-          color: _dropdownBg,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: 48,
-      ),
-      dropdownStyleData: DropdownStyleData(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        maxHeight: 260,
-      ),
-      iconStyleData: const IconStyleData(
-        icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFF645D9C)),
-      ),
     );
   }
 
   Widget _buildYearDropdown(List<int> years) {
-    return DropdownButton2<int>(
-      isExpanded: true,
-      underline: const SizedBox(),
+    return SaveCardExpiryDropdown(
       valueListenable: _yearNotifier,
       items: years
           .map(
-            (y) => DropdownItem<int>(
-              value: y,
+            (year) => DropdownItem<int>(
+              value: year,
               height: 44,
-              child: Text(
-                y.toString(),
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Text(year.toString(), style: SaveCardSheetTheme.fieldText),
             ),
           )
           .toList(),
-      onChanged: (v) {
-        if (v != null) {
-          setState(() => _selectedYear = v);
-          _yearNotifier.value = v;
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _selectedYear = value);
+          _yearNotifier.value = value;
         }
       },
-      style: const TextStyle(
-        fontFamily: 'CircularPro',
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFF1F1F1F),
-      ),
-      buttonStyleData: ButtonStyleData(
-        decoration: BoxDecoration(
-          color: _dropdownBg,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: 48,
-      ),
-      dropdownStyleData: DropdownStyleData(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        maxHeight: 260,
-      ),
-      iconStyleData: const IconStyleData(
-        icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFF645D9C)),
-      ),
     );
   }
 }
@@ -395,9 +205,6 @@ class _SaveNewCardExpiryPicker extends StatefulWidget {
 }
 
 class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
-  static const Color _primary = Color(0xFF645D9C);
-  static const Color _dropdownBg = Color(0xFFF5F4F8);
-
   static const List<String> _monthNames = [
     'January',
     'February',
@@ -460,240 +267,54 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
     final now = DateTime.now();
     final years = List.generate(26, (i) => now.year + i);
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 32,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEDE9F9),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.credit_card, color: _primary, size: 22),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFD0D5DD)),
-                  ),
-                  child: const Icon(
-                    Icons.close,
-                    size: 16,
-                    color: Color(0xFF344054),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'save card',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1F1F1F),
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'confirm expiration date',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF7E7E8A),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: <Widget>[
-              Expanded(child: _buildMonthDropdown()),
-              const SizedBox(width: 12),
-              Expanded(child: _buildYearDropdown(years)),
-            ],
-          ),
-          // CARD-002 clears itself once a current or future date is chosen.
-          if (_showExpiryError && _isPastExpiry)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                'enter a valid expiry date',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 46,
-            child: ElevatedButton(
-              onPressed: _onConfirm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primary,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(26),
-                ),
-              ),
-              child: const Text(
-                'save card',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return SaveCardSheetContent(
+      monthDropdown: _buildMonthDropdown(),
+      yearDropdown: _buildYearDropdown(years),
+      onSave: _onConfirm,
+      errorMessage: _showExpiryError && _isPastExpiry
+          ? 'enter a valid expiry date'
+          : null,
     );
   }
 
   Widget _buildMonthDropdown() {
-    return DropdownButton2<int>(
-      isExpanded: true,
-      underline: const SizedBox(),
+    return SaveCardExpiryDropdown(
       valueListenable: _monthNotifier,
       items: List.generate(
         12,
         (i) => DropdownItem<int>(
           value: i + 1,
           height: 44,
-          child: Text(
-            _monthNames[i],
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          child: Text(_monthNames[i], style: SaveCardSheetTheme.fieldText),
         ),
       ),
-      onChanged: (v) {
-        if (v != null) {
-          setState(() => _selectedMonth = v);
-          _monthNotifier.value = v;
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _selectedMonth = value);
+          _monthNotifier.value = value;
         }
       },
-      style: const TextStyle(
-        fontFamily: 'CircularPro',
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFF1F1F1F),
-      ),
-      buttonStyleData: ButtonStyleData(
-        decoration: BoxDecoration(
-          color: _dropdownBg,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: 48,
-      ),
-      dropdownStyleData: DropdownStyleData(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        maxHeight: 260,
-      ),
-      iconStyleData: const IconStyleData(
-        icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFF645D9C)),
-      ),
     );
   }
 
   Widget _buildYearDropdown(List<int> years) {
-    return DropdownButton2<int>(
-      isExpanded: true,
-      underline: const SizedBox(),
+    return SaveCardExpiryDropdown(
       valueListenable: _yearNotifier,
       items: years
           .map(
-            (y) => DropdownItem<int>(
-              value: y,
+            (year) => DropdownItem<int>(
+              value: year,
               height: 44,
-              child: Text(
-                y.toString(),
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Text(year.toString(), style: SaveCardSheetTheme.fieldText),
             ),
           )
           .toList(),
-      onChanged: (v) {
-        if (v != null) {
-          setState(() => _selectedYear = v);
-          _yearNotifier.value = v;
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _selectedYear = value);
+          _yearNotifier.value = value;
         }
       },
-      style: const TextStyle(
-        fontFamily: 'CircularPro',
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFF1F1F1F),
-      ),
-      buttonStyleData: ButtonStyleData(
-        decoration: BoxDecoration(
-          color: _dropdownBg,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: 48,
-      ),
-      dropdownStyleData: DropdownStyleData(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        maxHeight: 260,
-      ),
-      iconStyleData: const IconStyleData(
-        icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFF645D9C)),
-      ),
     );
   }
 }

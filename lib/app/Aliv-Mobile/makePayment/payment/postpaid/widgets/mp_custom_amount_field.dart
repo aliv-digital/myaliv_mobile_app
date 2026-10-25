@@ -79,7 +79,7 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
           ),
           padding: EdgeInsets.all(isFocused ? borderWidth : 0),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: MakePaymentPostPaidTheme.paymentDueAmountFieldPadding,
             decoration: BoxDecoration(
               color: MakePaymentPostPaidTheme.customAmountBg,
               borderRadius: BorderRadius.circular(
@@ -88,6 +88,8 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
             ),
             alignment: Alignment.centerLeft,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(r'$', style: MakePaymentPostPaidTheme.currencySymbolText),
                 const SizedBox(
