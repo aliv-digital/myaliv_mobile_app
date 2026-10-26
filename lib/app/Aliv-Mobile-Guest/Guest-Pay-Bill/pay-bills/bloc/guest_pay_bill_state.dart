@@ -145,9 +145,7 @@ class GuestPayBillState extends Equatable {
   /// has a credit on file. Informational only; `canSubmit` does not consider it.
   bool get isAccountInCredit {
     final balance = accountInfo?.balance;
-    return (isAlivPostpaid || isAlivFibr) &&
-        balance != null &&
-        balance < 0;
+    return (isAlivPostpaid || isAlivFibr) && balance != null && balance < 0;
   }
 
   bool get canSubmit {
