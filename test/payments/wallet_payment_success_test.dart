@@ -672,11 +672,9 @@ void main() {
         expect(planBloc!.state.walletPaymentSucceeded, isFalse);
         expect(planSuccess, isNull);
         expect(find.textContaining(_suffix), findsNothing);
+        expect(find.text('save credit card'), findsNothing);
         if (mode == 'postpaid account') {
-          expect(find.text('save credit card'), findsNothing);
           expect(find.text('back to home page'), findsOneWidget);
-        } else if (mode == '3DS') {
-          expect(find.text('save credit card'), findsOneWidget);
         }
         await finish(tester);
       },
