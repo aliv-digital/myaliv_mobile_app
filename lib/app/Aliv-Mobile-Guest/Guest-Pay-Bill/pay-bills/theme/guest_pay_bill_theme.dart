@@ -28,10 +28,16 @@ class GuestPayBillTheme {
   static const String mobileMismatchErrorMessage =
       "these numbers don't match. re-enter the number to continue.";
 
-  // BILL-009: product-approved ALIV postpaid bill-pay minimum (USD, inclusive).
+  // BILL-009: product-approved bill-pay minimum (USD, inclusive).
+  // Applies to ALIV Postpaid and ALIVFibr; REV flows through its own external journey.
   static const double minimumPaymentAmount = 5;
   static const String minimumPaymentErrorMessage =
       r'the minimum payment amount is $5.00';
+
+  // Shown under the "amount due" value when a verified account carries a
+  // negative balance (credit). Informational only — payment is still allowed.
+  static const String accountInCreditInfoMessage =
+      'all overages will be applied to the account as a credit.';
 
   static const Color errorText = Color(0xFFD92D20);
 

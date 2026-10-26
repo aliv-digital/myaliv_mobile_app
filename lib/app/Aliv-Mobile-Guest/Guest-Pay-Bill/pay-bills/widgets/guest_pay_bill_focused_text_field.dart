@@ -13,6 +13,7 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
     this.onSubmitted,
     this.prefix,
     this.style,
+    this.isError = false,
   });
 
   final String hint;
@@ -22,6 +23,7 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final Widget? prefix;
   final TextStyle? style;
+  final bool isError;
 
   @override
   State<GuestPayBillFocusedTextField> createState() =>
@@ -58,6 +60,7 @@ class _GuestPayBillFocusedTextFieldState
   Widget build(BuildContext context) {
     return GuestPayBillFocusedInputBorderWrapper(
       isFocused: _hasFocus,
+      isError: widget.isError,
       child: TextField(
         focusNode: _focusNode,
         keyboardType: widget.keyboardType,

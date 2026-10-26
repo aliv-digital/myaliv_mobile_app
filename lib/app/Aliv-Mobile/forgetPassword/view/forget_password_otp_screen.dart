@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/view/login_otp_screen
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../model/password_recovery_create_password_args.dart';
 import '../model/password_recovery_otp_challenge.dart';
 import '../repository/password_recovery_otp_repository.dart';
 
@@ -19,7 +20,7 @@ class ForgetPasswordOtpScreen extends LoginOtpScreen {
         clearCodeOnResend: true,
         resetValidationOnResend: true,
         successMessage: 'Code verified.',
-        onSuccess: _continueToPasswordReset,
+        onSuccess: (context) => _continueToPasswordReset(context, challenge),
       );
 
   final PasswordRecoveryOtpChallenge challenge;
@@ -38,7 +39,14 @@ class ForgetPasswordOtpScreen extends LoginOtpScreen {
     resetValidationOnResend: true,
   );
 
-  static void _continueToPasswordReset(BuildContext context) {
+  static void _continueToPasswordReset(
+    BuildContext context,
+    PasswordRecoveryOtpChallenge challenge,
+  ) {
+    PasswordRecoveryContext.pending = PasswordRecoveryCreatePasswordArgs(
+      apiPhoneNumber: challenge.apiPhoneNumber,
+      phoneNumber: challenge.phoneNumber,
+    );
     context.pushReplacement(AppRoutes.createPassword, extra: true);
   }
 }

@@ -653,7 +653,11 @@ void main() {
         {'CurrentPassword': null, 'NewPassword': 'Abc12345'},
       ]);
       expect(find.text('Password reset successful!'), findsOneWidget);
+      // Home mounts immediately; the save-password sheet opens on top of it
+      // via the root navigator and is dismissed independently.
       expect(find.text('home destination'), findsOneWidget);
+      expect(find.text('save your password?'), findsOneWidget);
+      await tap(tester, 'not now');
       expect(cleanupCalls, 0);
       expect(session, isNotNull);
       expect(sends, 1);

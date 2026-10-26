@@ -133,12 +133,22 @@ class GuestPayBillState extends Equatable {
     return accountNumber.trim().isNotEmpty && name.trim().isNotEmpty;
   }
 
-  /// BILL-009: a positive ALIV postpaid amount below the approved minimum.
-  /// Empty / non-numeric input parses to 0 and keeps its existing handling.
+  /// BILL-009: a positive ALIV Postpaid / ALIVFibr amount below the approved
+  /// minimum. Empty / non-numeric input parses to 0 and keeps its existing
+  /// handling. REV routes to an external flow and is intentionally excluded.
   bool get isBelowMinimumPayment =>
-      isAlivPostpaid &&
+      (isAlivPostpaid || isAlivFibr) &&
       amountValue > 0 &&
       amountValue < GuestPayBillTheme.minimumPaymentAmount;
+
+  /// A verified Postpaid/Fibr account whose balance is negative — the customer
+  /// has a credit on file. Informational only; `canSubmit` does not consider it.
+  bool get isAccountInCredit {
+    final balance = accountInfo?.balance;
+    return (isAlivPostpaid || isAlivFibr) &&
+        balance != null &&
+        balance < 0;
+  }
 
   bool get canSubmit {
     return selectedService != null &&

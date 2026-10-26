@@ -14,6 +14,12 @@ import '../theme/create_password_theme.dart';
 import '../widgets/create_password_header.dart';
 import '../widgets/password_input.dart';
 
+/// Signature used by callers that need to intercept the post-reset navigation
+/// (e.g. the password-recovery flow, which prompts the user to cache
+/// credentials before continuing to home).
+typedef CreatePasswordSuccessHandler =
+    Future<void> Function(BuildContext context, String newPassword);
+
 class CreatePasswordScreen extends StatelessWidget {
   const CreatePasswordScreen({
     super.key,
@@ -22,12 +28,14 @@ class CreatePasswordScreen extends StatelessWidget {
         'set the new password for your account so you can login and access myaliv app',
     this.buttonLabel = 'continue',
     this.onBack,
+    this.onSuccess,
   });
 
   final String title;
   final String subtitle;
   final String buttonLabel;
   final VoidCallback? onBack;
+  final CreatePasswordSuccessHandler? onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +46,7 @@ class CreatePasswordScreen extends StatelessWidget {
         subtitle: subtitle,
         buttonLabel: buttonLabel,
         onBack: onBack,
+        onSuccess: onSuccess,
       ),
     );
   }
@@ -49,12 +58,14 @@ class _CreatePasswordView extends StatelessWidget {
     required this.subtitle,
     required this.buttonLabel,
     this.onBack,
+    this.onSuccess,
   });
 
   final String title;
   final String subtitle;
   final String buttonLabel;
   final VoidCallback? onBack;
+  final CreatePasswordSuccessHandler? onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +86,18 @@ class _CreatePasswordView extends StatelessWidget {
           child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
             listenWhen: (p, c) =>
                 p.status != c.status || p.errorMessage != c.errorMessage,
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state.status == CreatePasswordStatus.success) {
                 AppToast.show(
                   message: 'Password reset successful!',
                   type: ToastType.success,
                 );
-                context.go(AppRoutes.home);
+                final handler = onSuccess;
+                if (handler != null) {
+                  await handler(context, state.password.trim());
+                } else if (context.mounted) {
+                  context.go(AppRoutes.home);
+                }
               }
               if (state.status == CreatePasswordStatus.failure &&
                   state.errorMessage != null) {

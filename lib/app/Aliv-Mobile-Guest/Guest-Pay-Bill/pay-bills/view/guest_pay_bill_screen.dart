@@ -540,6 +540,13 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                                         )
                                   : GuestPayBillTheme.accountBalanceValueStyle,
                             ),
+                            if (state.isAccountInCredit) ...[
+                              const SizedBox(height: 6),
+                              const Text(
+                                GuestPayBillTheme.accountInCreditInfoMessage,
+                                style: GuestPayBillTheme.inlineErrorTextStyle,
+                              ),
+                            ],
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,
                             ),
@@ -557,6 +564,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                                     decimal: true,
                                   ),
                               textInputAction: TextInputAction.done,
+                              isError: state.isBelowMinimumPayment,
                               onSubmitted: (_) {
                                 if (state.canSubmit) {
                                   finalSubmitAction();

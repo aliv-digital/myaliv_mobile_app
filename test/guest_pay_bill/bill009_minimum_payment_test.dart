@@ -20,6 +20,7 @@ class _Network extends Mock implements NetworkService {}
 const _minimum = r'the minimum payment amount is $5.00';
 const _invalidNumber = 'invalid Format';
 const _mismatch = "these numbers don't match. re-enter the number to continue.";
+const _creditInfo = 'all overages will be applied to the account as a credit.';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -199,8 +200,7 @@ void main() {
     expect(state(tester).canSubmit, isFalse);
   });
 
-  testWidgets('ALIV Fibr amounts are unchanged by BILL-009', (tester) async {
-    await pumpScreen(tester);
+  Future<void> selectFibrAndVerify(WidgetTester tester) async {
     await tester.tap(find.byType(DropdownButton<BillService>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ALIVFibr').last);
@@ -210,9 +210,89 @@ void main() {
     await tester.pump();
     await submitField(tester, field('enter name'));
     expect(state(tester).verifyStatus, GuestPayBillVerifyStatus.success);
+  }
+
+  testWidgets('BILL-009 ALIV Fibr amounts below \$5 are blocked', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await selectFibrAndVerify(tester);
     await enterAmount(tester, '4');
+    expect(find.text(_minimum), findsOneWidget);
+    expect(state(tester).canSubmit, isFalse);
+    await enterAmount(tester, '5');
     expect(find.text(_minimum), findsNothing);
     expect(state(tester).canSubmit, isTrue);
+  });
+
+  testWidgets(
+    'ALIV Postpaid credit balance shows info message and keeps submit enabled',
+    (tester) async {
+      when(
+        () => network.request<dynamic>(
+          Api.guestBalanceUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.guestBalanceUrl),
+          data: <String, dynamic>{
+            'Balance': -50.0,
+            'AccountStatus': 'AC',
+            'PaymentOption': 'PostPay',
+          },
+        ),
+      );
+      await pumpScreen(tester);
+      await verifyPostpaid(tester);
+      expect(find.text(_creditInfo), findsOneWidget);
+      await enterAmount(tester, '10');
+      expect(state(tester).isAccountInCredit, isTrue);
+      expect(state(tester).canSubmit, isTrue);
+      await tapPay(tester);
+      expect(confirmedAmount(), 10.0);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
+    'ALIVFibr credit balance shows info message and keeps submit enabled',
+    (tester) async {
+      when(
+        () => network.request<dynamic>(
+          Api.guestFibrBalanceUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.guestFibrBalanceUrl),
+          data: <String, dynamic>{
+            'id_acc': 123,
+            'Balance': -25.0,
+            'AccountStatus': 'active',
+          },
+        ),
+      );
+      await pumpScreen(tester);
+      await selectFibrAndVerify(tester);
+      expect(find.text(_creditInfo), findsOneWidget);
+      await enterAmount(tester, '10');
+      expect(state(tester).isAccountInCredit, isTrue);
+      expect(state(tester).canSubmit, isTrue);
+    },
+  );
+
+  testWidgets('non-credit balance does not render the credit info message', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await verifyPostpaid(tester);
+    expect(find.text(_creditInfo), findsNothing);
   });
 
   testWidgets('BILL-003 / BILL-004 behaviour is unchanged', (tester) async {
