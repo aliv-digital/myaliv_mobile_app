@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:local_auth/local_auth.dart';
 import 'package:finger_face_security/src/model/finger_face_security_model.dart';
 import 'package:finger_face_security/src/repository/finger_face_security_repository.dart';
@@ -26,12 +28,18 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
     final fingerprintEnabled = results[3] as bool;
     final faceIdEnabled = results[4] as bool;
 
+    // local_auth returns BiometricType.fingerprint / .face only on iOS. On
+    // Android it returns .strong (Class 3, usually fingerprint) and .weak
+    // (Class 2, usually face unlock) with no per-modality disambiguation.
+    final isAndroid = Platform.isAndroid;
     return FingerFaceSecurityModel(
       isBiometricEnabled: isEnabled,
       isFingerprintAvailable:
           available.contains(BiometricType.fingerprint) ||
-          available.contains(BiometricType.strong),
-      isFaceIdAvailable: available.contains(BiometricType.face),
+          (isAndroid && available.contains(BiometricType.strong)),
+      isFaceIdAvailable:
+          available.contains(BiometricType.face) ||
+          (isAndroid && available.contains(BiometricType.weak)),
       biometricTypeDescription: typeDescription,
       fingerprintEnabled: fingerprintEnabled,
       faceIdEnabled: faceIdEnabled,

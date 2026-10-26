@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,12 +151,16 @@ class BiometricAuthService {
   Future<String> getBiometricTypeDescription() async {
     final available = await getAvailableBiometrics();
     if (available.isEmpty) return 'No biometric authentication available';
+    final isAndroid = Platform.isAndroid;
     final parts = <String>[];
     if (available.contains(BiometricType.fingerprint) ||
-        available.contains(BiometricType.strong)) {
+        (isAndroid && available.contains(BiometricType.strong))) {
       parts.add('Fingerprint');
     }
-    if (available.contains(BiometricType.face)) parts.add('Face ID');
+    if (available.contains(BiometricType.face) ||
+        (isAndroid && available.contains(BiometricType.weak))) {
+      parts.add('Face ID');
+    }
     if (available.contains(BiometricType.iris)) parts.add('Iris');
     return parts.isEmpty ? 'Biometric authentication' : parts.join(' & ');
   }
