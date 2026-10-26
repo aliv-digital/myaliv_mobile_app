@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/add_or_edit_cards_prepaid_theme.dart';
 
 /// BottomSheet: Confirm remove saved card
-/// - shows warning text + OK and cancel buttons
+/// - shows a back arrow, warning text, and OK button
 /// - returns true if confirmed, else false
 class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
   const RemoveSavedCardConfirmBottomSheet({super.key});
@@ -27,7 +27,8 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
           color: AddOrEditCardsPrepaidTheme.pageBg,
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
-        padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+        // padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -35,12 +36,15 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.zero,
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(false),
               ),
             ),
 
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
+            const SizedBox(height: 8),
 
             // Message center
             Text(
@@ -81,37 +85,38 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12),
-
-            // CARD-009: explicit cancel dismisses only (returns false).
-            SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                    side: const BorderSide(
-                      color: AddOrEditCardsPrepaidTheme.primary,
-                    ),
-                  ),
-                ),
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text(
-                  'cancel',
-                  style: TextStyle(
-                    color: AddOrEditCardsPrepaidTheme.primary,
-                    fontSize: 13,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
+            // Previous cancel action is retained but hidden in the updated design.
+            // const SizedBox(height: 12),
+            //
+            // // CARD-009: explicit cancel dismisses only (returns false).
+            // SizedBox(
+            //   height: 50,
+            //   width: double.infinity,
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.white,
+            //       elevation: 0,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(28),
+            //         side: const BorderSide(
+            //           color: AddOrEditCardsPrepaidTheme.primary,
+            //         ),
+            //       ),
+            //     ),
+            //     onPressed: () => Navigator.of(context).pop(false),
+            //     child: const Text(
+            //       'cancel',
+            //       style: TextStyle(
+            //         color: AddOrEditCardsPrepaidTheme.primary,
+            //         fontSize: 13,
+            //         fontFamily: 'CircularPro',
+            //         fontWeight: FontWeight.w700,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            //
+            // const SizedBox(height: 10),
           ],
         ),
       ),

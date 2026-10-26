@@ -29,7 +29,8 @@ void main() {
         .load();
     await (FontLoader(
       'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
+        .load();
   });
 
   setUp(() {
@@ -86,20 +87,21 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('CARD-009 delete shows the confirmation with ok and cancel', (
+  testWidgets('CARD-009 delete shows the confirmation with back and ok only', (
     tester,
   ) async {
     await openRemove(tester);
     expect(find.text(_question), findsOneWidget);
     expect(find.text('ok'), findsOneWidget);
-    expect(find.text('cancel'), findsOneWidget);
+    expect(find.text('cancel'), findsNothing);
+    expect(find.byType(ElevatedButton), findsOneWidget);
     expect(find.text(_success), findsNothing);
     verifyNever(() => cards.removeCard(any()));
   });
 
-  testWidgets('CARD-009 cancel dismisses only', (tester) async {
+  testWidgets('CARD-009 sheet back arrow dismisses only', (tester) async {
     await openRemove(tester);
-    await tester.tap(find.text('cancel'));
+    await tester.tap(find.byIcon(Icons.arrow_back).last);
     await tester.pumpAndSettle();
     expect(find.text(_question), findsNothing);
     expect(find.text(_success), findsNothing);
