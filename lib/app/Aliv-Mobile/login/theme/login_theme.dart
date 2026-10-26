@@ -6,7 +6,6 @@ class AuthModuleColors {
   static const Color alivPurple = Color(0xFF645D9C);
 
   // Social login outline/text purple.
-  static const Color socialMediaButtonPurple = Color(0xFF746BB9);
   static const Color socialMediaButtonBorder = Color(0xFFF2F1F9);
 
   // Semi-transparent purple used for outlined button text in older mocks.
@@ -160,7 +159,7 @@ class AuthModuleTextStyles {
 
   // Label style for both social login action buttons.
   static const TextStyle socialMediaButton = TextStyle(
-    color: AuthModuleColors.socialMediaButtonPurple,
+    color: AuthModuleColors.loginRoundOutLinedBorderButton,
     fontSize: 15,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,

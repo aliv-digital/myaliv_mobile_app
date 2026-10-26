@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/theme/home_plan_purchase_receipt_theme.dart';
-
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 import 'home_plan_purchase_receipt_back_button.dart';
@@ -181,8 +180,6 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: 32),
             const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
             const SizedBox(height: 32),
-            // save credit card button (self-hides when no card to save)
-            ?saveCardSection,
             HomePlanPurchaseReceiptBackButton(onTap: onBackHome),
             const SizedBox(height: 52),
           ],

@@ -26,11 +26,6 @@ class HomePlanPurchaseReceiptBackButton extends StatelessWidget {
             side: const BorderSide(width: 1, color: Color(0xFFF1F1F8)),
             borderRadius: BorderRadius.circular(26),
           ),
-          // backgroundColor: Colors.white,//const Color(0xFFEDEDF3),
-          //
-          // elevation: 0,
-          // shape:
-          //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
         ),
         child: const Text(
           'back to home page',

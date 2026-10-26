@@ -183,7 +183,7 @@ class _SocialButton extends StatelessWidget {
     return IgnorePointer(
       ignoring: !active,
       child: Opacity(
-        opacity: active ? 1.0 : 0.5,
+        opacity: active ? 1.0 : 0.8,
         child: SizedBox(
           height: AuthModuleSizes.socialButtonHeight,
           child: OutlinedButton(
