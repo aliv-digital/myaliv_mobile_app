@@ -34,9 +34,9 @@ class _LocalAuthentication extends LocalAuthentication {
 
   @override
   Future<List<BiometricType>> getAvailableBiometrics() async => [
-        BiometricType.fingerprint,
-        BiometricType.face,
-      ];
+    BiometricType.fingerprint,
+    BiometricType.face,
+  ];
 
   @override
   Future<bool> authenticate({
@@ -88,9 +88,9 @@ void main() {
     storageCalls = [];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(storageChannel, (call) async {
-      storageCalls.add(call);
-      return null;
-    });
+          storageCalls.add(call);
+          return null;
+        });
     network = _Network();
     config = AppUiConfigCubit();
     instance.registerSingleton<NetworkService>(network);
@@ -168,7 +168,8 @@ void main() {
         await tester.tap(find.text(face ? 'face id' : 'fingerprint'));
         await tester.pumpAndSettle();
 
-        final lockedOut = code == LocalAuthExceptionCode.temporaryLockout ||
+        final lockedOut =
+            code == LocalAuthExceptionCode.temporaryLockout ||
             code == LocalAuthExceptionCode.biometricLockout;
         expect(
           find.text(row42),
@@ -187,10 +188,10 @@ void main() {
           lockedOut
               ? BiometricAuthResult.lockedOut
               : code == null
-                  ? BiometricAuthResult.failed
-                  : code == LocalAuthExceptionCode.userRequestedFallback
-                      ? BiometricAuthResult.userRequestedFallback
-                      : BiometricAuthResult.error,
+              ? BiometricAuthResult.failed
+              : code == LocalAuthExceptionCode.userRequestedFallback
+              ? BiometricAuthResult.userRequestedFallback
+              : BiometricAuthResult.error,
         );
         expect(
           biometrics.state.errorMessage,

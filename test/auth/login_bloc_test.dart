@@ -44,11 +44,11 @@ LoginBloc _buildBloc({
 }
 
 TokenSession _fakeSession() => TokenSession(
-      accessToken: 'access',
-      refreshToken: 'refresh',
-      accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
-      refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
-    );
+  accessToken: 'access',
+  refreshToken: 'refresh',
+  accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
+  refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
+);
 
 void main() {
   late MockLoginRepository repository;
