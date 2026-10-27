@@ -88,9 +88,14 @@ class _ProfilePostpaidView extends StatelessWidget {
                           return ProfilePostpaidMenuItemTile(
                             title: item.title,
                             enabled: item.enabled,
-                            onTap: () => context
-                                .read<ProfilePostpaidBloc>()
-                                .add(ProfilePostpaidItemPressed(item)),
+                            onTap: () {
+                              if (item.id == 'gift_data') {
+                                context.push(AppRoutes.giftData);
+                              }
+                              context.read<ProfilePostpaidBloc>().add(
+                                ProfilePostpaidItemPressed(item),
+                              );
+                            },
                           );
                         }),
                       ],

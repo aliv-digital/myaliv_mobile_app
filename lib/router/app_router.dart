@@ -119,6 +119,9 @@ import '../app/Support/view/chatbot_screen.dart';
 import '../app/Support/view/quick_help_screen.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/upgrade_credit_limit_screen.dart';
 import '../app/Usage/usage_screen.dart';
+import '../app/Aliv-Mobile/userProfile/giftData/model/gift_data_models.dart';
+import '../app/Aliv-Mobile/userProfile/giftData/view/gift_data_receipt_screen.dart';
+import '../app/Aliv-Mobile/userProfile/giftData/view/gift_data_screen.dart';
 import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
@@ -490,6 +493,50 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.profilePrepaidScreen,
         builder: (context, state) => const ProfilePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.giftData,
+        builder: (context, state) => const GiftDataScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.giftDataReceipt,
+        builder: (context, state) {
+          final extra = state.extra;
+          String recipientNumber = '';
+          String orderReference = '';
+          String dateText = DateFormat('MMM d, yyyy').format(DateTime.now());
+          String timeText = DateFormat(
+            'h:mm a',
+          ).format(DateTime.now()).toLowerCase();
+          String totalDataLabel = '';
+          String remainingDataLabel = '';
+          String dataGiftedLabel = '';
+          if (extra is Map) {
+            recipientNumber =
+                (extra['recipientNumber'] as String?) ?? recipientNumber;
+            orderReference =
+                (extra['orderReference'] as String?) ?? orderReference;
+            dateText = (extra['dateText'] as String?) ?? dateText;
+            timeText = (extra['timeText'] as String?) ?? timeText;
+            totalDataLabel =
+                (extra['totalDataLabel'] as String?) ?? totalDataLabel;
+            remainingDataLabel =
+                (extra['remainingDataLabel'] as String?) ?? remainingDataLabel;
+            dataGiftedLabel =
+                (extra['dataGiftedLabel'] as String?) ?? dataGiftedLabel;
+          }
+          return GiftDataReceiptScreen(
+            data: GiftDataReceiptData(
+              recipientNumber: recipientNumber,
+              orderReference: orderReference,
+              dateText: dateText,
+              timeText: timeText,
+              totalDataLabel: totalDataLabel,
+              remainingDataLabel: remainingDataLabel,
+              dataGiftedLabel: dataGiftedLabel,
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.callLogs,

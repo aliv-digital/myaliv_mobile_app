@@ -31,7 +31,7 @@ class ProfilePrepaidRepository {
       ProfileMenuItemModel(
         id: 'gift_data',
         title: 'gift data',
-        enabled: false, // screenshot e disabled/grey
+        enabled: true,
         route: null,
       ),
     ];

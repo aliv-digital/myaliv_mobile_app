@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:myaliv_mobile_app/core/utils/bahamas_phone_formatter.dart';
 
 /// Formats Bahamas local numbers as `(242)-345-4356` while the user types.
 ///
@@ -21,7 +22,7 @@ class BahamasPhoneInputFormatter extends TextInputFormatter {
     final String limitedDigits = resolvedDigits.length > _maxDigits
         ? resolvedDigits.substring(0, _maxDigits)
         : resolvedDigits;
-    final String formatted = _formatBahamasNumber(limitedDigits);
+    final String formatted = BahamasPhoneFormatter.formatDigits(limitedDigits);
 
     return TextEditingValue(
       text: formatted,
@@ -72,26 +73,5 @@ class BahamasPhoneInputFormatter extends TextInputFormatter {
 
     final int safeIndex = index.clamp(0, digits.length - 1);
     return digits.substring(0, safeIndex) + digits.substring(safeIndex + 1);
-  }
-
-  String _formatBahamasNumber(String digits) {
-    if (digits.isEmpty) {
-      return '';
-    }
-
-    if (digits.length < 3) {
-      return '($digits';
-    }
-
-    if (digits.length == 3) {
-      return '($digits)';
-    }
-
-    if (digits.length <= 6) {
-      return '(${digits.substring(0, 3)})-${digits.substring(3)}';
-    }
-
-    return '(${digits.substring(0, 3)})-'
-        '${digits.substring(3, 6)}-${digits.substring(6)}';
   }
 }

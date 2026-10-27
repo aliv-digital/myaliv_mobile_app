@@ -182,6 +182,9 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                               if (item.id == 'rewards') {
                                 context.push(AppRoutes.rewardPrepaidScreen);
                               }
+                              if (item.id == 'gift_data') {
+                                context.push(AppRoutes.giftData);
+                              }
                               context.read<ProfilePrepaidBloc>().add(
                                 ProfilePrepaidItemPressed(item),
                               );

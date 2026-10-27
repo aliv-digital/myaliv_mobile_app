@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/bahamas_phone_formatter.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import '../model/my_profile_prepaid_model.dart';
 
@@ -19,7 +20,7 @@ class MyProfilePrepaidRepository {
       avatarLetter: fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U',
       fullName: fullName,
       statusLabel: _mapStatus(deviceLimits?.deviceStatus),
-      phone: _formatPhone(deviceLimits?.tn ?? ''),
+      phone: BahamasPhoneFormatter.format(deviceLimits?.tn ?? ''),
       email: accountState.accountInfo?.email ?? '',
       deviceTitle: 'your device',
       deviceModel: deviceLimits?.model ?? '',
@@ -40,18 +41,5 @@ class MyProfilePrepaidRepository {
       default:
         return status?.toLowerCase() ?? 'unknown';
     }
-  }
-
-  /// Format phone number as (XXX)-XXX-XXXX
-  String _formatPhone(String phone) {
-    if (phone.isEmpty) return '';
-    final digits = phone.replaceAll(RegExp(r'\D'), '');
-    if (digits.length == 10) {
-      return '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
-    }
-    if (digits.length == 11 && digits.startsWith('1')) {
-      return '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
-    }
-    return phone;
   }
 }
