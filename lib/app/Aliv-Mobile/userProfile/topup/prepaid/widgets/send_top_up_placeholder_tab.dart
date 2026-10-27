@@ -35,7 +35,12 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
 }
 
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
+  // Recipient numbers must be typed in full, starting with 242.
   final LoginPhoneNumberHelper _phoneNumberHelper =
+      const LoginPhoneNumberHelper(requireBahamasAreaCode: true);
+  // The account's own number can arrive without 242, so it stays lenient for
+  // the own-number check.
+  final LoginPhoneNumberHelper _ownPhoneNumberHelper =
       const LoginPhoneNumberHelper();
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _confirmPhoneFocusNode = FocusNode();
@@ -345,11 +350,13 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                               .accountInfo;
                           final primaryPhone =
                               account?.primaryPhoneNumber.trim() ?? '';
-                          final ownPhone = _validatePhone(
-                            primaryPhone.isNotEmpty
-                                ? primaryPhone
-                                : account?.phoneNumber.trim() ?? '',
-                          );
+                          final ownPhone = _ownPhoneNumberHelper
+                              .validateAndBuildApiUsername(
+                                rawPhoneNumber: primaryPhone.isNotEmpty
+                                    ? primaryPhone
+                                    : account?.phoneNumber.trim() ?? '',
+                                selectedCountry: _selectedCountry,
+                              );
                           if (ownPhone.isValid &&
                               ownPhone.phoneNumberForApi ==
                                   _validatePhone(

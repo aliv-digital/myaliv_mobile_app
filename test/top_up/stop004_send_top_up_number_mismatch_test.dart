@@ -252,7 +252,7 @@ void main() {
 
   for (final (own, recipient) in [
     ('2428011616', '2428011616'),
-    ('(242)-801-1616', '8011616'),
+    ('(242)-801-1616', '2428011616'),
     ('8011616', '2428011616'),
   ]) {
     testWidgets('own number $own matches canonical recipient $recipient', (
@@ -298,7 +298,7 @@ void main() {
   });
 
   testWidgets(
-    'editing clears required/format errors and seven digits proceed',
+    'editing clears required/format errors and only 242 numbers proceed',
     (tester) async {
       await pumpTab(tester);
       expect(find.text('Phone number is required.'), findsNothing);
@@ -317,7 +317,22 @@ void main() {
       await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
       expect(find.text('Phone number is required.'), findsNothing);
       expectNoDownstream();
+      // Seven digits without the 242 area code are rejected inline.
       await fill(tester, phone: '8011616', confirm: '8011616', amount: '10');
+      expect(
+        find.text(
+          'Invalid phone number. Please enter a 10-digit phone number.',
+        ),
+        findsOneWidget,
+      );
+      expect(proceedButton(tester).onPressed, isNull);
+      expectNoDownstream();
+      await fill(
+        tester,
+        phone: '2428011616',
+        confirm: '2428011616',
+        amount: '10',
+      );
       expect(find.text('Phone number is required.'), findsNothing);
       expect(
         find.text(
