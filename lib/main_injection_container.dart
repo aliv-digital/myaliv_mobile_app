@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/rewards_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/review_invoice_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/saved_cards_injection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/gift_data_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/send_topup_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/mifi_alt_contact_injection.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/payments_injection.dart';
@@ -75,6 +76,9 @@ class AppMainInjection {
 
     // Initialize send top-up (wallet transfer) feature
     await setupSendTopupInjection();
+
+    // Initialize gift data feature
+    await setupGiftDataInjection();
 
     // Initialize MiFi alt-contact validation feature
     await setupMifiAltContactInjection();

@@ -31,7 +31,7 @@ class ProfilePostpaidRepository {
       ProfilePostpaidMenuItemModel(
         id: 'gift_data',
         title: 'gift data',
-        enabled: false, // screenshot মতো disabled/grey
+        enabled: true,
         route: null,
       ),
     ];

@@ -243,6 +243,28 @@ class Api {
   /// Response: { "OrderId": 804441 } — success when OrderId > 0.
   static const guestFibrPayUrl = '$baseUrl/v1/MyAliv/Guest/fibrpay';
 
+  /// Gift-data eligibility + available plan catalogue.
+  /// GET /device/can-send-data-share/{senderMsisdn}
+  /// Response: `{ "Reason": "SenderEligible", "AvailablePlans": [ ... ] }`.
+  /// Each entry carries { DataSharePlanID, DataShareID, PlanID, Amount, plan }
+  /// where `Amount` is the data gift size in GB.
+  static String canSendDataShare(String senderMsisdn) {
+    final digits = senderMsisdn.replaceAll(RegExp(r'\D'), '');
+    return '$baseUrl/v1/MyAliv/device/can-send-data-share/${Uri.encodeComponent(digits)}';
+  }
+
+  /// Sender's data-share quota and window.
+  /// GET /device/{deviceAccountId}/data-share-status
+  /// Response includes DataShareEndDate (ISO 8601) and DataQtySendLimit (MB)
+  /// among several send/receive counters.
+  static String dataShareStatus(int deviceAccountId) =>
+      '$baseUrl/v1/MyAliv/device/$deviceAccountId/data-share-status';
+
+  /// Submit a gift-data transfer.
+  /// POST /Order/data-share
+  /// Response: `{ "OrderId": <int> }`.
+  static const dataShareOrderUrl = '$baseUrl/v1/MyAliv/Order/data-share';
+
   /// Guest plan purchase 3DS: POST /Guest/purchaseplan
   /// Body: { "Bundle": { "PrimaryPlans": [planId], "SecondaryPlans": [], "StandalonePlans": [], "StartDate"? },
   ///         "ForceNow", "ChannelType": "SelfCare", "RedirectURL", "Branch", "PhoneNumber" }
