@@ -70,10 +70,7 @@ class GiftReceiptCard extends StatelessWidget {
             _DetailRow(label: 'date', value: data.dateText),
             _DetailRow(label: 'time', value: data.timeText),
             _DetailRow(label: 'total data', value: data.totalDataLabel),
-            _DetailRow(
-              label: 'remaining data',
-              value: data.remainingDataLabel,
-            ),
+            _DetailRow(label: 'remaining data', value: data.remainingDataLabel),
             const SizedBox(height: 8),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 6),

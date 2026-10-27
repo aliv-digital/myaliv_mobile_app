@@ -92,9 +92,9 @@ class _ProfilePostpaidView extends StatelessWidget {
                               if (item.id == 'gift_data') {
                                 context.push(AppRoutes.giftData);
                               }
-                              context
-                                  .read<ProfilePostpaidBloc>()
-                                  .add(ProfilePostpaidItemPressed(item));
+                              context.read<ProfilePostpaidBloc>().add(
+                                ProfilePostpaidItemPressed(item),
+                              );
                             },
                           );
                         }),

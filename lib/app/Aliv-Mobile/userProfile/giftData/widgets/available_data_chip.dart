@@ -16,7 +16,7 @@ class AvailableDataChip extends StatelessWidget {
       height: 42,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: GiftDataTheme.chipBg,
+        color: GiftDataTheme.textLightGrey,
         borderRadius: BorderRadius.circular(GiftDataTheme.fieldRadius),
       ),
       child: Row(

@@ -116,7 +116,10 @@ class _ConfirmGiftBottomSheetScaffoldState
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Text('confirm data gift', style: GiftDataTheme.sheetTitle),
+                const Text(
+                  'confirm data gift',
+                  style: GiftDataTheme.sheetTitle,
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -160,8 +163,9 @@ class _ConfirmGiftBottomSheetScaffoldState
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : const Text('confirm gift', style: GiftDataTheme.ctaLabel),
@@ -226,10 +230,6 @@ class _SheetDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      height: 1,
-      thickness: 1,
-      color: GiftDataTheme.divider,
-    );
+    return const Divider(height: 1, thickness: 1, color: GiftDataTheme.divider);
   }
 }

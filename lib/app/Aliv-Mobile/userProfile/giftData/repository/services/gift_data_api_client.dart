@@ -11,8 +11,7 @@ class GiftDataApiException implements Exception {
   final int? statusCode;
 
   @override
-  String toString() =>
-      'GiftDataApiException($statusCode): $message';
+  String toString() => 'GiftDataApiException($statusCode): $message';
 }
 
 /// Handles API calls for the gift-data flow. Uses the shared [NetworkService]
@@ -61,10 +60,7 @@ class GiftDataApiClient {
       }
       return CanSendDataShareResponse.fromJson(json);
     } on NetworkException catch (e) {
-      throw GiftDataApiException(
-        e.message,
-        statusCode: e.statusCode,
-      );
+      throw GiftDataApiException(e.message, statusCode: e.statusCode);
     } catch (e) {
       if (e is GiftDataApiException) rethrow;
       throw GiftDataApiException(e.toString());
@@ -106,10 +102,7 @@ class GiftDataApiClient {
       }
       return DataShareStatus.fromJson(json);
     } on NetworkException catch (e) {
-      throw GiftDataApiException(
-        e.message,
-        statusCode: e.statusCode,
-      );
+      throw GiftDataApiException(e.message, statusCode: e.statusCode);
     } catch (e) {
       if (e is GiftDataApiException) rethrow;
       throw GiftDataApiException(e.toString());
@@ -187,10 +180,7 @@ class GiftDataApiClient {
 
       return orderId;
     } on NetworkException catch (e) {
-      throw GiftDataApiException(
-        e.message,
-        statusCode: e.statusCode,
-      );
+      throw GiftDataApiException(e.message, statusCode: e.statusCode);
     } catch (e) {
       if (e is GiftDataApiException) rethrow;
       throw GiftDataApiException(e.toString());

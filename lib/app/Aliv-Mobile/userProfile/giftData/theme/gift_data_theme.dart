@@ -18,6 +18,7 @@ class GiftDataTheme {
   static const Color divider = Color(0xFFEDEDF3);
   static const Color textPrimary = Color(0xFF121212);
   static const Color textMuted = Color(0xFF7A7A7A);
+  static const Color textLightGrey = Color(0xFFF9FAFB);
   static const Color textGreyLabel = Color(0xFF565661);
   static const Color accentOrange = Color(0xFFFA762C);
   static const Color accentGreenData = Color(0xFF2E9E5B);

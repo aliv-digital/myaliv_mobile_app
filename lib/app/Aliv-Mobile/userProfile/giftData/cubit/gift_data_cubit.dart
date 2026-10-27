@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/cubit/gif
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/data_share_status.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/gift_data_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/repository/gift_data_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/repository/services/gift_data_api_client.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 class GiftDataCubit extends Cubit<GiftDataState> {
@@ -36,9 +37,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
   Future<void> load() async {
     emit(state.copyWith(status: GiftDataStatus.loading, clearError: true));
 
-    final senderMsisdn = _senderMsisdn;
-
-    if (senderMsisdn.isEmpty) {
+    if (_senderMsisdn.isEmpty) {
       emit(
         state.copyWith(
           status: GiftDataStatus.failure,
@@ -55,50 +54,28 @@ class GiftDataCubit extends Cubit<GiftDataState> {
     final deviceAccountId =
         _deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
 
-    try {
-      final results = await Future.wait<Object?>([
-        _repository.fetchSendDataShareOptions(senderMsisdn),
-        deviceAccountId > 0
-            ? _repository
-                  .fetchDataShareStatus(deviceAccountId)
-                  .then<DataShareStatus?>((v) => v)
-                  .catchError((_) => null)
-            : Future<DataShareStatus?>.value(null),
-      ]);
-
-      final sendOptions = results[0] as GiftDataSendOptions;
-      final shareStatus = results[1] as DataShareStatus?;
-
-      // The sender's catalog is intentionally discarded here — the chip
-      // grid is sourced from the recipient's `can-send-data-share` response
-      // (see `_checkRecipient`). This call is kept only for the
-      // `isSenderEligible` gate and the ineligibility reason.
-      if (!sendOptions.isSenderEligible) {
-        emit(
-          state.copyWith(
-            status: GiftDataStatus.ineligible,
-            ineligibleReason: sendOptions.reason,
-          ),
-        );
-        return;
+    // On load we only fetch the sender's quota window (`data-share-status`),
+    // which powers the "until <date> you can gift up to <Xgb>" banner. The
+    // sender's `can-send-data-share` call is deliberately NOT fired here —
+    // the chip catalog comes from the recipient's `can-send-data-share`
+    // response (see `_checkRecipient`) once the two recipient fields match.
+    DataShareStatus? shareStatus;
+    if (deviceAccountId > 0) {
+      try {
+        shareStatus = await _repository.fetchDataShareStatus(deviceAccountId);
+      } catch (_) {
+        shareStatus = null;
       }
-
-      emit(
-        state.copyWith(
-          status: GiftDataStatus.ready,
-          shareStatus: shareStatus,
-          clearShareStatus: shareStatus == null,
-          clearIneligibleReason: true,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: GiftDataStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
     }
+
+    emit(
+      state.copyWith(
+        status: GiftDataStatus.ready,
+        shareStatus: shareStatus,
+        clearShareStatus: shareStatus == null,
+        clearIneligibleReason: true,
+      ),
+    );
   }
 
   /// Monotonic generation for recipient-eligibility checks. Each new fetch
@@ -136,9 +113,11 @@ class GiftDataCubit extends Cubit<GiftDataState> {
 
     if (!s.isRecipientComplete) {
       _recipientDebounce?.cancel();
-      final hasStaleData = s.amountOptions.isNotEmpty ||
+      final hasStaleData =
+          s.amountOptions.isNotEmpty ||
           s.amountOptionsFor != null ||
-          s.isCheckingRecipient;
+          s.isCheckingRecipient ||
+          s.recipientErrorMessage != null;
       if (!hasStaleData) return;
       _recipientCheckGen++;
       emit(
@@ -147,6 +126,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
           clearAmountOptionsFor: true,
           isCheckingRecipient: false,
           clearSelectedAmount: true,
+          clearRecipientErrorMessage: true,
         ),
       );
       return;
@@ -166,6 +146,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
         clearAmountOptionsFor: true,
         isCheckingRecipient: true,
         clearSelectedAmount: true,
+        clearRecipientErrorMessage: true,
       ),
     );
 
@@ -192,16 +173,21 @@ class GiftDataCubit extends Cubit<GiftDataState> {
           // Any previously-picked amount belongs to a prior catalog — drop it
           // so the user re-picks from the new recipient's options.
           clearSelectedAmount: true,
+          clearRecipientErrorMessage: true,
         ),
       );
-    } catch (_) {
+    } catch (e) {
       if (gen != _recipientCheckGen) return;
+      final message = e is GiftDataApiException
+          ? e.message
+          : 'could not verify recipient — please try again';
       emit(
         state.copyWith(
           amountOptions: const <GiftAmountOption>[],
           amountOptionsFor: digits,
           isCheckingRecipient: false,
           clearSelectedAmount: true,
+          recipientErrorMessage: message,
         ),
       );
     }

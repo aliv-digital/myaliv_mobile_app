@@ -505,8 +505,9 @@ class AppRouter {
           String recipientNumber = '';
           String orderReference = '';
           String dateText = DateFormat('MMM d, yyyy').format(DateTime.now());
-          String timeText =
-              DateFormat('h:mm a').format(DateTime.now()).toLowerCase();
+          String timeText = DateFormat(
+            'h:mm a',
+          ).format(DateTime.now()).toLowerCase();
           String totalDataLabel = '';
           String remainingDataLabel = '';
           String dataGiftedLabel = '';

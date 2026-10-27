@@ -25,6 +25,7 @@ class GiftDataState extends Equatable {
     required this.ineligibleReason,
     required this.amountOptionsFor,
     required this.isCheckingRecipient,
+    required this.recipientErrorMessage,
   });
 
   final GiftDataStatus status;
@@ -53,6 +54,11 @@ class GiftDataState extends Equatable {
   /// True while `can-send-data-share` is in flight for the recipient.
   final bool isCheckingRecipient;
 
+  /// Human-readable message returned by `can-send-data-share` when the
+  /// recipient check fails (e.g. "Invalid Device"). Rendered inline in red
+  /// below the confirm field. Null when there's no error to show.
+  final String? recipientErrorMessage;
+
   factory GiftDataState.initial() => const GiftDataState(
     status: GiftDataStatus.initial,
     recipient: '',
@@ -65,6 +71,7 @@ class GiftDataState extends Equatable {
     ineligibleReason: null,
     amountOptionsFor: null,
     isCheckingRecipient: false,
+    recipientErrorMessage: null,
   );
 
   /// True when the info banner has enough data to render.
@@ -89,6 +96,13 @@ class GiftDataState extends Equatable {
     return remaining < 0 ? 0 : remaining;
   }
 
+  /// True when a chip with [amountMb] can be selected — i.e. the amount is
+  /// within the sender's `availableToShow` budget (or budget is unknown).
+  bool isAmountEnabled(int amountMb) {
+    final cap = availableToShowMb;
+    return cap == null || amountMb <= cap;
+  }
+
   /// True once both recipient fields match and contain a 10-digit number.
   /// Drives the visibility of the recipient-capacity banner.
   bool get isRecipientComplete {
@@ -103,9 +117,7 @@ class GiftDataState extends Equatable {
   /// returned no eligible plans.
   double? get maxGiftableGb {
     if (amountOptions.isEmpty) return null;
-    return amountOptions
-        .map((o) => o.amountGb)
-        .reduce((a, b) => a > b ? a : b);
+    return amountOptions.map((o) => o.amountGb).reduce((a, b) => a > b ? a : b);
   }
 
   // Form is valid when: both numbers match + non-empty, an amount is picked,
@@ -142,6 +154,8 @@ class GiftDataState extends Equatable {
     String? amountOptionsFor,
     bool clearAmountOptionsFor = false,
     bool? isCheckingRecipient,
+    String? recipientErrorMessage,
+    bool clearRecipientErrorMessage = false,
   }) {
     return GiftDataState(
       status: status ?? this.status,
@@ -161,6 +175,9 @@ class GiftDataState extends Equatable {
           ? null
           : (amountOptionsFor ?? this.amountOptionsFor),
       isCheckingRecipient: isCheckingRecipient ?? this.isCheckingRecipient,
+      recipientErrorMessage: clearRecipientErrorMessage
+          ? null
+          : (recipientErrorMessage ?? this.recipientErrorMessage),
     );
   }
 
@@ -177,5 +194,6 @@ class GiftDataState extends Equatable {
     ineligibleReason,
     amountOptionsFor,
     isCheckingRecipient,
+    recipientErrorMessage,
   ];
 }
