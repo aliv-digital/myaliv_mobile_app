@@ -44,11 +44,11 @@ LoginBloc _buildBloc({
 }
 
 TokenSession _fakeSession() => TokenSession(
-  accessToken: 'access',
-  refreshToken: 'refresh',
-  accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
-  refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
-);
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
+      refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
+    );
 
 void main() {
   late MockLoginRepository repository;
@@ -101,6 +101,25 @@ void main() {
             .having((s) => s.errorMessage, 'errorMessage', 'invalid Format')
             .having((s) => s.phoneFieldError, 'phoneFieldError', true)
             .having((s) => s.passwordFieldError, 'passwordFieldError', false),
+      ],
+      verify: (_) => verifyNever(
+        () => repository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ),
+    );
+
+    blocTest<LoginBloc, LoginState>(
+      'rejects 7-digit Bahamas number without the 242 area code',
+      build: () => _buildBloc(repository: repository),
+      seed: () => const LoginState(phone: '(899)-720-2', password: 'secret'),
+      act: (bloc) => bloc.add(const LoginSubmitted()),
+      expect: () => [
+        isA<LoginState>()
+            .having((s) => s.status, 'status', LoginStatus.failure)
+            .having((s) => s.errorMessage, 'errorMessage', 'invalid Format')
+            .having((s) => s.phoneFieldError, 'phoneFieldError', true),
       ],
       verify: (_) => verifyNever(
         () => repository.login(
@@ -169,7 +188,7 @@ void main() {
 
   group('LoginBloc — submit with valid Bahamas number', () {
     // 7-digit Bahamas number, which is valid for BS
-    const validPhone = '3241234';
+    const validPhone = '2423241234';
     const password = 'mypassword';
 
     blocTest<LoginBloc, LoginState>(

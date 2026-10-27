@@ -16,14 +16,18 @@ class LoginPhoneValidationResult {
   });
 
   const LoginPhoneValidationResult.success({required String phoneNumberForApi})
-    : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
+      : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
 
   const LoginPhoneValidationResult.failure({required String errorMessage})
-    : this._(isValid: false, errorMessage: errorMessage);
+      : this._(isValid: false, errorMessage: errorMessage);
 }
 
 class LoginPhoneNumberHelper {
-  const LoginPhoneNumberHelper();
+  const LoginPhoneNumberHelper({this.requireBahamasAreaCode = false});
+
+  /// When true, Bahamas numbers must be the full 10 digits starting with
+  /// `242`; the 7-digit shorthand (auto-prefixed with `242`) is rejected.
+  final bool requireBahamasAreaCode;
 
   static const String invalidPhoneNumberMessage = 'invalid phone number';
 
@@ -48,10 +52,10 @@ class LoginPhoneNumberHelper {
 
   static const Map<String, String> _territoryDialCodeOverrides =
       <String, String>{
-        // Bahamas is part of the shared NANP parent code and should display `1`
-        // in the picker, while the typed field keeps the local `242` area code.
-        'BS': '1',
-      };
+    // Bahamas is part of the shared NANP parent code and should display `1`
+    // in the picker, while the typed field keeps the local `242` area code.
+    'BS': '1',
+  };
 
   /// country_picker returns composite codes such as `1-242` for Bahamas.
   ///
@@ -62,8 +66,7 @@ class LoginPhoneNumberHelper {
 
     return LoginCountrySelection(
       isoCode: isoCode,
-      dialCode:
-          _territoryDialCodeOverrides[isoCode] ??
+      dialCode: _territoryDialCodeOverrides[isoCode] ??
           _normalizeDisplayDialCode(country.phoneCode),
       flagEmoji: country.flagEmoji,
     );
@@ -188,7 +191,7 @@ class LoginPhoneNumberHelper {
   }
 
   LoginPhoneValidationResult _validateBahamasPhoneNumber(String enteredDigits) {
-    if (enteredDigits.length == 7) {
+    if (!requireBahamasAreaCode && enteredDigits.length == 7) {
       return LoginPhoneValidationResult.success(
         phoneNumberForApi: '242$enteredDigits',
       );
@@ -221,7 +224,7 @@ class LoginPhoneNumberHelper {
   }) {
     final bool usesTerritoryDialCode =
         displayDialCode != parsedPhone.countryCode &&
-        parsedPhone.nsn.startsWith(displayDialCode);
+            parsedPhone.nsn.startsWith(displayDialCode);
 
     if (usesTerritoryDialCode) {
       final int subscriberLength =

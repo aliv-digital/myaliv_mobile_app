@@ -28,7 +28,7 @@ const _lockedBody = {
 const _lockedMessage =
     'your account is locked out, please try again in 15 minutes';
 const _seed = LoginState(
-  phone: '3241234',
+  phone: '2423241234',
   password: 'test-password',
   errorToastId: 7,
 );
@@ -280,7 +280,7 @@ void main() {
           ),
         );
         final fields = find.byType(TextField);
-        await tester.enterText(fields.at(0), '3241234');
+        await tester.enterText(fields.at(0), '2423241234');
         await tester.enterText(fields.at(1), 'test-password');
         tester.testTextInput.hide();
         await tester.pump();
