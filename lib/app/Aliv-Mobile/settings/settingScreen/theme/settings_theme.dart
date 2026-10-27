@@ -43,4 +43,22 @@ class SettingsTheme {
     color: textSecondary,
     height: 1.1,
   );
+
+  // Biometric turn-off confirmation sheet
+  static const Color sheetBg = Color(0xFFF1F1F8);
+  static const Color sheetPrimary = Color(0xFF645D9C);
+  static const Color sheetPrimaryText = Color(0xFFF1F1F8);
+
+  static const TextStyle sheetMessage = TextStyle(
+    color: Color(0xFF121212),
+    fontSize: 16,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle sheetButtonText = TextStyle(
+    fontSize: 15,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+  );
 }

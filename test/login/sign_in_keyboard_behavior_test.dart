@@ -89,6 +89,16 @@ void main() {
     expect(find.text('invalid phone number'), findsNothing);
   });
 
+  testWidgets('7-digit number without 242 shows invalid Format inline', (
+    tester,
+  ) async {
+    bloc.add(const LoginPhoneChanged('(899)-720-2'));
+    await tester.pump();
+    await _pumpHarness(tester, bloc);
+
+    expect(find.text('invalid Format'), findsOneWidget);
+  });
+
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     testWidgets('$platform phone toolbar Next focuses password only', (
       tester,

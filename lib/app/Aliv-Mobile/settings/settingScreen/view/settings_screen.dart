@@ -11,6 +11,7 @@ import '../bloc/settings_event.dart';
 import '../bloc/settings_state.dart';
 import '../repository/settings_repository_impl.dart';
 import '../theme/settings_theme.dart';
+import '../widgets/biometric_turn_off_confirm_bottom_sheet.dart';
 import '../widgets/settings_nav_tile.dart';
 import '../widgets/settings_section_card.dart';
 import '../widgets/settings_toggle_tile.dart';
@@ -31,6 +32,21 @@ class SettingsScreen extends StatelessWidget {
 
 class _SettingsView extends StatelessWidget {
   const _SettingsView();
+
+  // The toggle stays on until the user confirms with "yes".
+  Future<void> _confirmTurnOff(
+    BuildContext context, {
+    required String message,
+    required SettingsEvent event,
+  }) async {
+    final confirmed = await BiometricTurnOffConfirmBottomSheet.show(
+      context,
+      message: message,
+    );
+    if (confirmed && context.mounted) {
+      context.read<SettingsBloc>().add(event);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,8 +156,11 @@ class _SettingsView extends StatelessWidget {
                                         }
                                       });
                                 } else {
-                                  context.read<SettingsBloc>().add(
-                                    FingerprintToggled(false),
+                                  _confirmTurnOff(
+                                    context,
+                                    message:
+                                        'are you sure you want to turn off fingerprint?',
+                                    event: FingerprintToggled(false),
                                   );
                                 }
                               },
@@ -163,8 +182,11 @@ class _SettingsView extends StatelessWidget {
                                         }
                                       });
                                 } else {
-                                  context.read<SettingsBloc>().add(
-                                    FaceScanToggled(false),
+                                  _confirmTurnOff(
+                                    context,
+                                    message:
+                                        'are you sure you want to turn off face id?',
+                                    event: FaceScanToggled(false),
                                   );
                                 }
                               },

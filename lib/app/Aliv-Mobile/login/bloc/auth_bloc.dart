@@ -24,11 +24,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginPhoneNumberHelper? phoneNumberHelper,
     AuthCompletionService? authCompletionService,
     InternetConnection? internetConnection,
-  }) : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
-       authCompletionService =
-           authCompletionService ?? const AuthCompletionService(),
-       _internetConnection = internetConnection ?? InternetConnection(),
-       super(const LoginState()) {
+  })  : phoneNumberHelper = phoneNumberHelper ??
+            const LoginPhoneNumberHelper(requireBahamasAreaCode: true),
+        authCompletionService =
+            authCompletionService ?? const AuthCompletionService(),
+        _internetConnection = internetConnection ?? InternetConnection(),
+        super(const LoginState()) {
     on<LoginInitialized>(_onInitialized);
     on<LoginSaveMyPasswordToggled>(_onSaveMyPasswordToggled);
     on<LoginPhoneChanged>((event, emit) {
@@ -159,11 +160,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
-    final LoginPhoneValidationResult phoneValidationResult = phoneNumberHelper
-        .validateAndBuildApiUsername(
-          rawPhoneNumber: state.phone,
-          selectedCountry: state.selectedCountry,
-        );
+    final LoginPhoneValidationResult phoneValidationResult =
+        phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: state.phone,
+      selectedCountry: state.selectedCountry,
+    );
 
     if (!phoneValidationResult.isValid ||
         phoneValidationResult.phoneNumberForApi == null) {
