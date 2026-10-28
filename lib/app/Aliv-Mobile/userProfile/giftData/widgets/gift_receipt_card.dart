@@ -83,11 +83,16 @@ class GiftReceiptCard extends StatelessWidget {
                   label: 'remaining data',
                   value: data.remainingDataLabel,
                 ),
+                SizedBox(height: 4),
+                GiftDataTicketDivider(height: 1),
+                SizedBox(height: 4),
                 _DetailRow(
                   label: 'data gifted',
                   value: data.dataGiftedLabel,
                   valueBold: true,
                 ),
+                SizedBox(height: 4),
+                Divider(),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -199,7 +204,7 @@ class _DetailRow extends StatelessWidget {
             style: TextStyle(
               fontFamily: AppConstants.defaultFontFamily,
               fontSize: valueBold ? 16 : 15,
-              fontWeight: valueBold ? FontWeight.w700 : FontWeight.w500,
+              fontWeight: valueBold ? FontWeight.w800 : FontWeight.w500,
               color: GiftDataTheme.textPrimary,
               height: 1.4,
             ),
