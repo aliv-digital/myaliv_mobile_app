@@ -10,9 +10,6 @@ class PlansEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePlanScreen(
-      initialTab: initialTab,
-      rewardSugName: rewardSugName,
-    );
+    return HomePlanScreen(initialTab: initialTab, rewardSugName: rewardSugName);
   }
 }

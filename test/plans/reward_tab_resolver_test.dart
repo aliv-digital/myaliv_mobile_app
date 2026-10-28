@@ -6,39 +6,33 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dar
 
 void main() {
   group('resolveTabForRewardSug', () {
-    test(
-      'returns monthly tab for SUGName referencing a monthly plan',
-      () {
-        final state = PlansState(
-          monthlyApiPlans: [_plan('Liberty40')],
-          weeklyApiPlans: [_plan('Freedom15')],
-        );
+    test('returns monthly tab for SUGName referencing a monthly plan', () {
+      final state = PlansState(
+        monthlyApiPlans: [_plan('Liberty40')],
+        weeklyApiPlans: [_plan('Freedom15')],
+      );
 
-        final tab = resolveTabForRewardSug(
-          r'$10 off Liberty40 for 1 month',
-          state,
-        );
+      final tab = resolveTabForRewardSug(
+        r'$10 off Liberty40 for 1 month',
+        state,
+      );
 
-        expect(tab, HomePlanTab.monthly);
-      },
-    );
+      expect(tab, HomePlanTab.monthly);
+    });
 
-    test(
-      'returns weekly tab for SUGName referencing a weekly plan',
-      () {
-        final state = PlansState(
-          monthlyApiPlans: [_plan('Liberty40')],
-          weeklyApiPlans: [_plan('Freedom15')],
-        );
+    test('returns weekly tab for SUGName referencing a weekly plan', () {
+      final state = PlansState(
+        monthlyApiPlans: [_plan('Liberty40')],
+        weeklyApiPlans: [_plan('Freedom15')],
+      );
 
-        final tab = resolveTabForRewardSug(
-          r'$3 off Freedom15 for 2 weeks',
-          state,
-        );
+      final tab = resolveTabForRewardSug(
+        r'$3 off Freedom15 for 2 weeks',
+        state,
+      );
 
-        expect(tab, HomePlanTab.weekly);
-      },
-    );
+      expect(tab, HomePlanTab.weekly);
+    });
 
     test('longer plan name wins over shorter prefix match', () {
       final state = PlansState(
@@ -108,10 +102,7 @@ void main() {
       () {
         final state = PlansState(monthlyApiPlans: [_plan('liberty data1')]);
 
-        final tab = resolveTabForRewardSug(
-          r'$5 off liberty data 1 .99',
-          state,
-        );
+        final tab = resolveTabForRewardSug(r'$5 off liberty data 1 .99', state);
 
         expect(tab, HomePlanTab.monthly);
       },

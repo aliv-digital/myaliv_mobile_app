@@ -34,10 +34,7 @@ class HomePlanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _HomePlanView(
-      initialTab: initialTab,
-      rewardSugName: rewardSugName,
-    );
+    return _HomePlanView(initialTab: initialTab, rewardSugName: rewardSugName);
   }
 }
 
@@ -452,13 +449,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
-  List<HomePlanTab> _visibleTabs(
-    List<HomePlanTab> allTabs,
-    PlansState state,
-  ) {
+  List<HomePlanTab> _visibleTabs(List<HomePlanTab> allTabs, PlansState state) {
     if (allTabs.length <= 1) return allTabs;
 
-    final isAuthoritative = state.status == PlansStatus.success ||
+    final isAuthoritative =
+        state.status == PlansStatus.success ||
         state.status == PlansStatus.refreshing;
     if (!isAuthoritative) return allTabs;
 

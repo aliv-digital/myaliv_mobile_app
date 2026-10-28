@@ -46,8 +46,7 @@ HomePlanTab? resolveTabForRewardSug(String sugName, PlansState state) {
   return null;
 }
 
-String _normalize(String s) =>
-    s.toLowerCase().replaceAll(RegExp(r'\s+'), '');
+String _normalize(String s) => s.toLowerCase().replaceAll(RegExp(r'\s+'), '');
 
 class _Candidate {
   const _Candidate({required this.tab, required this.name});

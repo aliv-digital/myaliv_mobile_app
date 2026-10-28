@@ -211,7 +211,8 @@ class _SheetRow extends StatelessWidget {
           SizedBox(
             width: 20,
             height: 20,
-            child: leading ??
+            child:
+                leading ??
                 Icon(_icon, size: 20, color: GiftDataTheme.primaryPurple),
           ),
           const SizedBox(width: 12),

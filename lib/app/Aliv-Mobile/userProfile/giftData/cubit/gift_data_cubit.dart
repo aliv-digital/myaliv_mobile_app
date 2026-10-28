@@ -227,9 +227,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
       final message = e is GiftDataApiException
           ? e.message.toLowerCase()
           : 'could not send gift — please try again';
-      emit(
-        state.copyWith(status: GiftDataStatus.ready, errorMessage: message),
-      );
+      emit(state.copyWith(status: GiftDataStatus.ready, errorMessage: message));
       return null;
     }
   }
