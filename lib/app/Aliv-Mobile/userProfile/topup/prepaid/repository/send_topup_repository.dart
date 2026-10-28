@@ -131,10 +131,6 @@ class SendTopupRepository {
       return 'Request timed out. Please try again.';
     }
 
-    if (error is SessionExpiredException) {
-      return 'Session expired. Please log in again.';
-    }
-
     final serverMessage = _extractServerMessage(error.data);
     if (serverMessage != null) {
       return serverMessage;

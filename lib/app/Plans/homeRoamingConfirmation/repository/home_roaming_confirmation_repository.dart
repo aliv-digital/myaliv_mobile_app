@@ -119,10 +119,6 @@ class HomeRoamingConfirmationRepository {
       return 'Request timeout. Please try again.';
     }
 
-    if (error is SessionExpiredException || error.statusCode == 401) {
-      return 'Session expired. Please log in again.';
-    }
-
     final message = error.message.trim();
     if (message.isNotEmpty && message != 'An error occurred') {
       return message;

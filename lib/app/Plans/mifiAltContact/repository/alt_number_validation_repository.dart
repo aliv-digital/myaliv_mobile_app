@@ -111,7 +111,6 @@ class AltNumberValidationRepository {
 
   String _validateErrorMessage(NetworkException e) {
     final code = e.statusCode;
-    if (code == 401) return 'session expired. please log in again.';
     if (code == 400 || code == 404) return 'this mobile number is not valid.';
     if (code != null && code >= 500) {
       return 'service unavailable. please try again.';
@@ -125,7 +124,6 @@ class AltNumberValidationRepository {
 
   String _updateErrorMessage(NetworkException e) {
     final code = e.statusCode;
-    if (code == 401) return 'session expired. please log in again.';
     if (code != null && code >= 500) {
       return 'service unavailable. please try again.';
     }
@@ -138,7 +136,6 @@ class AltNumberValidationRepository {
 
   String _optInErrorMessage(NetworkException e) {
     final code = e.statusCode;
-    if (code == 401) return 'session expired. please log in again.';
     if (code == 400 || code == 404) {
       return 'could not save your offers preference. please check the mobile number.';
     }
