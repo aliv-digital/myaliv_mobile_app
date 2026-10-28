@@ -20,6 +20,7 @@ class ForgetPasswordOtpScreen extends LoginOtpScreen {
         clearCodeOnResend: true,
         resetValidationOnResend: true,
         successMessage: 'Code verified.',
+        failureRedirectLocation: AppRoutes.logIn,
         onSuccess: (context) => _continueToPasswordReset(context, challenge),
       );
 

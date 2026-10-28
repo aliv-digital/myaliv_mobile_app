@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../repository/base_login_otp_repository.dart';
 import '../repository/login_otp_repository.dart';
+import '../repository/otp_attempt_failure.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 
@@ -71,7 +72,10 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     LoginOtpSubmitted event,
     Emitter<LoginOtpState> emit,
   ) async {
-    if (preventDuplicateSubmissions && _submissionInProgress) return;
+    if (state.shouldExitOtpFlow ||
+        (preventDuplicateSubmissions && _submissionInProgress)) {
+      return;
+    }
 
     if (preventDuplicateSubmissions) _submissionInProgress = true;
     try {
@@ -153,6 +157,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         mfaToken: mfaToken,
         otpCode: enteredCode,
       );
+      if (state.mfaToken.trim() != mfaToken) {
+        return;
+      }
 
       await authCompletionService.complete(
         session: response.session,
@@ -169,20 +176,30 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           errorType: LoginOtpErrorType.none,
           codeFieldError: false,
           errorMessage: null,
+          incorrectAttempts: 0,
         ),
       );
     } catch (e) {
+      if (state.mfaToken.trim() != mfaToken) {
+        return;
+      }
       final message = _extractErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
       final normalized = message.toLowerCase();
       final treatAsInvalidCode =
           normalized.contains('two factor') || normalized.contains('twofactor');
+      final incorrectAttempts =
+          e is OtpAttemptFailure && e.incorrectAttempts > 0
+          ? e.incorrectAttempts
+          : state.incorrectAttempts +
+                (OtpAttemptFailure.isIncorrectCode(e) ? 1 : 0);
       emit(
         state.copyWith(
           status: LoginOtpStatus.failure,
           errorType: errorType,
           codeFieldError: _isCodeInputRelatedError(errorType),
           errorMessage: treatAsInvalidCode ? 'Invalid OTP' : message,
+          incorrectAttempts: incorrectAttempts,
         ),
       );
     }
@@ -214,6 +231,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     LoginOtpResendRequested event,
     Emitter<LoginOtpState> emit,
   ) async {
+    if (state.shouldExitOtpFlow) {
+      return;
+    }
     if (resetValidationOnResend) {
       emit(
         state.copyWith(
@@ -267,6 +287,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         state.copyWith(
           resendStatus: LoginOtpResendStatus.done,
           mfaToken: updatedKey,
+          incorrectAttempts: updatedKey != mfaToken
+              ? 0
+              : state.incorrectAttempts,
           errorMessage: null,
         ),
       );

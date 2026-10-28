@@ -11,6 +11,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_header.da
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import 'call_logs_otp_repository.dart';
 import 'call_logs_otp_route_args.dart';
@@ -117,6 +118,12 @@ class _CallLogsOtpViewState extends State<_CallLogsOtpView> {
                 message: state.errorMessage!,
                 type: ToastType.error,
               );
+              if (state.shouldExitOtpFlow &&
+                  ModalRoute.of(context)?.isCurrent == true &&
+                  _session.generation == _generation) {
+                context.go(AppRoutes.home);
+                return;
+              }
             }
 
             if (state.resendStatus == LoginOtpResendStatus.done) {

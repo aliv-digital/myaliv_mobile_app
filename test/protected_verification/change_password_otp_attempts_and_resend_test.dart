@@ -33,7 +33,7 @@ void main() {
   setUpAll(loadChangePasswordTestFonts);
 
   testWidgets(
-    'Change Password OTP: 1-5 wrong attempts show "Invalid OTP", attempt 6+ shows required lockout message',
+    'Change Password OTP keeps its messages and redirects home on wrong attempt six',
     (tester) async {
       await withChangePasswordFlow(tester, (h) async {
         await h.start(tester);
@@ -64,27 +64,12 @@ void main() {
           tester,
           expectedToast: 'Too many failed OTP attempts. Please try again.',
         );
-        expect(find.byType(ActionOtpScreen), findsOneWidget);
-        expect(h.otp(tester).state.status, LoginOtpStatus.failure);
-        expect(
-          h.otp(tester).state.errorMessage,
-          'Too many failed OTP attempts. Please try again.',
-        );
-
-        // Attempt 7: Must continue showing the exact required message
-        await _verifyOtp(
-          tester,
-          expectedToast: 'Too many failed OTP attempts. Please try again.',
-        );
-        expect(find.byType(ActionOtpScreen), findsOneWidget);
-        expect(h.otp(tester).state.status, LoginOtpStatus.failure);
-        expect(
-          h.otp(tester).state.errorMessage,
-          'Too many failed OTP attempts. Please try again.',
-        );
-
-        // Verify button remains enabled (no forced lockout or disable)
-        expect(find.text('verify'), findsOneWidget);
+        expect(find.byType(ActionOtpScreen), findsNothing);
+        expect(find.text('home destination'), findsOneWidget);
+        expect(h.router.canPop(), isFalse);
+        expect(h.verifications, 6);
+        expect(h.saves, 0);
+        expect(h.updates, 0);
       });
     },
   );
@@ -171,10 +156,8 @@ void main() {
           tester,
           expectedToast: 'Too many failed OTP attempts. Please try again.',
         );
-        expect(
-          h.otp(tester).state.errorMessage,
-          'Too many failed OTP attempts. Please try again.',
-        );
+        expect(find.text('home destination'), findsOneWidget);
+        expect(h.verifications, 9);
       });
     },
   );
@@ -250,10 +233,8 @@ void main() {
           tester,
           expectedToast: 'Too many failed OTP attempts. Please try again.',
         );
-        expect(
-          h.otp(tester).state.errorMessage,
-          'Too many failed OTP attempts. Please try again.',
-        );
+        expect(find.text('home destination'), findsOneWidget);
+        expect(h.verifications, 11);
       });
     },
   );

@@ -25,6 +25,7 @@ class LoginOtpScreen extends StatelessWidget {
     this.successMessage,
     this.clearCodeOnResend = false,
     this.resetValidationOnResend = false,
+    this.failureRedirectLocation = AppRoutes.home,
   });
 
   /// mfa_token issued by the login endpoint; seeded into the bloc so the
@@ -49,6 +50,8 @@ class LoginOtpScreen extends StatelessWidget {
   /// Forgot Password clears previous verification errors when requesting a code.
   final bool resetValidationOnResend;
 
+  final String failureRedirectLocation;
+
   @protected
   LoginOtpBloc createBloc(BuildContext context) => LoginOtpBloc(
     repository: LoginOtpRepository(),
@@ -57,6 +60,7 @@ class LoginOtpScreen extends StatelessWidget {
     initialPhoneNumber: initialPhoneNumber,
     initialApiPhoneNumber: initialApiPhoneNumber,
     resetValidationOnResend: resetValidationOnResend,
+    preventDuplicateSubmissions: true,
   );
 
   @override
@@ -67,6 +71,7 @@ class LoginOtpScreen extends StatelessWidget {
         onSuccess: onSuccess,
         successMessage: successMessage,
         clearCodeOnResend: clearCodeOnResend,
+        failureRedirectLocation: failureRedirectLocation,
       ),
     );
   }
@@ -77,12 +82,14 @@ class _LoginOtpView extends StatefulWidget {
     this.onSuccess,
     this.successMessage,
     required this.clearCodeOnResend,
+    required this.failureRedirectLocation,
   });
 
   final void Function(BuildContext context)? onSuccess;
   final String? successMessage;
 
   final bool clearCodeOnResend;
+  final String failureRedirectLocation;
 
   @override
   State<_LoginOtpView> createState() => _LoginOtpViewState();
@@ -123,6 +130,11 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
                 message: state.errorMessage!,
                 type: ToastType.error,
               );
+              if (state.shouldExitOtpFlow &&
+                  ModalRoute.of(context)?.isCurrent == true) {
+                context.go(widget.failureRedirectLocation);
+                return;
+              }
             }
 
             if (state.resendStatus == LoginOtpResendStatus.done) {
