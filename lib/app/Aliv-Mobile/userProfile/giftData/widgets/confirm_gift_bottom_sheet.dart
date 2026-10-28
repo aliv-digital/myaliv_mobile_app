@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gift_data_theme.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -124,23 +125,27 @@ class _ConfirmGiftBottomSheetScaffoldState
             ),
             const SizedBox(height: 16),
             _SheetRow(
-              icon: AssetConstant.giftBoxSVG,
-              iconColor: GiftDataTheme.primaryPurple,
+              icon: IconsaxPlusLinear.gift,
               label: 'gift amount',
               value: widget.amountLabel,
             ),
             const _SheetDivider(),
-            _SheetRow(
-              icon: AssetConstant.wifiIconSVG,
-              iconColor: GiftDataTheme.accentOrange,
+            _SheetRow.leading(
+              leading: SvgPicture.asset(
+                AssetConstant.dataIconSVG,
+                width: 20,
+                height: 20,
+                colorFilter: const ColorFilter.mode(
+                  GiftDataTheme.primaryPurple,
+                  BlendMode.srcIn,
+                ),
+              ),
               label: 'available to send',
               value: widget.availableLabel,
             ),
             const _SheetDivider(),
             _SheetRow(
-              icon: null,
-              fallbackIcon: Icons.person_outline,
-              iconColor: GiftDataTheme.textGreyLabel,
+              icon: IconsaxPlusLinear.user,
               label: 'recipient',
               value: widget.recipient,
             ),
@@ -180,16 +185,20 @@ class _ConfirmGiftBottomSheetScaffoldState
 
 class _SheetRow extends StatelessWidget {
   const _SheetRow({
-    required this.icon,
+    required IconData icon,
     required this.label,
     required this.value,
-    required this.iconColor,
-    this.fallbackIcon,
-  });
+  }) : leading = null,
+       _icon = icon;
 
-  final String? icon;
-  final IconData? fallbackIcon;
-  final Color iconColor;
+  const _SheetRow.leading({
+    required this.leading,
+    required this.label,
+    required this.value,
+  }) : _icon = null;
+
+  final IconData? _icon;
+  final Widget? leading;
   final String label;
   final String value;
 
@@ -202,19 +211,8 @@ class _SheetRow extends StatelessWidget {
           SizedBox(
             width: 20,
             height: 20,
-            child: icon != null
-                ? SvgPicture.asset(
-                    icon!,
-                    width: 20,
-                    height: 20,
-                    colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
-                    placeholderBuilder: (_) => Icon(
-                      fallbackIcon ?? Icons.circle_outlined,
-                      size: 20,
-                      color: iconColor,
-                    ),
-                  )
-                : Icon(fallbackIcon, size: 20, color: iconColor),
+            child: leading ??
+                Icon(_icon, size: 20, color: GiftDataTheme.primaryPurple),
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: GiftDataTheme.sheetRowLabel)),

@@ -116,8 +116,8 @@ class GiftDataTheme {
   static const TextStyle sheetRowLabel = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: textGreyLabel,
+    fontWeight: FontWeight.w500,
+    color: textPrimary,
     height: 1.43,
   );
 

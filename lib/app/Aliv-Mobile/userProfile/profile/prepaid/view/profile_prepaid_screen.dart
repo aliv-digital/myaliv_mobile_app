@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -138,6 +140,28 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                           color: ProfilePrepaidTheme.divider,
                         ),
                         ...state.items.map((item) {
+                          if (item.id == 'gift_data') {
+                            return BlocBuilder<
+                              BucketUsageSummaryCubit,
+                              BucketUsageSummaryState
+                            >(
+                              builder: (ctx, bucketState) {
+                                final enabled =
+                                    item.enabled && bucketState.hasActivePlans;
+                                return ProfileMenuItemTile(
+                                  title: item.title,
+                                  enabled: enabled,
+                                  onTap: () {
+                                    if (!enabled) return;
+                                    context.push(AppRoutes.giftData);
+                                    context.read<ProfilePrepaidBloc>().add(
+                                      ProfilePrepaidItemPressed(item),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          }
                           return ProfileMenuItemTile(
                             title: item.title,
                             enabled: item.enabled,
@@ -181,9 +205,6 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                               }
                               if (item.id == 'rewards') {
                                 context.push(AppRoutes.rewardPrepaidScreen);
-                              }
-                              if (item.id == 'gift_data') {
-                                context.push(AppRoutes.giftData);
                               }
                               context.read<ProfilePrepaidBloc>().add(
                                 ProfilePrepaidItemPressed(item),
