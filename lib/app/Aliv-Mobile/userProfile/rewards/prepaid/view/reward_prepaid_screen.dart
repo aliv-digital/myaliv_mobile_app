@@ -55,7 +55,8 @@ class _RewardPrepaidView extends StatelessWidget {
                 extra: action.reward,
               );
             } else if (action is StartGetThisFlow) {
-              context.go(AppRoutes.plans);
+              final sug = Uri.encodeQueryComponent(action.reward.name);
+              context.go('${AppRoutes.plans}?rewardSug=$sug');
             }
 
             rewardCubit.clearAction();

@@ -4,11 +4,15 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/home_plan_screen.dar
 
 class PlansEntryScreen extends StatelessWidget {
   final HomePlanTab? initialTab;
+  final String? rewardSugName;
 
-  const PlansEntryScreen({super.key, this.initialTab});
+  const PlansEntryScreen({super.key, this.initialTab, this.rewardSugName});
 
   @override
   Widget build(BuildContext context) {
-    return HomePlanScreen(initialTab: initialTab);
+    return HomePlanScreen(
+      initialTab: initialTab,
+      rewardSugName: rewardSugName,
+    );
   }
 }

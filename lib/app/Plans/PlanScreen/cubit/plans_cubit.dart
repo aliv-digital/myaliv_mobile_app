@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/logic/reward_tab_resolver.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
@@ -47,27 +48,39 @@ class PlansCubit extends HydratedCubit<PlansState> {
   Future<void> started({
     required UserType userType,
     HomePlanTab? initialTab,
+    String? rewardSugName,
   }) async {
-    final tab = initialTab ?? _defaultTabForUserType(userType);
+    final defaultTab = initialTab ?? _defaultTabForUserType(userType);
 
-    if (state.selectedTab != tab) {
-      emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
+    if (state.selectedTab != defaultTab) {
+      emit(state.copyWith(selectedTab: defaultTab, expandedPlanIds: const {}));
     }
 
     if (instance<AuthManager>().currentSession == null) return;
 
     if (!state.hasData) {
       await _fetchAllPlans();
+      _applyRewardSugTab(rewardSugName);
       return;
     }
 
-    // Cache is warm — trigger silent background refresh if stale.
+    // Cache is warm — resolve immediately, then trigger silent refresh.
+    _applyRewardSugTab(rewardSugName);
+
     if (_shouldRefresh()) {
       // Fire-and-forget: UI keeps showing cached data while fetch runs.
       // catchError suppresses unhandled-future warnings and handles
       // the edge case where the cubit is closed before the fetch completes.
       _fetchAllPlans().catchError((_) {});
     }
+  }
+
+  void _applyRewardSugTab(String? rewardSugName) {
+    if (rewardSugName == null || rewardSugName.isEmpty) return;
+    if (isClosed) return;
+    final matched = resolveTabForRewardSug(rewardSugName, state);
+    if (matched == null || matched == state.selectedTab) return;
+    emit(state.copyWith(selectedTab: matched, expandedPlanIds: const {}));
   }
 
   Future<void> changeTab(HomePlanTab tab) async {
