@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_verif
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/base_login_otp_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/login_otp_exception.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/login_otp_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/otp_attempt_failure.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/theme/login_otp_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_bottom_actions.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
@@ -19,6 +20,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_header.da
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 
 import 'action_otp_route_args.dart';
@@ -104,6 +106,10 @@ class _ActionOtpScreenState extends State<ActionOtpScreen> {
                   message: state.errorMessage!,
                   type: ToastType.error,
                 );
+                if (state.status == LoginOtpStatus.failure &&
+                    state.shouldExitOtpFlow) {
+                  context.go(AppRoutes.home);
+                }
               } else if (state.resendStatus == LoginOtpResendStatus.done) {
                 AppToast.show(
                   message: 'Verification code resent successfully.',
@@ -207,13 +213,18 @@ class _AuthorizationOtpRepository implements BaseLoginOtpRepository {
           _consecutiveFailures = 0;
         }
         _consecutiveFailures++;
-        if (_consecutiveFailures >= 6) {
-          throw const LoginOtpException(
-            type: LoginOtpErrorType.badResponse,
-            statusCode: 400,
-            serverMessage: 'Too many failed OTP attempts. Please try again.',
-          );
-        }
+        final cause = _consecutiveFailures >= 6
+            ? const LoginOtpException(
+                type: LoginOtpErrorType.badResponse,
+                statusCode: 400,
+                serverMessage:
+                    'Too many failed OTP attempts. Please try again.',
+              )
+            : e;
+        throw OtpAttemptFailure(
+          cause: cause,
+          incorrectAttempts: _consecutiveFailures,
+        );
       }
       rethrow;
     } finally {

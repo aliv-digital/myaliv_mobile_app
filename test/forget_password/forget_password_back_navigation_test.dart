@@ -656,7 +656,7 @@ void main() {
       // Home mounts immediately; the save-password sheet opens on top of it
       // via the root navigator and is dismissed independently.
       expect(find.text('home destination'), findsOneWidget);
-      expect(find.text('save your password?'), findsOneWidget);
+      expect(find.text('save new password?'), findsOneWidget);
       await tap(tester, 'not now');
       expect(cleanupCalls, 0);
       expect(session, isNotNull);

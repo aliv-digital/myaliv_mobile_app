@@ -1,20 +1,23 @@
-import 'dart:convert';
-
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_resend_response_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_verify_response_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/base_login_otp_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/otp_attempt_failure.dart';
 
 import '../logic/password_recovery_otp_attempts.dart';
 
-class PasswordRecoveryInvalidOtpException implements Exception {
+class PasswordRecoveryInvalidOtpException implements OtpAttemptFailure {
   const PasswordRecoveryInvalidOtpException({
     required this.cause,
     required this.feedback,
   });
 
+  @override
   final NetworkException cause;
   final PasswordRecoveryOtpFeedback? feedback;
+
+  @override
+  int get incorrectAttempts => feedback?.incorrectAttempts ?? 0;
 
   @override
   String toString() => feedback?.message ?? cause.toString();
@@ -46,7 +49,7 @@ class PasswordRecoveryOtpRepository implements BaseLoginOtpRepository {
       attempts.verified(mfaToken);
       return response;
     } on NetworkException catch (error) {
-      if (!_isIncorrectCode(error)) {
+      if (!OtpAttemptFailure.isIncorrectCode(error)) {
         rethrow;
       }
       throw PasswordRecoveryInvalidOtpException(
@@ -69,26 +72,5 @@ class PasswordRecoveryOtpRepository implements BaseLoginOtpRepository {
       attempts.replaceChallenge(response.mfaToken!);
     }
     return response;
-  }
-
-  bool _isIncorrectCode(NetworkException error) {
-    if (error.statusCode != 400 ||
-        error is ServerException ||
-        error is SessionExpiredException) {
-      return false;
-    }
-    dynamic body = error.data;
-    if (body is String) {
-      try {
-        body = jsonDecode(body);
-      } catch (_) {
-        return false;
-      }
-    }
-    // This exact structured pair is confirmed by the recovery endpoint. HTTP
-    // status or human-readable text alone is not evidence of an incorrect OTP.
-    return body is Map &&
-        body['ErrorCode'] == 202 &&
-        body['ErrorCodeName'] == 'TwoFactorKeyInvalid';
   }
 }

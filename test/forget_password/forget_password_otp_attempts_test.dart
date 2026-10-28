@@ -320,10 +320,10 @@ void main() {
     },
   );
 
-  LoginOtpBloc openBloc() {
+  LoginOtpBloc openBloc({bool recovery = true}) {
     config = AppUiConfigCubit();
     return bloc = LoginOtpBloc(
-      repository: repository,
+      repository: recovery ? repository : delegate,
       appUiConfigCubit: config!,
       authCompletionService: _Completion(),
       analyticsService: _Analytics(),
@@ -351,6 +351,63 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     return result;
   }
+
+  for (final recovery in [true, false]) {
+    test('six confirmed errors signal exit for recovery=$recovery', () async {
+      openBloc(recovery: recovery);
+      for (var i = 1; i <= 6; i++) {
+        final state = await submit();
+        expect(state.incorrectAttempts, i);
+        expect(state.shouldExitOtpFlow, i == 6);
+        expect(
+          state.errorMessage,
+          recovery && i >= 5 ? requiredRecoveryOtpMessage : 'Invalid OTP',
+        );
+      }
+      bloc!.add(const LoginOtpSubmitted());
+      bloc!.add(const LoginOtpResendRequested());
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(harness.transport.verifyRequests, hasLength(6));
+      expect(harness.transport.resendRequests, isEmpty);
+    });
+  }
+
+  test(
+    'only wrong codes advance the exit count and rotated resend resets it',
+    () async {
+      openBloc(recovery: false);
+      for (var i = 0; i < 5; i++) {
+        await submit();
+      }
+      expect((await submit(code: '123')).incorrectAttempts, 5);
+      harness.transport.verifyReplies.add(
+        const OtpHttpReply(400, {
+          'ErrorCode': 203,
+          'ErrorCodeName': 'TwoFactorKeyExpired',
+          'Message': 'OTP expired',
+        }),
+      );
+      expect((await submit()).shouldExitOtpFlow, isFalse);
+      harness.transport.transportFailure = DioExceptionType.receiveTimeout;
+      expect((await submit()).incorrectAttempts, 5);
+      harness.transport.transportFailure = null;
+      final resent = bloc!.stream.firstWhere(
+        (state) => state.resendStatus == LoginOtpResendStatus.done,
+      );
+      bloc!.add(const LoginOtpResendRequested());
+      expect((await resent).incorrectAttempts, 0);
+      await Future<void>.delayed(Duration.zero);
+      expect((await submit()).incorrectAttempts, 1);
+    },
+  );
+
+  test('attempt count participates in equality and survives copyWith', () {
+    const state = LoginOtpState(incorrectAttempts: 5);
+    expect(state.copyWith(code: '123456').incorrectAttempts, 5);
+    expect(state, isNot(const LoginOtpState(incorrectAttempts: 6)));
+    expect(state.shouldExitOtpFlow, isFalse);
+    expect(state.copyWith(incorrectAttempts: 6).shouldExitOtpFlow, isTrue);
+  });
 
   test('incomplete submissions do not reach HTTP or the tracker', () async {
     openBloc();

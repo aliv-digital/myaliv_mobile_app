@@ -161,7 +161,15 @@ void main() {
               apiPhoneNumber: '2427654321',
             ),
       routes: [
-        ...productionRoutes,
+        for (final route in productionRoutes)
+          if (!fromLogin && route.path == AppRoutes.logIn)
+            GoRoute(
+              path: AppRoutes.logIn,
+              builder: (_, _) =>
+                  const Scaffold(body: Text('login destination')),
+            )
+          else
+            route,
         GoRoute(
           path: AppRoutes.createPassword,
           builder: (_, state) {
@@ -259,7 +267,7 @@ void main() {
 
   for (final width in [320.0, 390.0]) {
     testScreen(
-      'exact HTTP 400 code 202 shows one special toast on attempt five at $width',
+      'recovery preserves attempt-five toast and redirects to login on six at $width',
       (tester) async {
         await open(tester, width: width, fromLogin: width >= 390);
         final bloc = activeBloc(tester);
@@ -282,6 +290,15 @@ void main() {
           }
           await tester.pump(const Duration(seconds: 3));
         }
+        await tapVerify(tester);
+        expect(harness.transport.verifyRequests, hasLength(6));
+        expect(find.text(requiredRecoveryOtpMessage), findsOneWidget);
+        expect(find.byType(ForgetPasswordOtpScreen), findsNothing);
+        expect(
+          router!.routeInformationProvider.value.uri.path,
+          AppRoutes.logIn,
+        );
+        expect(router!.canPop(), isFalse);
         verifyNever(() => auth.saveSession(any()));
         verifyNever(() => biometrics.markSessionAuthenticated());
         expect(harness.hardLogouts, 0);
@@ -292,18 +309,21 @@ void main() {
   }
 
   testScreen(
-    'correct OTP before five failures preserves success and reset navigation',
+    'correct sixth OTP after five failures preserves success and reset navigation',
     (tester) async {
       await open(tester, fromLogin: true);
-      await invalidAttempts(tester, 3);
-      harness.transport.successfulAttempt = 4;
+      await invalidAttempts(tester, 4);
+      await tapVerify(tester);
+      expect(find.text(requiredRecoveryOtpMessage), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+      harness.transport.successfulAttempt = 6;
       await tapVerify(tester);
       expect(find.text('Code verified.'), findsOneWidget);
       expect(find.text('password reset destination'), findsOneWidget);
       expect(find.text(requiredRecoveryOtpMessage), findsNothing);
       verify(() => auth.saveSession(any())).called(1);
       verify(() => biometrics.markSessionAuthenticated()).called(1);
-      expect(harness.transport.verifyRequests, hasLength(4));
+      expect(harness.transport.verifyRequests, hasLength(6));
       await finish(tester);
     },
   );
@@ -386,13 +406,14 @@ void main() {
   );
 
   testScreen(
-    'Login 2FA keeps its existing message for six exact HTTP 400 responses',
+    'Login 2FA keeps its existing message and redirects home on six wrong codes',
     (tester) async {
       await open(tester, recovery: false);
       await invalidAttempts(tester, 6);
       expect(harness.transport.verifyRequests, hasLength(6));
       expect(find.text('password reset destination'), findsNothing);
-      expect(find.text('home destination'), findsNothing);
+      expect(find.text('home destination'), findsOneWidget);
+      expect(router!.canPop(), isFalse);
       verifyNever(() => auth.saveSession(any()));
       await finish(tester);
     },

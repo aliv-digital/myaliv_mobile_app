@@ -23,6 +23,9 @@ class LoginOtpState extends Equatable {
   final LoginOtpErrorType errorType;
   final bool codeFieldError;
   final String? errorMessage;
+  final int incorrectAttempts;
+
+  bool get shouldExitOtpFlow => incorrectAttempts >= 6;
 
   const LoginOtpState({
     this.code = '',
@@ -34,6 +37,7 @@ class LoginOtpState extends Equatable {
     this.errorType = LoginOtpErrorType.none,
     this.codeFieldError = false,
     this.errorMessage,
+    this.incorrectAttempts = 0,
   });
 
   LoginOtpState copyWith({
@@ -46,6 +50,7 @@ class LoginOtpState extends Equatable {
     LoginOtpErrorType? errorType,
     bool? codeFieldError,
     String? errorMessage,
+    int? incorrectAttempts,
   }) {
     return LoginOtpState(
       code: code ?? this.code,
@@ -57,6 +62,7 @@ class LoginOtpState extends Equatable {
       errorType: errorType ?? this.errorType,
       codeFieldError: codeFieldError ?? this.codeFieldError,
       errorMessage: errorMessage,
+      incorrectAttempts: incorrectAttempts ?? this.incorrectAttempts,
     );
   }
 
@@ -71,5 +77,6 @@ class LoginOtpState extends Equatable {
     errorType,
     codeFieldError,
     errorMessage,
+    incorrectAttempts,
   ];
 }

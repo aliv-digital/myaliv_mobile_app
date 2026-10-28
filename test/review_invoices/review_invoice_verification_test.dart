@@ -390,6 +390,37 @@ void main() {
     });
   }
 
+  invoiceTest('six wrong invoice OTPs redirect home with the existing error', (
+    tester,
+  ) async {
+    final h = _Harness();
+    await h.pump(tester);
+    await h.enter(tester);
+    h.verifyFailure = NetworkException(
+      'Two Factor Key Invalid',
+      statusCode: 400,
+      data: {'ErrorCode': 202, 'ErrorCodeName': 'TwoFactorKeyInvalid'},
+    );
+    for (var i = 1; i <= 6; i++) {
+      await h.submit(tester);
+      await tester.pumpAndSettle();
+      expect(find.text('Invalid OTP'), findsOneWidget, reason: 'attempt $i');
+      expect(
+        find.byType(ReviewInvoiceOtpScreen),
+        i < 6 ? findsOneWidget : findsNothing,
+      );
+      if (i < 6) {
+        await tester.pump(const Duration(seconds: 3));
+      }
+    }
+    expect(h.verifyPayloads, hasLength(6));
+    expect(h.router.routeInformationProvider.value.uri.path, AppRoutes.home);
+    expect(h.router.canPop(), isFalse);
+    expect(h.session.isVerified, isFalse);
+    expect(h.saves, 0);
+    expect(h.api.loads, 0);
+  });
+
   invoiceTest(
     'postpaid Purchases verifies, saves both tokens, then loads sorted invoices',
     (tester) async {

@@ -101,6 +101,12 @@ class _ReviewInvoiceOtpViewState extends State<_ReviewInvoiceOtpView> {
                 message: state.errorMessage!,
                 type: ToastType.error,
               );
+              if (state.shouldExitOtpFlow &&
+                  ModalRoute.of(context)?.isCurrent == true &&
+                  _session.generation == _generation) {
+                context.go(AppRoutes.home);
+                return;
+              }
             }
 
             if (state.resendStatus == LoginOtpResendStatus.done) {
