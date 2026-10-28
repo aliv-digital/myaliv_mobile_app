@@ -406,8 +406,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  bool _isCurrentTabEmpty(PlansState state) {
-    switch (state.selectedTab) {
+  bool _isCurrentTabEmpty(PlansState state) =>
+      _isTabEmpty(state.selectedTab, state);
+
+  bool _isTabEmpty(HomePlanTab tab, PlansState state) {
+    switch (tab) {
       case HomePlanTab.daily:
         return state.dailyApiPlans.isEmpty;
       case HomePlanTab.weekly:
@@ -429,12 +432,30 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
+  List<HomePlanTab> _visibleTabs(
+    List<HomePlanTab> allTabs,
+    PlansState state,
+  ) {
+    if (allTabs.length <= 1) return allTabs;
+
+    final isAuthoritative = state.status == PlansStatus.success ||
+        state.status == PlansStatus.refreshing;
+    if (!isAuthoritative) return allTabs;
+
+    final visible = allTabs
+        .where((tab) => !_isTabEmpty(tab, state))
+        .toList(growable: false);
+
+    if (visible.isEmpty) return allTabs;
+    return visible;
+  }
+
   @override
   Widget build(BuildContext context) {
     final HomeUiConfig homeUiConfig = context.watch<AppUiConfigCubit>().state;
     debugPrint("active plan : ${homeUiConfig.hasActivePlan}");
 
-    final tabs = _tabsForUserType(homeUiConfig.userType);
+    final allTabs = _tabsForUserType(homeUiConfig.userType);
     final isPostpaid = homeUiConfig.userType == UserType.postpaid;
     final appBarTitle = isPostpaid ? 'roaming data add-ons' : 'plans';
 
@@ -473,14 +494,30 @@ class _HomePlanViewState extends State<_HomePlanView> {
           top: false,
           child: BlocBuilder<PlansCubit, PlansState>(
             buildWhen: (previous, current) {
-              // Rebuild when tab changes OR when tab status changes
               final tabChanged = previous.selectedTab != current.selectedTab;
               final statusChanged =
                   previous.selectedTabStatus != current.selectedTabStatus;
+              // Reference equality: cubit allocates fresh lists per emit, so
+              // any list swap triggers a rebuild and the visible-tab filter
+              // recomputes.
+              final listsChanged =
+                  previous.dailyApiPlans != current.dailyApiPlans ||
+                  previous.weeklyApiPlans != current.weeklyApiPlans ||
+                  previous.monthlyApiPlans != current.monthlyApiPlans ||
+                  previous.roamingApiPlans != current.roamingApiPlans ||
+                  previous.roamEasyApiPlans != current.roamEasyApiPlans ||
+                  previous.mifiApiPlans != current.mifiApiPlans ||
+                  previous.libertyGlobalApiPlans !=
+                      current.libertyGlobalApiPlans ||
+                  previous.postpaidRoamingApiPlans !=
+                      current.postpaidRoamingApiPlans ||
+                  previous.addOns != current.addOns;
 
-              return tabChanged || statusChanged;
+              return tabChanged || statusChanged || listsChanged;
             },
             builder: (context, state) {
+              final tabs = _visibleTabs(allTabs, state);
+
               if (!tabs.contains(state.selectedTab)) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   context.read<PlansCubit>().changeTab(tabs.first);
