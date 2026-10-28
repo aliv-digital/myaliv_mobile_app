@@ -9,7 +9,7 @@ class SavePasswordBottomSheet extends StatelessWidget {
   const SavePasswordBottomSheet._();
 
   static const Color _primary = Color(0xFF645D9C);
-  static const Color _iconBadgeBg = Color(0xFFF2F0FA);
+  static const Color _sheetBackground = Color(0xFFF1F1F8);
   static const Color _textPrimary = Color(0xFF121212);
   static const Color _textSecondary = Color(0xFF707070);
   static const Color _closeIcon = Color(0xFF121212);
@@ -36,7 +36,7 @@ class SavePasswordBottomSheet extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: _sheetBackground,
           borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         ),
         child: Column(
@@ -45,14 +45,9 @@ class SavePasswordBottomSheet extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 48.0,
-                  height: 48.0,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _iconBadgeBg,
-                    borderRadius: BorderRadius.circular(23),
-                  ),
+                SizedBox(
+                  width: 56,
+                  height: 56,
                   child: SvgPicture.asset('assets/icons/featured_icon.svg'),
                 ),
                 const Spacer(),
@@ -78,7 +73,7 @@ class SavePasswordBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'save your password?',
+              'save new password?',
               style: TextStyle(
                 color: _textPrimary,
                 fontSize: 18,
@@ -89,7 +84,7 @@ class SavePasswordBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'would you like to save your password for faster sign-in next '
+              'would you like to save your new password for faster sign-in next '
               'time?',
               style: TextStyle(
                 color: _textSecondary,
@@ -108,10 +103,11 @@ class SavePasswordBottomSheet extends StatelessWidget {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
+                        surfaceTintColor: Colors.transparent,
                         elevation: 0,
+                        side: BorderSide.none,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100),
-                          side: const BorderSide(color: Color(0xFFF1F1F8)),
                         ),
                       ),
                       onPressed: () => Navigator.of(context).pop(false),
@@ -143,7 +139,7 @@ class SavePasswordBottomSheet extends StatelessWidget {
                       child: const Text(
                         'save password',
                         style: TextStyle(
-                          color: Color(0xFFF1F1F8),
+                          color: _sheetBackground,
                           fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,
