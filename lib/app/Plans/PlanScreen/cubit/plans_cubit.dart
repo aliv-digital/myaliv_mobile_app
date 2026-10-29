@@ -101,10 +101,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   }
 
   Future<void> refreshCurrentTab() async {
-    await _fetchAllPlans(
-      forceRefresh: true,
-      deviceId: state.activeDeviceId,
-    );
+    await _fetchAllPlans(forceRefresh: true, deviceId: state.activeDeviceId);
   }
 
   /// Post-purchase refresh — fetches only /bundles to check whether the
