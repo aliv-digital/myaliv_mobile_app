@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../prepaid/theme/top_up_prepaid_theme.dart';
 import '../bloc/top_up_prepaid_number_postpaid_bloc.dart';
 import '../bloc/top_up_prepaid_number_postpaid_event.dart';
 import '../bloc/top_up_prepaid_number_postpaid_state.dart';
@@ -152,6 +153,16 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                                     TopUpPrepaidNumberPostPaidAmountChanged(v),
                                   ),
                                 ),
+                                if (state.amountInlineError != null) ...[
+                                  const SizedBox(height: 8),
+                                  Center(
+                                    child: Text(
+                                      state.amountInlineError!,
+                                      textAlign: TextAlign.center,
+                                      style: TopUpPrepaidTheme.amountError(),
+                                    ),
+                                  ),
+                                ],
                                 const SizedBox(height: 40),
                                 TopUpPrepaidNumberPostPaidApplySection(
                                   enabled: state.canApply,
