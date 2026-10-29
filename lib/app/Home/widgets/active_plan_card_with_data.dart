@@ -45,7 +45,12 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         return previous.status != current.status ||
             previous.earliestAddOnsPrimaryPlan !=
                 current.earliestAddOnsPrimaryPlan ||
-            previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
+            previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt ||
+            (isFromHome &&
+                showRenewButton &&
+                (previous.addOnsApiPrimaryPlans !=
+                        current.addOnsApiPrimaryPlans ||
+                    previous.standAlonePlans != current.standAlonePlans));
       },
       builder: (context, state) {
         final redCreditCard = isFromHome
@@ -86,7 +91,8 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                   children: [
                     if (!state.isLoading &&
                         !state.isInitial &&
-                        state.earliestAddOnsPrimaryPlan != null)
+                        state.earliestAddOnsPrimaryPlan != null &&
+                        !state.hasFuturePlans)
                       _PlanExpiryWarning(
                         plan: state.earliestAddOnsPrimaryPlan!,
                       ),

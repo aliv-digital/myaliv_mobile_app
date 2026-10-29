@@ -56,7 +56,11 @@ class OtpBottomActions extends StatelessWidget {
                       ? null
                       : () {
                           onResendPressed?.call();
-                          context.read<LoginOtpBloc>().add(
+                          final bloc = context.read<LoginOtpBloc>();
+                          // Clear the previous input and validation before the
+                          // resend request, even when it fails or is offline.
+                          bloc.add(const LoginOtpCodeChanged(''));
+                          bloc.add(
                             LoginOtpResendRequested(
                               clearCode: clearCodeOnResend,
                             ),
