@@ -47,10 +47,18 @@ class HomePlansPaymentMethodSection extends StatefulWidget {
 
 class _HomePlansPaymentMethodSectionState
     extends State<HomePlansPaymentMethodSection> {
+  final _savedCardsScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     instance<SavedCardsCubit>().fetchSavedCards();
+  }
+
+  @override
+  void dispose() {
+    _savedCardsScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -129,17 +137,8 @@ class _HomePlansPaymentMethodSectionState
               ),
             ),
           );
-        } else {
-          for (final SavedCardModel card in savedCardsState.cards) {
-            if (tiles.isNotEmpty) {
-              tiles.add(
-                const SizedBox(
-                  height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
-                ),
-              );
-            }
-            tiles.add(_buildSavedCardTile(card));
-          }
+        } else if (savedCardsState.hasCards) {
+          tiles.add(_buildSavedCardsList(savedCardsState.cards));
         }
         for (final method in chargeToAccountMethods) {
           if (tiles.isNotEmpty) {
@@ -154,6 +153,43 @@ class _HomePlansPaymentMethodSectionState
 
         return Column(children: tiles);
       },
+    );
+  }
+
+  Widget _buildSavedCardsList(List<SavedCardModel> cards) {
+    const limit = HomePlansPaymentMethodTheme.maxVisibleSavedCards;
+    const gap = HomePlansPaymentMethodTheme.firstToSecondCardGap;
+    if (cards.length <= limit) {
+      return Column(
+        children: [
+          for (var i = 0; i < cards.length; i++) ...[
+            if (i > 0) const SizedBox(height: gap),
+            _buildSavedCardTile(cards[i]),
+          ],
+        ],
+      );
+    }
+
+    return SizedBox(
+      height:
+          limit * HomePlansPaymentMethodTheme.savedCardMinHeight +
+          (limit - 1) * gap,
+      child: Scrollbar(
+        controller: _savedCardsScrollController,
+        thumbVisibility: true,
+        thickness: HomePlansPaymentMethodTheme.savedCardsScrollbarThickness,
+        child: ListView.separated(
+          controller: _savedCardsScrollController,
+          primary: false,
+          padding: const EdgeInsetsDirectional.only(
+            end: HomePlansPaymentMethodTheme.savedCardsScrollbarPadding,
+          ),
+          physics: const ClampingScrollPhysics(),
+          itemCount: cards.length,
+          separatorBuilder: (_, _) => const SizedBox(height: gap),
+          itemBuilder: (_, index) => _buildSavedCardTile(cards[index]),
+        ),
+      ),
     );
   }
 
