@@ -17,6 +17,7 @@ class CreatePasswordState extends Equatable {
     this.obscureConfirm = true,
     this.hasEditedPassword = false,
     this.hasEditedConfirmation = false,
+    this.showEmptyFieldErrors = false,
     this.status = CreatePasswordStatus.initial,
     this.errorMessage,
   });
@@ -27,6 +28,7 @@ class CreatePasswordState extends Equatable {
   final bool obscureConfirm;
   final bool hasEditedPassword;
   final bool hasEditedConfirmation;
+  final bool showEmptyFieldErrors;
   final CreatePasswordStatus status;
   final String? errorMessage;
 
@@ -48,10 +50,19 @@ class CreatePasswordState extends Equatable {
   String? get confirmationValidationError =>
       isMatch ? null : 'Passwords do not match.';
 
-  String? get passwordError =>
-      hasEditedPassword ? passwordValidationError : null;
-  String? get confirmPasswordError =>
-      hasEditedConfirmation ? confirmationValidationError : null;
+  String? get passwordError {
+    if (showEmptyFieldErrors && password.trim().isEmpty) {
+      return 'password must be 8 characters long';
+    }
+    return hasEditedPassword ? passwordValidationError : null;
+  }
+
+  String? get confirmPasswordError {
+    if (showEmptyFieldErrors && confirmPassword.trim().isEmpty) {
+      return 'please re-enter your password.';
+    }
+    return hasEditedConfirmation ? confirmationValidationError : null;
+  }
 
   CreatePasswordState copyWith({
     String? password,
@@ -60,6 +71,7 @@ class CreatePasswordState extends Equatable {
     bool? obscureConfirm,
     bool? hasEditedPassword,
     bool? hasEditedConfirmation,
+    bool? showEmptyFieldErrors,
     CreatePasswordStatus? status,
     String? errorMessage,
   }) {
@@ -71,6 +83,7 @@ class CreatePasswordState extends Equatable {
       hasEditedPassword: hasEditedPassword ?? this.hasEditedPassword,
       hasEditedConfirmation:
           hasEditedConfirmation ?? this.hasEditedConfirmation,
+      showEmptyFieldErrors: showEmptyFieldErrors ?? this.showEmptyFieldErrors,
       status: status ?? this.status,
       errorMessage: errorMessage,
     );
@@ -84,6 +97,7 @@ class CreatePasswordState extends Equatable {
     obscureConfirm,
     hasEditedPassword,
     hasEditedConfirmation,
+    showEmptyFieldErrors,
     status,
     errorMessage,
   ];
