@@ -504,7 +504,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         totalText: totalText,
         vatLabel: vatLabel,
         // Stays tappable so an unchecked submit can show PLAN-006 inline.
-        enabled: _termsAccepted,
+        enabled: true,
         onContinue: _continuePressed,
         useBottomSafeArea: widget.topUpAmount != null,
       ),
