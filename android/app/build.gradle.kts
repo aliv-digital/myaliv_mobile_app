@@ -43,7 +43,8 @@ android {
 
     defaultConfig {
         applicationId = "new.app.myaliv"
-        minSdk = flutter.minSdkVersion // local_auth requires API 23+ for biometric APIs
+        // Pin to 23: androidx.biometric 1.1.0 requires API 23+ (BiometricPrompt).
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -71,4 +72,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("androidx.biometric:biometric:1.1.0")
 }

@@ -120,6 +120,7 @@ class EnterPasswordPrepaidBloc
   ) async {
     await instance<FingerFaceSecurityCubit>().authenticate(
       reason: 'Use Face ID to verify your identity',
+      type: BiometricTypeHint.face,
     );
   }
 
@@ -129,6 +130,7 @@ class EnterPasswordPrepaidBloc
   ) async {
     await instance<FingerFaceSecurityCubit>().authenticate(
       reason: 'Use fingerprint to verify your identity',
+      type: BiometricTypeHint.fingerprint,
     );
   }
 }

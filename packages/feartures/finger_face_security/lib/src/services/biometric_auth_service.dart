@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:finger_face_security/src/services/android_biometric_channel.dart';
+import 'package:finger_face_security/src/services/biometric_type_hint.dart';
+
 class BiometricAuthService {
   static const String _biometricEnabledKey = 'biometric_enabled';
   static const String _biometricSetupKey = 'biometric_setup_completed';
@@ -17,10 +20,14 @@ class BiometricAuthService {
     _faceIdEnabledKey,
   };
 
-  BiometricAuthService({LocalAuthentication? localAuth})
-    : _localAuth = localAuth ?? LocalAuthentication();
+  BiometricAuthService({
+    LocalAuthentication? localAuth,
+    AndroidBiometricChannel? androidChannel,
+  }) : _localAuth = localAuth ?? LocalAuthentication(),
+       _androidChannel = androidChannel ?? AndroidBiometricChannel();
 
   final LocalAuthentication _localAuth;
+  final AndroidBiometricChannel _androidChannel;
 
   Future<bool> isDeviceSupported() async {
     try {
@@ -91,17 +98,31 @@ class BiometricAuthService {
   Future<BiometricAuthResult> authenticateWithBiometrics({
     String localizedReason = 'Please authenticate to access the app',
     bool biometricOnly = false,
+    BiometricTypeHint type = BiometricTypeHint.any,
   }) async {
     try {
-      debugPrint('BiometricAuth: Starting authentication...');
+      debugPrint('BiometricAuth: Starting authentication (type=$type)...');
 
       final deviceSupported = await isDeviceSupported();
       if (!deviceSupported) return BiometricAuthResult.deviceNotSupported;
+
+      // Android + explicit type hint: skip the local_auth preflight entirely.
+      // local_auth's getAvailableBiometrics() misreports empty on devices where
+      // only a BIOMETRIC_WEAK (face) authenticator is enrolled. The native
+      // handler does its own authoritative BiometricManager.canAuthenticate()
+      // check, so defer to it.
+      if (Platform.isAndroid && type != BiometricTypeHint.any) {
+        return await _androidChannel.authenticate(
+          type: type,
+          localizedReason: localizedReason,
+        );
+      }
 
       final canCheck = await canCheckBiometrics();
       if (!canCheck) return BiometricAuthResult.biometricsNotAvailable;
 
       final availableBiometrics = await getAvailableBiometrics();
+      debugPrint('BiometricAuth: availableBiometrics=$availableBiometrics');
       if (availableBiometrics.isEmpty) {
         return BiometricAuthResult.biometricsNotEnrolled;
       }

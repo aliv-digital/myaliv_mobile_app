@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finger_face_security/src/bloc/finger_face_security_state.dart';
 import 'package:finger_face_security/src/repository/finger_face_security_repository.dart';
 import 'package:finger_face_security/src/services/biometric_auth_service.dart';
+import 'package:finger_face_security/src/services/biometric_type_hint.dart';
 
 class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
   final FingerFaceSecurityRepository _repository;
@@ -24,10 +25,13 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
     }
   }
 
-  Future<void> authenticate({String? reason}) async {
+  Future<void> authenticate({
+    String? reason,
+    BiometricTypeHint type = BiometricTypeHint.any,
+  }) async {
     emit(state.copyWith(status: FingerFaceSecurityStatus.authenticating));
     try {
-      final result = await _repository.authenticate(reason: reason);
+      final result = await _repository.authenticate(reason: reason, type: type);
       if (result == BiometricAuthResult.success) {
         emit(
           state.copyWith(

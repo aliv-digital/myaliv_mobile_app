@@ -4,6 +4,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:finger_face_security/src/model/finger_face_security_model.dart';
 import 'package:finger_face_security/src/repository/finger_face_security_repository.dart';
 import 'package:finger_face_security/src/services/biometric_auth_service.dart';
+import 'package:finger_face_security/src/services/biometric_type_hint.dart';
 
 class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
   final BiometricAuthService _service;
@@ -47,9 +48,13 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
   }
 
   @override
-  Future<BiometricAuthResult> authenticate({String? reason}) {
+  Future<BiometricAuthResult> authenticate({
+    String? reason,
+    BiometricTypeHint type = BiometricTypeHint.any,
+  }) {
     return _service.authenticateWithBiometrics(
       localizedReason: reason ?? 'Authenticate to access MyAliv',
+      type: type,
     );
   }
 

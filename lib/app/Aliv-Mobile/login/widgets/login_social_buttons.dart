@@ -73,22 +73,35 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
       reason: isFace
           ? 'Use Face ID to sign in to MyAliv'
           : 'Use fingerprint to sign in to MyAliv',
+      type: isFace ? BiometricTypeHint.face : BiometricTypeHint.fingerprint,
     );
 
     if (!context.mounted) return;
     if (cubit.state.status != FingerFaceSecurityStatus.authenticated) {
-      if (!isFace &&
-          cubit.state.lastAuthResult == BiometricAuthResult.lockedOut) {
+      final result = cubit.state.lastAuthResult;
+      if (result == BiometricAuthResult.lockedOut) {
         AppToast.show(
           message:
               'Too many failed attempts. Please log in with your password.',
           type: ToastType.error,
         );
-      } else if (cubit.state.lastAuthResult == BiometricAuthResult.failed) {
+      } else if (result == BiometricAuthResult.failed) {
         AppToast.show(
           message: isFace
               ? 'Face not detected. Try again.'
               : 'Fingerprint not recognized. Please try again.',
+          type: ToastType.error,
+        );
+      } else if (result == BiometricAuthResult.biometricsNotEnrolled ||
+          result == BiometricAuthResult.biometricsNotAvailable) {
+        // On most Android OEMs (Vivo, Samsung, Oppo, Xiaomi, OnePlus) face
+        // unlock is implemented as a lock-screen-only feature and is not
+        // exposed to third-party apps via BiometricPrompt. Guide the user to
+        // the alternative instead of the generic "no biometrics" message.
+        AppToast.show(
+          message: isFace
+              ? 'Face unlock is not available for apps on this device. Please use fingerprint instead.'
+              : 'Fingerprint is not set up on this device. Please enroll a fingerprint in device settings.',
           type: ToastType.error,
         );
       }
