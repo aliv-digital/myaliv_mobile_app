@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
@@ -233,14 +234,6 @@ class _HomePlansPaymentMethodSectionState
     );
   }
 
-  Widget _buildCardIcon() {
-    return Image.asset(
-      AssetConstant.cardIconPNG,
-      width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
-      height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
-      fit: BoxFit.contain,
-    );
-  }
   Widget _buildPayWithCardRow() {
     return PaymentOptionTile(
       title: 'pay with card',
