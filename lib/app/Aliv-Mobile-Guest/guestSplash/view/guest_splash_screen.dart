@@ -121,7 +121,7 @@ class GuestSplashView extends StatelessWidget {
                                 bottom: false,
                                 child: InkWell(
                                   onTap: () {
-                                    context.pop();
+                                    context.go(AppRoutes.welcome);
                                   },
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
