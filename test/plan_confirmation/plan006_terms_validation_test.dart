@@ -316,7 +316,7 @@ void main() {
         ).uri;
         expect(uri.path, AppRoutes.topUpPaymentPrepaidScreen);
         expect(uri.queryParameters['amount'], '25.00');
-        expect(uri.queryParameters['recipientPhone'], 'null');
+        expect(uri.queryParameters['recipientPhone'], isNull);
         verifyZeroInteractions(network);
         await tester.pumpWidget(const SizedBox.shrink());
       },
