@@ -11,14 +11,20 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_resend_response_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/base_login_otp_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/theme/login_otp_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 class _Repository extends Mock implements BaseLoginOtpRepository {}
 
 class _Connected extends Fake implements InternetConnection {
+  bool connected = true;
+  Completer<bool>? pending;
+
   @override
-  Future<bool> get hasInternetAccess async => true;
+  Future<bool> get hasInternetAccess =>
+      pending?.future ?? Future.value(connected);
 }
 
 class _Analytics extends Fake implements AnalyticsService {}
@@ -28,11 +34,13 @@ void main() {
   late AppUiConfigCubit config;
   late LoginOtpBloc bloc;
   late Completer<LoginOtpResendResponse> response;
+  late _Connected connection;
 
   setUp(() {
     repository = _Repository();
     config = AppUiConfigCubit();
     response = Completer<LoginOtpResendResponse>();
+    connection = _Connected();
     when(
       () => repository.resendCode(
         phoneNumber: '2427654321',
@@ -42,7 +50,7 @@ void main() {
     bloc = LoginOtpBloc(
       repository: repository,
       appUiConfigCubit: config,
-      internetConnection: _Connected(),
+      internetConnection: connection,
       analyticsService: _Analytics(),
       initialMfaToken: 'original-challenge',
       initialApiPhoneNumber: '2427654321',
@@ -87,6 +95,40 @@ void main() {
       .map((field) => field.controller!)
       .toList();
 
+  int redBorders(WidgetTester tester) => tester
+      .widgetList<Container>(
+        find.descendant(
+          of: find.byType(OtpCodeFields),
+          matching: find.byType(Container),
+        ),
+      )
+      .where((container) {
+        final decoration = container.decoration;
+        return decoration is BoxDecoration &&
+            decoration.border is Border &&
+            (decoration.border! as Border).top.color ==
+                LoginOtpColors.otpBoxBorderError;
+      })
+      .length;
+
+  Future<void> failValidation(WidgetTester tester) async {
+    await tester.enterText(find.byType(TextField).last, '');
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('verify'));
+    await tester.tap(find.text('verify'));
+    await tester.runAsync(() async {
+      if (bloc.state.status != LoginOtpStatus.failure) {
+        await bloc.stream
+            .firstWhere((state) => state.status == LoginOtpStatus.failure)
+            .timeout(const Duration(seconds: 5));
+      }
+    });
+    await tester.pumpAndSettle();
+    expect(bloc.state.status, LoginOtpStatus.failure);
+    expect(redBorders(tester), 6);
+    await tester.pump(const Duration(seconds: 3));
+  }
+
   Future<void> awaitResend(
     WidgetTester tester,
     LoginOtpResendStatus status,
@@ -111,6 +153,7 @@ void main() {
       'password login clears immediately and stays empty after resend ${succeeds ? 'success' : 'failure'}',
       (tester) async {
         await pumpView(tester, passwordLogin: true);
+        await failValidation(tester);
         final originalControllers = controllers(tester);
         final resend = find
             .ancestor(
@@ -132,6 +175,9 @@ void main() {
         expect(bloc.state.resendStatus, LoginOtpResendStatus.loading);
         expect(controllers(tester), orderedEquals(originalControllers));
         expect(bloc.state.code, isEmpty);
+        expect(bloc.state.codeFieldError, isFalse);
+        expect(bloc.state.errorMessage, isNull);
+        expect(redBorders(tester), 0);
 
         if (succeeds) {
           response.complete(
@@ -146,6 +192,7 @@ void main() {
         expect(controllers(tester).map((c) => c.text), everyElement(isEmpty));
         expect(bloc.state.code, isEmpty);
         expect(bloc.state.resendStatus, LoginOtpResendStatus.idle);
+        expect(redBorders(tester), 0);
         expect(
           bloc.state.mfaToken,
           succeeds ? 'rotated-challenge' : 'original-challenge',
@@ -185,13 +232,19 @@ void main() {
     );
 
     testWidgets(
-      'non-password flow preserves entered code after resend ${succeeds ? 'success' : 'failure'}',
+      'non-password flow clears digits and red borders before resend ${succeeds ? 'success' : 'failure'}',
       (tester) async {
         await pumpView(tester, passwordLogin: false);
+        await failValidation(tester);
         await tester.ensureVisible(find.text('resend code'));
         await tester.tap(find.text('resend code'));
         await awaitResend(tester, LoginOtpResendStatus.loading);
-        expect(bloc.state.code, '123456');
+        expect(bloc.state.code, isEmpty);
+        expect(controllers(tester).map((c) => c.text), everyElement(isEmpty));
+        expect(bloc.state.status, LoginOtpStatus.initial);
+        expect(bloc.state.codeFieldError, isFalse);
+        expect(bloc.state.errorMessage, isNull);
+        expect(redBorders(tester), 0);
         if (succeeds) {
           response.complete(
             const LoginOtpResendResponse(mfaToken: 'rotated-challenge'),
@@ -200,12 +253,106 @@ void main() {
           response.completeError(Exception('Two Factor Key Invalid'));
         }
         await awaitResend(tester, LoginOtpResendStatus.idle);
-        expect(bloc.state.code, '123456');
-        expect(controllers(tester).map((c) => c.text).join(), '123456');
+        expect(bloc.state.code, isEmpty);
+        expect(controllers(tester).map((c) => c.text), everyElement(isEmpty));
+        expect(redBorders(tester), 0);
         await finish(tester);
       },
     );
   }
+
+  testWidgets(
+    'resend clears old input/errors before connectivity is resolved',
+    (tester) async {
+      await pumpView(tester, passwordLogin: false);
+      await failValidation(tester);
+      final connectivity = Completer<bool>();
+      connection.pending = connectivity;
+      await tester.ensureVisible(find.text('resend code'));
+      await tester.tap(find.text('resend code'));
+      await tester.runAsync(() async {
+        if (bloc.state.code.isNotEmpty) {
+          await bloc.stream
+              .firstWhere((state) => state.code.isEmpty)
+              .timeout(const Duration(seconds: 5));
+        }
+      });
+      await tester.pumpAndSettle();
+      expect(bloc.state.code, isEmpty);
+      expect(bloc.state.codeFieldError, isFalse);
+      expect(bloc.state.errorMessage, isNull);
+      expect(controllers(tester).map((c) => c.text), everyElement(isEmpty));
+      expect(redBorders(tester), 0);
+      verifyNever(
+        () => repository.resendCode(
+          phoneNumber: any(named: 'phoneNumber'),
+          mfaToken: any(named: 'mfaToken'),
+        ),
+      );
+      connectivity.complete(false);
+      await tester.runAsync(() async {
+        if (bloc.state.errorMessage != 'No Internet Connection') {
+          await bloc.stream
+              .firstWhere(
+                (state) => state.errorMessage == 'No Internet Connection',
+              )
+              .timeout(const Duration(seconds: 5));
+        }
+      });
+      await tester.pumpAndSettle();
+      expect(bloc.state.errorMessage, 'No Internet Connection');
+      expect(find.text('No Internet Connection'), findsOneWidget);
+      expect(redBorders(tester), 0);
+      expect(bloc.state.mfaToken, 'original-challenge');
+      await finish(tester);
+    },
+  );
+
+  testWidgets(
+    'clearing resend presentation retains wrong-attempt count on failure',
+    (tester) async {
+      when(
+        () => repository.verifyCode(
+          phoneNumber: any(named: 'phoneNumber'),
+          mfaToken: any(named: 'mfaToken'),
+          otpCode: any(named: 'otpCode'),
+        ),
+      ).thenThrow(
+        NetworkException(
+          'Two Factor Key Invalid',
+          statusCode: 400,
+          data: {'ErrorCode': 202, 'ErrorCodeName': 'TwoFactorKeyInvalid'},
+        ),
+      );
+      await pumpView(tester, passwordLogin: false);
+      await tester.ensureVisible(find.text('verify'));
+      await tester.tap(find.text('verify'));
+      await tester.runAsync(() async {
+        if (bloc.state.status != LoginOtpStatus.failure) {
+          await bloc.stream
+              .firstWhere((state) => state.status == LoginOtpStatus.failure)
+              .timeout(const Duration(seconds: 5));
+        }
+      });
+      await tester.pumpAndSettle();
+      expect(bloc.state.incorrectAttempts, 1);
+      expect(redBorders(tester), 6);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.ensureVisible(find.text('resend code'));
+      await tester.tap(find.text('resend code'));
+      await awaitResend(tester, LoginOtpResendStatus.loading);
+      expect(bloc.state.incorrectAttempts, 1);
+      expect(bloc.state.code, isEmpty);
+      expect(redBorders(tester), 0);
+      response.completeError(NetworkException('Request timeout'));
+      await awaitResend(tester, LoginOtpResendStatus.idle);
+      expect(bloc.state.incorrectAttempts, 1);
+      expect(bloc.state.mfaToken, 'original-challenge');
+      expect(bloc.state.errorMessage, 'Request timeout');
+      expect(redBorders(tester), 0);
+      await finish(tester);
+    },
+  );
 
   testWidgets(
     'disabled resend does not clear newly entered code or send another request',

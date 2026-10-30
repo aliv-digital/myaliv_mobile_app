@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -33,10 +35,12 @@ BasePlanModel _plan({
   required DateTime end,
   DateTime? start,
   String name = 'liberty120',
+  String id = '1',
+  String type = 'P',
 }) => BasePlanModel.fromApiMap({
-  'PlanID': '1',
+  'PlanID': id,
   'PlanName': name,
-  'PlanType': 'P',
+  'PlanType': type,
   'StartDate': (start ?? DateTime.now().subtract(const Duration(days: 7)))
       .toUtc()
       .toIso8601String(),
@@ -131,12 +135,14 @@ void main() {
     bool isFromHome = true,
     bool showRenewButton = true,
     bool postpaid = false,
+    PlansState? plansState,
   }) async {
     when(() => plans.state).thenReturn(
-      PlansState(
-        status: status,
-        addOnsApiPrimaryPlans: plan == null ? [] : [plan],
-      ),
+      plansState ??
+          PlansState(
+            status: status,
+            addOnsApiPrimaryPlans: plan == null ? [] : [plan],
+          ),
     );
     await tester.pumpWidget(
       BlocProvider<PlansCubit>.value(
@@ -165,6 +171,131 @@ void main() {
 
   Future<void> disposeCard(WidgetTester tester) =>
       tester.pumpWidget(const SizedBox.shrink());
+
+  for (final expired in [false, true]) {
+    for (final type in ['P', 'A']) {
+      for (final count in [1, 2]) {
+        testWidgets(
+          'Home expiry warning hides for $count future $type plans, expired=$expired',
+          (tester) async {
+            final now = DateTime.now();
+            final active = _plan(
+              end: expired
+                  ? now.subtract(const Duration(days: 1))
+                  : now.add(const Duration(days: 2)),
+            );
+            final future = List.generate(
+              count,
+              (index) => _plan(
+                id: 'future-$index',
+                type: type,
+                start: now.add(Duration(days: index + 3)),
+                end: now.add(Duration(days: index + 10)),
+              ),
+            );
+            final state = PlansState(
+              status: PlansStatus.success,
+              addOnsApiPrimaryPlans: [active, if (type == 'P') ...future],
+              standAlonePlans: type == 'A' ? future : const [],
+            );
+            await pumpCard(tester, plansState: state);
+            expect(_warning, findsNothing);
+            expect(_expiredWarning, findsNothing);
+            expect(find.byIcon(Icons.error_outline), findsNothing);
+            expect(find.text(active.planName), findsOneWidget);
+            expect(find.text('renew your plan'), findsOneWidget);
+            expect(tester.getSize(find.byType(ClipRRect).first).height, 216);
+            expect(state.earliestAddOnsPrimaryPlan, active);
+            verifyNever(() => plans.refreshCurrentTab());
+            verifyNever(() => plans.refreshBundlesOnly());
+            await disposeCard(tester);
+          },
+        );
+      }
+
+      testWidgets(
+        'Home warning follows future $type additions/removals without changing displayed plan, expired=$expired',
+        (tester) async {
+          final now = DateTime.now();
+          final active = _plan(
+            end: expired
+                ? now.subtract(const Duration(days: 1))
+                : now.add(const Duration(days: 2)),
+          );
+          final future = _plan(
+            id: 'future',
+            type: type,
+            start: now.add(const Duration(days: 3)),
+            end: now.add(const Duration(days: 10)),
+          );
+          final initial = PlansState(
+            status: PlansStatus.success,
+            addOnsApiPrimaryPlans: [active],
+          );
+          final states = StreamController<PlansState>();
+          addTearDown(states.close);
+          whenListen(plans, states.stream, initialState: initial);
+          await pumpCard(tester, plansState: initial);
+          final warning = expired ? _expiredWarning : _warning;
+          expect(warning, findsOneWidget);
+          states.add(
+            initial.copyWith(
+              addOnsApiPrimaryPlans: [active, if (type == 'P') future],
+              standAlonePlans: type == 'A' ? [future] : const [],
+            ),
+          );
+          await tester.pump();
+          expect(warning, findsNothing);
+          expect(find.text(active.planName), findsOneWidget);
+          expect(find.text('renew your plan'), findsOneWidget);
+          states.add(initial);
+          await tester.pump();
+          expect(warning, findsOneWidget);
+          expect(find.text(active.planName), findsOneWidget);
+          verifyNever(() => plans.refreshCurrentTab());
+          verifyNever(() => plans.refreshBundlesOnly());
+          await disposeCard(tester);
+        },
+      );
+    }
+  }
+
+  for (final scenario in ['today', 'missing', 'invalid', 'add-on']) {
+    testWidgets(
+      'Home warning keeps existing future-plan definition: $scenario',
+      (tester) async {
+        final now = DateTime.now();
+        final active = _plan(end: now.add(const Duration(days: 2)));
+        final other = BasePlanModel.fromApiMap({
+          'PlanID': 'other',
+          'PlanType': scenario == 'add-on' ? 'S' : 'P',
+          if (scenario == 'today')
+            'StartDate': DateTime(
+              now.year,
+              now.month,
+              now.day,
+              23,
+            ).toUtc().toIso8601String(),
+          if (scenario == 'invalid') 'StartDate': 'invalid',
+          if (scenario == 'add-on')
+            'StartDate': now
+                .add(const Duration(days: 3))
+                .toUtc()
+                .toIso8601String(),
+        });
+        await pumpCard(
+          tester,
+          plansState: PlansState(
+            status: PlansStatus.success,
+            addOnsApiPrimaryPlans: [active, if (scenario != 'add-on') other],
+            secondaryPlans: scenario == 'add-on' ? [other] : const [],
+          ),
+        );
+        expect(_warning, findsOneWidget);
+        await disposeCard(tester);
+      },
+    );
+  }
 
   for (final remaining in [
     const Duration(days: 3, seconds: 1),

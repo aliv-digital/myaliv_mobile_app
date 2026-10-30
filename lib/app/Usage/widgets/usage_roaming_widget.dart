@@ -20,7 +20,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 13, 16, 28),
+      padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         image: const DecorationImage(
@@ -116,6 +116,7 @@ class _DateColumn extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(

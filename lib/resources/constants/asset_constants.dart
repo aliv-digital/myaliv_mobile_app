@@ -2,6 +2,7 @@ class AssetConstant {
   static const splashLogoSVG = 'assets/icons/aliv_splash_logo.svg';
   static const welcomeImagePNG = 'assets/images/welcome2.png';
   static const guestImagePNG = 'assets/images/guest_splash.png';
+  static const whyAlivModelPNG = 'assets/images/model.png';
   static const alivBlackLogoSVG = 'assets/icons/aliv_black_logo.svg';
 
   static const bottomStripeSVG = 'assets/images/bottom_stripes.svg';
@@ -76,6 +77,7 @@ class AssetConstant {
   static const walletIconSVG = 'assets/icons/wallet.svg';
   static const addCardIconSVG = 'assets/icons/addcard.svg';
   static const creditCardIconSVG = 'assets/icons/credit_card.svg';
+  static const cardIconPNG = 'assets/icons/cardicon.png';
   static const blackRoundedCrossSVG = 'assets/icons/ic_back_bold.svg';
   static const roundedTikSVG = 'assets/icons/rounded_tik.svg';
   static const redCreditCardSVG = 'assets/icons/redcreditcard.svg';

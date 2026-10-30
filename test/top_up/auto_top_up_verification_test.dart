@@ -428,6 +428,39 @@ void main() {
     );
   }
 
+  flow('six wrong Auto Top-Up OTPs show the final message and redirect home', (
+    tester,
+    h,
+  ) async {
+    const limitMessage = 'Too many failed OTP attempts. Please try again.';
+    h.otp.verifyFailure = NetworkException(
+      'Two Factor Key Invalid',
+      statusCode: 400,
+      data: {'ErrorCode': 202, 'ErrorCodeName': 'TwoFactorKeyInvalid'},
+    );
+    expect(h.otp.args!.attempt.paymentMethod, ProtectedAccountAction.autoTopUp);
+    for (var attempt = 1; attempt <= 5; attempt++) {
+      await h.otp.verify(tester);
+      expect(h.otp.verifies, attempt);
+      expect(find.text('Invalid OTP'), findsOneWidget);
+      expect(find.text(limitMessage), findsNothing);
+      expect(find.byType(ActionOtpScreen), findsOneWidget);
+      expect(find.text('home destination'), findsNothing);
+    }
+    await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    expect(h.otp.verifies, 6);
+    expect(find.text(limitMessage), findsOneWidget);
+    expect(find.text('Invalid OTP'), findsNothing);
+    expect(find.byType(ActionOtpScreen), findsNothing);
+    expect(find.text('home destination'), findsOneWidget);
+    expect(h.router.canPop(), isFalse);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+    expect(h.otp.saves, 0);
+    expect(h.mutations, 0);
+    expect(h.payloads, isEmpty);
+  });
+
   flow('iOS mixed navigation success routes through OTP, then Authorization', (
     tester,
     h,

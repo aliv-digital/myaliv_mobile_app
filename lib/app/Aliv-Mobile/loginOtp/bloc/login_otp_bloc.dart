@@ -26,6 +26,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   final bool preventDuplicateSubmissions;
   final String offlineVerificationMessage;
   final bool resetValidationOnResend;
+  final String? incorrectAttemptLimitMessage;
   bool _submissionInProgress = false;
 
   LoginOtpBloc({
@@ -40,6 +41,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     this.preventDuplicateSubmissions = false,
     this.offlineVerificationMessage = 'No Internet Connection',
     this.resetValidationOnResend = false,
+    this.incorrectAttemptLimitMessage,
   }) : authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
@@ -193,14 +195,17 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           ? e.incorrectAttempts
           : state.incorrectAttempts +
                 (OtpAttemptFailure.isIncorrectCode(e) ? 1 : 0);
+      final failureState = state.copyWith(
+        status: LoginOtpStatus.failure,
+        errorType: errorType,
+        codeFieldError: _isCodeInputRelatedError(errorType),
+        errorMessage: treatAsInvalidCode ? 'Invalid OTP' : message,
+        incorrectAttempts: incorrectAttempts,
+      );
       emit(
-        state.copyWith(
-          status: LoginOtpStatus.failure,
-          errorType: errorType,
-          codeFieldError: _isCodeInputRelatedError(errorType),
-          errorMessage: treatAsInvalidCode ? 'Invalid OTP' : message,
-          incorrectAttempts: incorrectAttempts,
-        ),
+        failureState.shouldExitOtpFlow && incorrectAttemptLimitMessage != null
+            ? failureState.copyWith(errorMessage: incorrectAttemptLimitMessage)
+            : failureState,
       );
     }
   }

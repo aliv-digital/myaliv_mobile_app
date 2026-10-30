@@ -89,7 +89,7 @@ void main() {
     );
 
     testWidgets(
-      'renders top-up prepaid number label with 16px CircularPro font',
+      'renders top-up prepaid number label with 12px CircularPro font',
       (tester) async {
         await tester.pumpWidget(
           const MaterialApp(
@@ -106,7 +106,7 @@ void main() {
         expect(labelFinder, findsOneWidget);
 
         final textWidget = tester.widget<Text>(labelFinder);
-        expect(textWidget.style?.fontSize, 14.0);
+        expect(textWidget.style?.fontSize, 12.0);
         expect(textWidget.style?.fontWeight, FontWeight.w700);
         expect(textWidget.style?.fontFamily, 'CircularPro');
       },

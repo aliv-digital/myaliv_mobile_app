@@ -1,15 +1,11 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
-import 'package:myaliv_mobile_app/resources/widgets/cards/saved_card_brand_box.dart';
-import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart'
-    show CardBrand;
 
 import '../bloc/home_plans_payment_method_state.dart';
 import '../model/home_plans_payment_method_models.dart';
@@ -47,10 +43,18 @@ class HomePlansPaymentMethodSection extends StatefulWidget {
 
 class _HomePlansPaymentMethodSectionState
     extends State<HomePlansPaymentMethodSection> {
+  final _savedCardsScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     instance<SavedCardsCubit>().fetchSavedCards();
+  }
+
+  @override
+  void dispose() {
+    _savedCardsScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -129,17 +133,8 @@ class _HomePlansPaymentMethodSectionState
               ),
             ),
           );
-        } else {
-          for (final SavedCardModel card in savedCardsState.cards) {
-            if (tiles.isNotEmpty) {
-              tiles.add(
-                const SizedBox(
-                  height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
-                ),
-              );
-            }
-            tiles.add(_buildSavedCardTile(card));
-          }
+        } else if (savedCardsState.hasCards) {
+          tiles.add(_buildSavedCardsList(savedCardsState.cards));
         }
         for (final method in chargeToAccountMethods) {
           if (tiles.isNotEmpty) {
@@ -154,6 +149,43 @@ class _HomePlansPaymentMethodSectionState
 
         return Column(children: tiles);
       },
+    );
+  }
+
+  Widget _buildSavedCardsList(List<SavedCardModel> cards) {
+    const limit = HomePlansPaymentMethodTheme.maxVisibleSavedCards;
+    const gap = HomePlansPaymentMethodTheme.firstToSecondCardGap;
+    if (cards.length <= limit) {
+      return Column(
+        children: [
+          for (var i = 0; i < cards.length; i++) ...[
+            if (i > 0) const SizedBox(height: gap),
+            _buildSavedCardTile(cards[i]),
+          ],
+        ],
+      );
+    }
+
+    return SizedBox(
+      height:
+          limit * HomePlansPaymentMethodTheme.savedCardMinHeight +
+          (limit - 1) * gap,
+      child: Scrollbar(
+        controller: _savedCardsScrollController,
+        thumbVisibility: true,
+        thickness: HomePlansPaymentMethodTheme.savedCardsScrollbarThickness,
+        child: ListView.separated(
+          controller: _savedCardsScrollController,
+          primary: false,
+          padding: const EdgeInsetsDirectional.only(
+            end: HomePlansPaymentMethodTheme.savedCardsScrollbarPadding,
+          ),
+          physics: const ClampingScrollPhysics(),
+          itemCount: cards.length,
+          separatorBuilder: (_, _) => const SizedBox(height: gap),
+          itemBuilder: (_, index) => _buildSavedCardTile(cards[index]),
+        ),
+      ),
     );
   }
 
@@ -188,19 +220,23 @@ class _HomePlansPaymentMethodSectionState
       textToIndicatorGap: 4,
       selected: _cardModeActive && widget.selectedId == card.token,
       onTap: () => widget.onSelect(card.token),
-      // Use the shared brand box so the leading icon reads identically to
-      // the saved-card tile on `TopUpPaymentScreen`.
-      leadingWidget: SavedCardBrandBox(
-        brand: CardBrand.unknown,
-        width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
-        height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
-      ),
+      leadingWidget: _buildCardIcon(),
+    );
+  }
+
+  Widget _buildCardIcon() {
+    return Image.asset(
+      AssetConstant.cardIconPNG,
+      width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+      height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      fit: BoxFit.contain,
     );
   }
 
   Widget _buildPayWithCardRow() {
     return PaymentOptionTile(
       title: 'pay with card',
+      titleColor: Colors.black,
       selected: widget.paymentMode == HomePlansPaymentMode.payWithCard,
       onTap: widget.onPayWithCard,
       tileRadius: 10,
@@ -219,6 +255,7 @@ class _HomePlansPaymentMethodSectionState
   Widget _buildPayFromWalletRow() {
     return PaymentOptionTile(
       title: 'pay from wallet',
+      titleColor: Colors.black,
       selected: widget.paymentMode == HomePlansPaymentMode.payFromWallet,
       onTap: widget.onPayFromWallet,
       tileRadius: 10,
@@ -226,14 +263,9 @@ class _HomePlansPaymentMethodSectionState
       leadingWidth: HomePlansPaymentMethodTheme.savedCardLogoWidth,
       leadingHeight: HomePlansPaymentMethodTheme.savedCardLogoHeight,
       unselectedRadioFill: HomePlansPaymentMethodTheme.unselectedIndicatorColor,
-      leading: SizedBox(
-        width: HomePlansPaymentMethodTheme.paymentActionIconSize,
-        height: HomePlansPaymentMethodTheme.paymentActionIconSize,
-        child: SvgPicture.asset(
-          AssetConstant.walletIconSVG,
-          fit: BoxFit.contain,
-        ),
-      ),
+      contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      leadingToTextGap: 12,
+      leading: _buildCardIcon(),
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: HomePlansPaymentMethodTheme.walletChipHorizontalPadding,

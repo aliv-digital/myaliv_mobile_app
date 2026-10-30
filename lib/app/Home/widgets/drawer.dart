@@ -37,6 +37,7 @@ class AppMenuDrawer extends StatelessWidget {
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: SafeArea(
         child: Column(
           children: [
@@ -206,7 +207,7 @@ class AppMenuDrawer extends StatelessWidget {
           : label == 'REV bill pay'
           ? null
           : external
-          ? const Icon(Icons.open_in_new, size: 18)
+          ? SvgPicture.asset('assets/icons/alivfibr.svg', height: 18, width: 18)
           : const Icon(Icons.chevron_right),
       onTap: () async {
         if (label == 'profile') {

@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/createPassword/repository/crea
 class _Repository extends Mock implements CreatePasswordRepository {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late _Repository repository;
   late CreatePasswordBloc bloc;
 
@@ -33,6 +34,36 @@ void main() {
     expect(bloc.state.canSubmit, isFalse);
     verifyZeroInteractions(repository);
   });
+
+  for (final password in ['', 'Abc12345']) {
+    test(
+      'Continue reveals empty-field messages with password length ${password.length}',
+      () async {
+        if (password.isNotEmpty) {
+          await change(PasswordChanged(password));
+        }
+        expect(bloc.state.confirmPasswordError, isNull);
+        final state = await change(const SubmitCreatePassword());
+        expect(state.showEmptyFieldErrors, isTrue);
+        expect(
+          state.passwordError,
+          password.isEmpty ? 'password must be 8 characters long' : isNull,
+        );
+        expect(state.confirmPasswordError, 'please re-enter your password.');
+        expect(state.canSubmit, isFalse);
+        verifyZeroInteractions(repository);
+        if (password.isEmpty) {
+          await change(const PasswordChanged('Abc12345'));
+        }
+        expect(bloc.state.passwordError, isNull);
+        await change(const ConfirmPasswordChanged('different'));
+        expect(bloc.state.confirmPasswordError, 'Passwords do not match.');
+        await change(const ConfirmPasswordChanged('Abc12345'));
+        expect(bloc.state.confirmPasswordError, isNull);
+        expect(bloc.state.canSubmit, isTrue);
+      },
+    );
+  }
 
   test('minimum length is checked first on every password edit', () async {
     for (final password in ['A', 'Abc123', 'Abc1234', '   ']) {
@@ -129,11 +160,18 @@ void main() {
     final edited = initial.copyWith(
       hasEditedPassword: true,
       hasEditedConfirmation: true,
+      showEmptyFieldErrors: true,
     );
     expect(edited, isNot(initial));
     expect(edited.copyWith(), edited);
-    expect(edited.copyWith(hasEditedPassword: false).passwordError, isNull);
+    expect(
+      edited
+          .copyWith(hasEditedPassword: false, showEmptyFieldErrors: false)
+          .passwordError,
+      isNull,
+    );
     expect(edited.hasEditedConfirmation, isTrue);
+    expect(edited.copyWith().showEmptyFieldErrors, isTrue);
   });
 
   for (final password in [
