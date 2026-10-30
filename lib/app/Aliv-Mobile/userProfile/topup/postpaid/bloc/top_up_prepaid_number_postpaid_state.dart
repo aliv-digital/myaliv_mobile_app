@@ -21,6 +21,17 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
   final TopUpPrepaidNumberPostPaidApplyStatus applyStatus;
   final String? errorMessage;
 
+  /// Case B / TOP-002 copy rendered under the amount box (not as a toast).
+  final String? amountInlineError;
+
+  /// Remaining 24h headroom from `GET /Account/top-up-limit-left`.
+  /// Null until the fetch completes; also null when the fetch has failed.
+  final double? limitLeft;
+
+  /// True when the limit-left fetch failed on screen load; the A/B/C/D gate
+  /// treats this as Case D (fail-closed) when the user taps apply.
+  final bool limitFetchFailed;
+
   const TopUpPrepaidNumberPostPaidState({
     required this.loadStatus,
     required this.number,
@@ -28,6 +39,9 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
     required this.amountText,
     required this.applyStatus,
     required this.errorMessage,
+    required this.amountInlineError,
+    required this.limitLeft,
+    required this.limitFetchFailed,
   });
 
   factory TopUpPrepaidNumberPostPaidState.initial() =>
@@ -38,6 +52,9 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
         amountText: '',
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
         errorMessage: null,
+        amountInlineError: null,
+        limitLeft: null,
+        limitFetchFailed: false,
       );
 
   double get amountValue {
@@ -88,7 +105,11 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
     String? amountText,
     TopUpPrepaidNumberPostPaidApplyStatus? applyStatus,
     String? errorMessage,
+    String? amountInlineError,
+    double? limitLeft,
+    bool? limitFetchFailed,
     bool clearError = false,
+    bool clearAmountInlineError = false,
   }) {
     return TopUpPrepaidNumberPostPaidState(
       loadStatus: loadStatus ?? this.loadStatus,
@@ -97,6 +118,11 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
       amountText: amountText ?? this.amountText,
       applyStatus: applyStatus ?? this.applyStatus,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      amountInlineError: clearAmountInlineError
+          ? null
+          : amountInlineError ?? this.amountInlineError,
+      limitLeft: limitLeft ?? this.limitLeft,
+      limitFetchFailed: limitFetchFailed ?? this.limitFetchFailed,
     );
   }
 
@@ -108,5 +134,8 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
     amountText,
     applyStatus,
     errorMessage,
+    amountInlineError,
+    limitLeft,
+    limitFetchFailed,
   ];
 }

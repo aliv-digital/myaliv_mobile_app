@@ -106,7 +106,7 @@ void main() {
         expect(labelFinder, findsOneWidget);
 
         final textWidget = tester.widget<Text>(labelFinder);
-        expect(textWidget.style?.fontSize, 16.0);
+        expect(textWidget.style?.fontSize, 14.0);
         expect(textWidget.style?.fontWeight, FontWeight.w700);
         expect(textWidget.style?.fontFamily, 'CircularPro');
       },
