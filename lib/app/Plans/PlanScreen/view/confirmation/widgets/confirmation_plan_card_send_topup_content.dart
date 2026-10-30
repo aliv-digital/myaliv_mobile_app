@@ -79,7 +79,7 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                       'top-up prepaid number',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16,
+                        fontSize: 12,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                       ),
