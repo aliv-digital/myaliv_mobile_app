@@ -198,6 +198,14 @@ class _HomePlansPaymentMethodSectionState
     );
   }
 
+  Widget _buildCardIcon() {
+    return Image.asset(
+      AssetConstant.cardIconPNG,
+      width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+      height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      fit: BoxFit.contain,
+    );
+  }
   Widget _buildPayWithCardRow() {
     return PaymentOptionTile(
       title: 'pay with card',
