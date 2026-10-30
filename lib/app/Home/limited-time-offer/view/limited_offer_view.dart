@@ -67,6 +67,8 @@ class _LimitedOfferViewState extends State<LimitedOfferView> {
           return const SizedBox.shrink();
         }
 
+        final backgroundImageUrl = offer?.backgroundImageUrl;
+
         return Container(
           color: Colors.white,
           child: Padding(
@@ -80,8 +82,19 @@ class _LimitedOfferViewState extends State<LimitedOfferView> {
                 height: 112,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF9D933), // Yellow background
+                  color: const Color(0xFFF9D933), // Yellow background fallback
                   borderRadius: BorderRadius.circular(8),
+                  image:
+                      (backgroundImageUrl != null &&
+                          backgroundImageUrl.isNotEmpty)
+                      ? DecorationImage(
+                          image: NetworkImage(backgroundImageUrl),
+                          fit: BoxFit.cover,
+                          onError: (exception, stackTrace) {
+                            // Fallback to yellow background if network image fails to load
+                          },
+                        )
+                      : null,
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {

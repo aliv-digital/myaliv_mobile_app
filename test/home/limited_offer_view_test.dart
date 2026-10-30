@@ -19,6 +19,7 @@ LimitedOfferModel _offer({
   String type = 'prepaid',
   String status = 'active',
   bool expired = false,
+  String? backgroundImageUrl,
 }) {
   final now = DateTime.now();
   return LimitedOfferModel(
@@ -32,6 +33,7 @@ LimitedOfferModel _offer({
         ? now.subtract(const Duration(seconds: 1))
         : now.add(const Duration(days: 2)),
     status: status,
+    backgroundImageUrl: backgroundImageUrl,
   );
 }
 
@@ -252,4 +254,62 @@ void main() {
     expect(find.text('see current offers'), findsNothing);
     await cubit.close();
   });
+
+  testWidgets(
+    'renders DecorationImage with NetworkImage when backgroundImageUrl is present',
+    (tester) async {
+      final offer = _offer(
+        backgroundImageUrl: 'https://example.com/offer-banner.png',
+      );
+      when(
+        () => repository.fetchActiveOffers(userType: 'prepaid'),
+      ).thenAnswer((_) async => [offer]);
+      await cubit.loadOffers();
+      await _pumpCard(tester, cubit);
+
+      final card = tester.widget<Container>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration as BoxDecoration).color == const Color(0xFFF9D933),
+        ),
+      );
+      final decoration = card.decoration as BoxDecoration;
+      expect(decoration.image, isNotNull);
+      expect(
+        (decoration.image!.image as NetworkImage).url,
+        'https://example.com/offer-banner.png',
+      );
+      expect(decoration.image!.fit, BoxFit.cover);
+      expect(tester.takeException(), isNull);
+      await cubit.close();
+    },
+  );
+
+  testWidgets(
+    'renders yellow background fallback without DecorationImage when backgroundImageUrl is null or empty',
+    (tester) async {
+      final offer = _offer(backgroundImageUrl: '');
+      when(
+        () => repository.fetchActiveOffers(userType: 'prepaid'),
+      ).thenAnswer((_) async => [offer]);
+      await cubit.loadOffers();
+      await _pumpCard(tester, cubit);
+
+      final card = tester.widget<Container>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration as BoxDecoration).color == const Color(0xFFF9D933),
+        ),
+      );
+      final decoration = card.decoration as BoxDecoration;
+      expect(decoration.image, isNull);
+      expect(decoration.color, const Color(0xFFF9D933));
+      expect(tester.takeException(), isNull);
+      await cubit.close();
+    },
+  );
 }
