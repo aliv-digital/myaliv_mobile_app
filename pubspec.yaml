@@ -60,6 +60,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/icons/alivfibr.svg
+    - assets/icons/cardicon.png
     - assets/images/
 
   fonts:
