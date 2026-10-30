@@ -21,6 +21,7 @@ class SavedCardsRadioList extends StatelessWidget {
   final double? radioSize;
   final double? logoBoxWidth;
   final double? logoBoxHeight;
+  final String? logoImageAsset;
   final Color? unselectedRadioFill;
 
   const SavedCardsRadioList({
@@ -37,6 +38,7 @@ class SavedCardsRadioList extends StatelessWidget {
     this.radioSize,
     this.logoBoxWidth,
     this.logoBoxHeight,
+    this.logoImageAsset,
     this.unselectedRadioFill,
   });
 
@@ -62,6 +64,7 @@ class SavedCardsRadioList extends StatelessWidget {
             radioSize: radioSize,
             logoBoxWidth: logoBoxWidth,
             logoBoxHeight: logoBoxHeight,
+            logoImageAsset: logoImageAsset,
             unselectedRadioFill: unselectedRadioFill,
           ),
         ),
@@ -82,6 +85,7 @@ class SavedCardsRadioList extends StatelessWidget {
             radioSize: radioSize,
             logoBoxWidth: logoBoxWidth,
             logoBoxHeight: logoBoxHeight,
+            logoImageAsset: logoImageAsset,
             unselectedRadioFill: unselectedRadioFill,
           ),
         ],
@@ -102,6 +106,7 @@ class SavedCardRadioTile extends StatelessWidget {
   final double? radioSize;
   final double? logoBoxWidth;
   final double? logoBoxHeight;
+  final String? logoImageAsset;
   final Color? unselectedRadioFill;
 
   const SavedCardRadioTile({
@@ -115,6 +120,7 @@ class SavedCardRadioTile extends StatelessWidget {
     this.radioSize,
     this.logoBoxWidth,
     this.logoBoxHeight,
+    this.logoImageAsset,
     this.unselectedRadioFill,
   });
 
@@ -169,6 +175,15 @@ class SavedCardRadioTile extends StatelessWidget {
   }
 
   Widget _buildBrandBox() {
+    final imageAsset = logoImageAsset;
+    if (imageAsset != null) {
+      return Image.asset(
+        imageAsset,
+        width: logoBoxWidth ?? _defaultLogoBoxWidth,
+        height: logoBoxHeight ?? _defaultLogoBoxHeight,
+        fit: BoxFit.contain,
+      );
+    }
     return SavedCardBrandBox(
       brand: brand,
       width: logoBoxWidth ?? _defaultLogoBoxWidth,

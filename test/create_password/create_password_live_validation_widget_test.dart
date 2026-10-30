@@ -124,6 +124,47 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }
 
+  for (final width in [320.0, 430.0]) {
+    for (final password in ['', 'Abc12345']) {
+      testWidgets(
+        'empty reset fields show conditional messages after Continue at $width, password length ${password.length}',
+        (tester) async {
+          const emptyPassword = 'password must be 8 characters long';
+          const emptyConfirmation = 'please re-enter your password.';
+          await open(tester, size: Size(width, 844));
+          if (password.isNotEmpty) {
+            await enter(tester, 0, password);
+          }
+          expect(inline(emptyPassword), findsNothing);
+          expect(inline(emptyConfirmation), findsNothing);
+          await submit(tester);
+          expect(
+            inline(emptyPassword),
+            password.isEmpty ? findsOneWidget : findsNothing,
+          );
+          expect(inline(emptyConfirmation), findsOneWidget);
+          expect(inline(mismatch), findsNothing);
+          expect(
+            toast(password.isEmpty ? emptyPassword : emptyConfirmation),
+            findsOneWidget,
+          );
+          expect(
+            tester.getTopLeft(inline(emptyConfirmation)).dy,
+            greaterThan(tester.getBottomLeft(field(1)).dy),
+          );
+          expect(find.text('home destination'), findsNothing);
+          verifyZeroInteractions(network);
+          await enter(tester, 0, 'Abc12345');
+          await enter(tester, 1, 'Abc12345');
+          expect(inline(emptyPassword), findsNothing);
+          expect(inline(emptyConfirmation), findsNothing);
+          expect(tester.takeException(), isNull);
+          await finish(tester);
+        },
+      );
+    }
+  }
+
   testWidgets(
     'minimum error is live, red, below the first input and clears at eight',
     (tester) async {

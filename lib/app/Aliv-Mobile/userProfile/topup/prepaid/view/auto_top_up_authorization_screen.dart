@@ -183,10 +183,10 @@ class _AutoTopUpAuthorizationScreenState
             children: [
               Text(
                 'by providing my credit card ending *${widget.cardLastDigits} as payment method, '
-                'I authorize ALIV and/or its agents to store my payment method '
+                'I authorize aliv and/or its agents to store my payment method '
                 'information and to automatically charge plan renewal costs of '
                 'qualifying plans for all subscriber lines on my account. '
-                'I am certifying I am the payment method owner or have '
+                'i am certifying i am the payment method owner or have '
                 'authorization to use the payment method information provided '
                 'for the automatic charging of plan renewal costs.',
                 style: const TextStyle(
@@ -211,11 +211,11 @@ class _AutoTopUpAuthorizationScreenState
               const SizedBox(height: 14),
               const Text(
                 'by entering my pin, full name matching the name displayed and '
-                'clicking agree, I am providing my electronic signature as '
-                'evidence that I understand the terms I am to which I am agreeing. '
-                'In addition, I understand this automatic payment authorization '
-                'will remain in effect until canceled by me via the myALIV app. '
-                'The complete ALIV automatic payment policy will be sent to your '
+                'clicking agree, i am providing my electronic signature as '
+                'evidence that i understand the terms i am to which i am agreeing. '
+                'In addition, i understand this automatic payment authorization '
+                'will remain in effect until canceled by me via the myaliv app. '
+                'The complete aliv automatic payment policy will be sent to your '
                 'account email address.',
                 style: TextStyle(
                   fontFamily: 'CircularPro',

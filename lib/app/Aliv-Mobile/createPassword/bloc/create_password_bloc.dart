@@ -60,6 +60,15 @@ class CreatePasswordBloc
     Emitter<CreatePasswordState> emit,
   ) async {
     final pass = state.password.trim();
+    if (state.confirmPassword.trim().isEmpty) {
+      final next = state.copyWith(showEmptyFieldErrors: true);
+      emit(next);
+      AppToast.show(
+        message: next.passwordError ?? next.confirmPasswordError!,
+        type: ToastType.error,
+      );
+      return;
+    }
     final validationError =
         state.passwordValidationError ?? state.confirmationValidationError;
     if (validationError != null) {

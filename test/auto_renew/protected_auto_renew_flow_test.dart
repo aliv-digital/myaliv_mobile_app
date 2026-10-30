@@ -19,6 +19,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepai
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/bloc/auto_renew_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/bloc/auto_renew_prepaid_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/postpaid/view/auto_pay_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_page_content.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_proceed_action_button.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart';
@@ -27,10 +28,12 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_mo
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
@@ -69,6 +72,7 @@ class _Harness {
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<DeviceLimitsCubit>(devices);
     instance.registerSingleton<AccountInfoCubit>(account);
+    instance.registerSingleton<SavedCardsCubit>(cards);
     instance.registerSingleton<CallLogsVerificationRepository>(challenge);
     instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
       history,
@@ -93,6 +97,12 @@ class _Harness {
       () => cards.state,
     ).thenReturn(const SavedCardsState(status: SavedCardsStatus.success));
     when(() => cards.stream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => cards.fetchSavedCards(
+        forceRefresh: true,
+        userType: UserType.postpaid,
+      ),
+    ).thenAnswer((_) async {});
     when(() => selection.state).thenAnswer((_) => selectionState);
     when(() => selection.stream).thenAnswer((_) => const Stream.empty());
     when(() => challenge.requestChallenge()).thenAnswer((_) async {
@@ -214,13 +224,22 @@ class _Harness {
     AutoRenewPaymentMethodType? formMode,
     String? cardToken = 'test-saved-card',
     bool productionRouter = false,
+    bool postpaidSetup = false,
   }) async {
     router = productionRouter
         ? AppRouter().router
         : GoRouter(
             navigatorKey: rootNavigatorKey,
-            initialLocation: formMode == null ? '/wallet' : '/form',
+            initialLocation: postpaidSetup
+                ? '/postpaid'
+                : formMode == null
+                ? '/wallet'
+                : '/form',
             routes: [
+              GoRoute(
+                path: '/postpaid',
+                builder: (_, _) => const AutoPayPostpaidScreen(),
+              ),
               GoRoute(
                 path: '/wallet',
                 builder: (_, _) => const AutoRenewPrepaidPageContent(),
@@ -299,6 +318,40 @@ class _Harness {
     }
   }
 
+  Future<void> startPostpaidAutoPay(WidgetTester tester) async {
+    config.setUserType(UserType.postpaid);
+    when(() => cards.state).thenReturn(
+      const SavedCardsState(
+        status: SavedCardsStatus.success,
+        cards: [SavedCardModel(token: 'test-saved-card', number: '*0000')],
+      ),
+    );
+    await pump(tester, postpaidSetup: true);
+    await tester.tap(find.text('card ending in 0000'));
+    await tester.pump();
+    await tester.tap(find.text('use for auto pay'));
+    await tester.pumpAndSettle();
+    expect(find.byType(OtpCodeFields), findsOneWidget);
+    expect(
+      otpArgs!.attempt.paymentMethod,
+      AutoRenewPaymentMethodType.postpaidInvoice,
+    );
+  }
+
+  DioException invalidOtp() => DioException(
+    requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+    type: DioExceptionType.badResponse,
+    response: Response<dynamic>(
+      requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+      statusCode: 400,
+      data: {
+        'ErrorCode': 202,
+        'ErrorCodeName': 'TwoFactorKeyInvalid',
+        'Message': 'Two Factor Key Invalid',
+      },
+    ),
+  );
+
   Future<void> finish(WidgetTester tester) async {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
@@ -354,6 +407,194 @@ void main() {
       await instance.reset();
     }
   });
+
+  const limitMessage = 'Too many failed OTP attempts. Please try again.';
+
+  flowTest('postpaid Auto Pay shows final OTP message and redirects on six', (
+    tester,
+    h,
+  ) async {
+    h.verifyFailure = h.invalidOtp();
+    await h.startPostpaidAutoPay(tester);
+    final bloc = tester
+        .element(find.byType(OtpCodeFields))
+        .read<LoginOtpBloc>();
+    for (var attempt = 1; attempt <= 5; attempt++) {
+      await h.submitOtp(tester);
+      expect(bloc.state.incorrectAttempts, attempt);
+      expect(bloc.state.errorMessage, 'Invalid OTP');
+      expect(find.text('Invalid OTP'), findsOneWidget);
+      expect(find.text(limitMessage), findsNothing);
+      expect(find.byType(OtpCodeFields), findsOneWidget);
+      expect(find.text('home-destination'), findsNothing);
+    }
+    await h.submitOtp(tester);
+    await tester.pumpAndSettle();
+    expect(bloc.state.incorrectAttempts, 6);
+    expect(bloc.state.errorMessage, limitMessage);
+    expect(find.text(limitMessage), findsOneWidget);
+    expect(find.text('home-destination'), findsOneWidget);
+    expect(find.byType(OtpCodeFields), findsNothing);
+    expect(h.router.canPop(), isFalse);
+    expect(h.verifies, 6);
+    expect(h.saves, 0);
+    h.noMutations();
+    await h.finish(tester);
+    expect(find.text('home-destination'), findsOneWidget);
+    expect(find.text(limitMessage), findsNothing);
+  });
+
+  flowTest('postpaid Auto Pay non-OTP failures keep the existing message', (
+    tester,
+    h,
+  ) async {
+    h.verifyFailure = h.invalidOtp();
+    await h.startPostpaidAutoPay(tester);
+    final bloc = tester
+        .element(find.byType(OtpCodeFields))
+        .read<LoginOtpBloc>();
+    for (var attempt = 0; attempt < 5; attempt++) {
+      await h.submitOtp(tester);
+    }
+    for (final failure in [
+      DioException(
+        requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+        type: DioExceptionType.connectionTimeout,
+      ),
+      DioException(
+        requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+        type: DioExceptionType.badResponse,
+        response: Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+          statusCode: 500,
+          data: {'Message': 'Service unavailable'},
+        ),
+      ),
+      DioException(
+        requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+        type: DioExceptionType.badResponse,
+        response: Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+          statusCode: 400,
+          data: {
+            'ErrorCode': 203,
+            'ErrorCodeName': 'TwoFactorKeyExpired',
+            'Message': 'OTP expired',
+          },
+        ),
+      ),
+    ]) {
+      h.verifyFailure = failure;
+      await h.submitOtp(tester);
+      expect(bloc.state.incorrectAttempts, 5);
+      expect(bloc.state.errorMessage, isNot(limitMessage));
+      expect(find.text(limitMessage), findsNothing);
+      expect(find.byType(OtpCodeFields), findsOneWidget);
+      expect(find.text('home-destination'), findsNothing);
+    }
+    h.verifyFailure = h.invalidOtp();
+    await h.submitOtp(tester);
+    await tester.pumpAndSettle();
+    expect(bloc.state.errorMessage, limitMessage);
+    expect(find.text(limitMessage), findsOneWidget);
+    expect(find.text('home-destination'), findsOneWidget);
+    expect(h.saves, 0);
+    h.noMutations();
+  });
+
+  flowTest('postpaid Auto Pay resend starts a fresh OTP attempt count', (
+    tester,
+    h,
+  ) async {
+    h.verifyFailure = h.invalidOtp();
+    await h.startPostpaidAutoPay(tester);
+    final bloc = tester
+        .element(find.byType(OtpCodeFields))
+        .read<LoginOtpBloc>();
+    for (var attempt = 0; attempt < 5; attempt++) {
+      await h.submitOtp(tester);
+    }
+    await tester.tap(find.text('resend code'));
+    await tester.pumpAndSettle();
+    expect(bloc.state.incorrectAttempts, 0);
+    for (var attempt = 1; attempt <= 5; attempt++) {
+      await h.submitOtp(tester);
+      expect(bloc.state.incorrectAttempts, attempt);
+      expect(bloc.state.errorMessage, 'Invalid OTP');
+      expect(find.text(limitMessage), findsNothing);
+      expect(find.text('home-destination'), findsNothing);
+    }
+    await h.submitOtp(tester);
+    await tester.pumpAndSettle();
+    expect(find.text(limitMessage), findsOneWidget);
+    expect(find.text('home-destination'), findsOneWidget);
+    expect(h.payloads.last['mfa_token'], 'test-mfa-2');
+    expect(h.saves, 0);
+    h.noMutations();
+  });
+
+  for (final savedCard in [false, true]) {
+    flowTest(
+      'prepaid ${savedCard ? 'saved-card' : 'wallet'} shows its final OTP message on six and redirects home',
+      (tester, h) async {
+        const prepaidLimitMessage =
+            'Too many failed OTP attempts. Please try again';
+        if (savedCard) {
+          const card = SavedCardModel(
+            token: 'test-saved-card',
+            number: '*0000',
+          );
+          h.selectionState = h.selectionState.copyWith(
+            selectedMethodId: card.token,
+            selectedCard: card,
+          );
+          when(() => h.cards.state).thenReturn(
+            const SavedCardsState(
+              status: SavedCardsStatus.success,
+              cards: [card],
+            ),
+          );
+        }
+        h.verifyFailure = h.invalidOtp();
+        await h.pump(tester);
+        await h.proceed(tester);
+        expect(
+          h.otpArgs!.attempt.paymentMethod,
+          savedCard
+              ? AutoRenewPaymentMethodType.card
+              : AutoRenewPaymentMethodType.wallet,
+        );
+        final bloc = tester
+            .element(find.byType(OtpCodeFields))
+            .read<LoginOtpBloc>();
+        for (var attempt = 1; attempt <= 5; attempt++) {
+          await h.submitOtp(tester);
+          expect(bloc.state.incorrectAttempts, attempt);
+          expect(bloc.state.errorMessage, 'Invalid OTP');
+          expect(find.byType(OtpCodeFields), findsOneWidget);
+          expect(find.text('home-destination'), findsNothing);
+        }
+        await h.submitOtp(tester);
+        await tester.pumpAndSettle();
+        expect(bloc.state.incorrectAttempts, 6);
+        expect(
+          bloc.state.errorMessage,
+          savedCard ? prepaidLimitMessage : 'Invalid OTP',
+        );
+        expect(find.text('home-destination'), findsOneWidget);
+        expect(
+          find.text(savedCard ? prepaidLimitMessage : 'Invalid OTP'),
+          findsOneWidget,
+        );
+        expect(find.byType(OtpCodeFields), findsNothing);
+        expect(find.text(limitMessage), findsNothing);
+        expect(h.router.canPop(), isFalse);
+        expect(h.verifies, 6);
+        expect(h.saves, 0);
+        h.noMutations();
+      },
+    );
+  }
 
   flowTest('active wallet Proceed requests Challenge with zero mutations', (
     tester,

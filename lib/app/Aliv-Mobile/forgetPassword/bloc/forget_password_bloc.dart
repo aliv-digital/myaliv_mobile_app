@@ -98,7 +98,9 @@ class ForgetPasswordBloc
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,
-          errorMessage: message,
+          errorMessage: message.trim().toLowerCase() == 'Password Reset Failed'
+              ? 'number is invalid'
+              : message,
           isEmptyNumberError: false,
           isInvalidNumberLengthError: false,
         ),

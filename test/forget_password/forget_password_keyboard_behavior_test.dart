@@ -609,9 +609,9 @@ void main() {
 
   for (final priorInput in ['', '242']) {
     testWidgets(
-      'API failure after ${priorInput.isEmpty ? 'FPW-001' : 'FPW-002'} still shows its existing error toast',
+      'unregistered number after ${priorInput.isEmpty ? 'FPW-001' : 'FPW-002'} shows the invalid-number toast',
       (tester) async {
-        const backendMessage = 'The number you entered is invalid';
+        const backendMessage = 'password reset failed';
         when(
           () => networkService.request<dynamic>(
             Api.forgotPasswordUrl,
@@ -652,8 +652,10 @@ void main() {
         expect(bloc.state.status, ForgetPasswordStatus.failure);
         expect(bloc.state.isEmptyNumberError, isFalse);
         expect(bloc.state.isInvalidNumberLengthError, isFalse);
-        expect(bloc.state.errorMessage, backendMessage);
-        expect(find.text(backendMessage), findsOneWidget);
+        expect(bloc.state.errorMessage, 'number is invalid');
+        expect(find.text('number is invalid'), findsOneWidget);
+        expect(find.text(backendMessage), findsNothing);
+        expect(find.text('OTP placeholder'), findsNothing);
         expect(find.byIcon(Icons.close), findsOneWidget);
         expect(find.text('enter your mobile number'), findsNothing);
         expect(find.text('invalid Format'), findsNothing);

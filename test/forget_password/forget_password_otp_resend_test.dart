@@ -344,19 +344,21 @@ void main() {
     },
   );
 
-  testWidgets('the login OTP route keeps its existing resend behavior', (
-    tester,
-  ) async {
-    await open(tester, routePath: AppRoutes.loginOtp);
-    await failValidation(tester);
-    await resend(tester);
-    response.complete(
-      const LoginOtpResendResponse(mfaToken: 'rotated-challenge'),
-    );
-    await waitForResend(tester, LoginOtpResendStatus.idle);
-    expect(bloc!.state.code, '123');
-    expect(bloc!.state.status, LoginOtpStatus.failure);
-    expect(redBorders(tester), 6);
-    await finish(tester);
-  });
+  testWidgets(
+    'the login OTP route also clears entered digits and old red borders',
+    (tester) async {
+      await open(tester, routePath: AppRoutes.loginOtp);
+      await failValidation(tester);
+      await resend(tester);
+      response.complete(
+        const LoginOtpResendResponse(mfaToken: 'rotated-challenge'),
+      );
+      await waitForResend(tester, LoginOtpResendStatus.idle);
+      expect(bloc!.state.code, isEmpty);
+      expect(bloc!.state.status, LoginOtpStatus.initial);
+      expect(redBorders(tester), 0);
+      expect(controllers(tester).map((c) => c.text), everyElement(isEmpty));
+      await finish(tester);
+    },
+  );
 }

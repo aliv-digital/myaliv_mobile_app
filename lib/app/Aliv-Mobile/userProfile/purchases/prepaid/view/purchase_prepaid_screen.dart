@@ -95,10 +95,7 @@ class _PurchasePrepaidView extends StatelessWidget {
                       sliver: SliverToBoxAdapter(
                         child: PurchasePrepaidMenuList(
                           items: state.items,
-                          showTopDivider: context
-                              .read<AppUiConfigCubit>()
-                              .state
-                              .isPrepaid,
+                          showTopDivider: false,
                           onTapItem: (item) {
                             context.read<PurchasePrepaidBloc>().add(
                               PurchasePrepaidItemTapped(item.action),
