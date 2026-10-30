@@ -2,6 +2,7 @@ class AssetConstant {
   static const splashLogoSVG = 'assets/icons/aliv_splash_logo.svg';
   static const welcomeImagePNG = 'assets/images/welcome2.png';
   static const guestImagePNG = 'assets/images/guest_splash.png';
+  static const whyAlivModelPNG = 'assets/images/model.png';
   static const alivBlackLogoSVG = 'assets/icons/aliv_black_logo.svg';
 
   static const bottomStripeSVG = 'assets/images/bottom_stripes.svg';
