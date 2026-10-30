@@ -533,23 +533,68 @@ void main() {
     h.noMutations();
   });
 
-  flowTest('prepaid wallet retains its existing error on wrong OTP six', (
-    tester,
-    h,
-  ) async {
-    h.verifyFailure = h.invalidOtp();
-    await h.pump(tester);
-    await h.proceed(tester);
-    for (var attempt = 0; attempt < 6; attempt++) {
-      await h.submitOtp(tester);
-    }
-    await tester.pumpAndSettle();
-    expect(find.text('home-destination'), findsOneWidget);
-    expect(find.text('Invalid OTP'), findsOneWidget);
-    expect(find.text(limitMessage), findsNothing);
-    expect(h.saves, 0);
-    h.noMutations();
-  });
+  for (final savedCard in [false, true]) {
+    flowTest(
+      'prepaid ${savedCard ? 'saved-card' : 'wallet'} shows its final OTP message on six and redirects home',
+      (tester, h) async {
+        const prepaidLimitMessage =
+            'Too many failed OTP attempts. Please try again';
+        if (savedCard) {
+          const card = SavedCardModel(
+            token: 'test-saved-card',
+            number: '*0000',
+          );
+          h.selectionState = h.selectionState.copyWith(
+            selectedMethodId: card.token,
+            selectedCard: card,
+          );
+          when(() => h.cards.state).thenReturn(
+            const SavedCardsState(
+              status: SavedCardsStatus.success,
+              cards: [card],
+            ),
+          );
+        }
+        h.verifyFailure = h.invalidOtp();
+        await h.pump(tester);
+        await h.proceed(tester);
+        expect(
+          h.otpArgs!.attempt.paymentMethod,
+          savedCard
+              ? AutoRenewPaymentMethodType.card
+              : AutoRenewPaymentMethodType.wallet,
+        );
+        final bloc = tester
+            .element(find.byType(OtpCodeFields))
+            .read<LoginOtpBloc>();
+        for (var attempt = 1; attempt <= 5; attempt++) {
+          await h.submitOtp(tester);
+          expect(bloc.state.incorrectAttempts, attempt);
+          expect(bloc.state.errorMessage, 'Invalid OTP');
+          expect(find.byType(OtpCodeFields), findsOneWidget);
+          expect(find.text('home-destination'), findsNothing);
+        }
+        await h.submitOtp(tester);
+        await tester.pumpAndSettle();
+        expect(bloc.state.incorrectAttempts, 6);
+        expect(
+          bloc.state.errorMessage,
+          savedCard ? prepaidLimitMessage : 'Invalid OTP',
+        );
+        expect(find.text('home-destination'), findsOneWidget);
+        expect(
+          find.text(savedCard ? prepaidLimitMessage : 'Invalid OTP'),
+          findsOneWidget,
+        );
+        expect(find.byType(OtpCodeFields), findsNothing);
+        expect(find.text(limitMessage), findsNothing);
+        expect(h.router.canPop(), isFalse);
+        expect(h.verifies, 6);
+        expect(h.saves, 0);
+        h.noMutations();
+      },
+    );
+  }
 
   flowTest('active wallet Proceed requests Challenge with zero mutations', (
     tester,

@@ -79,10 +79,13 @@ class _ActionOtpScreenState extends State<ActionOtpScreen> {
         initialApiPhoneNumber: widget.args.challenge.apiPhoneNumber,
         preventDuplicateSubmissions: true,
         incorrectAttemptLimitMessage:
-            widget.args.attempt.paymentMethod ==
-                AutoRenewPaymentMethodType.postpaidInvoice
-            ? 'Too many failed OTP attempts. Please try again.'
-            : null,
+            switch (widget.args.attempt.paymentMethod) {
+              AutoRenewPaymentMethodType.card =>
+                'Too many failed OTP attempts. Please try again',
+              AutoRenewPaymentMethodType.postpaidInvoice =>
+                'Too many failed OTP attempts. Please try again.',
+              _ => null,
+            },
         offlineVerificationMessage:
             "We couldn't verify the OTP due to a network error. Please try again later",
       ),
