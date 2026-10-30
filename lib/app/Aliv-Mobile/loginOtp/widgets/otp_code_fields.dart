@@ -106,7 +106,10 @@ class OtpCodeFieldsState extends State<OtpCodeFields> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginOtpBloc, LoginOtpState>(
+    return BlocConsumer<LoginOtpBloc, LoginOtpState>(
+      listenWhen: (previous, current) =>
+          previous.code != current.code && current.code.isEmpty,
+      listener: (context, state) => clearCode(),
       builder: (context, state) {
         final hasFieldError = state.codeFieldError;
         return LayoutBuilder(

@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/common/verification/action_verified_result
 import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import '../verification/upgrade_credit_limit_submission.dart';
+import '../logic/credit_limit_value_validation.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
@@ -34,6 +35,7 @@ class UpgradeCreditLimitScreen extends StatefulWidget {
 class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
   bool _agreed = true;
   bool _verificationPending = false;
+  bool _showValidationErrors = false;
   late final ActionVerificationCoordinator<ProtectedAccountAction>
   _verification;
   late final UpgradeCreditLimitSubmission _submission;
@@ -93,6 +95,16 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
 
   Future<void> _updateLimits(DeviceLimitsState state) async {
     if (_verificationPending || state.isUpdating) {
+      return;
+    }
+    if ([
+      _localTextController.text,
+      _localDataController.text,
+      _localVoiceController.text,
+      _intlRoamingController.text,
+      _intlTalkController.text,
+    ].any((value) => validateCreditLimitValue(value) != null)) {
+      setState(() => _showValidationErrors = true);
       return;
     }
     final deviceId = state.deviceLimits?.deviceId ?? 0;
@@ -314,22 +326,27 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
         LimitFieldWithController(
           label: 'local text',
           controller: _localTextController,
+          validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: 'local data',
           controller: _localDataController,
+          validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: 'local talk mins',
           controller: _localVoiceController,
+          validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: "int'l roaming",
           controller: _intlRoamingController,
+          validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: "int'l talk mins",
           controller: _intlTalkController,
+          validateValue: _showValidationErrors,
         ),
       ],
     );

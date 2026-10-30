@@ -38,6 +38,8 @@ class CurrentPlanActiveCard extends StatelessWidget {
                       )
                     : const PrepaidActivePlanCardWithData(
                         showRenewButton: false,
+                        dateRowCrossAxisAlignment: CrossAxisAlignment.start,
+                        contentBottomPadding: 16,
                       ))
               : const NoActivePlanCard(),
         );

@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 /// payment-method list look and behave consistently.
 class PaymentOptionTile extends StatelessWidget {
   final String title;
+  final Color? titleColor;
   final bool selected;
   final VoidCallback? onTap;
   final Widget? leading;
@@ -26,6 +27,7 @@ class PaymentOptionTile extends StatelessWidget {
   const PaymentOptionTile({
     super.key,
     required this.title,
+    this.titleColor,
     required this.selected,
     this.onTap,
     this.leading,
@@ -116,7 +118,7 @@ class PaymentOptionTile extends StatelessWidget {
   }
 
   TextStyle get _titleStyle => TextStyle(
-    color: _selectedTextColor,
+    color: titleColor ?? _selectedTextColor,
     fontSize: 16,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/focused_input_border_wrapper.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/theme/rev_prepaid_theme.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
+
+import '../../logic/credit_limit_value_validation.dart';
 
 /// Input field for limit amount with dollar prefix
 class LimitAmountInputField extends StatefulWidget {
@@ -113,25 +116,38 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
 }
 
 /// Limit field with label and controller
-class LimitFieldWithController extends StatelessWidget {
+class LimitFieldWithController extends StatefulWidget {
   final String label;
   final TextEditingController controller;
+  final bool validateValue;
 
   const LimitFieldWithController({
     super.key,
     required this.label,
     required this.controller,
+    this.validateValue = false,
   });
 
   @override
+  State<LimitFieldWithController> createState() =>
+      _LimitFieldWithControllerState();
+}
+
+class _LimitFieldWithControllerState extends State<LimitFieldWithController> {
+  bool _hasEdited = false;
+
+  @override
   Widget build(BuildContext context) {
+    final error = _hasEdited || widget.validateValue
+        ? validateCreditLimitValue(widget.controller.text)
+        : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
+            widget.label,
             style: const TextStyle(
               color: Color(0xFF1C1C1C),
               fontSize: 14,
@@ -142,9 +158,24 @@ class LimitFieldWithController extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           LimitAmountInputField(
-            value: controller.text,
-            onChanged: (value) => controller.text = value,
+            value: widget.controller.text,
+            onChanged: (value) {
+              widget.controller.text = value;
+              setState(() => _hasEdited = true);
+            },
           ),
+          if (error != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              error,
+              style: TextStyle(
+                color: ColorManager.redColor,
+                fontFamily: RevPrepaidTheme.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
         ],
       ),
     );

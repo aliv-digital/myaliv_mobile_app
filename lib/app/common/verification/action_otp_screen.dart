@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.dart'
@@ -77,6 +78,18 @@ class _ActionOtpScreenState extends State<ActionOtpScreen> {
         initialPhoneNumber: widget.args.challenge.apiPhoneNumber,
         initialApiPhoneNumber: widget.args.challenge.apiPhoneNumber,
         preventDuplicateSubmissions: true,
+        incorrectAttemptLimitMessage:
+            switch (widget.args.attempt.paymentMethod) {
+              AutoRenewPaymentMethodType.card =>
+                'Too many failed OTP attempts. Please try again',
+              AutoRenewPaymentMethodType.postpaidInvoice =>
+                'Too many failed OTP attempts. Please try again.',
+              ProtectedAccountAction.autoTopUp =>
+                'Too many failed OTP attempts. Please try again.',
+              ProtectedAccountAction.upgradeCreditLimit =>
+                'Too many failed OTP attempts. Please try again.',
+              _ => null,
+            },
         offlineVerificationMessage:
             "We couldn't verify the OTP due to a network error. Please try again later",
       ),

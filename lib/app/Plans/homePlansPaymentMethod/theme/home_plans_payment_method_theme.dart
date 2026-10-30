@@ -120,6 +120,12 @@ class HomePlansPaymentMethodTheme {
   static const double savedCardTextToIndicatorGap = 4;
   static const double savedCardLogoWidth = 46;
   static const double savedCardLogoHeight = 32;
+  static const int maxVisibleSavedCards = 4;
+  // Logo height + vertical tile padding + the two 1px borders.
+  static double get savedCardMinHeight =>
+      savedCardLogoHeight + savedCardTilePadding.vertical + 2;
+  static const double savedCardsScrollbarThickness = 4;
+  static const double savedCardsScrollbarPadding = 12;
 
   static TextStyle get bottomAmount => const TextStyle(
     fontFamily: fontFamily,

@@ -2,7 +2,7 @@ class WhyAlivStrings {
   // AssetConstant additions for WhyAlivScreen
   // Copy-paste these inside your AssetConstant class.
 
-  static const String whyAlivAppbarTitle = 'why ALIV';
+  static const String whyAlivAppbarTitle = 'why aliv';
 
   static const String whyAlivHeading1 = 'Beautiful analytics to grow smarter';
   static const String whyAlivSubheading1 =
