@@ -235,6 +235,8 @@ void main() {
 
   Future<void> paySuccessfully(WidgetTester tester, String method) async {
     if (method == '3DS') {
+      bloc.add(const HomePlansPayWithCardPressed());
+      await tester.pump();
       bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '456'));
     } else {
       if (method == 'wallet') {
@@ -275,7 +277,7 @@ void main() {
       expect(find.text(_addOnCopy), findsNothing);
       expect(find.text('existing success receipt'), findsOneWidget);
       expect(receipt!['selectedItems'], _roamingItems);
-      expect(receipt!['orderId'], '456');
+      expect(receipt!['orderId'], method == '3DS' ? '456' : isNull);
       expect(receiptVisits, 1);
       expect(bloc.state.navTarget, HomePlansPaymentMethodNavTarget.none);
       // Consuming the navigation event must not show the toast a second time.

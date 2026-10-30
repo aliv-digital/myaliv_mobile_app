@@ -232,6 +232,8 @@ void main() {
       await pumpScreen(tester, startDate: start);
       expect(scheduledToast(), findsNothing);
       if (method == '3DS') {
+        bloc.add(const HomePlansPayWithCardPressed());
+        await tester.pump();
         bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '456'));
       } else {
         if (method == 'wallet') {
@@ -256,7 +258,7 @@ void main() {
       expect(find.text('existing success receipt'), findsOneWidget);
       expect(receipt!['amount'], 110);
       expect(receipt!['phoneNumber'], '(242)-801-1616');
-      expect(receipt!['orderId'], '456');
+      expect(receipt!['orderId'], method == '3DS' ? '456' : isNull);
       expect(receipt!['selectedItems'], _items);
       expect(receipt!['rightType'], 'prepaid');
       expect(receiptVisits, 1);
@@ -313,6 +315,8 @@ void main() {
             : HomePlansSubscriberType.prepaid,
         items: scenario == 'no plan' ? const [] : _items,
       );
+      bloc.add(const HomePlansPayWithCardPressed());
+      await tester.pump();
       bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '456'));
       await tester.pumpAndSettle();
       expect(scheduledToast(), findsNothing);
@@ -403,6 +407,8 @@ void main() {
           findsNothing,
         );
         if (method == '3DS') {
+          bloc.add(const HomePlansPayWithCardPressed());
+          await tester.pump();
           bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '7890'));
         } else {
           if (method == 'wallet') {
@@ -430,7 +436,7 @@ void main() {
         expect(find.text('existing success receipt'), findsOneWidget);
         expect(receipt!['selectedItems'], _addOnItems);
         expect(receipt!['amount'], 110);
-        expect(receipt!['orderId'], '7890');
+        expect(receipt!['orderId'], method == '3DS' ? '7890' : isNull);
         expect(receiptVisits, 1);
         expect(bloc.state.forceNow, isTrue);
         expect(bloc.state.selectedItems, _addOnItems);
