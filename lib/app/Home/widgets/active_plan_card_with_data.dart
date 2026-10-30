@@ -31,11 +31,15 @@ const bool debugForcePlanExpiryWarning =
 class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool showRenewButton;
   final bool isFromHome;
+  final CrossAxisAlignment dateRowCrossAxisAlignment;
+  final double? contentBottomPadding;
 
   const PrepaidActivePlanCardWithData({
     super.key,
     this.showRenewButton = true,
     this.isFromHome = false,
+    this.dateRowCrossAxisAlignment = CrossAxisAlignment.center,
+    this.contentBottomPadding,
   });
 
   @override
@@ -57,9 +61,11 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             ? AssetConstant.homeRedCardSVG
             : AssetConstant.redCreditCardSVG;
         final cardHeight = showRenewButton ? 216.0 : 166.0;
-        final cardPadding = showRenewButton
-            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
-            : const EdgeInsets.fromLTRB(16, 13, 16, 26);
+        final cardPadding =
+            (showRenewButton
+                    ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
+                    : const EdgeInsets.fromLTRB(16, 13, 16, 26))
+                .copyWith(bottom: contentBottomPadding);
 
         final card = ClipRRect(
           borderRadius: BorderRadius.circular(12),
@@ -125,6 +131,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         ),
         const Spacer(),
         _DatesRow(
+          crossAxisAlignment: dateRowCrossAxisAlignment,
           activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
           expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
           expireTime: (activePlan?.endDateTime).formatHmAOrEmpty(),
@@ -539,11 +546,13 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
 /// Dates row showing active and expire dates
 class _DatesRow extends StatelessWidget {
   const _DatesRow({
+    required this.crossAxisAlignment,
     required this.activeDate,
     required this.expireDate,
     this.expireTime = '',
   });
 
+  final CrossAxisAlignment crossAxisAlignment;
   final String activeDate;
   final String expireDate;
   final String expireTime;
@@ -551,6 +560,7 @@ class _DatesRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: crossAxisAlignment,
       children: [
         _DateBlock(title: 'active', value: activeDate),
         const Spacer(),
