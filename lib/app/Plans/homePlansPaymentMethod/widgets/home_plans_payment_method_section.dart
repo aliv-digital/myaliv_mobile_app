@@ -230,7 +230,7 @@ class _HomePlansPaymentMethodSectionState
         width: HomePlansPaymentMethodTheme.paymentActionIconSize,
         height: HomePlansPaymentMethodTheme.paymentActionIconSize,
         child: SvgPicture.asset(
-          AssetConstant.walletIconSVG,
+          AssetConstant.walletIconSVGPayment,
           fit: BoxFit.contain,
         ),
       ),
