@@ -100,12 +100,8 @@ class _UserProfileReceiptView extends StatelessWidget {
                               );
                             },
                             saveCardSection: orderId != null
-                                ? SaveNewCardOnReceiptSection(
-                                    orderId: orderId!,
-                                  )
-                                : SaveCardOnReceiptSection(
-                                    details: cardToSave,
-                                  ),
+                                ? SaveNewCardOnReceiptSection(orderId: orderId!)
+                                : SaveCardOnReceiptSection(details: cardToSave),
                           );
                         },
                       ),

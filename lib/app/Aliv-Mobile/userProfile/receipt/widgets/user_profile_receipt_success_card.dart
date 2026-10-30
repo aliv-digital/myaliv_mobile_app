@@ -141,10 +141,7 @@ class _StandardReceiptDetails extends StatelessWidget {
           value: data.topUpType,
         ),
         if (orderId != null && orderId.isNotEmpty)
-          UserProfileReceiptDetailRow(
-            label: 'order reference',
-            value: orderId,
-          ),
+          UserProfileReceiptDetailRow(label: 'order reference', value: orderId),
         UserProfileReceiptDetailRow(label: 'date', value: data.dateText),
         UserProfileReceiptDetailRow(label: 'time', value: data.timeText),
         UserProfileReceiptDetailRow(

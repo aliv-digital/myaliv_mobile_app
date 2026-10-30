@@ -84,9 +84,7 @@ class TopUpPaymentPrepaidState extends Equatable {
       lastNewCardDetails: clearLastNewCardDetails
           ? null
           : (lastNewCardDetails ?? this.lastNewCardDetails),
-      lastOrderId: clearLastOrderId
-          ? null
-          : (lastOrderId ?? this.lastOrderId),
+      lastOrderId: clearLastOrderId ? null : (lastOrderId ?? this.lastOrderId),
     );
   }
 
