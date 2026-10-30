@@ -10,6 +10,7 @@ import '../bloc/guest_top_up_receipt_bloc.dart';
 import '../bloc/guest_top_up_receipt_event.dart';
 import '../bloc/guest_top_up_receipt_state.dart';
 import '../repository/guest_top_up_receipt_repository.dart';
+import '../widgets/receipt_failure_card.dart';
 import '../widgets/receipt_success_card.dart';
 
 class GuestTopUpReceiptScreen extends StatelessWidget {
@@ -21,6 +22,7 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
     required this.timeText,
     this.paymentMethod = 'credit card',
     this.orderId,
+    this.isPaymentFailed = false,
   });
 
   final String phoneNumber;
@@ -29,6 +31,7 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
   final String timeText;
   final String paymentMethod;
   final String? orderId;
+  final bool isPaymentFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +52,16 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestTopUpReceiptBloc(
           repository: ctx.read<GuestTopUpReceiptRepository>(),
         )..add(GuestTopUpReceiptStarted(receiptData)),
-        child: const _GuestTopUpReceiptView(),
+        child: _GuestTopUpReceiptView(isPaymentFailed: isPaymentFailed),
       ),
     );
   }
 }
 
 class _GuestTopUpReceiptView extends StatelessWidget {
-  const _GuestTopUpReceiptView();
+  const _GuestTopUpReceiptView({this.isPaymentFailed = false});
+
+  final bool isPaymentFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -78,14 +83,14 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                 child: DefaultAppBar(
                   backgroundColor: HexColor.fromHex('#645D9C'),
                   showBackArrow: false,
-                  title: '   my receipt',
+                  title: 'my receipt',
                   onBack: () {},
                 ),
               ),
 
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 24,
                     right: 24,
                     top: 29,
@@ -99,10 +104,21 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                         builder: (context, state) {
                           final data = state.data;
                           if (data == null) return const SizedBox.shrink();
+
+                          if (isPaymentFailed) {
+                            return ReceiptFailureCard(
+                              data: data,
+                              onBackHome: () {
+                                context.go(AppRoutes.guestSplash);
+                              },
+                              pageBackground: ReceiptTheme.screenBackground,
+                            );
+                          }
+
                           return ReceiptSuccessCard(
                             data: data,
                             onBackHome: () {
-                              context.go(AppRoutes.logIn);
+                              context.go(AppRoutes.guestSplash);
                             },
                             pageBackground: ReceiptTheme.circleBackground,
                           );
@@ -110,37 +126,6 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                       ),
                 ),
               ),
-              //     SliverToBoxAdapter(
-              //   //hasScrollBody: false,
-              //   child: Center(
-              //     child: ConstrainedBox(
-              //       constraints: const BoxConstraints(maxWidth: 420),
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
-              //         child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
-              //           builder: (context, state) {
-              //             final data = state.data;
-              //             if (data == null) return const SizedBox.shrink();
-              //
-              //             return PaymentFailedTicket(
-              //               phone: "242-300-2548",
-              //               onPressed: () {
-              //                 Navigator.pop(context); // বা Home route
-              //               },
-              //             );
-              //             // return ReceiptFailureCard(
-              //             //   data: data,
-              //             //   pageBackground: ReceiptTheme.screenBackground,
-              //             //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
-              //             //     const GuestTopUpReceiptBackToHomePressed(),
-              //             //   ),
-              //             // );
-              //           },
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),

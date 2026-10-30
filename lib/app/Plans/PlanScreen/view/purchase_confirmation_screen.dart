@@ -153,8 +153,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
         '${AppRoutes.topUpPaymentPrepaidScreen}'
-        '?amount=$amountParam'
-        '&recipientPhone=${widget.recipientPhone}',
+        '?amount=$amountParam',
       );
       return;
     }

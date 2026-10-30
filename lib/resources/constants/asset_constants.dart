@@ -88,4 +88,8 @@ class AssetConstant {
   static const textIconSVG = 'assets/icons/talk_text_icon.svg';
   static const homeRedCardSVG = 'assets/icons/home_red_card.svg';
   static const creditCardSVG = 'assets/icons/credit-card.svg';
+
+  static const paymentFailedBg =
+      "assets/icons/payment_failure_icon_background.svg";
+  static const payementFailedSvg = "assets/icons/payment_failure_icon.svg";
 }

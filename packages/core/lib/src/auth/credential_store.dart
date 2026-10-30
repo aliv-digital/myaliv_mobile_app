@@ -58,6 +58,32 @@ class CredentialStore {
     return raw == 'true';
   }
 
+  /// Updates the stored password without modifying the stored phone numbers
+  /// or preferences. If credentials were previously saved, the new password
+  /// will be used for subsequent biometric logins and prefilled password fields.
+  Future<void> updatePassword(
+    String newPassword, {
+    String? apiPhone,
+    String? displayPhone,
+  }) async {
+    try {
+      final existingPhone = await _storage.read(key: _kApiPhone);
+      final writes = <Future<void>>[
+        _storage.write(key: _kPassword, value: newPassword),
+      ];
+      if (existingPhone == null && apiPhone != null && apiPhone.isNotEmpty) {
+        writes.add(_storage.write(key: _kApiPhone, value: apiPhone));
+        if (displayPhone != null && displayPhone.isNotEmpty) {
+          writes.add(_storage.write(key: _kDisplayPhone, value: displayPhone));
+        }
+      }
+      await Future.wait(writes);
+    } catch (_) {
+      // In non-platform environments (e.g. unit tests without channel mocks),
+      // ignore storage errors gracefully.
+    }
+  }
+
   Future<void> clear() async {
     await Future.wait([
       _storage.delete(key: _kApiPhone),

@@ -14,7 +14,6 @@ import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_ca
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
@@ -92,9 +91,16 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             final orderId = int.tryParse(success.orderId ?? '');
             if (orderId == null || orderId <= 0) {
               navigator.pop();
-              AppToast.show(
-                message: 'Payment failed. Please try again.',
-                type: ToastType.error,
+              final now = DateTime.now();
+              router.push(
+                AppRoutes.guestTopUpReceipt,
+                extra: <String, dynamic>{
+                  'phoneNumber': state.phoneNumber,
+                  'amount': state.total,
+                  'dateText': DateFormat('MMM d, yyyy').format(now),
+                  'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
+                  'isPaymentFailed': true,
+                },
               );
               return;
             }
@@ -108,12 +114,23 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                 'dateText': DateFormat('MMM d, yyyy').format(now),
                 'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
                 'orderId': success.orderId,
+                'isPaymentFailed': false,
               },
             );
           },
           onFailure: (String message) {
             navigator.pop();
-            AppToast.show(message: message, type: ToastType.error);
+            final now = DateTime.now();
+            router.push(
+              AppRoutes.guestTopUpReceipt,
+              extra: <String, dynamic>{
+                'phoneNumber': state.phoneNumber,
+                'amount': state.total,
+                'dateText': DateFormat('MMM d, yyyy').format(now),
+                'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
+                'isPaymentFailed': true,
+              },
+            );
           },
           onHomeTap: () {
             navigator.pop();
