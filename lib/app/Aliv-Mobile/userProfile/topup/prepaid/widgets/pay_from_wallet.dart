@@ -103,10 +103,6 @@ class _PayFromWalletSheetView extends StatelessWidget {
                         AssetConstant.walletIconSVG,
                         width: 22,
                         height: 22,
-                        colorFilter: const ColorFilter.mode(
-                          TopUpPrepaidTheme.purple,
-                          BlendMode.srcIn,
-                        ),
                       ),
                       const SizedBox(width: 8),
                       const Text(

@@ -96,7 +96,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
       selected: selectedMethodId == AutoRenewPaymentMethod.wallet.id,
       onTap: onPayFromWallet,
       leading: SvgPicture.asset(
-        AssetConstant.walletIconSVG,
+        AssetConstant.walletIconSVGPayment,
         width: AutoRenewPrepaidTheme.addCardIconSize,
         height: AutoRenewPrepaidTheme.addCardIconSize,
         fit: BoxFit.contain,

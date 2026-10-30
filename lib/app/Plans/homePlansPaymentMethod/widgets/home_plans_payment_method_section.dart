@@ -233,6 +233,14 @@ class _HomePlansPaymentMethodSectionState
     );
   }
 
+  Widget _buildCardIcon() {
+    return Image.asset(
+      AssetConstant.cardIconPNG,
+      width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+      height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      fit: BoxFit.contain,
+    );
+  }
   Widget _buildPayWithCardRow() {
     return PaymentOptionTile(
       title: 'pay with card',
@@ -263,9 +271,14 @@ class _HomePlansPaymentMethodSectionState
       leadingWidth: HomePlansPaymentMethodTheme.savedCardLogoWidth,
       leadingHeight: HomePlansPaymentMethodTheme.savedCardLogoHeight,
       unselectedRadioFill: HomePlansPaymentMethodTheme.unselectedIndicatorColor,
-      contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      leadingToTextGap: 12,
-      leading: _buildCardIcon(),
+      leading: SizedBox(
+        width: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        height: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        child: SvgPicture.asset(
+          AssetConstant.walletIconSVGPayment,
+          fit: BoxFit.contain,
+        ),
+      ),
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: HomePlansPaymentMethodTheme.walletChipHorizontalPadding,
