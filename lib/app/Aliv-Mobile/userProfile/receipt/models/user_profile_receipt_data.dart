@@ -14,6 +14,10 @@ class UserProfileReceiptData extends Equatable {
   final String message;
   final UserProfileReceiptVariant variant;
 
+  /// Order ID returned by the API. When provided, an "order reference"
+  /// row is rendered immediately after the top-up/service row.
+  final String? orderId;
+
   const UserProfileReceiptData({
     required this.typeLabel,
     required this.topUpType,
@@ -25,6 +29,7 @@ class UserProfileReceiptData extends Equatable {
     required this.title,
     required this.message,
     this.variant = UserProfileReceiptVariant.standard,
+    this.orderId,
   });
 
   @override
@@ -39,5 +44,6 @@ class UserProfileReceiptData extends Equatable {
     title,
     message,
     variant,
+    orderId,
   ];
 }

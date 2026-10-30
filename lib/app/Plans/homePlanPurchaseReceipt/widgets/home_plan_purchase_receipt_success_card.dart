@@ -178,8 +178,9 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
-            const SizedBox(height: 32),
+            // Divider now lives inside the save-card section so it hides
+            // together with the button on save success.
+            ?saveCardSection,
             HomePlanPurchaseReceiptBackButton(onTap: onBackHome),
             const SizedBox(height: 52),
           ],

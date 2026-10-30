@@ -23,6 +23,11 @@ class TopUpPaymentPrepaidState extends Equatable {
   /// Null for saved-card payments.
   final NewCardDetails? lastNewCardDetails;
 
+  /// Order ID from a successful 3DS payment ([Pay3DSSucceeded.orderId]).
+  /// Forwarded to the receipt as `orderId` so the "save credit card" button
+  /// can call `CreditCard/savenew` instead of the direct [cardToSave] path.
+  final String? lastOrderId;
+
   const TopUpPaymentPrepaidState({
     required this.status,
     required this.paymentMode,
@@ -31,6 +36,7 @@ class TopUpPaymentPrepaidState extends Equatable {
     required this.errorMessage,
     required this.navTarget,
     this.lastNewCardDetails,
+    this.lastOrderId,
   });
 
   factory TopUpPaymentPrepaidState.initial() => const TopUpPaymentPrepaidState(
@@ -58,9 +64,11 @@ class TopUpPaymentPrepaidState extends Equatable {
     String? errorMessage,
     TopUpPaymentNavTarget? navTarget,
     NewCardDetails? lastNewCardDetails,
+    String? lastOrderId,
     bool clearSelection = false,
     bool clearErrorMessage = false,
     bool clearLastNewCardDetails = false,
+    bool clearLastOrderId = false,
   }) {
     return TopUpPaymentPrepaidState(
       status: status ?? this.status,
@@ -76,6 +84,9 @@ class TopUpPaymentPrepaidState extends Equatable {
       lastNewCardDetails: clearLastNewCardDetails
           ? null
           : (lastNewCardDetails ?? this.lastNewCardDetails),
+      lastOrderId: clearLastOrderId
+          ? null
+          : (lastOrderId ?? this.lastOrderId),
     );
   }
 
@@ -88,5 +99,6 @@ class TopUpPaymentPrepaidState extends Equatable {
     errorMessage,
     navTarget,
     lastNewCardDetails,
+    lastOrderId,
   ];
 }

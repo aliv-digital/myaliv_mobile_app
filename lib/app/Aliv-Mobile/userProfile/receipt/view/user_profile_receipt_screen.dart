@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -36,7 +37,10 @@ class UserProfileReceiptScreen extends StatelessWidget {
                   args.paymentMethod == 'wallet'
               ? args.walletPaymentSuccess
               : null,
-          child: _UserProfileReceiptView(cardToSave: args.cardToSave),
+          child: _UserProfileReceiptView(
+            cardToSave: args.cardToSave,
+            orderId: args.orderId,
+          ),
         ),
       ),
     );
@@ -44,9 +48,10 @@ class UserProfileReceiptScreen extends StatelessWidget {
 }
 
 class _UserProfileReceiptView extends StatelessWidget {
-  const _UserProfileReceiptView({required this.cardToSave});
+  const _UserProfileReceiptView({required this.cardToSave, this.orderId});
 
   final NewCardDetails? cardToSave;
+  final String? orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +99,13 @@ class _UserProfileReceiptView extends StatelessWidget {
                                 const UserProfileReceiptBackHomePressed(),
                               );
                             },
-                            saveCardSection: SaveCardOnReceiptSection(
-                              details: cardToSave,
-                            ),
+                            saveCardSection: orderId != null
+                                ? SaveNewCardOnReceiptSection(
+                                    orderId: orderId!,
+                                  )
+                                : SaveCardOnReceiptSection(
+                                    details: cardToSave,
+                                  ),
                           );
                         },
                       ),

@@ -34,6 +34,11 @@ class PaymentReceiptBuilder {
     final cardToSave = state.paymentMode == HomePlansPaymentMode.payWithCard
         ? state.lastNewCardDetails
         : null;
+    // Same gating for orderId — only the 3DS pay-with-card path should
+    // surface the "save credit card" button on the receipt.
+    final orderId = state.paymentMode == HomePlansPaymentMode.payWithCard
+        ? state.orderId
+        : null;
 
     return <String, dynamic>{
       'phoneNumber': phone,
@@ -54,7 +59,7 @@ class PaymentReceiptBuilder {
       'selectedMethodId': state.selectedMethodId,
       'paymentMethods': state.methods,
       'cardToSave': ?cardToSave,
-      if (state.orderId != null) 'orderId': state.orderId,
+      'orderId': ?orderId,
       if (state.walletPaymentSucceeded &&
           state.status == HomePlansPaymentMethodStatus.success &&
           state.navTarget == HomePlansPaymentMethodNavTarget.paid)

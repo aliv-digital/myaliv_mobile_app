@@ -105,12 +105,23 @@ class _SaveCardOnReceiptSectionState extends State<SaveCardOnReceiptSection> {
       child: BlocBuilder<SavedCardsCubit, SavedCardsState>(
         buildWhen: (prev, curr) => prev.isAddingCard != curr.isAddingCard,
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: SaveCreditCardButton(
-              onTap: _onTap,
-              isLoading: state.isAddingCard,
-            ),
+          // Divider lives inside the section so it self-hides together
+          // with the button after a successful save. The outer SizedBox
+          // spacer stays in the receipt card so the vertical rhythm is
+          // preserved whether the section is shown or not.
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SaveCreditCardButton(
+                  onTap: _onTap,
+                  isLoading: state.isAddingCard,
+                ),
+              ),
+            ],
           );
         },
       ),

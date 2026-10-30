@@ -121,6 +121,9 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
           cardToSave: state.paymentMode == TopUpPaymentMode.payWithCard
               ? state.lastNewCardDetails
               : null,
+          orderId: state.paymentMode == TopUpPaymentMode.payWithCard
+              ? state.lastOrderId
+              : null,
         ),
       );
       context.read<TopUpPaymentPrepaidBloc>().add(const PaymentNavConsumed());

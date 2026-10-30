@@ -232,6 +232,7 @@ class TopUpPaymentPrepaidBloc
       state.copyWith(
         status: TopUpPaymentStatus.success,
         navTarget: TopUpPaymentNavTarget.paid,
+        lastOrderId: event.orderId,
       ),
     );
   }

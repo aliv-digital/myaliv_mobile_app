@@ -112,14 +112,8 @@ class UserProfileReceiptSuccessCard extends StatelessWidget {
             else
               _StandardReceiptDetails(data: data),
             const SizedBox(height: UserProfileReceiptTheme.gapAfterAmount),
-            Divider(
-              height: UserProfileReceiptTheme.bottomDividerThickness,
-              thickness: UserProfileReceiptTheme.bottomDividerThickness,
-              color: UserProfileReceiptTheme.successCardBottomDividerColor,
-            ),
-            const SizedBox(
-              height: UserProfileReceiptTheme.gapAfterBottomDivider,
-            ),
+            // Divider now lives inside the save-card section so it hides
+            // together with the button on save success.
             ?saveCardSection,
             UserProfileReceiptBackButton(onTap: onBackHome),
             const SizedBox(height: UserProfileReceiptTheme.gapAfterButton),
@@ -139,12 +133,18 @@ class _StandardReceiptDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orderId = data.orderId;
     return Column(
       children: [
         UserProfileReceiptDetailRow(
           label: data.typeLabel,
           value: data.topUpType,
         ),
+        if (orderId != null && orderId.isNotEmpty)
+          UserProfileReceiptDetailRow(
+            label: 'order reference',
+            value: orderId,
+          ),
         UserProfileReceiptDetailRow(label: 'date', value: data.dateText),
         UserProfileReceiptDetailRow(label: 'time', value: data.timeText),
         UserProfileReceiptDetailRow(

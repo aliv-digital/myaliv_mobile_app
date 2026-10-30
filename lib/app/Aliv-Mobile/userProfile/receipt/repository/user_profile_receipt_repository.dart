@@ -30,6 +30,7 @@ class UserProfileReceiptRepository {
       title: args.title,
       message: args.receiptMessage,
       variant: args.variant,
+      orderId: args.orderId,
     );
   }
 
