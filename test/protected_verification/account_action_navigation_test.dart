@@ -81,6 +81,8 @@ void main() {
         'network failure',
       ],
       'invalid OTP',
+      if (action == ProtectedAccountAction.upgradeCreditLimit)
+        'six incorrect OTPs',
       'save failure',
       'cancel',
       'challenge failure',
@@ -172,6 +174,16 @@ void main() {
               options: any(named: 'options'),
             ),
           ).thenAnswer((_) async {
+            if (outcome == 'six incorrect OTPs') {
+              throw NetworkException(
+                'Two Factor Key Invalid',
+                statusCode: 400,
+                data: {
+                  'ErrorCode': 202,
+                  'ErrorCodeName': 'TwoFactorKeyInvalid',
+                },
+              );
+            }
             if (outcome == 'invalid OTP') {
               throw StateError('synthetic invalid OTP');
             }
@@ -310,6 +322,47 @@ void main() {
                 await tester.pump(const Duration(milliseconds: 10));
               }
               await tester.pump(const Duration(seconds: 2));
+              if (outcome == 'six incorrect OTPs') {
+                const limitMessage =
+                    'Too many failed OTP attempts. Please try again.';
+                final otp = tester
+                    .element(find.byType(OtpCodeFields))
+                    .read<LoginOtpBloc>();
+                expect(otp.state.incorrectAttempts, 1);
+                expect(find.text('Invalid OTP'), findsOneWidget);
+                await tester.pump(const Duration(seconds: 3));
+                await tester.pumpAndSettle();
+                for (var attempt = 2; attempt <= 6; attempt++) {
+                  otp.add(const LoginOtpCodeChanged('123456'));
+                  await tester.pump();
+                  await tester.tap(find.text('verify'));
+                  await tester.pump(const Duration(milliseconds: 100));
+                  await tester.pumpAndSettle();
+                  expect(otp.state.incorrectAttempts, attempt);
+                  if (attempt < 6) {
+                    expect(find.text('Invalid OTP'), findsOneWidget);
+                    expect(find.text(limitMessage), findsNothing);
+                    expect(find.byType(ActionOtpScreen), findsOneWidget);
+                    expect(find.text('home destination'), findsNothing);
+                    expect(mutations, 0);
+                    await tester.pump(const Duration(seconds: 3));
+                    await tester.pumpAndSettle();
+                  }
+                }
+                expect(find.text(limitMessage), findsOneWidget);
+                expect(find.text('Invalid OTP'), findsNothing);
+                expect(find.byType(ActionOtpScreen), findsNothing);
+                expect(find.text('home destination'), findsOneWidget);
+                expect(router.canPop(), isFalse);
+                verify(
+                  () => network.request<dynamic>(
+                    Api.verifyOtpUrl,
+                    method: HttpMethod.post,
+                    data: any(named: 'data'),
+                    options: any(named: 'options'),
+                  ),
+                ).called(6);
+              }
             }
             if (action == ProtectedAccountAction.changePassword &&
                 (outcome == 'success' ||

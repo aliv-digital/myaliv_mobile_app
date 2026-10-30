@@ -86,6 +86,8 @@ class _ActionOtpScreenState extends State<ActionOtpScreen> {
                 'Too many failed OTP attempts. Please try again.',
               ProtectedAccountAction.autoTopUp =>
                 'Too many failed OTP attempts. Please try again.',
+              ProtectedAccountAction.upgradeCreditLimit =>
+                'Too many failed OTP attempts. Please try again.',
               _ => null,
             },
         offlineVerificationMessage:
