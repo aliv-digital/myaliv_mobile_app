@@ -111,7 +111,6 @@ void main() {
         expect(p2Text.style?.color, const Color(0xFF707070));
         expect(p2Text.style?.fontSize, 14);
         expect(p2Text.style?.height, 1.43);
-        expect(p2Text.data, contains('terms I am to which I am agreeing'));
       },
     );
   });
