@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/logic/reward_tab_resolver.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
@@ -47,27 +48,39 @@ class PlansCubit extends HydratedCubit<PlansState> {
   Future<void> started({
     required UserType userType,
     HomePlanTab? initialTab,
+    String? rewardSugName,
   }) async {
-    final tab = initialTab ?? _defaultTabForUserType(userType);
+    final defaultTab = initialTab ?? _defaultTabForUserType(userType);
 
-    if (state.selectedTab != tab) {
-      emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
+    if (state.selectedTab != defaultTab) {
+      emit(state.copyWith(selectedTab: defaultTab, expandedPlanIds: const {}));
     }
 
     if (instance<AuthManager>().currentSession == null) return;
 
     if (!state.hasData) {
       await _fetchAllPlans();
+      _applyRewardSugTab(rewardSugName);
       return;
     }
 
-    // Cache is warm — trigger silent background refresh if stale.
+    // Cache is warm — resolve immediately, then trigger silent refresh.
+    _applyRewardSugTab(rewardSugName);
+
     if (_shouldRefresh()) {
       // Fire-and-forget: UI keeps showing cached data while fetch runs.
       // catchError suppresses unhandled-future warnings and handles
       // the edge case where the cubit is closed before the fetch completes.
       _fetchAllPlans().catchError((_) {});
     }
+  }
+
+  void _applyRewardSugTab(String? rewardSugName) {
+    if (rewardSugName == null || rewardSugName.isEmpty) return;
+    if (isClosed) return;
+    final matched = resolveTabForRewardSug(rewardSugName, state);
+    if (matched == null || matched == state.selectedTab) return;
+    emit(state.copyWith(selectedTab: matched, expandedPlanIds: const {}));
   }
 
   Future<void> changeTab(HomePlanTab tab) async {
@@ -88,7 +101,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   }
 
   Future<void> refreshCurrentTab() async {
-    await _fetchAllPlans(forceRefresh: true);
+    await _fetchAllPlans(forceRefresh: true, deviceId: state.activeDeviceId);
   }
 
   /// Post-purchase refresh — fetches only /bundles to check whether the
@@ -105,6 +118,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
     try {
       final addOnsResult = await _repository.fetchAddOnsData(
         forceRefresh: true,
+        deviceId: state.activeDeviceId,
       );
 
       if (isClosed) return;
@@ -357,6 +371,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
+    int? deviceId,
   }) async {
     if (instance<AuthManager>().currentSession == null) {
       if (kDebugMode) {
@@ -380,7 +395,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
       return;
     }
 
-    await _fetchAllPlans(forceRefresh: forceRefresh);
+    await _fetchAllPlans(forceRefresh: forceRefresh, deviceId: deviceId);
   }
 
   // ─── HydratedCubit ───────────────────────────────────────────────────────
@@ -417,7 +432,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   // ─── Private ─────────────────────────────────────────────────────────────
 
-  Future<void> _fetchAllPlans({bool forceRefresh = false}) async {
+  Future<void> _fetchAllPlans({
+    bool forceRefresh = false,
+    int? deviceId,
+  }) async {
     if (_isFetching) {
       if (forceRefresh) _pendingForceRefresh = true;
       if (kDebugMode) {
@@ -457,9 +475,11 @@ class PlansCubit extends HydratedCubit<PlansState> {
       // Start both requests concurrently.
       final plansFuture = _repository.fetchCategorizedPlans(
         forceRefresh: forceRefresh,
+        deviceId: deviceId,
       );
       final bundlesFuture = _repository.fetchAddOnsData(
         forceRefresh: forceRefresh,
+        deviceId: deviceId,
       );
 
       // Emit bundles data as soon as it arrives so the active plan card is
@@ -484,6 +504,8 @@ class PlansCubit extends HydratedCubit<PlansState> {
                       state.optimisticSecondaryPlans,
                       addOnsResult.secondaryPlans,
                     ),
+                activeDeviceId: deviceId,
+                clearActiveDeviceId: deviceId == null,
               ),
             );
           })
@@ -525,6 +547,8 @@ class PlansCubit extends HydratedCubit<PlansState> {
             state.optimisticSecondaryPlans,
             addOnsResult.secondaryPlans,
           ),
+          activeDeviceId: deviceId,
+          clearActiveDeviceId: deviceId == null,
         ),
       );
     } catch (e) {

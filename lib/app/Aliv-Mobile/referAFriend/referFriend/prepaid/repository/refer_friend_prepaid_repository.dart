@@ -195,10 +195,6 @@ class ReferFriendPrepaidRepository {
       return 'Invalid referral code.';
     }
 
-    if (statusCode == 401) {
-      return 'Session expired. Please log in again.';
-    }
-
     if (statusCode != null && statusCode >= 500) {
       return 'Could not redeem referral. Try again.';
     }

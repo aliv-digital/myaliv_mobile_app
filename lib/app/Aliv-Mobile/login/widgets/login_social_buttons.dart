@@ -157,10 +157,11 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
         type: ToastType.error,
       );
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(
           () => isFace ? _loadingFaceId = false : _loadingFingerprint = false,
         );
+      }
     }
   }
 }

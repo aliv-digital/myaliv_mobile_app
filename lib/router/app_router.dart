@@ -1019,7 +1019,11 @@ class AppRouter {
             path: AppRoutes.plans,
             builder: (context, state) {
               final tabParam = state.uri.queryParameters['tab'];
-              return PlansEntryScreen(initialTab: _parsePlanTab(tabParam));
+              final rewardSug = state.uri.queryParameters['rewardSug'];
+              return PlansEntryScreen(
+                initialTab: _parsePlanTab(tabParam),
+                rewardSugName: rewardSug,
+              );
             },
           ),
 

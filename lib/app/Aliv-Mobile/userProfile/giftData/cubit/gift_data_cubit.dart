@@ -221,12 +221,13 @@ class GiftDataCubit extends Cubit<GiftDataState> {
       );
       return orderRef;
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: GiftDataStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+      // Stay on the form (status: ready) and surface the clean server message
+      // via `errorMessage` — the screen listens and shows it in a toast
+      // rather than switching to the full-screen error view.
+      final message = e is GiftDataApiException
+          ? e.message.toLowerCase()
+          : 'could not send gift — please try again';
+      emit(state.copyWith(status: GiftDataStatus.ready, errorMessage: message));
       return null;
     }
   }

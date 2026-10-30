@@ -120,10 +120,6 @@ class HomePlanConfirmationRepository {
       return 'Request timeout. Please try again.';
     }
 
-    if (error is SessionExpiredException || error.statusCode == 401) {
-      return 'Session expired. Please log in again.';
-    }
-
     final statusCode = error.statusCode;
     if (statusCode != null && statusCode >= 400 && statusCode < 500) {
       return 'Invalid promo';

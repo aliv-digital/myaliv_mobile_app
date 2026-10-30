@@ -1,17 +1,16 @@
-import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
+//change
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-//change
-import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_promo_response_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -53,6 +52,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   late final NetworkService _networkService = instance<NetworkService>();
   bool _termsAccepted = false;
   bool _showTermsValidation = false;
+
   // Context edits invalidate pending promo results without cancelling transport.
   int _promoRevision = 0;
   String _promoCode = '';
@@ -153,8 +153,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
         '${AppRoutes.topUpPaymentPrepaidScreen}'
-        '?amount=$amountParam'
-        '&recipientPhone=${widget.recipientPhone}',
+        '?amount=$amountParam',
       );
       return;
     }
@@ -411,10 +410,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
     if (error is TimeoutException) {
       return 'Request timeout. Please try again.';
-    }
-
-    if (error is SessionExpiredException || error.statusCode == 401) {
-      return 'Session expired. Please log in again.';
     }
 
     final message = error.message.trim();

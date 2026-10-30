@@ -28,12 +28,6 @@ class ProfilePostpaidRepository {
         enabled: true,
         route: null,
       ),
-      ProfilePostpaidMenuItemModel(
-        id: 'gift_data',
-        title: 'gift data',
-        enabled: true,
-        route: null,
-      ),
     ];
   }
 }
