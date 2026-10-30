@@ -89,7 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _isRefreshingToggleStatus = true;
     try {
-      final userType = context.read<AppUiConfigCubit>().state.userType;
+      final uiConfig = context.read<AppUiConfigCubit>().state;
+      final userType = uiConfig.userType;
+      // Read before the awaits below — AppUiConfigCubit is a plain Cubit so
+      // this is a cheap state snapshot; the user's dropdown selection won't
+      // change mid-refresh.
+      final activeDeviceId = uiConfig.activeDeviceId;
 
       if (userType.isPostpaid) {
         // Postpaid Auto Pay comes from the Account API.
@@ -119,6 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
       await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
 
+      // Honour the dropdown's active line: when the user has switched to a
+      // child via PhoneDropdown, AppUiConfigCubit.activeDeviceId holds that
+      // DeviceID. Falling back to the primary preserves cold-start behaviour.
+      final primaryDeviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
+      final deviceId = (activeDeviceId != null && activeDeviceId > 0)
+          ? activeDeviceId
+          : primaryDeviceId;
+
       // /bundles + /available-plans both build URLs from the DeviceID
       // resolved above — fire the plans refresh now so its APIs actually go
       // on the wire on cold restart. Fire-and-forget: PlansCubit updates
@@ -126,9 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
       instance<PlansCubit>().loadInitialPlans(
         userType: userType,
         forceRefresh: true,
+        deviceId: activeDeviceId,
       );
 
-      final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
       if (deviceId != null && deviceId > 0) {
         await instance<BalanceCubit>().loadBalances(
           deviceAccountId: deviceId,

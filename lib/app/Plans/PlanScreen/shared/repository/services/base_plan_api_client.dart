@@ -103,6 +103,17 @@ abstract class BasePlanApiClient {
     return primary.deviceId.toString();
   }
 
+  /// Resolve the device id for this call: use [override] when non-null and
+  /// positive; otherwise fall back to the primary device via
+  /// [requireDeviceAccountId]. Lets callers target a child line explicitly
+  /// (e.g. after the user switches via the home-screen phone dropdown)
+  /// without changing primary-only call sites like `checkConnectivity`.
+  String resolveDeviceAccountId(int? override) {
+    requireAuth();
+    if (override != null && override > 0) return override.toString();
+    return requireDeviceAccountId();
+  }
+
   /// Map HTTP error to typed exception (shared logic)
   ///
   /// This method handles all common HTTP status codes and converts them

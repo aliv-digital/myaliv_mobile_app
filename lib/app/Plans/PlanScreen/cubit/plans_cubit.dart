@@ -101,7 +101,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   }
 
   Future<void> refreshCurrentTab() async {
-    await _fetchAllPlans(forceRefresh: true);
+    await _fetchAllPlans(forceRefresh: true, deviceId: state.activeDeviceId);
   }
 
   /// Post-purchase refresh — fetches only /bundles to check whether the
@@ -118,6 +118,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
     try {
       final addOnsResult = await _repository.fetchAddOnsData(
         forceRefresh: true,
+        deviceId: state.activeDeviceId,
       );
 
       if (isClosed) return;
@@ -370,6 +371,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
+    int? deviceId,
   }) async {
     if (instance<AuthManager>().currentSession == null) {
       if (kDebugMode) {
@@ -393,7 +395,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
       return;
     }
 
-    await _fetchAllPlans(forceRefresh: forceRefresh);
+    await _fetchAllPlans(forceRefresh: forceRefresh, deviceId: deviceId);
   }
 
   // ─── HydratedCubit ───────────────────────────────────────────────────────
@@ -430,7 +432,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   // ─── Private ─────────────────────────────────────────────────────────────
 
-  Future<void> _fetchAllPlans({bool forceRefresh = false}) async {
+  Future<void> _fetchAllPlans({
+    bool forceRefresh = false,
+    int? deviceId,
+  }) async {
     if (_isFetching) {
       if (forceRefresh) _pendingForceRefresh = true;
       if (kDebugMode) {
@@ -470,9 +475,11 @@ class PlansCubit extends HydratedCubit<PlansState> {
       // Start both requests concurrently.
       final plansFuture = _repository.fetchCategorizedPlans(
         forceRefresh: forceRefresh,
+        deviceId: deviceId,
       );
       final bundlesFuture = _repository.fetchAddOnsData(
         forceRefresh: forceRefresh,
+        deviceId: deviceId,
       );
 
       // Emit bundles data as soon as it arrives so the active plan card is
@@ -497,6 +504,8 @@ class PlansCubit extends HydratedCubit<PlansState> {
                       state.optimisticSecondaryPlans,
                       addOnsResult.secondaryPlans,
                     ),
+                activeDeviceId: deviceId,
+                clearActiveDeviceId: deviceId == null,
               ),
             );
           })
@@ -538,6 +547,8 @@ class PlansCubit extends HydratedCubit<PlansState> {
             state.optimisticSecondaryPlans,
             addOnsResult.secondaryPlans,
           ),
+          activeDeviceId: deviceId,
+          clearActiveDeviceId: deviceId == null,
         ),
       );
     } catch (e) {
