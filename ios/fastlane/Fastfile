@@ -5,6 +5,24 @@ platform :ios do
     setup_ci if ENV["CI"]
   end
 
+  desc "Bootstrap Match: create/sync certs + profiles for a bundle (local use only)"
+  lane :match_bootstrap do |options|
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPLE_API_KEY_ID"],
+      issuer_id: ENV["APPLE_API_ISSUER_ID"],
+      key_filepath: ENV["APPLE_API_KEY_PATH"],
+      in_house: false,
+    )
+
+    match(
+      type: "appstore",
+      readonly: false,
+      api_key: api_key,
+      app_identifier: options[:app_identifier] || "new.app.myaliv",
+      force_for_new_devices: false,
+    )
+  end
+
   desc "Build signed IPA and upload to TestFlight (internal testing)"
   lane :beta do |options|
     build_number = options[:build_number] || Time.now.to_i.to_s
@@ -18,7 +36,7 @@ platform :ios do
 
     match(
       type: "appstore",
-      readonly: false,
+      readonly: true,
       api_key: api_key,
       force_for_new_devices: false,
     )
