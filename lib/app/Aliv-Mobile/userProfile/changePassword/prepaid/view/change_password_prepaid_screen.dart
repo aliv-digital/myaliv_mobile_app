@@ -61,8 +61,12 @@ class _ChangePasswordPrepaidScreenState
     final identity = (initialAccount?.idAcc, initialAccount?.username);
     final deviceId = devices.state.deviceLimits?.deviceId;
     _verification = ActionVerificationCoordinator<ProtectedAccountAction>();
+    final phone = (initialAccount?.phoneNumber.isNotEmpty == true)
+        ? initialAccount!.phoneNumber
+        : initialAccount?.primaryPhoneNumber;
     _bloc = ChangePasswordPrepaidBloc(
       ChangePasswordPrepaidRepository(),
+      phoneNumber: phone,
       verifyAction: (attemptId) async {
         final result = await requestAccountActionOtp(
           context: context,

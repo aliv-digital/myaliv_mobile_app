@@ -866,6 +866,7 @@ class AppRouter {
             dateText: extra?['dateText'] as String? ?? '',
             timeText: extra?['timeText'] as String? ?? '',
             orderId: extra?['orderId'] as String?,
+            isPaymentFailed: extra?['isPaymentFailed'] as bool? ?? false,
           );
         },
       ),

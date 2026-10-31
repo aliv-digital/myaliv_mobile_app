@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import '../repository/change_password_prepaid_repository.dart';
@@ -11,6 +12,8 @@ class ChangePasswordPrepaidBloc
   verifyAction;
   final void Function() cancelVerification;
   final bool Function() isAuthorizationCurrent;
+  final CredentialStore _credentialStore;
+  final String? phoneNumber;
   ActionVerifiedResult<ProtectedAccountAction>? _authorization;
   bool _started = false;
   bool _pending = false;
@@ -26,7 +29,10 @@ class ChangePasswordPrepaidBloc
     required this.verifyAction,
     required this.cancelVerification,
     required this.isAuthorizationCurrent,
-  }) : super(ChangePasswordPrepaidState.initial()) {
+    this.phoneNumber,
+    CredentialStore? credentialStore,
+  }) : _credentialStore = credentialStore ?? CredentialStore(),
+       super(ChangePasswordPrepaidState.initial()) {
     on<ChangePasswordPrepaidStarted>(_onStarted);
     on<ChangePasswordPrepaidAuthorizationInvalidated>(_onInvalidated);
     on<ChangePasswordPrepaidNewChanged>(_onNewChanged);
@@ -221,6 +227,11 @@ class ChangePasswordPrepaidBloc
       }
 
       if (success) {
+        await _credentialStore.updatePassword(
+          a,
+          apiPhone: phoneNumber,
+          displayPhone: phoneNumber,
+        );
         emit(state.copyWith(status: ChangePasswordPrepaidStatus.success));
       } else {
         emit(
