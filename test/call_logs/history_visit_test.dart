@@ -127,12 +127,11 @@ class _Harness {
       ),
     );
     instance.registerFactory<CallLogsCubit>(
-      () => CallLogsCubit(repository: calls, deviceLimitsCubit: devices),
+      () => CallLogsCubit(repository: calls),
     );
     instance.registerFactory<TransactionsCubit>(
       () => TransactionsCubit(
         repository: TransactionsRepository(apiClient: transactionApi),
-        deviceLimitsCubit: devices,
       ),
     );
     uiConfig = AppUiConfigCubit(
@@ -142,6 +141,9 @@ class _Harness {
         isFuturePlan: false,
       ),
     );
+    // ActiveDevice.id() resolves via GetIt-registered singletons.
+    instance.registerSingleton<DeviceLimitsCubit>(devices);
+    instance.registerSingleton<AppUiConfigCubit>(uiConfig);
     when(() => auth.saveSession(any())).thenAnswer((invocation) async {
       saves++;
       savedSession = invocation.positionalArguments.first as TokenSession;

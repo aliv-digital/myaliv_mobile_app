@@ -52,26 +52,29 @@ void main() async {
   // Load biometric status so the GoRouter redirect can read it synchronously
   await instance<FingerFaceSecurityCubit>().loadBiometricStatus();
 
+  // Seed AppUiConfigCubit (singleton registered in DI) from the hydrated
+  // AccountInfoCubit so cold start doesn't briefly show the wrong tabs.
   final accountState = instance<AccountInfoCubit>().state;
-  final initialUiConfig = !accountState.hasAccount
-      ? null
-      : HomeUiConfig(
-          userType: accountState.isPostpaid
-              ? UserType.postpaid
-              : UserType.prepaid,
-          hasActivePlan: false,
-          isFuturePlan: false,
-          isCurrentPlan: false,
-        );
+  if (accountState.hasAccount) {
+    instance<AppUiConfigCubit>().setConfig(
+      HomeUiConfig(
+        userType: accountState.isPostpaid
+            ? UserType.postpaid
+            : UserType.prepaid,
+        hasActivePlan: false,
+        isFuturePlan: false,
+        isCurrentPlan: false,
+      ),
+    );
+  }
 
-  runApp(MyApp(appRouter: appRouter, initialUiConfig: initialUiConfig));
+  runApp(MyApp(appRouter: appRouter));
 }
 
 class MyApp extends StatefulWidget {
   final AppRouter appRouter;
-  final HomeUiConfig? initialUiConfig;
 
-  const MyApp({super.key, required this.appRouter, this.initialUiConfig});
+  const MyApp({super.key, required this.appRouter});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -141,10 +144,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) =>
-              AppUiConfigCubit(initialConfig: widget.initialUiConfig),
-        ),
+        BlocProvider.value(value: instance<AppUiConfigCubit>()),
         BlocProvider.value(value: instance<AccountInfoCubit>()),
         BlocProvider.value(value: instance<PlansCubit>()),
         BlocProvider.value(value: instance<LimitedOfferCubit>()),

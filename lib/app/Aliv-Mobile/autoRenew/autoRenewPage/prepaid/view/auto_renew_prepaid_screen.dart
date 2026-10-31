@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import '../../shared/auto_pay_selection_resolver.dart';
@@ -61,7 +62,7 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
   Future<void> _refreshBalanceWithDeviceId() async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
     await deviceLimitsCubit.loadDeviceLimits();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) return;
     await instance<BalanceCubit>().loadBalances(deviceAccountId: deviceId);
   }

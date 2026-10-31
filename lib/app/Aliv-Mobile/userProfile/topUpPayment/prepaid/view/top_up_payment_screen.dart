@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_re
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/saved_card_payment_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
@@ -131,12 +132,19 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
   }
 
   /// Returns the phone number to display on the receipt.
-  /// For postpaid topping up another prepaid number, show the recipient's
-  /// number. For own-number top-up, show the account holder's primary number.
+  ///
+  /// Preference order:
+  ///   1. recipient from route (postpaid topping up another prepaid number)
+  ///   2. active device's TN (home-screen dropdown-selected child line)
+  ///   3. account's primary / phoneNumber (own-number top-up on parent)
   String? _receiptPhone(String? routeValue) {
     final incoming = routeValue?.trim() ?? '';
-    if (incoming.isNotEmpty && incoming.toLowerCase() != 'null')
+    if (incoming.isNotEmpty && incoming.toLowerCase() != 'null') {
       return incoming;
+    }
+
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
 
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
@@ -206,9 +214,17 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
     final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
+    // Prefer the recipient (postpaid topping up another line); for own-number
+    // top-up honour the dropdown-selected child line via ActiveDevice.tn
+    // before falling back to the account's primary.
+    final activeTn = ActiveDevice.tn();
     final phone = recipientPhone.isNotEmpty
         ? recipientPhone
-        : (primary.isNotEmpty ? primary : (account?.phoneNumber.trim() ?? ''));
+        : (activeTn != null && activeTn.isNotEmpty
+              ? activeTn
+              : (primary.isNotEmpty
+                    ? primary
+                    : (account?.phoneNumber.trim() ?? '')));
 
     if (phone.isEmpty) {
       AppToast.show(

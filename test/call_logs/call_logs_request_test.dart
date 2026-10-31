@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/widgets/call_log_tile.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 class _MockNetworkService extends Mock implements NetworkService {}
@@ -78,15 +79,16 @@ void main() {
     network = _MockNetworkService();
     devices = _MockDeviceLimitsCubit();
     client = CallLogsApiClient(networkService: network);
-    cubit = CallLogsCubit(
-      repository: CallLogsRepository(apiClient: client),
-      deviceLimitsCubit: devices,
-    );
+    cubit = CallLogsCubit(repository: CallLogsRepository(apiClient: client));
     setDevice(1540278210);
+    // ActiveDevice.id() resolves via GetIt-registered singletons.
+    instance.registerSingleton<DeviceLimitsCubit>(devices);
+    instance.registerSingleton<AppUiConfigCubit>(AppUiConfigCubit());
   });
 
   tearDown(() async {
     await cubit.close();
+    await instance.reset();
   });
 
   test('sends the exact Postman query and removes fractional seconds', () async {

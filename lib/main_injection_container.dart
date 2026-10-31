@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_injection.dart';
 import 'package:myaliv_mobile_app/core/auth/hard_logout.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/account_info_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/plan_injection.dart';
@@ -37,6 +38,11 @@ class AppMainInjection {
     // Initialize core with hard-logout callback (invoked by
     // BearerAuthInterceptor when refresh fails / refresh token dies).
     await _coreInjection.initInjection(onHardLogout: performHardLogout);
+
+    // App-wide UI config (holds active device id selected via the
+    // home-screen phone dropdown). Registered globally so ActiveDevice
+    // can resolve from any layer (NetworkService callers, repositories, …).
+    await setupAppUiConfigInjection();
 
     // Initialize account information feature
     await setupAccountInfoInjection();

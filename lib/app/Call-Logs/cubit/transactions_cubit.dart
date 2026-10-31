@@ -1,21 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/transactions_repository.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import 'transactions_state.dart';
 
 /// Cubit for managing transactions data
 class TransactionsCubit extends Cubit<TransactionsState> {
-  TransactionsCubit({
-    required TransactionsRepository repository,
-    required DeviceLimitsCubit deviceLimitsCubit,
-  }) : _repository = repository,
-       _deviceLimitsCubit = deviceLimitsCubit,
-       super(const TransactionsState());
+  TransactionsCubit({required TransactionsRepository repository})
+    : _repository = repository,
+      super(const TransactionsState());
 
   final TransactionsRepository _repository;
-  final DeviceLimitsCubit _deviceLimitsCubit;
 
   /// Fetch transactions for the selected month
   Future<void> fetchTransactions() async {
@@ -25,7 +21,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       );
     }
 
-    final deviceId = _deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) {
       emit(
         state.copyWith(

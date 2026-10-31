@@ -50,6 +50,12 @@ class ChangeBundleRequestFactory {
   }
 
   /// Change-bundle envelope: outer body sent to `POST /Order/change-bundle`.
+  ///
+  // TODO(backend): payload has no `DeviceAccountId`. Even when the home
+  // dropdown has selected a child line (ActiveDevice), this request charges
+  // the parent primary line server-side because the backend resolves the
+  // target line from the JWT, which is parent-scoped. Backend contract
+  // change needed before plan purchases honour the active device.
   static Map<String, dynamic> changeBundleBody({
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
@@ -94,6 +100,9 @@ class ChangeBundleRequestFactory {
   /// Differs from [changeBundleBody]: no `CardPayment` block (card details are
   /// entered in the bank's WebView), no `SaveCard`/`UseAsRenewalCard`, and
   /// `RedirectURL` + `Branch` are added at the top level.
+  ///
+  // TODO(backend): same gap as [changeBundleBody] — no `DeviceAccountId` in
+  // payload, so child-line purchases still land on parent server-side.
   static Map<String, dynamic> changeBundleBodyFor3DS({
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -167,6 +176,11 @@ class ChangeBundleRequestFactory {
   }
 
   /// 3DS postpaid make-payment envelope: POST /Order/3ds/payment.
+  ///
+  // TODO(backend): payload carries no `DeviceAccountId`. Postpaid payment
+  // made while a child line is selected via the dropdown still lands on
+  // the parent primary line server-side (JWT scoped to parent). Needs a
+  // backend contract change before this flow honours the active device.
   static Map<String, dynamic> orderPaymentBodyFor3DS({required double amount}) {
     return <String, dynamic>{
       'Amount': double.parse(amount.toStringAsFixed(2)),

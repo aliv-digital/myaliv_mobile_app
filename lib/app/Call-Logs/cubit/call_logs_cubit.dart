@@ -1,21 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/call_logs_repository.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import 'call_logs_state.dart';
 
 /// Cubit for managing call logs/usage data
 class CallLogsCubit extends Cubit<CallLogsState> {
-  CallLogsCubit({
-    required CallLogsRepository repository,
-    required DeviceLimitsCubit deviceLimitsCubit,
-  }) : _repository = repository,
-       _deviceLimitsCubit = deviceLimitsCubit,
-       super(const CallLogsState());
+  CallLogsCubit({required CallLogsRepository repository})
+    : _repository = repository,
+      super(const CallLogsState());
 
   final CallLogsRepository _repository;
-  final DeviceLimitsCubit _deviceLimitsCubit;
 
   /// Fetch usages for the selected month
   Future<void> fetchUsages() async {
@@ -23,7 +19,7 @@ class CallLogsCubit extends Cubit<CallLogsState> {
       debugPrint('CallLogsCubit: Fetching usages for ${state.currentMonth}');
     }
 
-    final deviceAccountId = _deviceLimitsCubit.state.deviceLimits?.deviceId;
+    final deviceAccountId = ActiveDevice.id();
     if (deviceAccountId == null || deviceAccountId <= 0) {
       emit(
         state.copyWith(

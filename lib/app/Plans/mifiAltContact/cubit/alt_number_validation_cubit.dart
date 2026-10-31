@@ -1,8 +1,7 @@
-import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import '../repository/alt_number_validation_repository.dart';
 import 'alt_number_validation_state.dart';
@@ -36,9 +35,9 @@ class AltNumberValidationCubit extends Cubit<AltNumberValidationState> {
     );
 
     // AltNumber opt-in body carries `DeviceAccountId` — that's the DEVICE
-    // id (from /Account/devices), not the account's id_acc.
-    final deviceAccountId =
-        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    // id (from /Account/devices). Honour the dropdown-selected child line
+    // via ActiveDevice; falls back to primary when nothing is selected.
+    final deviceAccountId = ActiveDevice.id() ?? 0;
     if (kDebugMode) {
       debugPrint(
         'AltNumberValidationCubit.submit: starting '

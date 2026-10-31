@@ -7,26 +7,25 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/dat
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/gift_data_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/repository/gift_data_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/repository/services/gift_data_api_client.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 class GiftDataCubit extends Cubit<GiftDataState> {
   GiftDataCubit({
     required GiftDataRepository repository,
     required AccountInfoCubit accountInfoCubit,
-    required DeviceLimitsCubit deviceLimitsCubit,
   }) : _repository = repository,
        _accountInfoCubit = accountInfoCubit,
-       _deviceLimitsCubit = deviceLimitsCubit,
        super(GiftDataState.initial());
 
   final GiftDataRepository _repository;
   final AccountInfoCubit _accountInfoCubit;
-  final DeviceLimitsCubit _deviceLimitsCubit;
 
-  /// Sender MSISDN sourced from the authenticated account; prefers the
-  /// device-aware `primaryPhoneNumber`, falls back to `phoneNumber` for
-  /// older account payloads that don't include it.
+  /// Sender MSISDN sourced from the active device (dropdown-selected line
+  /// via `ActiveDevice.tn`); falls back to the authenticated account's
+  /// primary number when the active device can't be resolved.
   String get _senderMsisdn {
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
     final account = _accountInfoCubit.state.accountInfo;
     if (account == null) return '';
     final primary = account.primaryPhoneNumber.trim();
@@ -47,12 +46,9 @@ class GiftDataCubit extends Cubit<GiftDataState> {
       return;
     }
 
-    // Resolve device account id from /Account/devices via DeviceLimitsCubit.
-    // That cubit is a GetIt singleton; `/Account/devices` is already fetched
-    // during home-screen boot (see HomeScreen.loadDeviceLimits call), so we
-    // just read the cached state here.
-    final deviceAccountId =
-        _deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    // Resolve device account id for the dropdown-selected line (falls back
+    // to primary when nothing has been selected).
+    final deviceAccountId = ActiveDevice.id() ?? 0;
 
     // On load we only fetch the sender's quota window (`data-share-status`),
     // which powers the "until <date> you can gift up to <Xgb>" banner. The
