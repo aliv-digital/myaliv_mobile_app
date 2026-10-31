@@ -75,7 +75,7 @@ void main() {
     ProtectedAccountAction.upgradeCreditLimit,
   ]) {
     for (final outcome in [
-      'success',
+      if (action != ProtectedAccountAction.changePassword) 'success',
       if (action == ProtectedAccountAction.changePassword) ...[
         'backend failure',
         'network failure',

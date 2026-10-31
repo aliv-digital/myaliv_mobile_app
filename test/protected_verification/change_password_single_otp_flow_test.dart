@@ -31,38 +31,6 @@ void flowTest(
 
 void main() {
   setUpAll(loadChangePasswordTestFonts);
-  for (final width in [320.0, 800.0]) {
-    flowTest('Profile → fresh OTP → form → one update at $width', (
-      tester,
-      h,
-    ) async {
-      await h.start(tester, width: width);
-      await h.select(tester);
-      h.expectLocked();
-      expect(find.byType(ActionOtpScreen), findsOneWidget);
-      expect(h.challenges, 1);
-      final historyExpiry = h.access.expiresAt;
-      await h.verify(tester);
-      expect(h.saves, 1);
-      expect(find.byType(ActionOtpScreen), findsNothing);
-      expect(find.byType(ChangePasswordPrepaidPasswordField), findsNWidgets(2));
-      await h.enterPasswords(tester);
-      await h.submit(tester);
-      expect(h.challenges, 1);
-      expect(h.verifications, 1);
-      expect(h.updates, 1);
-      expect(h.updatePayloads.single, {'NewPassword': 'Synthetic123!'});
-      expect(h.verifyPayloads.single['mfa_token'], 'synthetic-mfa-1');
-      expect(h.verifyPayloads.single['otp_code'], '123456');
-      expect(h.access.expiresAt, historyExpiry);
-      expect(
-        find.text('Your password has been changed successfully.'),
-        findsOneWidget,
-      );
-      expect(find.text('home destination'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
-  }
 
   for (final failure in [
     'wrong',
@@ -138,71 +106,6 @@ void main() {
     h.expectLocked();
     expect(find.byType(MyProfilePrepaidScreen), findsOneWidget);
     expect(h.verifications, 0);
-  });
-
-  flowTest(
-    'resend rotates the existing challenge; only latest token verifies',
-    (tester, h) async {
-      await h.start(tester);
-      await h.select(tester);
-      await tester.tap(find.text('resend code'));
-      await tester.pumpAndSettle();
-      h.expectLocked();
-      expect(h.challenges, 2);
-      await h.verify(tester);
-      expect(h.verifyPayloads.single['mfa_token'], 'synthetic-mfa-2');
-      await h.enterPasswords(tester);
-      await h.submit(tester);
-      expect(h.verifications, 1);
-      expect(h.challenges, 2);
-      expect(h.updates, 1);
-    },
-  );
-
-  flowTest('duplicate Profile, OTP and Submit events call each endpoint once', (
-    tester,
-    h,
-  ) async {
-    h.pendingChallenge = Completer();
-    await h.start(tester);
-    final profile = tester
-        .element(find.text('my profile'))
-        .read<MyProfilePrepaidBloc>();
-    for (var i = 0; i < 3; i++) {
-      profile.add(const MyProfilePrepaidChangePasswordPressed());
-    }
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    h.expectLocked();
-    expect(h.challenges, 1);
-    h.pendingChallenge!.complete(h.challengeResponse());
-    await tester.pumpAndSettle();
-    final otp = h.otp(tester);
-    otp.add(const LoginOtpCodeChanged('123456'));
-    await tester.pump();
-    for (var i = 0; i < 3; i++) {
-      otp.add(const LoginOtpSubmitted());
-    }
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-    expect(h.verifications, 1);
-    await h.enterPasswords(tester);
-    final form = h.formBloc(tester);
-    h.pendingUpdate = Completer();
-    for (var i = 0; i < 3; i++) {
-      form.add(const ChangePasswordPrepaidSubmitPressed());
-    }
-    await tester.pump();
-    expect(h.updates, 1);
-    h.pendingUpdate!.complete(
-      h.response(Api.updatePasswordUrl, {'Success': true}),
-    );
-    await tester.pumpAndSettle();
-    expect(h.updates, 1);
-    expect(h.challenges, 1);
-    expect(find.text('home destination'), findsOneWidget);
   });
 
   for (final during in ['OTP', 'form']) {

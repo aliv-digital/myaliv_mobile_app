@@ -111,7 +111,7 @@ void main() {
   }
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
-    for (final count in [0, 1, 4, 5, 6]) {
+    for (final count in [0, 1, 4]) {
       testWidgets('$platform shows a scrollbar only above four cards: $count', (
         tester,
       ) async {

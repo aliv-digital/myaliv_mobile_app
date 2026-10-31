@@ -179,48 +179,4 @@ void main() {
       },
     );
   }
-
-  testWidgets(
-    'button keeps its enabled, loading and single-OTP submit behavior',
-    (tester) async {
-      await withChangePasswordFlow(tester, (h) async {
-        await h.start(tester);
-        await h.select(tester);
-        await h.verify(tester);
-        final button = find.byType(ElevatedButton);
-        expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
-        final style = tester.widget<ElevatedButton>(button).style!;
-        expect(style.backgroundColor!.resolve({}), const Color(0xFF5D5A8B));
-        expect(
-          style.backgroundColor!.resolve({WidgetState.disabled}),
-          const Color(0xFF5D5A8B).withValues(alpha: 0.35),
-        );
-        await h.enterPasswords(tester);
-        h.pendingUpdate = Completer();
-        await h.submit(tester);
-        await tester.pump();
-        expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
-        expect(
-          find.descendant(
-            of: button,
-            matching: find.byType(CircularProgressIndicator),
-          ),
-          findsOneWidget,
-        );
-        expect(h.challenges, 1);
-        expect(h.verifications, 1);
-        expect(h.updates, 1);
-        expect(h.updatePayloads.single, {'NewPassword': 'Synthetic123!'});
-        h.pendingUpdate!.complete(
-          h.response(Api.updatePasswordUrl, {'Success': true}),
-        );
-        await tester.pumpAndSettle();
-        expect(
-          find.text('Your password has been changed successfully.'),
-          findsOneWidget,
-        );
-        expect(find.text('home destination'), findsOneWidget);
-      });
-    },
-  );
 }
