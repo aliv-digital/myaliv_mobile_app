@@ -226,10 +226,10 @@ class _HomePlansPaymentMethodSectionState
   }
 
   Widget _buildCardIcon() {
-    return Image.asset(
-      AssetConstant.cardIconPNG,
-      width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
-      height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+    return SvgPicture.asset(
+      AssetConstant.walletIconSVG,
+      width: HomePlansPaymentMethodTheme.paymentActionIconSize,
+      height: HomePlansPaymentMethodTheme.payWithCardChevronSize,
       fit: BoxFit.contain,
     );
   }
@@ -265,8 +265,8 @@ class _HomePlansPaymentMethodSectionState
       leadingHeight: HomePlansPaymentMethodTheme.savedCardLogoHeight,
       unselectedRadioFill: HomePlansPaymentMethodTheme.unselectedIndicatorColor,
       leading: SizedBox(
-        width: HomePlansPaymentMethodTheme.paymentActionIconSize,
-        height: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        width: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+        height: HomePlansPaymentMethodTheme.savedCardLogoWidth,
         child: SvgPicture.asset(
           AssetConstant.walletIconSVGPayment,
           fit: BoxFit.contain,
