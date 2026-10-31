@@ -158,7 +158,7 @@ class AppMenuDrawer extends StatelessWidget {
                     // context.go(AppRoutes.welcome);
                     showModalBottomSheet(
                       context: context,
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: const Color(0xFFF1F2FA),
                       isScrollControlled: true,
                       builder: (_) => const LogoutBottomSheet(),
                     );

@@ -23,7 +23,7 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
     return SafeArea(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
         decoration: const ShapeDecoration(
           color: Color(0xFFF1F2FA),
           shape: RoundedRectangleBorder(

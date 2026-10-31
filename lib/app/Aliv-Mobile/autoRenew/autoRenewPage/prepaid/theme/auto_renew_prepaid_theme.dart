@@ -84,7 +84,7 @@ class AutoRenewPrepaidTheme {
   static const double walletPaymentSheetTopRadius = 24.0;
   static const double walletPaymentHorizontalPadding = 16.0;
   static const double walletPaymentTopPadding = 24.0;
-  static const double walletPaymentBottomPadding = 24.0;
+  static const double walletPaymentBottomPadding = 8.0;
   static const double walletPaymentBackButtonSize = 24.0;
   static const double walletPaymentBackIconSize = 24.0;
   static const double walletPaymentBackToTitleGap = 8.0;

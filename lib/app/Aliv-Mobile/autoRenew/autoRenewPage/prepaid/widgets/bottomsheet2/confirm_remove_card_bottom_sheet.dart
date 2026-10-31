@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../userProfile/addOrEditCards/prepaid/theme/add_or_edit_cards_prepaid_theme.dart';
 
 /// BottomSheet: Confirm remove saved card
@@ -23,12 +24,11 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        // ✅ Rounded top sheet like screenshot
         decoration: const BoxDecoration(
           color: AddOrEditCardsPrepaidTheme.pageBg,
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
-        padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+        padding: const EdgeInsets.fromLTRB(24, 18, 24, 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

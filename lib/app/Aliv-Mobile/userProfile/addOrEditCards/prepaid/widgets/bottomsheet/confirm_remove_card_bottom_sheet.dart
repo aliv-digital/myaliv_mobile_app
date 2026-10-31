@@ -28,7 +28,7 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
         // padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

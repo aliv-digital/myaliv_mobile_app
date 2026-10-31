@@ -48,7 +48,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(
             listenWhen: (previous, current) =>
                 !previous.isSuccess || !current.isSuccess,

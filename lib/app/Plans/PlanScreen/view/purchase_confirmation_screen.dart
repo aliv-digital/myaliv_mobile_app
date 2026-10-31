@@ -188,7 +188,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         builder: (_) => PayFromWalletSheet(
           amount: widget.topUpAmount!,
           phoneNumber: widget.recipientPhone,
