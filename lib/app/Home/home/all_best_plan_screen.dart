@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,146 +15,140 @@ class AllBestPlansScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF4F6FB),
-        appBar: AppBar(
-          toolbarHeight: 64,
-          backgroundColor: purple,
-          elevation: 0,
-          centerTitle: false,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 24.0),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => context.pop(),
-            ),
-          ),
-          title: const Text(
-            'our best plans',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4F6FB),
+      appBar: AppBar(
+        toolbarHeight: 64,
+        backgroundColor: purple,
+        elevation: 0,
+        centerTitle: false,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 24.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.pop(),
           ),
         ),
-        body: BlocBuilder<BestPlanCubit, BestPlanState>(
-          builder: (context, state) {
-            // Loading state
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(purple),
-                ),
-              );
-            }
+        title: const Text(
+          'our best plans',
+          style: TextStyle(
+            fontFamily: 'CircularPro',
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: BlocBuilder<BestPlanCubit, BestPlanState>(
+        builder: (context, state) {
+          // Loading state
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(purple),
+              ),
+            );
+          }
 
-            // Error state
-            if (state.hasError) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
+          // Error state
+          if (state.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.errorMessage ?? 'Failed to load plans',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 16,
                         color: Colors.grey,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        state.errorMessage ?? 'Failed to load plans',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Retry loading
-                          final userType =
-                              context
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Retry loading
+                        final userType =
+                            context.read<BestPlanCubit>().state.plans.isNotEmpty
+                            ? context
                                   .read<BestPlanCubit>()
                                   .state
                                   .plans
-                                  .isNotEmpty
-                              ? context
-                                    .read<BestPlanCubit>()
-                                    .state
-                                    .plans
-                                    .first
-                                    .type
-                              : 'prepaid';
-                          context.read<BestPlanCubit>().loadPlans(
-                            userType: userType,
-                            forceRefresh: true,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: purple,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('Retry'),
+                                  .first
+                                  .type
+                            : 'prepaid';
+                        context.read<BestPlanCubit>().loadPlans(
+                          userType: userType,
+                          forceRefresh: true,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: purple,
+                        foregroundColor: Colors.white,
                       ),
-                    ],
-                  ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
-              );
-            }
+              ),
+            );
+          }
 
-            // Empty state
-            if (state.isEmpty || !state.hasPlans) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.inbox_outlined,
-                        size: 64,
+          // Empty state
+          if (state.isEmpty || !state.hasPlans) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.inbox_outlined,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No plans available right now',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 16,
                         color: Colors.grey,
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No plans available right now',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            }
-
-            // Success state with plans
-            final plans = state.plans;
-
-            return ListView.separated(
-              padding: const EdgeInsets.all(25),
-              itemCount: plans.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 20),
-              itemBuilder: (context, index) {
-                final plan = plans[index];
-                return _PlanCard(
-                  plan: plan,
-                  onTap: () => _handleTap(context, plan.link),
-                );
-              },
+              ),
             );
-          },
-        ),
+          }
+
+          // Success state with plans
+          final plans = state.plans;
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(25),
+            itemCount: plans.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 20),
+            itemBuilder: (context, index) {
+              final plan = plans[index];
+              return _PlanCard(
+                plan: plan,
+                onTap: () => _handleTap(context, plan.link),
+              );
+            },
+          );
+        },
       ),
     );
   }

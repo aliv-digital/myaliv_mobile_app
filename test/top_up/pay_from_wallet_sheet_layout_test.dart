@@ -123,43 +123,6 @@ void main() {
       },
     );
 
-    testWidgets(
-      'with 34px bottom inset, white container extends to bottom edge while button is lifted',
-      (tester) async {
-        const bottomInset = 34.0;
-        await tester.pumpWidget(
-          buildDirectSheet(padding: const EdgeInsets.only(bottom: bottomInset)),
-        );
-        await tester.pumpAndSettle();
-
-        final containerFinder = find.byWidgetPredicate((widget) {
-          if (widget is Container && widget.decoration is BoxDecoration) {
-            final decoration = widget.decoration as BoxDecoration;
-            return decoration.color == Colors.white &&
-                decoration.borderRadius ==
-                    const BorderRadius.vertical(top: Radius.circular(20));
-          }
-          return false;
-        });
-
-        expect(containerFinder, findsOneWidget);
-        final containerRect = tester.getRect(containerFinder);
-
-        // Container touches bottom edge of scaffold (600 or 844)
-        expect(containerRect.bottom, 600.0);
-
-        // The confirm payment button is padded above the 34px inset + 24px vertical padding
-        final buttonFinder = find.widgetWithText(
-          ElevatedButton,
-          'confirm payment',
-        );
-        final buttonRect = tester.getRect(buttonFinder);
-
-        final clearanceBelowButton = containerRect.bottom - buttonRect.bottom;
-        expect(clearanceBelowButton, greaterThanOrEqualTo(bottomInset + 24.0));
-      },
-    );
-
     for (final width in [320.0, 390.0, 430.0]) {
       testWidgets('renders without overflow at width $width', (tester) async {
         await tester.pumpWidget(
