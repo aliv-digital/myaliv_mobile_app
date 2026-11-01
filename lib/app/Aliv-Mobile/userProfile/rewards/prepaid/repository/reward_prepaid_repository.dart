@@ -1,10 +1,9 @@
 import 'dart:convert';
 
-import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/repository/services/rewards_api_client.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 class RewardPrepaidRepository {
   RewardPrepaidRepository({RewardsApiClient? apiClient})
@@ -13,8 +12,7 @@ class RewardPrepaidRepository {
   final RewardsApiClient _apiClient;
 
   Future<List<RewardModel>> fetchRewards() async {
-    final deviceId =
-        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
 
     if (kDebugMode) {
       debugPrint('RewardPrepaidRepository: Fetching SUGs for device $deviceId');

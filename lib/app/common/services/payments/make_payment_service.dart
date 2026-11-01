@@ -46,6 +46,12 @@ class MakePaymentService {
     required String logTag,
   }) {
     final body = ChangeBundleRequestFactory.topUpBody(cardPayment: cardPayment);
+    // TODO(backend): /Order/payment payload carries no `DeviceAccountId` or
+    // target TN. When the home-screen dropdown has selected a child line
+    // (ActiveDevice), this postpaid payment still lands on the parent
+    // primary line because the backend resolves the target from the JWT.
+    // Needs a backend contract change (add `DeviceAccountId` or route by
+    // phone) before this flow honours the active device.
     return _cardPaymentService.send(
       url: Api.orderPaymentUrl,
       body: body,

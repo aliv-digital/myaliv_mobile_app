@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_event.dart';
@@ -72,7 +73,9 @@ class _HomePlansPaymentMethodViewState
     // BalanceCubit for every screen that reads it.
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
     await deviceLimitsCubit.loadDeviceLimits();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    // Honour the dropdown-selected child line (ActiveDevice); falls back
+    // to primary when no override is set.
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) return;
     if (!mounted) return;
     // BalanceCubit owns the wallet balance app-wide; it caches & refetches.

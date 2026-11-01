@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cub
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -67,6 +68,9 @@ Future<void> performHardLogout({bool navigate = true}) async {
     instance<LimitedOfferCubit>().reset();
     instance<BestPlanCubit>().reset();
     instance<ConsumptionLimitCubit>().reset();
+    // Clear the active-device dropdown selection + userType so the next
+    // user doesn't briefly see the previous session's line.
+    instance<AppUiConfigCubit>().reset();
   } catch (e) {
     if (kDebugMode) debugPrint('hardLogout: cubit reset failed — $e');
   }

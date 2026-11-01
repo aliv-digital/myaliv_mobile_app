@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/limit_row.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_states.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -27,16 +27,14 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
   }
 
   void _loadLimits() {
-    final deviceId =
-        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId > 0) {
       instance<ConsumptionLimitCubit>().loadLimits(deviceAccountId: deviceId);
     }
   }
 
   Future<void> _refreshLimits() async {
-    final deviceId =
-        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId > 0) {
       await instance<ConsumptionLimitCubit>().loadLimits(
         deviceAccountId: deviceId,

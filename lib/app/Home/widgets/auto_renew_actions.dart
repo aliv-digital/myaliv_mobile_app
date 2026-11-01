@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 /// Shared handler for the prepaid auto-renew toggle.
@@ -42,8 +43,7 @@ Future<bool> handleAutoRenewToggle(
   );
   if (confirmed != true) return false;
 
-  final deviceId =
-      instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+  final deviceId = ActiveDevice.id() ?? 0;
   if (deviceId <= 0) {
     AppToast.show(message: 'Device info not available', type: ToastType.error);
     return false;

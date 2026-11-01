@@ -96,7 +96,6 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     instance<PlansCubit>().loadInitialPlans(
       userType: uiConfig.userType,
       forceRefresh: true,
-      deviceId: deviceId,
     );
     final plansState = instance<PlansCubit>().state;
     instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(

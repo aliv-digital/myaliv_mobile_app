@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_session_completion_service.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import 'action_otp_route_args.dart';
@@ -43,8 +43,10 @@ class ActionVerificationCoordinator<T extends Object> {
 
   static Object? _currentAccountContext() {
     final account = instance<AccountInfoCubit>().state.accountInfo;
-    final device = instance<DeviceLimitsCubit>().state.deviceLimits;
-    return account == null ? null : (account.idAcc, device?.deviceId);
+    // Track the active device (dropdown-selected child, else primary) so
+    // switching the line mid-verification invalidates the pending OTP.
+    final deviceId = ActiveDevice.id();
+    return account == null ? null : (account.idAcc, deviceId);
   }
 
   Future<ActionVerifiedResult<T>?> verify({

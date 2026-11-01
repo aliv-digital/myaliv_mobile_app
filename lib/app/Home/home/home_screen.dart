@@ -26,6 +26,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -89,12 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _isRefreshingToggleStatus = true;
     try {
-      final uiConfig = context.read<AppUiConfigCubit>().state;
-      final userType = uiConfig.userType;
-      // Read before the awaits below — AppUiConfigCubit is a plain Cubit so
-      // this is a cheap state snapshot; the user's dropdown selection won't
-      // change mid-refresh.
-      final activeDeviceId = uiConfig.activeDeviceId;
+      final userType = context.read<AppUiConfigCubit>().state.userType;
 
       if (userType.isPostpaid) {
         // Postpaid Auto Pay comes from the Account API.
@@ -124,23 +120,19 @@ class _HomeScreenState extends State<HomeScreen> {
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
       await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
 
-      // Honour the dropdown's active line: when the user has switched to a
-      // child via PhoneDropdown, AppUiConfigCubit.activeDeviceId holds that
-      // DeviceID. Falling back to the primary preserves cold-start behaviour.
-      final primaryDeviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
-      final deviceId = (activeDeviceId != null && activeDeviceId > 0)
-          ? activeDeviceId
-          : primaryDeviceId;
-
-      // /bundles + /available-plans both build URLs from the DeviceID
-      // resolved above — fire the plans refresh now so its APIs actually go
-      // on the wire on cold restart. Fire-and-forget: PlansCubit updates
-      // BucketUsageSummaryCubit through the BlocListener in build().
+      // /bundles + /available-plans build URLs from the DeviceID resolved by
+      // ActiveDevice (dropdown-selected child, else primary) — fire the plans
+      // refresh now so its APIs actually go on the wire on cold restart.
+      // Fire-and-forget: PlansCubit updates BucketUsageSummaryCubit through
+      // the BlocListener in build().
       instance<PlansCubit>().loadInitialPlans(
         userType: userType,
         forceRefresh: true,
-        deviceId: activeDeviceId,
       );
+
+      // Balance / BucketUsage / ConsumptionLimit cubits take an explicit
+      // deviceAccountId for cache keying — resolve through ActiveDevice.
+      final deviceId = ActiveDevice.id();
 
       if (deviceId != null && deviceId > 0) {
         await instance<BalanceCubit>().loadBalances(

@@ -1,15 +1,14 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Usage/repository/usage_repository.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/start_future_plan_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
@@ -241,8 +240,7 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
     });
 
     try {
-      final deviceId =
-          instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId;
+      final deviceId = ActiveDevice.id();
       if (deviceId == null || deviceId <= 0) {
         AppToast.show(
           message: 'Device information not available',

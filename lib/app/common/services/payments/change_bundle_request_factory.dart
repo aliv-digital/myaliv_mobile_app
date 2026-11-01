@@ -1,7 +1,10 @@
+import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 /// Builds the request body for `POST /Order/change-bundle`.
 ///
@@ -50,6 +53,10 @@ class ChangeBundleRequestFactory {
   }
 
   /// Change-bundle envelope: outer body sent to `POST /Order/change-bundle`.
+  ///
+  /// Carries `CustomerID` (parent account id) + `DeviceID` (dropdown-selected
+  /// device id, via [ActiveDevice]) so the backend routes the purchase to
+  /// the line the user is viewing instead of the parent primary.
   static Map<String, dynamic> changeBundleBody({
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
@@ -75,6 +82,7 @@ class ChangeBundleRequestFactory {
       bundleMap['StartDate'] = startDate;
     }
 
+    final routing = _accountRouting();
     return <String, dynamic>{
       'CardPayment': cardPayment,
       'Bundle': bundleMap,
@@ -86,6 +94,8 @@ class ChangeBundleRequestFactory {
       'Note': 'Payment',
       'RedirectURL': 'myaliv://topup-callback',
       'Branch': 'branch',
+      'CustomerID': routing.customerId,
+      'DeviceID': routing.deviceId,
     };
   }
 
@@ -94,6 +104,8 @@ class ChangeBundleRequestFactory {
   /// Differs from [changeBundleBody]: no `CardPayment` block (card details are
   /// entered in the bank's WebView), no `SaveCard`/`UseAsRenewalCard`, and
   /// `RedirectURL` + `Branch` are added at the top level.
+  ///
+  /// Carries the same `CustomerID` + `DeviceID` routing as [changeBundleBody].
   static Map<String, dynamic> changeBundleBodyFor3DS({
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -118,6 +130,7 @@ class ChangeBundleRequestFactory {
       bundleMap['StartDate'] = startDate;
     }
 
+    final routing = _accountRouting();
     return <String, dynamic>{
       'Bundle': bundleMap,
       'ForceNow': forceNow,
@@ -126,6 +139,8 @@ class ChangeBundleRequestFactory {
       'Note': 'Payment',
       'RedirectURL': 'myaliv://topup-callback',
       'Branch': 'branch',
+      'CustomerID': routing.customerId,
+      'DeviceID': routing.deviceId,
     };
   }
 
@@ -167,6 +182,11 @@ class ChangeBundleRequestFactory {
   }
 
   /// 3DS postpaid make-payment envelope: POST /Order/3ds/payment.
+  ///
+  // TODO(backend): payload carries no `DeviceAccountId`. Postpaid payment
+  // made while a child line is selected via the dropdown still lands on
+  // the parent primary line server-side (JWT scoped to parent). Needs a
+  // backend contract change before this flow honours the active device.
   static Map<String, dynamic> orderPaymentBodyFor3DS({required double amount}) {
     return <String, dynamic>{
       'Amount': double.parse(amount.toStringAsFixed(2)),
@@ -282,5 +302,22 @@ class ChangeBundleRequestFactory {
     return '${date.year.toString().padLeft(4, '0')}-'
         '${two(date.month)}-${two(date.day)} '
         '${two(date.hour)}:${two(date.minute)}';
+  }
+
+  /// Resolves `CustomerID` (parent account id, from `/Account/devices`) and
+  /// `DeviceID` (active dropdown-selected device id). Both are null-safe
+  /// to `0` so missing-state at build time still produces a valid payload
+  /// shape — backend rejects with a clear error if required but populated
+  /// with `0`.
+  ///
+  /// All devices in `/Account/devices` share the same `ParentAccountID`, so
+  /// reading from `DeviceLimitsCubit.state.deviceLimits` (first/primary
+  /// device) yields the authoritative customer id regardless of the active
+  /// line.
+  static ({int customerId, int deviceId}) _accountRouting() {
+    final primary = instance<DeviceLimitsCubit>().state.deviceLimits;
+    final customerId = primary?.parentAccountId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
+    return (customerId: customerId, deviceId: deviceId);
   }
 }

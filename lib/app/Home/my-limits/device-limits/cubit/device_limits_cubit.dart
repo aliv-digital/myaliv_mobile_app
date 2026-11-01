@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/balance_threshold_settings_request.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 /// Cubit for managing Device Limits state
 ///
@@ -374,7 +376,21 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
     required double autoTopUpAmount,
     required String cardToken,
   }) async {
-    final deviceLimits = state.deviceLimits;
+    // Honour the dropdown-selected child line: resolve the active device's
+    // DeviceLimitsModel from allDeviceLimits so the threshold payload carries
+    // the child's current numeric fields (BalanceThreshold, AutoTopUp, …).
+    // Falls back to the primary device when no override is set.
+    final activeId = ActiveDevice.id();
+    DeviceLimitsModel? deviceLimits;
+    if (activeId != null) {
+      for (final d in state.allDeviceLimits) {
+        if (d.deviceId == activeId) {
+          deviceLimits = d;
+          break;
+        }
+      }
+    }
+    deviceLimits ??= state.deviceLimits;
     if (deviceLimits == null) {
       if (kDebugMode) {
         debugPrint('❌ DeviceLimitsCubit: No device limits available');

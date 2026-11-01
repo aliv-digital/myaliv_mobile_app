@@ -12,7 +12,6 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gif
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/widgets/confirm_gift_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/widgets/gift_data_form_body.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/widgets/gift_data_status_views.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -26,7 +25,6 @@ class GiftDataScreen extends StatelessWidget {
       create: (_) => GiftDataCubit(
         repository: instance<GiftDataRepository>(),
         accountInfoCubit: instance<AccountInfoCubit>(),
-        deviceLimitsCubit: instance<DeviceLimitsCubit>(),
       )..load(),
       child: const _GiftDataView(),
     );

@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widg
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -350,18 +351,29 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                               .accountInfo;
                           final primaryPhone =
                               account?.primaryPhoneNumber.trim() ?? '';
-                          final ownPhone = _ownPhoneNumberHelper
-                              .validateAndBuildApiUsername(
-                                rawPhoneNumber: primaryPhone.isNotEmpty
-                                    ? primaryPhone
-                                    : account?.phoneNumber.trim() ?? '',
-                                selectedCountry: _selectedCountry,
-                              );
-                          if (ownPhone.isValid &&
-                              ownPhone.phoneNumberForApi ==
-                                  _validatePhone(
-                                    _phoneNumber,
-                                  ).phoneNumberForApi) {
+                          // Honour the home-screen dropdown: block
+                          // sending to the active device's TN too, not
+                          // only the account owner's primary.
+                          final activeTn = ActiveDevice.tn()?.trim() ?? '';
+                          final recipientApi = _validatePhone(
+                            _phoneNumber,
+                          ).phoneNumberForApi;
+                          bool matchesOwn(String raw) {
+                            if (raw.isEmpty) return false;
+                            final own = _ownPhoneNumberHelper
+                                .validateAndBuildApiUsername(
+                                  rawPhoneNumber: raw,
+                                  selectedCountry: _selectedCountry,
+                                );
+                            return own.isValid &&
+                                own.phoneNumberForApi == recipientApi;
+                          }
+
+                          final isOwnNumber =
+                              matchesOwn(activeTn) ||
+                              matchesOwn(primaryPhone) ||
+                              matchesOwn(account?.phoneNumber.trim() ?? '');
+                          if (isOwnNumber) {
                             AppToast.show(
                               message:
                                   'You cannot send a top-up to your own number.',
