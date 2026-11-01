@@ -17,11 +17,12 @@ class ForgetPasswordBloc
   ForgetPasswordBloc({
     required this.repository,
     AnalyticsService? analyticsService,
-  })  : _analyticsService = analyticsService ??
-            (instance.isRegistered<AnalyticsService>()
-                ? instance<AnalyticsService>()
-                : AnalyticsService()),
-        super(const ForgetPasswordState()) {
+  }) : _analyticsService =
+           analyticsService ??
+           (instance.isRegistered<AnalyticsService>()
+               ? instance<AnalyticsService>()
+               : AnalyticsService()),
+       super(const ForgetPasswordState()) {
     on<ForgetPasswordPhoneChanged>((event, emit) {
       emit(
         state.copyWith(

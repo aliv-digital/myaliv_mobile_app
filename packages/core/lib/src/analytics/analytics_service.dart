@@ -175,8 +175,7 @@ class AnalyticsService {
       _log(AnalyticsEvent.passwordResetCompleted);
 
   /// Log a terminal failure at any step of the password-reset flow.
-  Future<void> logPasswordResetFailed({required String failureReason}) =>
-      _log(
+  Future<void> logPasswordResetFailed({required String failureReason}) => _log(
         AnalyticsEvent.passwordResetFailed,
         params: {AnalyticsParam.failureReason: failureReason},
       );

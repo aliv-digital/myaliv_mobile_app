@@ -27,10 +27,14 @@ class _Analytics extends Fake implements AnalyticsService {
   }) async {}
 
   @override
-  Future<void> logOtpRequested({String otpChannel = AnalyticsOtpChannel.sms}) async {}
+  Future<void> logOtpRequested({
+    String otpChannel = AnalyticsOtpChannel.sms,
+  }) async {}
 
   @override
-  Future<void> logOtpVerified({String otpChannel = AnalyticsOtpChannel.sms}) async {}
+  Future<void> logOtpVerified({
+    String otpChannel = AnalyticsOtpChannel.sms,
+  }) async {}
 
   @override
   Future<void> logOtpFailed({

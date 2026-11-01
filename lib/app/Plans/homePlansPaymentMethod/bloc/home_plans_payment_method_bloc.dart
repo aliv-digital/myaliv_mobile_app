@@ -354,8 +354,9 @@ class HomePlansPaymentMethodBloc
     await instance<AnalyticsService>().logPurchase(
       itemId: item.id,
       itemName: item.title,
-      itemCategory:
-          isPrimary ? AnalyticsItemCategory.plan : AnalyticsItemCategory.addon,
+      itemCategory: isPrimary
+          ? AnalyticsItemCategory.plan
+          : AnalyticsItemCategory.addon,
       amount: state.amount,
       paymentMethod: _paymentMethodLabel(state.paymentMode),
       transactionId: transactionId,

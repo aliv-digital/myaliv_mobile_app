@@ -32,7 +32,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
        authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
-       _analyticsService = analyticsService ??
+       _analyticsService =
+           analyticsService ??
            (instance.isRegistered<AnalyticsService>()
                ? instance<AnalyticsService>()
                : AnalyticsService()),
@@ -275,7 +276,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       // so classify() routes them to AnalyticsLoginFailureReason.invalidCredentials;
       // "FailedUsernameIsLocked" contains "locked" so classify() picks lockedAccount
       // on its own; network/system errors fall through to the default classification.
-      final isInvalidCreds = message == 'FailedUsernameOrPassword' ||
+      final isInvalidCreds =
+          message == 'FailedUsernameOrPassword' ||
           message == 'FailedSimpleValidation';
       await _analyticsService.logLoginFailure(
         method: AnalyticsLoginMethod.password,
