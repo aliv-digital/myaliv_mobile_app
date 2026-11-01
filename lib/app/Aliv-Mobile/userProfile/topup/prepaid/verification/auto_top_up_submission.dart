@@ -39,8 +39,7 @@ class AutoTopUpSubmission {
     if (_closed || _pending != null || deviceLimitsCubit.state.isUpdating) {
       return null;
     }
-    if (snapshot.deviceId <= 0 ||
-        ActiveDevice.id() != snapshot.deviceId) {
+    if (snapshot.deviceId <= 0 || ActiveDevice.id() != snapshot.deviceId) {
       return false;
     }
     if (!identical(verifiedResult.attemptId, snapshot.attemptId) ||
