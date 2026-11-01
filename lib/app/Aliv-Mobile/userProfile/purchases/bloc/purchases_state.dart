@@ -1,39 +1,39 @@
 import 'package:equatable/equatable.dart';
-import '../model/purchase_prepaid_models.dart';
+import '../model/purchases_models.dart';
 
-enum PurchasePrepaidLoadStatus { initial, loading, ready, failure }
+enum PurchasesLoadStatus { initial, loading, ready, failure }
 
-class PurchasePrepaidState extends Equatable {
-  final PurchasePrepaidLoadStatus status;
-  final List<PurchasePrepaidMenuItem> items;
+class PurchasesState extends Equatable {
+  final PurchasesLoadStatus status;
+  final List<PurchasesMenuItem> items;
   final String? errorMessage;
 
   /// one-shot navigation
-  final PurchasePrepaidAction? navigateTo;
+  final PurchasesAction? navigateTo;
 
-  const PurchasePrepaidState({
+  const PurchasesState({
     required this.status,
     required this.items,
     required this.errorMessage,
     required this.navigateTo,
   });
 
-  factory PurchasePrepaidState.initial() => const PurchasePrepaidState(
-    status: PurchasePrepaidLoadStatus.initial,
+  factory PurchasesState.initial() => const PurchasesState(
+    status: PurchasesLoadStatus.initial,
     items: [],
     errorMessage: null,
     navigateTo: null,
   );
 
-  PurchasePrepaidState copyWith({
-    PurchasePrepaidLoadStatus? status,
-    List<PurchasePrepaidMenuItem>? items,
+  PurchasesState copyWith({
+    PurchasesLoadStatus? status,
+    List<PurchasesMenuItem>? items,
     String? errorMessage,
     bool clearError = false,
-    PurchasePrepaidAction? navigateTo,
+    PurchasesAction? navigateTo,
     bool clearNavigation = false,
   }) {
-    return PurchasePrepaidState(
+    return PurchasesState(
       status: status ?? this.status,
       items: items ?? this.items,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
