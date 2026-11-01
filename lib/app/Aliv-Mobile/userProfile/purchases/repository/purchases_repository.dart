@@ -11,14 +11,8 @@ class PurchasesRepository {
           title: 'add/edit credit cards',
           action: PurchasesAction.addEditCreditCards,
         ),
-        PurchasesMenuItem(
-          title: 'top-up',
-          action: PurchasesAction.topUp,
-        ),
-        PurchasesMenuItem(
-          title: 'buy plans',
-          action: PurchasesAction.buyPlans,
-        ),
+        PurchasesMenuItem(title: 'top-up', action: PurchasesAction.topUp),
+        PurchasesMenuItem(title: 'buy plans', action: PurchasesAction.buyPlans),
         PurchasesMenuItem(
           title: 'future plans',
           action: PurchasesAction.futurePlans,
@@ -39,17 +33,11 @@ class PurchasesRepository {
           title: 'auto renew',
           action: PurchasesAction.autoRenew,
         ),
-        PurchasesMenuItem(
-          title: 'add-ons',
-          action: PurchasesAction.addOns,
-        ),
+        PurchasesMenuItem(title: 'add-ons', action: PurchasesAction.addOns),
       ];
     } else {
       return const [
-        PurchasesMenuItem(
-          title: 'buy plans',
-          action: PurchasesAction.buyPlans,
-        ),
+        PurchasesMenuItem(title: 'buy plans', action: PurchasesAction.buyPlans),
         PurchasesMenuItem(
           title: 'make payment',
           action: PurchasesAction.makePayment,
@@ -62,14 +50,8 @@ class PurchasesRepository {
           title: 'future plans',
           action: PurchasesAction.futurePlans,
         ),
-        PurchasesMenuItem(
-          title: 'auto pay',
-          action: PurchasesAction.autoPay,
-        ),
-        PurchasesMenuItem(
-          title: 'my limits',
-          action: PurchasesAction.myLimits,
-        ),
+        PurchasesMenuItem(title: 'auto pay', action: PurchasesAction.autoPay),
+        PurchasesMenuItem(title: 'my limits', action: PurchasesAction.myLimits),
         PurchasesMenuItem(
           title: 'review invoices',
           action: PurchasesAction.reviewInvoices,

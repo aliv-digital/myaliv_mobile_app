@@ -232,9 +232,7 @@ class _AutoPayAwareMenuList extends StatelessWidget {
       buildWhen: (p, c) => p.autoPayInvoice != c.autoPayInvoice,
       builder: (context, acctState) {
         final visibleItems = acctState.autoPayInvoice
-            ? items
-                  .where((i) => i.action != PurchasesAction.autoPay)
-                  .toList()
+            ? items.where((i) => i.action != PurchasesAction.autoPay).toList()
             : items;
         return PurchasesMenuList(
           items: visibleItems,
