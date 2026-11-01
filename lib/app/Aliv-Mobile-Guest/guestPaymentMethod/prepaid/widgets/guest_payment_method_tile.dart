@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import '../theme/guest_payment_method_prepaid_theme.dart';
 
 class GuestPaymentMethodTile extends StatelessWidget {
@@ -51,14 +51,8 @@ class GuestPaymentMethodTile extends StatelessWidget {
         child: Row(
           children: [
             if (showLogo) ...[
-              SizedBox(
-                width: GuestPaymentMethodPrepaidTheme.savedCardLogoWidth,
-                height: GuestPaymentMethodPrepaidTheme.savedCardLogoHeight,
-                child: SvgPicture.asset(
-                  logoSvgAsset, // ✅ তুমি পরে path set করবে
-                  fit: BoxFit.contain,
-                ),
-              ),
+              // Previous artwork: SvgPicture.asset(logoSvgAsset).
+              const PaymentMethodIcon.savedCard(),
               const SizedBox(width: 12),
             ],
             Expanded(

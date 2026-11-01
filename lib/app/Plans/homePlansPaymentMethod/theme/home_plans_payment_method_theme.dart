@@ -42,6 +42,10 @@ class HomePlansPaymentMethodTheme {
   static const EdgeInsets payWithCardRowPadding = EdgeInsets.zero;
   static const double payWithCardChevronSize = 16;
   static const double paymentActionIconSize = 20;
+  static const Color paymentIconBorder = Color(0xFFF2F3F6);
+  static const double paymentIconBorderWidth = 1;
+  static const double paymentIconCornerRadius = 6;
+  static const double paymentIconToTextGap = 12;
   static const double walletChipHorizontalPadding = 8;
   static const double walletChipVerticalPadding = 2;
   static const double walletChipCornerRadius = 100;

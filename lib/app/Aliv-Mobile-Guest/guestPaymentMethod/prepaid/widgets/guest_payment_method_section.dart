@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import '../model/guest_payment_method_prepaid_models.dart';
 import '../theme/guest_payment_method_prepaid_theme.dart';
 import 'guest_payment_method_tile.dart';
@@ -81,15 +82,12 @@ class GuestPaymentMethodSection extends StatelessWidget {
           InkWell(
             onTap: onPayWithCard,
             child: Padding(
-              padding: GuestPaymentMethodPrepaidTheme.payWithCardRowPadding,
+              padding: GuestPaymentMethodPrepaidTheme.savedCardTilePadding,
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.add,
-                    size: 18,
-                    color: GuestPaymentMethodPrepaidTheme.plus,
-                  ),
-                  const SizedBox(width: 8),
+                  // Previous artwork: Icon(Icons.add, size: 18, color: GuestPaymentMethodPrepaidTheme.plus).
+                  const PaymentMethodIcon.addCard(),
+                  const SizedBox(width: PaymentMethodIcon.textGap),
                   Text(
                     'pay with card',
                     style: GuestPaymentMethodPrepaidTheme.addCard,

@@ -78,6 +78,8 @@ class AssetConstant {
   static const walletIconSVGPayment = 'assets/icons/payment_wallet.svg';
   static const addCardIconSVG = 'assets/icons/addcard.svg';
   static const creditCardIconSVG = 'assets/icons/credit_card.svg';
+  static const savedCreditCardsPNG = 'assets/icons/saved_credit_cards.png';
+  static const plusAddPNG = 'assets/icons/plus_add.png';
   static const blackRoundedCrossSVG = 'assets/icons/ic_back_bold.svg';
   static const roundedTikSVG = 'assets/icons/rounded_tik.svg';
   static const redCreditCardSVG = 'assets/icons/redcreditcard.svg';

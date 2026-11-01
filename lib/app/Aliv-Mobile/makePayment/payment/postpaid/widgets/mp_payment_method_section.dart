@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart';
 
 import '../theme/make_payment_postpaid_theme.dart';
@@ -127,19 +128,14 @@ class _PayWithCardTile extends StatelessWidget {
       onTap: onTap,
       contentPadding:
           MakePaymentPostPaidTheme.paymentMethodPayWithCardRowPadding,
-      leadingWidth:
-          MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingWidth,
+      leadingWidth: PaymentMethodIcon.width,
       leadingHeight:
           MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingHeight,
-      leadingToTextGap:
-          MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingToTextGap,
+      leadingToTextGap: PaymentMethodIcon.textGap,
       unselectedRadioFill:
           MakePaymentPostPaidTheme.paymentMethodUnselectedIndicatorColor,
-      leading: const Icon(
-        Icons.add,
-        size: 18,
-        color: MakePaymentPostPaidTheme.paymentMethodAccent,
-      ),
+      // Previous artwork: Icon(Icons.add, size: 18, color: MakePaymentPostPaidTheme.paymentMethodAccent).
+      leading: const PaymentMethodIcon.addCard(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import '../model/rev_payment_method_prepaid_models.dart';
 import '../theme/rev_payment_method_prepaid_theme.dart';
 import 'rev_payment_method_tile.dart';
@@ -64,15 +65,15 @@ class RevPaymentMethodSection extends StatelessWidget {
           InkWell(
             onTap: onPayWithCard,
             child: Padding(
-              padding: RevPaymentMethodPrepaidTheme.payWithCardRowPadding,
+              padding: RevPaymentMethodPrepaidTheme.paymentTilePadding,
               child: Row(
                 children: [
-                  Icon(
-                    Icons.add,
-                    size: 18,
-                    color: RevPaymentMethodPrepaidTheme.plus,
+                  // Previous artwork: Icon(Icons.add, size: 18, color: RevPaymentMethodPrepaidTheme.plus).
+                  const PaymentMethodIcon.addCard(),
+                  const SizedBox(
+                    width:
+                        RevPaymentMethodPrepaidTheme.paymentTileLogoToTextGap,
                   ),
-                  const SizedBox(width: 8),
                   Text(
                     'pay with card',
                     style: RevPaymentMethodPrepaidTheme.addCard,

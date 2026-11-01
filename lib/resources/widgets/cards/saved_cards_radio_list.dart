@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/saved_card_brand_box.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 
 enum CardBrand { visa, mastercard, unknown }
 
@@ -134,7 +135,7 @@ class SavedCardRadioTile extends StatelessWidget {
   static const _unselectedRadioBorder = Color(0xFFCFCFCF);
 
   static const double _defaultTileRadius = 12;
-  static const double _defaultLogoBoxWidth = 56;
+  static const double _defaultLogoBoxWidth = PaymentMethodIcon.width;
   static const double _defaultLogoBoxHeight = 40;
   static const double _logoBoxRadius = 8;
   static const double _defaultRadioSize = 22;
@@ -182,6 +183,13 @@ class SavedCardRadioTile extends StatelessWidget {
         width: logoBoxWidth ?? _defaultLogoBoxWidth,
         height: logoBoxHeight ?? _defaultLogoBoxHeight,
         fit: BoxFit.contain,
+      );
+    }
+    if (brand == CardBrand.unknown) {
+      return SizedBox(
+        width: logoBoxWidth ?? _defaultLogoBoxWidth,
+        height: logoBoxHeight ?? _defaultLogoBoxHeight,
+        child: const Center(child: PaymentMethodIcon.savedCard()),
       );
     }
     return SavedCardBrandBox(
