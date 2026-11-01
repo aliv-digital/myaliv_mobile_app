@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
 import '../../logic/auto_top_up_validation.dart';
 import '../../theme/top_up_prepaid_theme.dart';

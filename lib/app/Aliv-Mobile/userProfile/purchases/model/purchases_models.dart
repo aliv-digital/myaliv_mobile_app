@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum PurchasePrepaidAction {
+enum PurchasesAction {
   addEditCreditCards,
   topUpPrepaidNumber,
   buyPlans,
@@ -17,11 +17,11 @@ enum PurchasePrepaidAction {
   autoPay,
 }
 
-class PurchasePrepaidMenuItem extends Equatable {
+class PurchasesMenuItem extends Equatable {
   final String title;
-  final PurchasePrepaidAction action;
+  final PurchasesAction action;
 
-  const PurchasePrepaidMenuItem({required this.title, required this.action});
+  const PurchasesMenuItem({required this.title, required this.action});
 
   @override
   List<Object?> get props => [title, action];

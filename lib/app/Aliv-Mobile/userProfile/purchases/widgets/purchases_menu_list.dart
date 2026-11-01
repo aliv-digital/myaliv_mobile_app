@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../model/purchase_prepaid_models.dart';
-import '../theme/purchase_prepaid_theme.dart';
-import 'purchase_prepaid_menu_tile.dart';
+import '../model/purchases_models.dart';
+import '../theme/purchases_theme.dart';
+import 'purchases_menu_tile.dart';
 
-class PurchasePrepaidMenuList extends StatelessWidget {
-  final List<PurchasePrepaidMenuItem> items;
-  final ValueChanged<PurchasePrepaidMenuItem> onTapItem;
+class PurchasesMenuList extends StatelessWidget {
+  final List<PurchasesMenuItem> items;
+  final ValueChanged<PurchasesMenuItem> onTapItem;
   final bool showTopDivider;
 
-  const PurchasePrepaidMenuList({
+  const PurchasesMenuList({
     super.key,
     required this.items,
     required this.onTapItem,
@@ -18,19 +18,19 @@ class PurchasePrepaidMenuList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: PurchasePrepaidTheme.tileBg,
+      color: PurchasesTheme.tileBg,
       child: Column(
         children: [
           if (showTopDivider)
             const Divider(
               height: 1,
               thickness: 1,
-              indent: PurchasePrepaidTheme.horizontalPad,
-              endIndent: PurchasePrepaidTheme.horizontalPad,
-              color: PurchasePrepaidTheme.divider,
+              indent: PurchasesTheme.horizontalPad,
+              endIndent: PurchasesTheme.horizontalPad,
+              color: PurchasesTheme.divider,
             ),
           for (int i = 0; i < items.length; i++) ...[
-            PurchasePrepaidMenuTile(
+            PurchasesMenuTile(
               title: items[i].title,
               onTap: () => onTapItem(items[i]),
             ),
@@ -38,9 +38,9 @@ class PurchasePrepaidMenuList extends StatelessWidget {
               const Divider(
                 height: 1,
                 thickness: 1,
-                indent: PurchasePrepaidTheme.horizontalPad,
-                endIndent: PurchasePrepaidTheme.horizontalPad,
-                color: PurchasePrepaidTheme.divider,
+                indent: PurchasesTheme.horizontalPad,
+                endIndent: PurchasesTheme.horizontalPad,
+                color: PurchasesTheme.divider,
               ),
           ],
         ],
