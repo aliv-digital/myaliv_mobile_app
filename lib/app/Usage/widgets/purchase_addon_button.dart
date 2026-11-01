@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -13,6 +14,8 @@ class PurchaseAddOnButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
+    if (isRestricted) return const SizedBox.shrink();
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (a, b) =>
           a.status != b.status ||

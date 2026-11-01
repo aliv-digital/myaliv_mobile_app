@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
@@ -10,6 +12,7 @@ class PrepaidBalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
@@ -35,46 +38,47 @@ class PrepaidBalanceCard extends StatelessWidget {
               'reward balance',
               const BalanceAmountText(type: BalanceType.bonus),
             ),
-            const SizedBox(height: 12),
-
-            GestureDetector(
-              onTap: () {
-                context.push(AppRoutes.topUpPrepaidScreen);
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: HomeScreen.purple,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/card-add-pre.svg',
-                      width: 21,
-                      height: 21,
-                    ),
-                    const SizedBox(width: 10),
-                    const SizedBox(
-                      height: 21,
-                      child: Text(
-                        'add top-up',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Color(0xFFF1F1F8),
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
+            if (!isRestricted) ...[
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () {
+                  context.push(AppRoutes.topUpPrepaidScreen);
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: HomeScreen.purple,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/card-add-pre.svg',
+                        width: 21,
+                        height: 21,
+                      ),
+                      const SizedBox(width: 10),
+                      const SizedBox(
+                        height: 21,
+                        child: Text(
+                          'add top-up',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Color(0xFFF1F1F8),
+                            fontSize: 15,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/logic/add_on_eligibility.dart';
+
 import '../../PlanScreen/models/base_plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
 
@@ -56,11 +58,13 @@ class PlanPurchasePlanAddOnsRepository {
   List<PlanPurchaseAddOnItem> mapAvailableBoltOnsToAddOnItems(
     BasePlanModel? primaryPlan,
   ) {
-    if (primaryPlan == null) {
+    if (primaryPlan == null ||
+        !isAddOnEligiblePrimaryName(primaryPlan.planName)) {
       return const <PlanPurchaseAddOnItem>[];
     }
 
     return primaryPlan.availableBoltOns
+        .where((addOnPlan) => isAllowedBoltOnName(addOnPlan.planName))
         .map(
           (addOnPlan) => PlanPurchaseAddOnItem(
             id: addOnPlan.planId,

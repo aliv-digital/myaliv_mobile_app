@@ -104,13 +104,11 @@ class AppMenuDrawer extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16.0, right: 16),
               child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
             ),
-            if (!isRestricted)
-              _item('assets/icons/purchase.svg', 'purchases', context),
-            if (!isRestricted)
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16),
-                child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
-              ),
+            _item('assets/icons/purchase.svg', 'purchases', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item('assets/icons/refer.svg', 'refer a friend', context),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16),

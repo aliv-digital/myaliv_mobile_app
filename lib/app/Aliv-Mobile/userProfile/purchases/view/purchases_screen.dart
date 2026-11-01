@@ -97,7 +97,7 @@ class _PurchasesView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 6),
                       sliver: SliverToBoxAdapter(
                         child: _AutoPayAwareMenuList(
-                          items: state.items,
+                          items: _filterForRole(context, state.items),
                           onTap: (item) {
                             context.read<PurchasesBloc>().add(
                               PurchasesItemTapped(item.action),
@@ -114,6 +114,22 @@ class _PurchasesView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<PurchasesMenuItem> _filterForRole(
+    BuildContext context,
+    List<PurchasesMenuItem> items,
+  ) {
+    final config = context.watch<AppUiConfigCubit>().state;
+    if (!config.isRestricted) return items;
+    final allowed = config.isPrepaid
+        ? const {PurchasesAction.futurePlans}
+        : const {
+            PurchasesAction.futurePlans,
+            PurchasesAction.myLimits,
+            PurchasesAction.reviewInvoices,
+          };
+    return items.where((i) => allowed.contains(i.action)).toList();
   }
 
   void _handleNavigation(BuildContext context, PurchasesAction action) {
