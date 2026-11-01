@@ -341,36 +341,47 @@ void main() {
     });
   }
 
-  historyTest('six wrong History OTPs redirect home with the existing error', (
-    tester,
-  ) async {
-    final h = _Harness();
-    await h.pump(tester);
-    await h.enter(tester, HistoryDestination.callLogs);
-    h.verifyFailure = NetworkException(
-      'Two Factor Key Invalid',
-      statusCode: 400,
-      data: {'ErrorCode': 202, 'ErrorCodeName': 'TwoFactorKeyInvalid'},
-    );
-    for (var i = 1; i <= 6; i++) {
-      await h.submit(tester);
-      await tester.pumpAndSettle();
-      expect(find.text('Invalid OTP'), findsOneWidget, reason: 'attempt $i');
-      expect(
-        find.byType(CallLogsOtpScreen),
-        i < 6 ? findsOneWidget : findsNothing,
+  historyTest(
+    'six wrong History OTPs show the attempt-limit toast and redirect home',
+    (tester) async {
+      final h = _Harness();
+      await h.pump(tester);
+      await h.enter(tester, HistoryDestination.callLogs);
+      h.verifyFailure = NetworkException(
+        'Two Factor Key Invalid',
+        statusCode: 400,
+        data: {'ErrorCode': 202, 'ErrorCodeName': 'TwoFactorKeyInvalid'},
       );
-      if (i < 6) {
-        await tester.pump(const Duration(seconds: 3));
+      const limitMessage = 'Too many failed OTP attempts. Please try again.';
+      for (var i = 1; i <= 6; i++) {
+        await h.submit(tester);
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Invalid OTP'),
+          i < 6 ? findsOneWidget : findsNothing,
+          reason: 'attempt $i',
+        );
+        expect(
+          find.text(limitMessage),
+          i < 6 ? findsNothing : findsOneWidget,
+          reason: 'the attempt-limit toast appears only on attempt six',
+        );
+        expect(
+          find.byType(CallLogsOtpScreen),
+          i < 6 ? findsOneWidget : findsNothing,
+        );
+        if (i < 6) {
+          await tester.pump(const Duration(seconds: 3));
+        }
       }
-    }
-    expect(h.verifyPayloads, hasLength(6));
-    expect(h.router.routeInformationProvider.value.uri.path, AppRoutes.home);
-    expect(h.router.canPop(), isFalse);
-    expect(h.session.isVerified, isFalse);
-    expect(h.savedSession, isNull);
-    expect(h.calls.requests, 0);
-  });
+      expect(h.verifyPayloads, hasLength(6));
+      expect(h.router.routeInformationProvider.value.uri.path, AppRoutes.home);
+      expect(h.router.canPop(), isFalse);
+      expect(h.session.isVerified, isFalse);
+      expect(h.savedSession, isNull);
+      expect(h.calls.requests, 0);
+    },
+  );
 
   for (final prepaid in [true, false]) {
     historyTest(
