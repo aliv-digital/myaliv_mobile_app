@@ -30,127 +30,129 @@ class SavePasswordBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-        decoration: const BoxDecoration(
-          color: _sheetBackground,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 56,
-                  height: 56,
-                  child: SvgPicture.asset('assets/icons/featured_icon.svg'),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  icon: const Icon(
-                    Icons.close,
-                    size: 20,
-                    color: _closeIcon,
-                    fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: _sheetBackground,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: SvgPicture.asset('assets/icons/featured_icon.svg'),
                   ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: const BorderSide(color: _closeIcon, width: 2.0),
-                    shape: const CircleBorder(
-                      side: BorderSide(color: _closeIcon),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    icon: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: _closeIcon,
+                      fontWeight: FontWeight.bold,
                     ),
-                    padding: const EdgeInsets.all(6),
-                    minimumSize: const Size(32, 32),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: const BorderSide(color: _closeIcon, width: 2.0),
+                      shape: const CircleBorder(
+                        side: BorderSide(color: _closeIcon),
+                      ),
+                      padding: const EdgeInsets.all(6),
+                      minimumSize: const Size(32, 32),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'save new password?',
-              style: TextStyle(
-                color: _textPrimary,
-                fontSize: 18,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
-                height: 1.56,
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'would you like to save your new password for faster sign-in next '
-              'time?',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-                height: 1.43,
+              const SizedBox(height: 16),
+              const Text(
+                'save new password?',
+                style: TextStyle(
+                  color: _textPrimary,
+                  fontSize: 18,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                  height: 1.56,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        surfaceTintColor: Colors.transparent,
-                        elevation: 0,
-                        side: BorderSide.none,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
+              const SizedBox(height: 8),
+              const Text(
+                'would you like to save your new password for faster sign-in next '
+                'time?',
+                style: TextStyle(
+                  color: _textSecondary,
+                  fontSize: 14,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                  height: 1.43,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          surfaceTintColor: Colors.transparent,
+                          elevation: 0,
+                          side: BorderSide.none,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
                         ),
-                      ),
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text(
-                        'not now',
-                        style: TextStyle(
-                          color: _primary,
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text(
+                          'not now',
+                          style: TextStyle(
+                            color: _primary,
+                            fontSize: 15,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _primary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
                         ),
-                      ),
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text(
-                        'save password',
-                        style: TextStyle(
-                          color: _sheetBackground,
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text(
+                          'save password',
+                          style: TextStyle(
+                            color: _sheetBackground,
+                            fontSize: 15,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

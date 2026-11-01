@@ -20,104 +20,105 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AddOrEditCardsPrepaidTheme.pageBg,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-        ),
-        // padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Top row: back arrow (left)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
+    return Container(
+      decoration: const BoxDecoration(
+        color: AddOrEditCardsPrepaidTheme.pageBg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Top row: back arrow (left)
+              Align(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-            ),
-
-            // const SizedBox(height: 20),
-            const SizedBox(height: 8),
-
-            // Message center
-            Text(
-              'are you sure you want to remove \nyour saved card?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: const Color(0xFF121212),
-                fontSize: 16,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // OK Button
-            SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AddOrEditCardsPrepaidTheme.primary,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                ),
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  'ok',
-                  style: TextStyle(
-                    color: const Color(0xFFF1F1F8),
-                    fontSize: 13,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
+                child: IconButton(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop(false),
                 ),
               ),
-            ),
 
-            // Previous cancel action is retained but hidden in the updated design.
-            // const SizedBox(height: 12),
-            //
-            // // CARD-009: explicit cancel dismisses only (returns false).
-            // SizedBox(
-            //   height: 50,
-            //   width: double.infinity,
-            //   child: ElevatedButton(
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.white,
-            //       elevation: 0,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(28),
-            //         side: const BorderSide(
-            //           color: AddOrEditCardsPrepaidTheme.primary,
-            //         ),
-            //       ),
-            //     ),
-            //     onPressed: () => Navigator.of(context).pop(false),
-            //     child: const Text(
-            //       'cancel',
-            //       style: TextStyle(
-            //         color: AddOrEditCardsPrepaidTheme.primary,
-            //         fontSize: 13,
-            //         fontFamily: 'CircularPro',
-            //         fontWeight: FontWeight.w700,
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            //
-            // const SizedBox(height: 10),
-          ],
+              // const SizedBox(height: 20),
+              const SizedBox(height: 8),
+
+              // Message center
+              Text(
+                'are you sure you want to remove \nyour saved card?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: const Color(0xFF121212),
+                  fontSize: 16,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // OK Button
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AddOrEditCardsPrepaidTheme.primary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                    'ok',
+                    style: TextStyle(
+                      color: const Color(0xFFF1F1F8),
+                      fontSize: 13,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Previous cancel action is retained but hidden in the updated design.
+              // const SizedBox(height: 12),
+              //
+              // // CARD-009: explicit cancel dismisses only (returns false).
+              // SizedBox(
+              //   height: 50,
+              //   width: double.infinity,
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.white,
+              //       elevation: 0,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(28),
+              //         side: const BorderSide(
+              //           color: AddOrEditCardsPrepaidTheme.primary,
+              //         ),
+              //       ),
+              //     ),
+              //     onPressed: () => Navigator.of(context).pop(false),
+              //     child: const Text(
+              //       'cancel',
+              //       style: TextStyle(
+              //         color: AddOrEditCardsPrepaidTheme.primary,
+              //         fontSize: 13,
+              //         fontFamily: 'CircularPro',
+              //         fontWeight: FontWeight.w700,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              //
+              // const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
