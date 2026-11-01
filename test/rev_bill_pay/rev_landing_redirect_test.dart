@@ -21,13 +21,13 @@ void main() {
     launched.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, (call) async {
-          if (call.method == 'launch') {
-            launched.add((call.arguments as Map)['url'] as String);
-            return true;
-          }
-          if (call.method == 'canLaunch') return true;
-          return null;
-        });
+      if (call.method == 'launch') {
+        launched.add((call.arguments as Map)['url'] as String);
+        return true;
+      }
+      if (call.method == 'canLaunch') return true;
+      return null;
+    });
   });
 
   tearDown(() {
@@ -48,37 +48,23 @@ void main() {
     ('Pay as a Guest', 'https://my.rev.bs/guest/payment'),
     ('Log in to Pay', 'https://my.rev.bs/'),
   ]) {
-    testWidgets('REV-003 "$label" asks before leaving myALIV', (tester) async {
-      await pumpLanding(tester);
-      await tester.tap(find.text(label));
-      await tester.pumpAndSettle();
-      expect(find.text(_question), findsOneWidget);
-      expect(find.text('continue'), findsOneWidget);
-      expect(find.text('cancel'), findsOneWidget);
-      expect(launched, isEmpty);
-    });
+    for (final size in [const Size(320, 700), const Size(430, 932)]) {
+      testWidgets('$label opens $url directly at $size', (tester) async {
+        await pumpLanding(tester);
+        tester.view.physicalSize = size;
+        await tester.pumpAndSettle();
+        expect(launched, isEmpty);
 
-    testWidgets('REV-003 "$label" continue opens the existing REV URL', (
-      tester,
-    ) async {
-      await pumpLanding(tester);
-      await tester.tap(find.text(label));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('continue'));
-      await tester.pumpAndSettle();
-      expect(find.text(_question), findsNothing);
-      expect(launched, [url]);
-    });
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
 
-    testWidgets('REV-003 "$label" cancel opens nothing', (tester) async {
-      await pumpLanding(tester);
-      await tester.tap(find.text(label));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('cancel'));
-      await tester.pumpAndSettle();
-      expect(find.text(_question), findsNothing);
-      expect(find.text(label), findsOneWidget);
-      expect(launched, isEmpty);
-    });
+        expect(launched, [url]);
+        expect(find.byType(BottomSheet), findsNothing);
+        expect(find.text(_question), findsNothing);
+        expect(find.text('continue'), findsNothing);
+        expect(find.text('cancel'), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
   }
 }

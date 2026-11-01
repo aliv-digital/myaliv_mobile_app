@@ -5,7 +5,6 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/widgets/rev_landing_bottom_decoration.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/widgets/rev_landing_choice_button.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/widgets/rev_landing_hero_image.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/widgets/rev_landing_leave_confirm_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RevLandingPrepaidScreen extends StatelessWidget {
@@ -17,13 +16,6 @@ class RevLandingPrepaidScreen extends StatelessWidget {
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  /// REV-003: confirm before leaving myALIV; cancel opens nothing.
-  Future<void> _confirmAndOpen(BuildContext context, String url) async {
-    final confirmed = await RevLandingLeaveConfirmSheet.show(context);
-    if (!confirmed) return;
-    await _openUrl(url);
   }
 
   @override
@@ -72,8 +64,7 @@ class RevLandingPrepaidScreen extends StatelessWidget {
                           Center(
                             child: RevLandingChoiceButton(
                               label: 'Pay as a Guest',
-                              onPressed: () =>
-                                  _confirmAndOpen(context, _payAsGuestUrl),
+                              onPressed: () => _openUrl(_payAsGuestUrl),
                             ),
                           ),
                           const SizedBox(
@@ -82,8 +73,7 @@ class RevLandingPrepaidScreen extends StatelessWidget {
                           Center(
                             child: RevLandingChoiceButton(
                               label: 'Log in to Pay',
-                              onPressed: () =>
-                                  _confirmAndOpen(context, _loginToPayUrl),
+                              onPressed: () => _openUrl(_loginToPayUrl),
                             ),
                           ),
                           const Expanded(child: SizedBox.shrink()),

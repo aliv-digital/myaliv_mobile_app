@@ -21,7 +21,6 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/theme/theme.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class _MockPlansCubit extends MockCubit<PlansState> implements PlansCubit {}
@@ -72,9 +71,10 @@ void _expectWarningAppearance(
   expect(decoration.borderRadius, BorderRadius.circular(8));
   expect(container.padding, const EdgeInsets.all(10));
   final messageStyle = tester.widget<Text>(message).style!;
-  expect(messageStyle.color, ColorManager.primaryRedFF0000);
-  expect(messageStyle.fontFamily, 'CircularPro');
-  expect(messageStyle.fontSize, 12);
+  expect(messageStyle.color, const Color(0xFFFD2F38));
+  expect(messageStyle.fontFamily, 'CircularProBold');
+  expect(messageStyle.fontSize, 14);
+  expect(messageStyle.fontWeight, FontWeight.w700);
   expect(messageStyle.height, 1.3);
   final icon = find.byIcon(Icons.error_outline);
   expect(icon, findsOneWidget);
@@ -83,8 +83,10 @@ void _expectWarningAppearance(
   expect(tester.getTopLeft(message).dx - tester.getTopLeft(icon).dx, 26);
   final link = find.descendant(of: banner, matching: find.text(actionText));
   expect(tester.widget<Text>(link).style?.decoration, TextDecoration.underline);
-  expect(tester.widget<Text>(link).style?.color, ColorManager.primaryRedFF0000);
-  expect(tester.widget<Text>(link).style?.fontSize, 12);
+  expect(tester.widget<Text>(link).style?.color, messageStyle.color);
+  expect(tester.widget<Text>(link).style?.fontSize, 14);
+  expect(tester.widget<Text>(link).style?.fontFamily, 'CircularProBold');
+  expect(tester.widget<Text>(link).style?.fontWeight, FontWeight.w700);
   expect(tester.getTopLeft(link).dx, tester.getTopLeft(message).dx);
   final arrow = find.byIcon(Icons.arrow_forward);
   expect(tester.widget<Icon>(arrow).size, 12);
@@ -104,6 +106,9 @@ void main() {
   late _MockDeviceLimitsCubit devices;
 
   setUpAll(() async {
+    await (FontLoader(
+      'CircularProBold',
+    )..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf'))).load();
     await (FontLoader('CircularPro')
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
