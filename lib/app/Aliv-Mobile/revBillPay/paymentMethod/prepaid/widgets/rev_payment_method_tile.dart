@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import '../theme/rev_payment_method_prepaid_theme.dart';
 
 class RevPaymentMethodTile extends StatelessWidget {
@@ -38,14 +38,8 @@ class RevPaymentMethodTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            SizedBox(
-              width: RevPaymentMethodPrepaidTheme.paymentTileLogoWidth,
-              height: RevPaymentMethodPrepaidTheme.paymentTileLogoHeight,
-              child: SvgPicture.asset(
-                logoSvgAsset, // ✅ তুমি পরে path set করবে
-                fit: BoxFit.contain,
-              ),
-            ),
+            // Previous artwork: SvgPicture.asset(logoSvgAsset).
+            const PaymentMethodIcon.savedCard(),
             const SizedBox(
               width: RevPaymentMethodPrepaidTheme.paymentTileLogoToTextGap,
             ),

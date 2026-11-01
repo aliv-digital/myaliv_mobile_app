@@ -119,7 +119,14 @@ void main() {
         if (count <= 4) {
           expect(find.byType(Scrollbar), findsNothing);
           expect(find.byType(ListView), findsNothing);
-          expect(find.byType(HomePlansPaymentMethodTile), findsNWidgets(count));
+          expect(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is HomePlansPaymentMethodTile &&
+                  widget.title.startsWith('card ending in '),
+            ),
+            findsNWidgets(count),
+          );
         } else {
           final bar = tester.widget<Scrollbar>(find.byType(Scrollbar));
           final list = tester.widget<ListView>(find.byType(ListView));
@@ -161,6 +168,18 @@ void main() {
     'other payment actions remain outside the saved-card scroll area',
     (tester) async {
       await pumpSection(tester, count: 6, showOtherMethods: true);
+      final savedCard = find.widgetWithText(
+        HomePlansPaymentMethodTile,
+        'card ending in 1001',
+      );
+      final savedTitleStyle = tester
+          .widget<Text>(find.text('card ending in 1001'))
+          .style;
+      for (final label in ['pay with card', 'pay from wallet']) {
+        final action = find.widgetWithText(HomePlansPaymentMethodTile, label);
+        expect(tester.getSize(action), tester.getSize(savedCard));
+        expect(tester.widget<Text>(find.text(label)).style, savedTitleStyle);
+      }
       for (final label in [
         'charge to my account',
         'pay with card',
@@ -188,7 +207,33 @@ void main() {
     testWidgets(
       'saved cards remain scrollable at width $width and larger text',
       (tester) async {
-        await pumpSection(tester, count: 6, width: width, textScale: 1.6);
+        await pumpSection(
+          tester,
+          count: 6,
+          width: width,
+          showOtherMethods: true,
+        );
+        final savedCardSize = tester.getSize(
+          find.widgetWithText(
+            HomePlansPaymentMethodTile,
+            'card ending in 1001',
+          ),
+        );
+        for (final label in ['pay with card', 'pay from wallet']) {
+          expect(
+            tester.getSize(
+              find.widgetWithText(HomePlansPaymentMethodTile, label),
+            ),
+            savedCardSize,
+          );
+        }
+        await pumpSection(
+          tester,
+          count: 6,
+          width: width,
+          textScale: 1.6,
+          showOtherMethods: true,
+        );
         await tester.drag(find.byType(ListView), const Offset(0, -900));
         await tester.pumpAndSettle();
         expect(find.text('card ending in 1005').hitTestable(), findsOneWidget);

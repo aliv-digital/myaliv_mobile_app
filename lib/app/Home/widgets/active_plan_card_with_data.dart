@@ -16,7 +16,6 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/theme/theme.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Temporary HOME-006 preview: opt in with --dart-define=debugForcePlanExpiryWarning=true.
@@ -168,6 +167,14 @@ class _PlanExpiryWarning extends StatefulWidget {
 
 class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
   static const _warningWindow = Duration(days: 3);
+  static const _textStyle = TextStyle(
+    color: Color(0xFFFD2F38),
+    fontSize: 14,
+    // Use the registered bold face; CircularPro maps w700 to the book font.
+    fontFamily: 'CircularProBold',
+    fontWeight: FontWeight.w700,
+    height: 1.3,
+  );
   Timer? _updateTimer;
 
   // In-memory, presentation-only expiry; the plan and its card are untouched.
@@ -241,7 +248,7 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
     final actionText = isExpired ? 'purchase a new plan' : 'renew your plan';
 
     // Real and debug expiry values share the same production banner UI.
-    final red = ColorManager.primaryRedFF0000;
+    final red = _textStyle.color!;
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 20),
       child: Container(
@@ -261,16 +268,7 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message,
-                    style: TextStyle(
-                      color: red,
-                      fontSize: 12,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
-                    ),
-                  ),
+                  Text(message, style: _textStyle),
                   const SizedBox(height: 4),
                   InkWell(
                     onTap: () {
@@ -286,12 +284,7 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
                       children: [
                         Text(
                           actionText,
-                          style: TextStyle(
-                            color: red,
-                            fontSize: 12,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
-                            height: 1.3,
+                          style: _textStyle.copyWith(
                             decoration: TextDecoration.underline,
                             decorationColor: red,
                           ),

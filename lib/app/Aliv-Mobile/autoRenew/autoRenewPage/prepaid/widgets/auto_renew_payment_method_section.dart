@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_saved_cards_list.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import '../theme/auto_renew_prepaid_theme.dart';
 
 class AutoRenewPaymentMethodSection extends StatelessWidget {
@@ -95,12 +94,8 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     return _StaticPaymentOptionTile(
       selected: selectedMethodId == AutoRenewPaymentMethod.wallet.id,
       onTap: onPayFromWallet,
-      leading: SvgPicture.asset(
-        AssetConstant.walletIconSVGPayment,
-        width: AutoRenewPrepaidTheme.addCardIconSize,
-        height: AutoRenewPrepaidTheme.addCardIconSize,
-        fit: BoxFit.contain,
-      ),
+      // Previous artwork used a square addCardIconSize slot for the wallet SVG.
+      leading: const PaymentMethodIcon.wallet(),
       title: 'pay from wallet',
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(
@@ -133,11 +128,8 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     return _StaticPaymentOptionTile(
       selected: payWithCardSelected,
       onTap: onPayWithCardSelected,
-      leading: const Icon(
-        Icons.add,
-        size: 18,
-        color: AutoRenewPrepaidTheme.primary,
-      ),
+      // Previous artwork: Icon(Icons.add, size: 18, color: AutoRenewPrepaidTheme.primary).
+      leading: const PaymentMethodIcon.addCard(),
       title: 'pay with card',
     );
   }
@@ -188,18 +180,21 @@ class _StaticPaymentOptionTile extends StatelessWidget {
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: leading == null ? 16 : 12,
+            vertical: 12,
+          ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: _tileMinHeight - 24),
             child: Row(
               children: [
                 if (leading != null) ...[
                   SizedBox(
-                    width: 20,
+                    width: PaymentMethodIcon.width,
                     height: 40,
                     child: Center(child: leading),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: PaymentMethodIcon.textGap),
                 ],
                 Expanded(
                   child: Row(

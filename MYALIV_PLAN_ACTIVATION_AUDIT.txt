@@ -1,0 +1,858 @@
+MYALIV PLAN PURCHASE ACTIVATION AUDIT
+Investigation date: 2026-11-01 (Asia/Dhaka)
+Repository: /Users/nazmulhaquenahin/SoftwareDevelopment/WorkSpc/MyAlivApp/myaliv_mobile_app
+Branch: nahin/fix6
+Source revision: bb06d34a44b7193e60fc09ac9387735303a4d4fa
+Baseline working tree: clean.
+Scope: static, read-only investigation; this report is the only intended new file.
+
+Evidence conventions
+--------------------
+CODE = confirmed by reading executable source; conditional outcomes are reasoned
+from that source, not observations on a running device.
+TEST SOURCE = an existing test asserts this behavior; inspected, NOT executed in
+this investigation. This is evidence of coverage/expectations, not a fresh pass.
+RUNTIME REQUIRED = real payloads, timing, device timezone or backend behavior
+must be observed before claiming a production reproduction.
+PASS/FAIL compare the supplied client-chart baseline, not an inferred backend
+contract. Guest pronoun changes and lowercase text are recorded separately from
+semantic business-rule matches. No original chart attachment beyond the user's
+scenario descriptions was available.
+
+Evidence index: all paths below are relative to the repository above. References
+such as [O:99-125] mean that exact file and line range in this source revision.
+
+O = lib/app/Plans/PlanScreen/widgets/home_plan_purchase_sheet_launcher.dart
+    showHomePlanPurchaseBottomSheet:28-291; _continueWithFuturePlan:294-330;
+    _pushMifiAltContact:332-369; route argument builders:371-431.
+S = lib/app/Plans/PlanScreen/cubit/plans_state.dart
+    PlansState; primary selection/date/status getters:155-262;
+    effectiveSecondaryPlans:273-285.
+C = lib/app/Plans/PlanScreen/cubit/plans_cubit.dart
+    PlansCubit; started:48-76; refreshBundlesOnly:110-156;
+    optimistic injection:169-221; clearing:256-278; modal flags:345-353;
+    reset:361-368; hydration:404-430; _fetchAllPlans:435-581.
+V = lib/app/Plans/PlanScreen/view/home_plan_screen.dart
+    _HomePlanViewState; initState:53-61; _onPurchaseNowPressed:164-198;
+    _showPostpaidStartBottomSheet:252-290; loading/error UI:309-330;
+    purchase callbacks:358-419; visible tabs:292-307.
+G = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart
+    GuestPurchasePlanScreen.build:48-55; _GuestPurchasePlanView;
+    route argument builders:150-201; _onPurchaseNowPressed:250-456.
+GS = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/bloc/guest_purchase_plan_state.dart
+    GuestPurchasePlanState; initial:52-61; primary/date/status getters:109-183.
+GB = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/bloc/guest_purchase_plan_bloc.dart
+    GuestPurchasePlanBloc; _onStarted:36-48; purchase event:79-82;
+    _onPrimaryPlanSelected:101-106; _loadBundles:110-129;
+    _loadByTab:144-185.
+GR = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/repository/guest_purchase_plan_repository.dart
+    GuestPurchasePlanRepository; phone normalization:39-47; fetchPlans:57-77;
+    findBasePlanById:86-105; _fetchCatalogue:107-126;
+    fetchExistingBundles:159-178; _normalizeBundlesMap:180-191.
+R = lib/app/Plans/PlanScreen/repository/plans_repository.dart
+    PlansRepository; fetchCategorizedPlans:51-76; fetchBundles:88-109;
+    fetchAddOnsData:135-165; AddOnsResult:12-27.
+API = lib/app/Plans/PlanScreen/repository/services/plan_api_service.dart
+    PlanApiService.fetchRawPlansJson:10-28; fetchRawBundlesJson:30-48.
+BP = lib/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart
+    BundleResponseParser.parse:13-44; _sortByEarliestStartDate:50-79;
+    _asMapList:151-165.
+M = lib/app/Plans/PlanScreen/models/base_plan_model.dart
+    BasePlanModel.fromApiMap:163-244; date getters:318-320;
+    _asString:400; fields:85-107.
+DP = packages/core/lib/src/time/api_date_parser.dart
+    parseApiDate:12-53.
+DX = packages/core/lib/src/extensions/date_time_x.dart
+    DateTimeX.toDeviceLocal:11; ApiDateString.toLocalApiDate:45.
+CAT = lib/app/Plans/PlanScreen/repository/services/plan_categorizer_service.dart
+    PlanCategorizerService.categorize:22-45; primary:48-68;
+    addon:71-106; special:109-145; isValidPlan:148-153.
+TYPE = lib/app/Plans/PlanScreen/repository/enums/plan_type.dart
+    PlanType.parse:19-26; enum names/codes:2-11.
+GROUP = lib/app/Plans/PlanScreen/repository/enums/plan_group.dart
+    PlanGroup values:2-19; parse:27-36.
+CAL = lib/app/Plans/PlanScreen/widgets/roam_bottom_sheet.dart
+    HomePlanRoamBottomSheet defaults:7-26; date init:35-39;
+    field:129-166; action:202-213; _openCalendarPickerSheet:221-238;
+    picker:251-263,332-340,351-382; ordinal formatting:394-429.
+GCAL = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roam_bottom_sheet.dart
+    showGuestRoamCalendarPickerSheet:7-18; RoamBottomSheet defaults:20-38;
+    date init:47-51; field:149-187; action:229-240;
+    _openCalendarPickerSheet:249-261; picker:274-286,362-370,381-418;
+    ordinal formatting:430-465.
+THEME = lib/app/Plans/PlanScreen/theme/theme.dart
+    button label constants:497-498; standalone text:558-561.
+GTHEME = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/theme/theme.dart
+    button label constants:487-488; standalone text:548-551.
+ONE = lib/app/Plans/PlanScreen/widgets/wallet_payment_activate_bottom_sheet.dart
+    HomePlanWalletPaymentActivateBottomSheet; label default:13;
+    warning Text:75; single action:87-114.
+TWO = lib/app/Plans/PlanScreen/widgets/wallet_payment_activate_or_future_bottom_sheet.dart
+    HomePlanWalletPaymentActivateOrFutureBottomSheet; warning Text:76;
+    unconditional future/activate actions:88-121.
+GONE = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/wallet_payment_activate_bottom_sheet.dart
+    WalletPaymentActivateBottomSheet; warning Text:85;
+    callback/label:101-120.
+GTWO = lib/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/wallet_payment_activate_or_future_bottom_sheet.dart
+    WalletPaymentActivateOrFutureBottomSheet; warning Text:80;
+    unconditional activate/future actions:96-132.
+CONF = lib/app/Plans/homePlanConfirmation/bloc/home_plan_confirmation_bloc.dart
+    HomePlanConfirmationBloc._onStarted:30-65; _parseDate:67-71.
+CR = lib/app/Plans/homePlanConfirmation/repository/home_plan_confirmation_repository.dart
+    HomePlanConfirmationRepository._planBeginsText:149-160;
+    _formatPlanDate / _formatDayMonthYear:162-190; type labels:136-146.
+GCONF = lib/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart
+    _GuestPurchasePlanConfirmationViewState payment callback:151-205.
+GCR = lib/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/repository/guest_purchase_plan_confirmation_repository.dart
+    GuestPurchasePlanConfirmationRepository._planBeginsText:52-63;
+    _formatPlanDate:65-87.
+REQ = lib/app/common/services/payments/change_bundle_request_factory.dart
+    ChangeBundleRequestFactory.changeBundleBody:53-90;
+    changeBundleBodyFor3DS:97-130; guestPurchasePlanBodyFor3DS:231-252;
+    _formatStartDate:279-285.
+ROUTES = lib/router/app_router.dart
+    owner confirmation:140-163; MiFi:166-175; roaming:217-247;
+    guest confirmation:748-774; add-ons:776-797;
+    guest catalog:849-858; Plans route:1019-1029.
+
+1. Executive Summary
+====================
+
+Overall verdict: FAIL against the supplied chart in specific conditions, with
+ordinary A/B/C and ordinary D behavior matching its business rules. Scenario E
+normally has the correct single Future Plan button, but its warning/schedule
+date is NOT the current active primary's expiration. It is the latest known end
+across primary, standalone, and secondary plans [O:99-123; S:247-262].
+
+Main results (CODE):
+1) A/C: with no primary entries, the owner shows immediate-only/no-active-plan
+   copy. Guest uses date-based active detection and account-owner pronouns.
+   Active standalone entries alone do not cause replacement copy [O:35-36,
+   251-287; S:160-162; G:368-453; GS:162-173].
+2) B: roaming/roameasy/libertyGlobal tabs always select immediate-or-date sheets
+   before current/future-plan evaluation. No first-purchase flag is evaluated
+   [O:65-95; G:295-325].
+3) D: for ordinary non-MiFi primary purchase, active primary and no future
+   primary selects the requested owner description, both buttons and the latest
+   primary expiry. It literally says "active your plan" [O:127-167].
+4) E: active + future primary with no parseable end anywhere falls through to
+   BOTH buttons, violating Future Plan only [O:99-127; G:333-383].
+5) Owner's outer `hasActivePlan` means earliest primary entry exists, not
+   `hasActivePrimaryPlan`. Expired-only or future-only primary entries can
+   wrongly trigger replacement/scheduling descriptions [O:35-36,127-165].
+6) Failed existing-plan requests can become a successful-looking no-active-plan
+   decision; no separate unknown-eligibility state protects that decision
+   [R:159-164; GB:123-129].
+7) A MiFi-specific warning deliberately overrides D's description and omits the
+   expiry/scheduling explanation, even though both buttons remain [O:145-167;
+   G:372-383]. This is a mismatch to the provided generic chart, not proof the
+   separately implemented MiFi product requirement is wrong.
+
+Tester verdict: PARTIALLY SUPPORTED. There are concrete paths to wrong/missing
+description or date. There is no evidence that the normal valid-data D branch
+universally chooses a wrong description. The actual tester account, selected
+tab, response, and observed text are unavailable, so that particular occurrence
+remains UNCLEAR. No runtime reproduction is claimed.
+
+Execution: only source/Git inspection and report creation. No Flutter analyzer,
+formatting, tests, builds, app launch, network calls, database access, Git writes
+or production processes were performed for this audit. Earlier turns' test
+results are not used as fresh audit verification. No long-running process was
+started by this investigation.
+
+2. Complete Purchase Flow Trace
+===============================
+
+2.1 Account Owner: Plans -> selection -> popup
+
+a) `AppRoutes.plans` (`/plans`, lib/router/app_routes.dart:6) constructs
+   PlansEntryScreen with optional tab/rewardSug [ROUTES:1019-1029].
+   lib/app/Plans/PlanScreen/view/plans_entry_screen.dart:11-14 delegates to
+   HomePlanScreen. `_HomePlanViewState.initState` calls PlansCubit.started
+   [V:53-61]. lib/main.dart:149 exposes the singleton with BlocProvider.value;
+   lib/main_injection_container.dart:45 calls setupPlanInjection;
+   lib/app/Plans/PlanScreen/plan_injection.dart:30-55 registers API/parser/cache,
+   PlansRepository and lazy-singleton PlansCubit. Cubit is hydrated [C:404-430].
+b) `started` fetches without data, or keeps cached content while refreshing
+   [C:59-75]. `_fetchAllPlans` requests catalog and bundles concurrently
+   [C:474-514]. The catalog is GET `/v1/MyAliv/device/{id}/available-plans`;
+   existing plans are GET `/v1/MyAliv/device/{id}/bundles` [API:10-47].
+   Paths are defined in lib/core/networkService/api_paths.dart:16-17. Device
+   override/primary-device resolution is in
+   lib/app/Plans/PlanScreen/shared/repository/services/base_plan_api_client.dart:
+   94-114, `requireDeviceAccountId` / `resolveDeviceAccountId`.
+c) PlansRepository.fetchCategorizedPlans calls PlanParserService.parseRawJson
+   and parseAndCategorize [R:64-74;
+   lib/app/Plans/PlanScreen/repository/services/plan_parser_service.dart:22-42,
+   52-120]. Catalog grouping uses PlanType, Frequency, PlanGroup, PaymentOption
+   [CAT:22-45]. P becomes daily/weekly/monthly or MiFi; A roaming/roameasy/
+   liberty-global becomes corresponding tabs; selected S exceptions can also
+   enter roaming/liberty-global [CAT:48-145]. Unknown categories are not a
+   generic standalone activation route.
+d) Each card's purchase callback passes selected BasePlanModel and, for primary
+   tabs, index into `_onPurchaseNowPressed` [V:358-409]. Restrictions can disable
+   purchase callbacks; e.g. HomePlanPlansList in
+   lib/app/Plans/PlanScreen/widgets/home_plan_plans_list.dart:205-211.
+e) `_onPurchaseNowPressed` prevents duplicate modals with isPurchaseModalOpen,
+   calls cubit.purchaseNowPressed, then showHomePlanPurchaseBottomSheet; closing
+   resets the flag [V:170-197; C:345-353]. This Cubit method only sets a UI flag;
+   it does not evaluate activation eligibility or call a purchase API.
+f) `showHomePlanPurchaseBottomSheet` takes a snapshot of PlansCubit.state;
+   computes `hasActivePlan`, latestPrimaryPlanEndDate, selected route context;
+   then chooses the sheet. Priority is standalone-tab -> active+future with
+   valid final end -> any primary entry -> no primary entry [O:35-167,251-288].
+   The sheet builder is not a BlocBuilder; the warning is not recomputed from
+   a newly emitted bundle state while that already-open sheet is displayed.
+
+2.2 Existing-plan mapping and state evaluation
+
+`fetchAddOnsData` -> fetchBundles -> parseBundlesJson -> BundleResponseParser
+[R:135-163; lib/app/Plans/PlanScreen/repository/services/plan_parser_service.dart:
+124-137; BP:13-44]. Response keys:
+  PrimaryPlans    -> addOnsApiPrimaryPlans
+  SecondaryPlans  -> secondaryPlans
+  StandAlonePlans -> standAlonePlans
+Each item becomes BasePlanModel; lists are sorted by parsed StartDate ascending,
+with unparseable starts last and stable input order for ties [BP:50-79]. There
+is no filtering of expired/current/future entries at this parser boundary.
+
+Fields used for activation choices/date:
+  StartDate -> BasePlanModel.startDate -> startDateTime
+  EndDate   -> BasePlanModel.endDate   -> endDateTime
+  PlanGroup -> MiFi warning override
+  PlanType  -> catalog category and downstream purchase context/type
+  PlanID    -> selection/deduplication/payment bundle
+`CurrentlyAssigned` is parsed but is NOT checked by these activation predicates;
+there is no PlanStatus response mapping used in their decision [M:170-205;
+S:160-262; GS:109-183]. Primary membership comes from the PrimaryPlans array,
+not a second `plan.planType == 'P'` test in the state getters.
+
+Definitions used below:
+  E = earliestAddOnsPrimaryPlan != null. Owner earliest is optimistic plan,
+      else the first PrimaryPlans entry [S:160-162].
+  A = hasActivePrimaryPlan: any effective primary whose local StartDate's DAY
+      is not after today (or start is null), AND whose end is null OR strictly
+      after DateTime.now() [S:206-217; GS:162-173].
+  F = hasFuturePrimaryPlans: any effective primary with parsed local StartDate
+      DAY strictly after today [S:226-233; GS:151-159]. End is not checked.
+  Lp = latestPrimaryPlanEndDate: max parseable end in effective primary list
+       [S:183-190; GS:119-126].
+  La = latestPurchasedPlanEndDate: max parseable end in primary + standalone +
+       effective secondary (raw secondary for guest) [S:247-262; GS:133-147].
+  Rtab = selectedTab in {roaming, roameasy, libertyGlobal} [O:65-67; G:297-299].
+
+`hasFuturePlans` (owner only, broader than F) includes future standalone entries.
+It affects fallback wording in `!A && standAlonePlans.isNotEmpty &&
+hasFuturePlans` [S:193-202; O:138-164]. It is NOT the schedule-only predicate.
+The similarly named `hasActivePrimaryWithStandaloneAndFuturePlans` only controls
+diagnostic logging in this entry point [S:221-222; V:178-185,200-202].
+The actual schedule-only predicate is `A && F` [S:242-243; GS:182-183].
+
+2.3 Account Owner: click -> confirmation -> API
+
+Immediate ordinary primary: both/no-plan sheet's onActivateNowPressed closes
+sheet and pushes homePurchasePlanAddOns with selectedApiPlan, selectedIndex,
+activePrimaryPlan and `forceNow:true` [O:173-200,258-286,388-400]. The add-ons
+screen builds HomePlanConfirmationRouteArgs, keeping routeArgs.forceNow
+[lib/app/Plans/purchasePlanAddOns/view/plan_purchase_plan_add_ons_screen.dart:
+126-154]. The selected plan's catalog StartDate may also be forwarded at line
+144, but ForceNow=true makes this an immediate purchase.
+
+Future: `_continueWithFuturePlan` blocks only while `isRefreshingBundles`, with
+toast "updating your plans, please try again in a moment"; otherwise pushes
+homePlanConfirmationScreen with forceNow:false and the ISO Lp (D) or La (E)
+[O:294-329,405-431]. The guard re-reads the refresh flag, not the date snapshot.
+The button named `onActivateNowPressed` in the SINGLE-button widget is reused
+for the Future Plan action; the label override and callback determine behavior,
+not this parameter's name [O:104-122; ONE:87-114].
+
+MiFi: immediate/future passes the same timing values to `_pushMifiAltContact`.
+If AccountInfoCubit.accountInfo.altPhoneNumber is nonempty, confirmation is
+direct; otherwise homePlanMifiAltContact receives MifiAltContactRouteArgs
+[O:332-369]. Timing is propagated by
+lib/app/Plans/mifiAltContact/view/mifi_alt_contact_args_builder.dart:33 and the
+route-argument model at lib/app/Plans/mifiAltContact/model/mifi_alt_contact_route_args.dart:
+13-32. No date picker is introduced by the activation popup's MiFi branch.
+
+Standalone: date Apply -> homeRoamingConfirmation with beginDate=chosen local
+date, showDateField:true, forceNow:false. Activate -> same destination with
+beginDate=DateTime.now(), showDateField:false, forceNow:true [O:68-94].
+
+Owner primary confirmation stores forceNow and `_parseDate(futurePlanStartDate)`
+in HomePlanConfirmationState [CONF:44-70]. Continue forwards forceNow and
+selectedBeginDate into HomePlansPaymentMethodRouteArgs
+[lib/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart:
+131-157]. Standalone confirmation forwards routeArgs.forceNow and beginDate
+instead [lib/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart:
+156-179]. HomePlansPaymentMethodBloc stores these on Started and passes them to
+payment operations [lib/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart:
+45-49,153-175,207-230]. Repository forwards to ChangeBundleService
+[lib/app/Plans/homePlansPaymentMethod/repository/home_plans_payment_method_repository_impl.dart:
+75-88,114-157]. New-card/3DS path uses changeBundleBodyFor3DS
+[lib/app/Plans/homePlansPaymentMethod/view/services/payment_sheet_launcher.dart:
+113-135]. These steps do not re-evaluate A/F for button visibility.
+
+Wire behavior: ForceNow=true -> omit Bundle.StartDate. ForceNow=false -> require
+non-null selectedBeginDate and serialize Bundle.StartDate as `yyyy-MM-dd HH:mm`;
+otherwise throw "Selected start date is required for future plan."
+[REQ:65-81,108-123,279-285]. The formatting writes DateTime components directly;
+there is no UTC conversion in _formatStartDate. This is the actual request
+mapping, not proof of the backend's interpretation of the timestamp.
+Payment type mapping: P->primary, S->secondary, A->standalone (unknown defaults
+standalone) [lib/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart:
+12-22]. PlanBundleMapper.fromSelectedItems creates PrimaryPlans/SecondaryPlans/
+StandalonePlans; isPostpaid overrides all to standalone
+[lib/app/Plans/homePlansPaymentMethod/repository/plan_bundle_mapper.dart:10-44].
+
+2.4 Guest: selection -> popup -> downstream flow
+
+Guest route reads phoneNumber extra [ROUTES:849-858]. GuestPurchasePlanScreen
+creates screen-owned GuestPurchasePlanBloc and GuestPurchasePlanRepository for
+that number [G:48-55]. Repository strips nondigits and adds/removes known country
+prefixes [GR:39-47]. Started sets isLoadingBundles=true, starts existing bundles
+unawaited, and awaits catalog [GB:36-48]. Catalog POST uses
+`/v1/myAliv/guest/availableplans`; existing state POST uses
+`/v1/MyAliv/Guest/existingplans`, ChannelType=SelfCare, PhoneNumber, skipAuth=true
+[GR:107-125,159-177; lib/core/networkService/api_paths.dart:215-222]. No calls
+were made by this audit. Existing state uses the SAME BundleResponseParser.
+
+Guest `_onPurchaseNowPressed` adds an event whose Bloc handler is empty, reads
+currentState, and blocks if isLoadingBundles with "checking the account plans,
+please try again in a moment" [G:250-268; GB:79-82]. It looks up selected raw
+BasePlanModel and dispatches GuestPrimaryPlanSelected [G:274-277; GB:101-106].
+The decision uses captured currentState and selectedTab, not that queued event.
+Priority: Rtab -> A&&F&&La!=null -> A -> no-active [G:295-453].
+
+Immediate ordinary primary -> guestPurchasePlanAddOns; its confirmation args
+always set forceNow:true, independently of skip/proceed
+[G:389-409,432-451;
+lib/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart:
+72-99]. MiFi skips add-ons and passes forceNow:true [G:171-183,392-397].
+Future -> guestPurchasePlanConfirmation, forceNow:false, ISO futurePlanStartDate
+[G:186-200,350-357,411-419]. There is no owner-style refresh guard in these guest
+future callbacks. Guest has no optimistic primary merge [GS:109-125].
+
+Guest primary payment parses futurePlanStartDate using DateFormat('dd-MM-yy'),
+then sends ForceNow and optional StartDate using guestPurchasePlanBodyFor3DS
+to Api.guestPurchasePlanUrl [GCONF:160-205; REQ:231-251]. BUT the popup supplies
+ISO (`toIso8601String`), not dd-MM-yy [G:286-287,356]. This format mismatch is
+confirmed; whether a specific ISO input throws or is leniently misparsed needs
+a targeted runtime check. On catch it becomes null; the guest factory silently
+omits StartDate if null even when ForceNow=false [REQ:243-246]. No backend
+outcome can be inferred with certainty.
+
+Guest standalone date/immediate -> roamingPlanConfirmation with forceNow =
+!showDateField and chosen/now beginDate [G:150-168,300-323]. That confirmation
+only constructs local summary data; its pay event increments payNowRequestId,
+and the view directly pushes guestPurchasePlanReceipt. No purchase/payment API
+is invoked in this traced standalone path
+[lib/app/Aliv-Mobile-Guest/roamingPlanConfirmation/repository/roaming_plan_confirmation_repository.dart:
+4-34;
+lib/app/Aliv-Mobile-Guest/roamingPlanConfirmation/bloc/roaming_plan_confirmation_bloc.dart:
+136-144;
+lib/app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart:
+157-214]. Its popup can satisfy B while actual activation is not implemented
+along that path. This is separate from the tester's description complaint.
+
+2.5 Postpaid owner branch
+
+Postpaid owner's visible tab is postpaidRoaming [V:292-306]; its callback uses
+_showPostpaidStartBottomSheet and StartPlanBottomSheet, not O's primary decision
+tree [V:412-418,252-285]. It always shows "when to start?", standalone guidance,
+start-from field and Activate Now. Date Apply immediately routes to confirmation
+with showBeginOn=true; immediate action uses false
+[lib/app/Plans/PlanScreen/view/start_plan_bottom_sheet.dart:81-102,110-130,
+135-151,246-265]. Postpaid confirmation maps forceNow = !showBeginOn
+[lib/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart:202-228].
+No A/F-dependent description/expiry is used in this separate path; scenarios
+A/C/D/E should not be generalized to it as if it purchased normal primary plans.
+
+3. Condition Matrix
+====================
+
+Message IDs below expand to EXACT strings in section 4. `dP` = MM-dd-yy(Lp),
+`dA` = MM-dd-yy(La). Rtab is excluded for primary-purchase rows. PASS assumes
+valid, timely, correctly grouped existing-plan data unless the row says otherwise.
+
+| Scenario | Actual Condition in Code | Actual Message | Activate Now | Future Plan | Date Picker | Client Chart Match |
+|---|---|---|---|---|---|---|
+| A: no active primary, true first purchase, owner | !Rtab && !E [O:251-287] | M1: you have no active plan, so your new plan will start immediately. | Yes | No | No | PASS |
+| A: same, guest | !Rtab && !A [G:424-453] after loading guard | G1: the account owner has no active plan, so their new plan will start immediately. | Yes | No | No | PASS semantically; role-specific copy |
+| B1: first standalone, no primary | Rtab, evaluated first [O:65-95; G:295-325] | M2 / G2, immediate-or-date guidance | Yes | No | Field yes; calendar on tap | PASS for plans categorized into those tabs |
+| B2: another standalone while standalone active, no primary | SAME Rtab; no existing standalone count/status check | SAME M2 / G2 | Yes | No | Field yes; calendar on tap | PASS for these tabs; no history-specific branch |
+| C: active standalone only, purchasing primary | Owner !E despite standAlonePlans; guest !A [O:35-36,251; G:424] | M1 / G1 | Yes | No | No | PASS with truly empty primary list |
+| D: active primary, no future primary, normal selected primary | Owner E && A && !F && !MiFiOverride; guest A && !F && !MiFiOverride [O:127-167; G:368-383] | M3(dP) / G3(dP) | Yes | Yes | No | PASS with valid expiry; wording/date caveats in sections 4/6 |
+| D-MiFi: active MiFi purchasing MiFi, no future primary | selectedTab=mifi && A && earliest.planGroup parses MiFi [O:145-154; G:372-380] | M4 / G4, replacement only, NO date | Yes | Yes | No | FAIL against generic D message/date requirement; separate MiFi-specific behavior |
+| D: active primary but all primary ends unavailable | E && A && !F && Lp==null (end-null counts active) [S:215-216; O:128-160] | M3 / G3 WITHOUT " on DATE" | Yes | Yes | No | FAIL date-display requirement; API actual expiry UNCLEAR |
+| E1: active + one future primary, La valid | A && F && La!=null [O:99-123; G:333-360] | M5(dA) / G5(dA) | No | Yes | No | FAIL full baseline: buttons PASS; date is latest purchased expiry, not current primary expiry |
+| E2: active + multiple future primary, La valid | SAME .any future predicate; no count distinction | SAME M5(dA) / G5(dA) | No | Yes | No | FAIL full baseline for same date semantics; button rule PASS |
+| E: active + future primary, every end unavailable | A && F && La==null -> fall through [O:99-127; G:333-383] | M6 undated (or M4 MiFi) / G3 undated (or G4 MiFi) | Yes | Yes | No | FAIL: Activate Now returns and date absent |
+| Future primary exists, no active primary, no standalone | Owner E && !A && F; guest !A && F [O:127-165; G:368,424] | Owner M6(dP) replacement copy; guest G1 | Yes | Owner yes; guest no | No | FAIL owner no-active-primary rule; intended queue handling beyond supplied A-E is UNCLEAR |
+| Future primary exists, standalone active, no active primary | Owner E && !A && standAlonePlans.isNotEmpty && hasFuturePlans [O:138-164]; guest !A | Owner M7(dP); guest G1 | Yes | Owner yes; guest no | No | FAIL owner C/no-active-primary rule; guest matches immediate-only C |
+| Expired primary entry remains, no current primary | Owner E true, A false; guest A false [S:160-217; O:127] | Owner M6 (can show past expiry); guest G1 | Yes | Owner yes; guest no | No | FAIL owner no-active-primary behavior if expired entry returned |
+| Existing-plan request failed but catalog loaded | Owner fetchAddOnsData returns empty; guest catch clears loading [R:159-164; GB:123-129] | M1 / G1 if no retained primary data | Yes | No | No | UNCLEAR real account; FAIL if active/future plans actually exist |
+
+4. Exact Warning Messages by Condition
+======================================
+
+All warnings are hardcoded Dart text/constants, not localization keys. Sheet
+widgets render the supplied warningText without resolving business conditions
+[ONE:75; TWO:76; GONE:85; GTWO:80]. Capitalization below is intentional.
+
+M1 (owner no primary entry) [O:251-253]:
+  "you have no active plan, so your new plan will start immediately."
+G1 (guest no active primary) [G:424-427]:
+  "the account owner has no active plan, so their new plan will start immediately."
+There is no historical first-purchase condition; the same text can appear on a
+later purchase when no primary is considered present/active.
+
+M2 (owner Rtab) [THEME:558-561; CAL:10-12]:
+  "when to start? — your standalone plan can start immediately, or on a date of your choice."
+The "when to start? — " prefix is part of the owner's default warningText as
+well as having a separate sheet title. This is exact composed display text.
+G2 (guest Rtab) [GTHEME:550-551; GCAL:23-24]:
+  "the account owner standalone plan can start immediately, or on a date of choice."
+Guest title is separately "when to start?"; it is not prefixed inside G2.
+Both texts are independent of current-plan expiry and existing standalone count.
+
+M3 (ordinary owner D) [O:128-130,155-160]:
+  "activating now replaces your current plan, you can also active your plan when your current plan ends on {dP}."
+G3 (guest active-primary dual-choice fallback) [G:369-382]:
+  "activating now replaces the current plan, you can also activate the plan when the current plan ends on {dP}."
+If Lp is null, the entire " on {dP}" suffix disappears; text ends "ends.".
+Owner M3's "active your plan" is a literal grammar error. The nearby comment
+explicitly says it copies client-chart text verbatim. Correct condition selection
+and grammatical quality are separate conclusions. "XX-XX-XX" is not hardcoded:
+DateFormat('MM-dd-yy') produces the date. For normal valid-data D this is exactly
+the branch the tester quoted, except the illustrative placeholder.
+
+M4 (owner active MiFi -> MiFi, overrides M3) [O:145-154]:
+  "you already have an active mifi plan. buying this plan will replace it immediately."
+G4 (guest same) [G:372-380]:
+  "the account owner already has an active mifi plan. buying this plan will replace it immediately."
+No expiry interpolation and no scheduling explanation. `earliest` group is used,
+which is not guaranteed to be the entry that caused A=true.
+
+M5 (owner A&&F and La non-null) [O:99-106]:
+  "you can activate your plan when your current plan ends on {dA}."
+G5 (guest same) [G:333-344]:
+  "you can activate your plan when the current plan ends on {dA}."
+These warnings use La, including future primary, standalone and secondary ends.
+They are never shown by this branch if every end is missing/unparseable.
+
+M6 (owner E fallback outside M3/M4/M5) [O:134-136,161-164]:
+  "activating now replaces your current plan. you can also activate your plan when your current plan ends on {dP}."
+This can be selected for expired-only/future-only primary entries, or A&&F when
+La is null. With null Lp, it ends "ends.". Its period/"activate" differ from M3's
+comma/"active". Guest has no equivalent E/non-active fallback: it uses G1.
+
+M7 (owner E && !A && standalone list nonempty && hasFuturePlans)
+[O:132-141,162-164]:
+  "you can activate your plan when your current plan ends on {dP}."
+Same surface text as M5, but dual buttons and primary-only date source. Empty
+Lp omits the date suffix. A future standalone can satisfy hasFuturePlans, but E
+still requires some primary entry. Standalone membership need not be active.
+
+Postpaid separate _InfoBanner:
+  "your standalone plan can start immediately, or on a date of your choice."
+[lib/app/Plans/PlanScreen/view/start_plan_bottom_sheet.dart:135-151].
+
+TEST SOURCE (not executed):
+T1 = test/plans/home_plan_purchase_sheet_wording_test.dart:
+     90-113 tests M1/buttons; 146-168 tests standalone-only -> M1;
+     171-194 tests first/repeat standalone M2; 197-229 explicitly expects M6
+     for future-only primary; 258-267 tests same-day/missing/invalid starts;
+     325-345 active getter excludes expired/future; 348-359 omits missing date.
+     The test labelled "standalone only" at 197-211 ALSO inserts a primary;
+     its name must not be taken as evidence of a true standalone-only case.
+T2 = test/plans/home_plan_scheduled_purchase_sheet_test.dart:
+     143-187 tests future-only button and route date;
+     190-225 asserts later standalone/secondary expiry can control La;
+     278-307 tests D with/without standalone; 311-348 tests E with one/multiple
+     future primaries; 353-368 explicitly EXPECTS both buttons when ends absent.
+T3 = test/plans/mifi006_active_mifi_warning_test.dart:161-205:
+     M4 and both actions, including forceNow=false for future, are asserted.
+T4 = test/guest_purchase_plan/guest_purchase_sheet_warning_test.dart:
+     171-205 tests G1 and fallback when existingplans does not supply valid
+     bundles; 207-263 tests G2 and immediate/date routing. Its fake returns the
+     catalog LIST for every endpoint (23-46), so this does NOT establish behavior
+     for a valid existingplans OBJECT with real active/future primary plans.
+     Repeat standalone test reopens a sheet, not an actual completed purchase.
+T5 = test/plans/roam001_neutral_information_test.dart:143-162,185-225:
+     owner guidance and forceNow/date navigation assertions.
+T6 = test/guest_purchase_plan/gst011_013_guest_roam_start_date_test.dart:
+     153-219 tests today preselected, Apply unchanged date, immediate callback.
+T7 = test/guest_purchase_plan/guest_confirmation_terms_validation_test.dart:
+     56-68 injects `01-11-26`, not popup's ISO date;
+     439-466 expects `StartDate: 2026-11-01 00:00` for scheduled requests.
+     It does not cover the popup-to-payment format mismatch.
+No tests were executed; therefore none of these are labelled freshly verified.
+
+5. Button Visibility Matrix
+===========================
+
+| Winning branch / controlling function | Activate Now | Future Plan | Date Picker | Click handler / timing |
+|---|---|---|---|---|
+| O.showHomePlanPurchaseBottomSheet Rtab [65-94] | Yes | No | Start field; calendar on tap | onActivateNowPressed -> homeRoamingConfirmation, forceNow=true; onDateApplied -> same, forceNow=false, beginDate=chosen |
+| G._onPurchaseNowPressed Rtab [295-324] | Yes | No | Same | _roamingConfirmationExtra -> roamingPlanConfirmation, forceNow=!showDateField |
+| O A&&F&&La!=null [99-123] | No | Yes | No | Single widget's onActivateNowPressed calls _continueWithFuturePlan(ISO La), forceNow=false |
+| G A&&F&&La!=null [333-360] | No | Yes | No | Single widget's onActivateNowPressed calls _futurePlanConfirmationArgs(ISO La), forceNow=false |
+| O fallback E [127-248] | Yes | Yes | No | Immediate -> add-ons forceNow=true or MiFi; future -> _continueWithFuturePlan(ISO Lp), false |
+| G fallback A [368-421] | Yes | Yes | No | Immediate -> add-ons forceNow=true or MiFi direct; future -> _futurePlanConfirmationArgs(ISO Lp), false |
+| O !E [251-287] / G !A [424-453] | Yes | No | No | Immediate -> add-ons forceNow=true or MiFi direct |
+| G isLoadingBundles [262-267] | No popup | No popup | No popup | Toast; returns before popup |
+| Owner duplicate modal [V:172-175] | No additional popup | No additional popup | No additional popup | Existing sheet stays; no new one |
+| Postpaid StartPlanBottomSheet | Yes | No | Yes | _ActivateButton / calendar Apply -> confirmation; showBeginOn controls forceNow |
+
+Visibility comes from the launcher's choice of widget, not conditional logic
+inside the dual/single widgets. Owner dual sheet visually puts Future Plan
+before Activate Now [TWO:88-121]; guest puts Activate Now before Future Plan
+[GTWO:96-132]. Labels are lowercase theme constants [THEME:497-498;
+GTHEME:487-488]. A single Future Plan callback retaining the parameter name
+onActivateNowPressed does NOT mean an Activate Now button is visible.
+
+Date choice is optional interaction, not an optional presence flag within the
+standalone popup: the start-from field is always present for Rtab, calendar is
+opened only by tapping it. No separate Future Plan button appears there.
+`_selectedDate = initialDate ?? DateTime.now()` [CAL:35-39; GCAL:47-51].
+Calendar firstDate=today at local midnight, lastDate=2035-12-31; draft starts at
+initial date clamped to today. Apply pops draft DateTime; cancel/dismiss returns
+null and does not navigate [CAL:221-238,258-262,332-340,351-375;
+GCAL:249-260,281-285,362-370,381-406]. Apply immediately continues purchase via
+onDateApplied. Applying today's preselected date still sets forceNow=false;
+this is not the same request as tapping Activate Now. Display is English
+"Month ordinalDay, year", e.g. "November 1st, 2026", separate from warning expiry
+format [CAL:394-429; GCAL:430-465].
+
+6. Expiration Date Source & Formatting
+======================================
+
+6.1 Exact data chain
+Owner device bundles / guest entered-number existingplans -> PrimaryPlans /
+StandAlonePlans / SecondaryPlans items -> BasePlanModel.fromApiMap EndDate ->
+trimmed String -> endDateTime -> toLocalApiDate -> parseApiDate -> toDeviceLocal
+-> Lp or La -> DateFormat('MM-dd-yy') -> warningText -> sheet Text
+[API:30-47; GR:159-177; BP:13-43; M:177-178,318-320,400; DX:11,45;
+DP:12-53; S:183-190,247-262; O:103-106,128-160; G:339-344,369-382].
+It does NOT come from the selected catalog plan's end date in the ordinary live
+existing-plan path. Catalog PlanDescription is not used as the activation warning.
+
+6.2 Formatting versus business selection
+Popup format is month-day-two-digit-year: MM-dd-yy. Example: a local expiry of
+23 November 2026 is "11-23-26". The placeholder XX-XX-XX alone does not specify
+day/month order, so it is insufficient evidence to call MM-dd-yy itself wrong.
+Confirmation begins text instead uses dd-MM-yy [CR:162-187; GCR:65-83]. The same
+23 November date becomes "23-11-26" there: a confirmed cross-screen inconsistency,
+not proof the popup selected the wrong plan.
+
+DP treats bare ISO datetime and supported US meridiem format as UTC, applies
+explicit offsets via DateTime parsing, then DX converts to the device timezone.
+The displayed calendar day can differ from the raw API text near midnight.
+That is deliberate conversion by the implementation; correct intended business
+timezone requires API contract/device verification. It is not always the literal
+calendar date written in the response. ISO parse uses DateTime.tryParse and US
+fallback DateTime.utc; neither branch performs explicit strict component-range
+validation, so some overflow dates can normalize rather than be rejected.
+
+Normal D: Lp is maximum primary end, not specifically the active entry's end.
+With exactly one active primary and no future primary this equals that plan's
+API-derived local expiry. If several primaries are present, source selection
+does not insist the chosen entry be current/assigned. E uses La, which includes
+future primary, standalone and add-on dates. An actually active primary ending
+on November 8 and future primary ending December 8 will produce "12-08-26" in
+E's "current plan ends" warning; a later standalone end can move it further.
+This example is a source-derived illustration, not captured backend data.
+
+6.3 Null / empty / invalid / unavailable date behavior
+* Null/missing/empty EndDate -> M._asString returns ''; unparseable supported
+  parsing failure -> null endDateTime [M:177-178,318-320,400; DP:13-19,38-39].
+* Lp/La ignore null ends and use another valid maximum if available; there is
+  no placeholder or visible "date unavailable" error in the popup
+  [S:183-190,247-262; GS:119-146].
+* D with Lp=null omits the entire ` on DATE` suffix but still offers Future Plan
+  with empty futurePlanStartDate [O:40-41,128-130,240-246;
+  G:286-287,369-371,411-419]. Owner confirmation then says "begins immediately"
+  for empty date despite forceNow=false [CR:149-166]. Owner request factory
+  later rejects missing scheduled date [REQ:70-74,113-117].
+* E with La=null abandons schedule-only and shows both buttons. This behavior is
+  explicitly asserted by T2:353-368 and contradicts the chart's E button rule.
+* Missing EndDate can itself make a non-future entry count active: `end == null
+  || end.isAfter(now)` [S:215-216; GS:171-172]. Missing/unparseable StartDate
+  similarly does not disqualify it from active status. Unknown dates therefore
+  affect BOTH the description branch and whether a date can be interpolated.
+
+6.4 Is it always a real API-provided expiry?
+No. Owner may have an optimistic plan immediately after purchase. Payment view
+uses now for immediate purchases, selectedBeginDate for scheduled purchases,
+then injectOptimisticPrimaryPlanChange estimates end from frequency
+[lib/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_view.dart:
+185-209; C:197-219]. Daily adds 1 day, weekly 7, monthly one calendar month;
+unknown returns null
+[lib/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart:14-30].
+S.effectivePrimaryPlans can include this estimate; earliest may prefer it
+[S:160-173]. Thus popup expiry can be estimated until bundles confirms it.
+Matching PlanID clears optimistic state; empty returned primaries retain it;
+the 30-second clearing check is applied only for nonempty unmatched responses
+[C:246,256-277]. Deduplication by PlanID can suppress an optimistic purchase of
+the same plan ID already present, so repeated same-plan purchases are not a
+distinct subscription identity here [S:167-173]. Guest has no such optimistic
+injection in its purchase state [GS:109-125].
+
+7. Guest vs Account Owner Differences
+=====================================
+
+| Concern | Account Owner | Guest |
+|---|---|---|
+| Existing-plan identity | Authenticated device bundles; optional device override [API:30-47] | Entered phone number existingplans with skipAuth [GR:159-177] |
+| Primary fallback | E (entry exists), not A [O:35-36,127] | A (date-based) [G:368] |
+| No-active copy | "you ... your" [O:253] | "the account owner ... their" [G:427] |
+| D copy | "your ... active your plan" [O:159-160] | "the ... activate the plan" [G:381-382] |
+| E copy | "your current plan" [O:106] | "the current plan" [G:344] |
+| Loading protection | Initial UI shimmer, cached content during refresh; future click guard only [V:315-321; C:460-465; O:303-309] | Purchase blocks while isLoadingBundles [G:262-268] |
+| Failure handling | fetchAddOnsData converts failure to empty AddOnsResult [R:159-164] | _loadBundles catch silently clears loading, retaining initial/previous arrays [GB:123-129] |
+| Persistence | Shared hydrated state + optimistic estimates [C:404-430; S:160-173] | Screen-owned Bloc, no optimistic getter [G:48-55; GS:109-125] |
+| Standalone message | Prefixed "when to start? — your standalone..." [CAL:10-12] | Account-owner standalone text without prefix [GCAL:23-24] |
+| Future date transfer | ISO -> DateTime.tryParse -> required request date [CONF:67-70; REQ:70-75] | ISO -> dd-MM-yy parser -> optional request date [GCONF:160-198; REQ:243-246] |
+| Standalone final action | Confirmation -> payment route with timing [home_roaming_confirmation_screen.dart:156-179, path in 2.3] | Confirmation -> receipt directly; no purchase API on that path [sources in 2.4] |
+
+Neither popup compares a historical purchase count. Neither distinguishes one
+from multiple future primary plans using a count; F is `.any`. A future standalone
+alone cannot set F, though it can extend La once A&&F is already true. API array
+placement drives primary/standalone separation; an item's PlanType or
+CurrentlyAssigned is not independently validated by these getters [BP:13-43;
+S:206-243; GS:151-183]. Catalog TYPE names call A "addon" and S "special", while
+payment mapping calls A standalone and S secondary [TYPE:2-11; payment type
+model:12-22, path in 2.3]. Different names alone do not prove incorrect payload
+mapping: actual array placement and codes must be checked against API evidence.
+
+8. Confirmed Mismatches
+=======================
+
+F1 — E's date/message referent differs from supplied chart (CODE + TEST SOURCE).
+Condition: !Rtab && A && F && La!=null. Expected current primary expiry;
+actual max end across every known purchased category. Message M5/G5 calls that
+"current plan". A later future primary, standalone or secondary expiry can be
+shown/scheduled instead. [O:99-122; S:247-262; G:333-357; GS:133-146;
+T2:190-225,311-347.] Buttons still match E. Existing tests intentionally encode
+the chain behavior; product confirmation is needed before changing it.
+
+F2 — E restores immediate activation when dates unavailable (CODE + TEST SOURCE).
+Condition: !Rtab && A && F && La==null. The guard only returns schedule-only
+inside `if(lastPlanEndDate != null)`; fallback dual sheet exposes Activate Now.
+Owner M6/guest G3 may explain replacement despite already queued primary.
+[O:99-127,134-167; G:333-383; T2:353-368.] Direct chart mismatch, not just wording.
+
+F3 — Owner confuses primary entry presence with active primary (CODE + TEST SOURCE).
+Condition: !Rtab && E && !A. Future-only or expired-only primary entry reaches
+dual sheet. Without standalone+future, M6 claims replacement of a current plan;
+with that combination M7 still offers both. Guest uses G1/immediate-only.
+[O:35-36,127-167; S:160-162,206-217; G:368,424-427;
+T1:115-141,197-229.] Source-level reproduction: put only a tomorrow-start primary
+in addOnsApiPrimaryPlans. Owner E=true/A=false/F=true -> M6 and both buttons.
+No actual purchase or real API call is needed to infer this branch.
+
+F4 — MiFi D warning omits date/alternative while future action remains (CODE +
+TEST SOURCE). Condition selectedTab=mifi, A, earliest.planGroup=MiFi, no winning
+valid schedule-only branch. M4/G4 takes priority over M3/G3 and mentions immediate
+replacement only. Both buttons render. [O:145-167; G:372-383; T3:161-205.]
+Mismatch to generic chart D; whether MiFi's distinct requirement supersedes that
+chart in production is RUNTIME/PRODUCT REQUIRED, not presumed.
+
+F5 — Eligibility lookup failure can assert no active plan (CODE; real account
+RUNTIME REQUIRED). Owner fetchAddOnsData catches request/parser failure and
+returns empty result, then _fetchAllPlans emits arrays and success if catalog
+succeeds. Guest catch clears loading without a surfaced eligibility error.
+[R:159-164; C:480-518,522-541; GB:110-129.] Actual active/future subscribers can
+therefore be offered M1/G1/immediate-only after failed state retrieval. T4:189-204
+asserts fallback for malformed/no existingplans data, not legitimate no-plan proof.
+
+F6 — Missing/invalid end gives undated warning and unusable/ambiguous schedule
+(CODE). D with Lp=null suppresses suffix. Future passes empty date; owner summary
+says begins immediately but forceNow=false request validation rejects it;
+guest may send false without StartDate. [O:40-41,128-130,240-246;
+G:286-287,369-371,411-419; CR:149-166; REQ:70-74,243-246.]
+Fails required expiry presentation; does not prove a correct date was available.
+
+F7 — Wording and formatting inconsistencies (CODE).
+Owner D literally uses "active your plan" [O:159-160]. Guest wording changes
+pronouns/grammar. Popup MM-dd-yy differs from confirmation dd-MM-yy
+[O:128-130; G:369-371; CR:184-187; GCR:71-75]. These are separable from correct D
+condition selection. Exact desired date order is UNCLEAR from XX-XX-XX.
+
+Additional flow gaps found while tracing (not asserted as tester reproduction):
+F8 — Guest future date producer/consumer disagree (CODE): ISO from popup vs
+dd-MM-yy parse at payment [G:286-287,356; GCONF:160-198]. The format mismatch is
+certain; exact lenient-parser result/backend impact is RUNTIME REQUIRED. T7 uses
+a different, hand-authored date shape and does not cover this integration.
+F9 — Guest standalone confirmation goes straight to receipt (CODE): timing
+flags are displayed/stored, not sent to an activation API on this path [sources
+and functions fully identified in 2.4]. Popup B passes; completed activation
+cannot be claimed from those button labels or the receipt navigation.
+
+Overlaps, gaps and priority conflicts (CODE unless noted):
+* Active primary + no future primary: A&&!F -> ordinary D. Active standalone or
+  future standalone does not change this, except MiFi warning override
+  [S:237-243; O:145-160; T2:273-307].
+* One versus multiple primary future plans: same A&&F condition; only maximum
+  expiry changes. The code does not count or enforce a future-plan capacity
+  [S:226-243,247-262; T2:311-348].
+* Active standalone, no primary entries: E=false/A=false -> M1/G1 when purchasing
+  primary; Rtab still overrides this when purchasing another standalone
+  [O:65-95,251-253; G:295-325,424-427].
+* Expired primary: A excludes end<=now, but owner E does not; can show a past end
+  and offer scheduling in the past. No past-date validation exists in the
+  primary Future Plan launcher [S:215-216; O:127-165,294-329].
+* Future primary without active primary: fails A&&F schedule-only guard; owner
+  and guest disagree as in F3. Supplied chart does not fully define queue
+  management for this inconsistent state, but replacement copy lacks a current
+  primary to refer to [O:99,127; G:333,368,424].
+* Starts later TODAY: date-only comparison makes F=false and may make A=true
+  even before exact start time. Missing/invalid starts also allow A=true if end
+  is null/future. This is confirmed logic, not proof intended status is wrong
+  [S:207-216,227-232; GS:163-172; T1:258-267].
+* Future classification ignores EndDate, CurrentlyAssigned and PlanType. A
+  malformed future entry can coexist with A and force schedule-only
+  [S:226-243; GS:151-183]. Whether such payloads occur is RUNTIME REQUIRED.
+* Malformed casing/shape: BP reads exact PrimaryPlans/StandAlonePlans/
+  SecondaryPlans keys and M exact StartDate/EndDate keys; missing/non-list fields
+  silently become empty lists/empty strings. Guest top-level normalization does
+  not unwrap a Data object [BP:13-35,151-165; M:177-178; GR:180-190]. Alternate
+  casing/wrappers can therefore lose eligibility/date data; actual API variants
+  were not observed. Note response `StandAlonePlans` vs request
+  `StandalonePlans` are two distinct literal wire names [BP:33; REQ:68].
+* Delayed owner refresh: loading without data uses skeleton, but cached refresh
+  remains usable. isRefreshingBundles protects future click only, not opening
+  popup or immediate activation, and _fetchAllPlans uses status refreshing
+  rather than setting that particular flag [V:164-197,315-321; C:460-483;
+  O:303-309]. Sheet snapshots can retain old warning/date after state updates
+  [O:35-41; G:254,286-294]. Timing reproduction is RUNTIME REQUIRED.
+* Delayed guest bundles: _onStarted does not await _loadBundles; it only awaits
+  catalog. _loadBundles returns without state update when emit.isDone. If the
+  catalog handler completes first, a late bundles response can be dropped with
+  isLoadingBundles still true, repeatedly blocking popup. This is a conditional
+  lifecycle/timing risk inferred from GB:44-47,110-128 plus G:262-268; not an
+  observed device failure. It is more likely a missing popup than wrong text.
+* "Active MiFi" lookup checks earliest.planGroup but A is any-entry based;
+  earliest is sorted by start, not filtered current. An expired first MiFi and
+  a later active non-MiFi can therefore select MiFi warning. Actual payload
+  occurrence RUNTIME REQUIRED [BP:50-79; S:160-162,206-217; O:145-149].
+
+9. Tester Bug Investigation
+===========================
+
+Reported: Purchase Now -> activation popup, expected choices based on active /
+future primary state and expiry in warning; actual "description shows wrong."
+
+Q1: Exactly which conditions can support that report?
+* !Rtab && E && !A: owner M6 replacement warning or M7 scheduling warning with
+  no currently active primary (F3).
+* !Rtab && A && F && La!=null: M5/G5 says current plan ends on future/standalone/
+  secondary's later expiry (F1).
+* !Rtab && A && F && La==null: dual replacement description despite queued
+  primary; immediate option returns (F2).
+* !Rtab && A && !F && Lp==null: D warning omits required expiry (F6).
+* MiFi-on-active-MiFi: specific replacement-only M4/G4 instead of generic D
+  expiry/alternative explanation (F4).
+* Existingplans/bundles failure or malformed payload with no retained primary:
+  false no-active-plan description if account really has plans (F5).
+* Stale/hydrated/optimistic state, open-sheet snapshot, device-local date shifts
+  or wrong array placement can also explain discrepancies, but the actual
+  triggering account/payload/timezone is RUNTIME REQUIRED (sections 6/8).
+
+Q2: Does the app choose the correct description for every condition?
+No: concrete exceptions above. Ordinary A/B/C/D valid-data paths are supported
+by source and existing test expectations. Normal D expression is
+`hasActivePrimaryWithoutFuturePrimaryPlans` (A&&!F), after Rtab, valid E and MiFi
+precedence, and displays M3. That by itself does NOT support a universal wrong
+description claim. The typo is real even when selection is correct.
+
+Q3: Can state/API mapping cause a wrong description?
+Yes, conditionally and with exact mechanisms: primary list existence used as
+active; null dates treated as active; errors mapped to empty; case-sensitive
+keys silently absent; cached/optimistic values; broad max-end selection. No
+observed production response proves one of these caused this tester incident.
+
+Q4: Is the date from the correct source?
+Normally API EndDate parsed local. D's one-current-primary case uses its real
+end. E deliberately uses latest of every purchased plan, diverging from supplied
+"current plan expires" baseline. Optimistic owner dates can be estimates. The
+date is not a random demo date inserted by the activation launcher; null dates
+are omitted, and the selected catalog's description is not used for the warning.
+
+Q5: Is the report reproducible from evidence?
+Source-level branch reproduction is supported for F1-F7. T1 explicitly encodes
+future-only replacement wording, T2 explicitly encodes no-date E dual buttons
+and latest standalone/secondary expiry, and T3 encodes MiFi copy without expiry.
+These tests confirm intended current expectations in SOURCE; they were not run
+and do not prove a live backend response. No screenshot, account payload, tab,
+date/time/timezone or exact wrong string was provided for this tester incident.
+Therefore: specific implementation mismatches SUPPORTED; exact reported
+occurrence/root cause UNCLEAR; live/runtime reproduction NOT PERFORMED.
+
+Minimal manual follow-up, description only (not executed):
+Capture selected tab/PlanID/PlanType/PlanGroup, account versus guest entry, device
+timezone, sanitized PrimaryPlans/StandAlonePlans/SecondaryPlans dates and whether
+loading/refresh/optimistic state was present. Compare A/F/E/Lp/La at tap time
+against matrix. Exercise D, E with one and multiple future primaries, E all ends
+missing, future-only/expired-only primary, delayed/failed existingplans, and MiFi
+override. Validate API date/time contract separately from warning grammar.
+
+10. Final Verdict (PASS / FAIL / UNCLEAR)
+=========================================
+
+PASS: ordinary A, B popup behavior (mapped standalone tabs), C and non-MiFi D
+with valid expiry. D's quoted message is deliberately selected by A&&!F.
+PASS: E button restriction when a usable final expiry exists, for one or many
+future primary plans.
+FAIL: overall chart parity because E's date refers to latest purchased expiry;
+E missing-end fallback restores Activate Now; owner non-active primary entries
+can trigger active-plan descriptions; generic D expiry absent under MiFi or
+missing-date paths. Separate confirmed flow gaps: guest future date format
+mismatch and guest standalone receipt-only completion path.
+UNCLEAR: exact tester occurrence/root cause; actual payload validity/grouping;
+business override for MiFi and intended queue/date/timezone contract; exact
+guest lenient parsing outcome. No runtime or backend activation claim made.
+
+Read-only validation: source/reference inspection only. No tests, analyzer,
+formatter, Docker or builds run. No API mutations or requests sent. No Git
+commit/push performed. No persistent process started; nothing to stop. Final
+handoff should show only MYALIV_PLAN_ACTIVATION_AUDIT.txt as the audit artifact.
+
+11. Recommended Fixes (description only; no implementation)
+===========================================================
+
+1) Agree whether E should chain after last future/purchased plan or the current
+   primary. If chaining is intended, amend the baseline and describe the queue
+   end accurately; if chart is authoritative, use the active primary's expiry.
+   Evidence: F1. No change should be inferred solely from "current plan" text.
+2) Centralize explicit primary activation eligibility for owner/guest and make
+   "active", "future", "expired", "unknown" distinct. Avoid E replacing A;
+   decide same-day future times and missing date/status behavior. Evidence: F3
+   and date/status conflicts. Preserve API distinctions and account scoping.
+3) Keep E schedule-only even when date is unavailable; present a retriable date
+   error and prevent an invalid scheduling request rather than offering
+   immediate replacement. Evidence: F2/F6.
+4) Track existing-plan lookup failure separately from verified empty results.
+   Surface retry and prevent an unverified immediate purchase. Ensure guest
+   parallel loading stays within a live awaited handler and reliably clears its
+   loading flag. Evidence: F5 and guest timing risk.
+5) Resolve MiFi-specific requirement against generic D. If both actions remain,
+   explain the scheduled alternative and expiry as well as immediate replacement.
+   Evidence: F4. Do not remove a product override without that decision.
+6) Use one typed date value end-to-end, an explicit backend timezone contract,
+   and separately agreed display format. Align guest ISO producer/parser and
+   require a valid future StartDate; do not let null silently remove it.
+   Evidence: F6/F8 and section 6. Correct "active your plan" independently (F7).
+7) Ensure pending/cached/optimistic data cannot present stale eligibility or
+   imply an estimated expiry is confirmed API data; revalidate at continuation
+   when necessary. Define identity for repeat purchases sharing a PlanID.
+   Evidence: section 6.4 and refresh/snapshot conflicts.
+8) Validate guest standalone completion through an actual purchase/payment
+   operation before navigating to success receipt. Evidence: F9. This is beyond
+   a description-only patch and should be scoped separately.
+9) Add focused integration coverage after requirements are settled: real-shaped
+   guest existingplans object (not catalog-list fallback), delayed/error results,
+   D/E missing dates, expired/future-only primary, queued plans with later
+   standalone/add-on expiry, ISO popup-to-guest-payment transfer, and standalone
+   completion. Existing tests that encode divergences must not be treated as
+   proof of chart correctness. No tests were added or run for this audit.

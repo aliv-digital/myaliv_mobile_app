@@ -19,6 +19,7 @@ import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -402,8 +403,11 @@ class _PaymentMethodSection extends StatelessWidget {
             radioSize: TopUpPaymentRadioMetrics.radioSize,
             leadingWidth: TopUpPaymentRadioMetrics.logoBoxWidth,
             leadingHeight: TopUpPaymentRadioMetrics.logoBoxHeight,
+            contentPadding: const EdgeInsets.all(12),
+            leadingToTextGap: PaymentMethodIcon.textGap,
             unselectedRadioFill: TopUpPaymentRadioMetrics.unselectedRadioFill,
-            leading: const Icon(Icons.add, size: 18, color: Color(0xFF5045A7)),
+            // Previous artwork: const Icon(Icons.add, size: 18, color: Color(0xFF5045A7)).
+            leading: const PaymentMethodIcon.addCard(),
           ),
         ],
       ),

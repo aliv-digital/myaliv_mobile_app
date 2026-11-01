@@ -5,6 +5,7 @@ import '../../PlanScreen/data/plan_icon_assets.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 import '../../PlanScreen/models/plan_model.dart';
+import '../../PlanScreen/theme/theme.dart';
 import '../model/plan_purchase_add_on_models.dart';
 import '../theme/plan_purchase_plan_add_ons_theme.dart';
 
@@ -23,6 +24,23 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
     required this.selected,
     required this.onChanged,
   });
+
+  HomePlanBenefitType get _benefitType =>
+      switch (item.subtitleLabel.trim().toLowerCase()) {
+        'minutes balance' || 'min balance' => HomePlanBenefitType.talkMins,
+        'text balance' || 'texts balance' => HomePlanBenefitType.sms,
+        _ => HomePlanBenefitType.data,
+      };
+
+  Color get _labelColor => switch (_benefitType) {
+    HomePlanBenefitType.talkMins => HomePlanTheme.talkMinsColor,
+    HomePlanBenefitType.sms => HomePlanTheme.smsColor,
+    _ => PlanPurchasePlanAddOnsTheme.addOnLabelColor,
+  };
+
+  String get _subtitleLabel => _benefitType == HomePlanBenefitType.talkMins
+      ? 'min balance'
+      : item.subtitleLabel;
 
   // The add-ons API can return compact values like "100minutes".
   // Keep the original number/text intact, and only normalize the unit
@@ -110,29 +128,39 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Row(
-                        children: [
-                          _DataIcon(),
-                          const SizedBox(
-                            width: PlanPurchasePlanAddOnsTheme
-                                .addOnCardIconToLabelGap,
-                          ),
-                          Text(
-                            item.subtitleLabel,
-                            style: PlanPurchasePlanAddOnsTheme.addOnLabel,
-                          ),
-                          const SizedBox(
-                            width: PlanPurchasePlanAddOnsTheme
-                                .addOnCardLabelToValueGap,
-                          ),
-                          // Display the API value as-is unless it contains
-                          // "minutes", in which case we shorten it to "min".
-                          Text(
-                            // come here
-                            _formatSubtitleValue(item.subtitleValue),
-                            style: PlanPurchasePlanAddOnsTheme.addOnValue,
-                          ),
-                        ],
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Previously every add-on used _DataIcon().
+                            _AddOnBenefitIcon(
+                              type: _benefitType,
+                              color: _labelColor,
+                            ),
+                            const SizedBox(
+                              width: PlanPurchasePlanAddOnsTheme
+                                  .addOnCardIconToLabelGap,
+                            ),
+                            Text(
+                              _subtitleLabel,
+                              style: PlanPurchasePlanAddOnsTheme.addOnLabel
+                                  .copyWith(color: _labelColor),
+                            ),
+                            const SizedBox(
+                              width: PlanPurchasePlanAddOnsTheme
+                                  .addOnCardLabelToValueGap,
+                            ),
+                            // Display the API value as-is unless it contains
+                            // "minutes", in which case we shorten it to "min".
+                            Text(
+                              // come here
+                              _formatSubtitleValue(item.subtitleValue),
+                              style: PlanPurchasePlanAddOnsTheme.addOnValue,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -220,10 +248,16 @@ class _SquareCheckbox extends StatelessWidget {
   }
 }
 
-class _DataIcon extends StatelessWidget {
+class _AddOnBenefitIcon extends StatelessWidget {
+  const _AddOnBenefitIcon({required this.type, required this.color});
+
+  final HomePlanBenefitType type;
+  final Color color;
+
   @override
   Widget build(BuildContext context) {
-    final iconPath = HomePlanIconAssets.forType(HomePlanBenefitType.data);
+    // Previous icon selection was always HomePlanBenefitType.data.
+    final iconPath = HomePlanIconAssets.forType(type);
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
 
     if (isSvg) {
@@ -231,17 +265,14 @@ class _DataIcon extends StatelessWidget {
         iconPath,
         width: 18,
         height: 18,
-        colorFilter: const ColorFilter.mode(
-          PlanPurchasePlanAddOnsTheme.addOnLabelColor,
-          BlendMode.srcIn,
-        ),
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       );
     }
     return Image.asset(
       iconPath,
       width: 18,
       height: 18,
-      color: PlanPurchasePlanAddOnsTheme.addOnLabelColor,
+      color: color,
       colorBlendMode: BlendMode.srcIn,
     );
   }
