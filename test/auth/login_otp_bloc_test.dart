@@ -25,7 +25,40 @@ class FakeAuthCompletionService extends Fake implements AuthCompletionService {
 
 class FakeAnalyticsService extends Fake implements AnalyticsService {
   @override
-  Future<void> logLogin() async {}
+  Future<void> logLogin({
+    required String userId,
+    String method = AnalyticsLoginMethod.otp,
+  }) async {}
+
+  @override
+  Future<void> logLoginFailure({
+    required String method,
+    required String failureReason,
+  }) async {}
+
+  @override
+  Future<void> logOtpRequested({String otpChannel = AnalyticsOtpChannel.sms}) async {}
+
+  @override
+  Future<void> logOtpVerified({String otpChannel = AnalyticsOtpChannel.sms}) async {}
+
+  @override
+  Future<void> logOtpFailed({
+    required String failureReason,
+    String otpChannel = AnalyticsOtpChannel.sms,
+  }) async {}
+
+  @override
+  Future<void> logPasswordResetStarted() async {}
+
+  @override
+  Future<void> logPasswordResetCompleted() async {}
+
+  @override
+  Future<void> logPasswordResetFailed({required String failureReason}) async {}
+
+  @override
+  Future<void> setLoggedIn() async {}
 }
 
 class _FakeInternetConnection extends Fake implements InternetConnection {

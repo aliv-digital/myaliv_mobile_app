@@ -256,7 +256,7 @@ class HomePlansPaymentMethodBloc
 
     try {
       final orderId = await invoke();
-      await _logPurchaseAnalytics();
+      await _logPurchaseAnalytics(transactionId: orderId?.toString());
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.success,
@@ -333,7 +333,7 @@ class HomePlansPaymentMethodBloc
     if (state.replacementPrimaryPlanTitle != null) {
       emit(state.copyWith(hasConfirmed3DSPayment: true));
     }
-    await _logPurchaseAnalytics();
+    await _logPurchaseAnalytics(transactionId: event.orderId);
     emit(
       state.copyWith(
         status: HomePlansPaymentMethodStatus.success,
@@ -344,29 +344,22 @@ class HomePlansPaymentMethodBloc
     );
   }
 
-  // Fires the correct GA4 event based on whether the purchase is a plan
-  // bundle (primary plan type) or an add-on (secondary / standalone).
-  Future<void> _logPurchaseAnalytics() async {
+  // Fires GA4's standard `purchase` event; `item_category` discriminates
+  // bundle (primary plan type) from add-on in Monetisation → Ecommerce reports.
+  Future<void> _logPurchaseAnalytics({String? transactionId}) async {
     if (state.selectedItems.isEmpty) return;
     final item = state.selectedItems.first;
-    final paymentMethod = _paymentMethodLabel(state.paymentMode);
-    final analytics = instance<AnalyticsService>();
+    final isPrimary = item.planType == HomePlansPaymentPlanType.primary;
 
-    if (item.planType == HomePlansPaymentPlanType.primary) {
-      await analytics.logPlanPurchase(
-        planId: item.id,
-        planName: item.title,
-        amount: state.amount,
-        paymentMethod: paymentMethod,
-      );
-    } else {
-      await analytics.logAddonPurchase(
-        addonId: item.id,
-        addonName: item.title,
-        amount: state.amount,
-        paymentMethod: paymentMethod,
-      );
-    }
+    await instance<AnalyticsService>().logPurchase(
+      itemId: item.id,
+      itemName: item.title,
+      itemCategory:
+          isPrimary ? AnalyticsItemCategory.plan : AnalyticsItemCategory.addon,
+      amount: state.amount,
+      paymentMethod: _paymentMethodLabel(state.paymentMode),
+      transactionId: transactionId,
+    );
   }
 
   String _paymentMethodLabel(HomePlansPaymentMode mode) {

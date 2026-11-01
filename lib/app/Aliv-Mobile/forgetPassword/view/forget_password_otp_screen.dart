@@ -38,6 +38,7 @@ class ForgetPasswordOtpScreen extends LoginOtpScreen {
     initialApiPhoneNumber: initialApiPhoneNumber,
     preventDuplicateSubmissions: true,
     resetValidationOnResend: true,
+    authFlow: AuthFlow.passwordRecovery,
   );
 
   static void _continueToPasswordReset(

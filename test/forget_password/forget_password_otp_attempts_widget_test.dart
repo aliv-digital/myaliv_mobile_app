@@ -104,7 +104,30 @@ void main() {
       ),
     );
     when(() => role.fetchRoleId(123)).thenAnswer((_) async => 1);
-    when(() => analytics.logLogin()).thenAnswer((_) async {});
+    when(() => analytics.logLogin(
+          userId: any(named: 'userId'),
+          method: any(named: 'method'),
+        )).thenAnswer((_) async {});
+    when(() => analytics.logLoginFailure(
+          method: any(named: 'method'),
+          failureReason: any(named: 'failureReason'),
+        )).thenAnswer((_) async {});
+    when(() => analytics.logOtpRequested(otpChannel: any(named: 'otpChannel')))
+        .thenAnswer((_) async {});
+    when(() => analytics.logOtpVerified(otpChannel: any(named: 'otpChannel')))
+        .thenAnswer((_) async {});
+    when(() => analytics.logOtpFailed(
+          otpChannel: any(named: 'otpChannel'),
+          failureReason: any(named: 'failureReason'),
+        )).thenAnswer((_) async {});
+    when(() => analytics.logPasswordResetStarted())
+        .thenAnswer((_) async {});
+    when(() => analytics.logPasswordResetCompleted())
+        .thenAnswer((_) async {});
+    when(() => analytics.logPasswordResetFailed(
+          failureReason: any(named: 'failureReason'),
+        )).thenAnswer((_) async {});
+    when(() => analytics.setLoggedIn()).thenAnswer((_) async {});
     instance.registerSingleton<NetworkService>(harness.network);
     instance.registerSingleton<AuthManager>(auth);
     instance.registerSingleton<AccountInfoCubit>(account);

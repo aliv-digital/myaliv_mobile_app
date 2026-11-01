@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../login/model/login_country_selection.dart';
@@ -10,10 +11,17 @@ import 'forget_password_state.dart';
 class ForgetPasswordBloc
     extends Bloc<ForgetPasswordEvent, ForgetPasswordState> {
   final ForgetPasswordRepository repository;
+  final AnalyticsService _analyticsService;
   static const _phoneNumberHelper = LoginPhoneNumberHelper();
 
-  ForgetPasswordBloc({required this.repository})
-    : super(const ForgetPasswordState()) {
+  ForgetPasswordBloc({
+    required this.repository,
+    AnalyticsService? analyticsService,
+  })  : _analyticsService = analyticsService ??
+            (instance.isRegistered<AnalyticsService>()
+                ? instance<AnalyticsService>()
+                : AnalyticsService()),
+        super(const ForgetPasswordState()) {
     on<ForgetPasswordPhoneChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -82,6 +90,8 @@ class ForgetPasswordBloc
       final mfaToken = await repository.sendRequest(
         apiPhone: validatedApiPhone,
       );
+      await _analyticsService.logPasswordResetStarted();
+      await _analyticsService.logOtpRequested();
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.success,
@@ -95,6 +105,9 @@ class ForgetPasswordBloc
       final message = e is Exception
           ? e.toString().replaceFirst('Exception: ', '')
           : 'Something went wrong. Please try again.';
+      await _analyticsService.logPasswordResetFailed(
+        failureReason: AnalyticsPasswordResetFailureReason.classify(e),
+      );
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,

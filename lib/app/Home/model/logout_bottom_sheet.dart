@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/logOut/repository/logout_repository.dart';
@@ -201,6 +202,9 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
                                     );
 
                             if (res) {
+                              if (instance.isRegistered<AnalyticsService>()) {
+                                await instance<AnalyticsService>().logLogout();
+                              }
                               AppToast.show(
                                 message: 'Logout successful!',
                                 type: ToastType.success,

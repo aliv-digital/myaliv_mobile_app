@@ -17,6 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AppUiConfigCubit appUiConfigCubit;
   final AuthCompletionService authCompletionService;
   final InternetConnection _internetConnection;
+  final AnalyticsService _analyticsService;
 
   LoginBloc({
     required this.repository,
@@ -24,12 +25,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginPhoneNumberHelper? phoneNumberHelper,
     AuthCompletionService? authCompletionService,
     InternetConnection? internetConnection,
+    AnalyticsService? analyticsService,
   }) : phoneNumberHelper =
            phoneNumberHelper ??
            const LoginPhoneNumberHelper(requireBahamasAreaCode: true),
        authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
+       _analyticsService = analyticsService ??
+           (instance.isRegistered<AnalyticsService>()
+               ? instance<AnalyticsService>()
+               : AnalyticsService()),
        super(const LoginState()) {
     on<LoginInitialized>(_onInitialized);
     on<LoginSaveMyPasswordToggled>(_onSaveMyPasswordToggled);
@@ -229,6 +235,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             appUiConfigCubit: appUiConfigCubit,
           );
 
+          await _analyticsService.logLogin(
+            userId: phoneValidationResult.phoneNumberForApi!,
+            method: AnalyticsLoginMethod.password,
+          );
+          await _analyticsService.setLoggedIn();
+
           emit(
             state.copyWith(
               status: LoginStatus.success,
@@ -259,6 +271,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       debugPrint('Login error: $message, $e');
+      // Treat known "wrong username/password" markers as invalid credentials
+      // so classify() routes them to AnalyticsLoginFailureReason.invalidCredentials;
+      // "FailedUsernameIsLocked" contains "locked" so classify() picks lockedAccount
+      // on its own; network/system errors fall through to the default classification.
+      final isInvalidCreds = message == 'FailedUsernameOrPassword' ||
+          message == 'FailedSimpleValidation';
+      await _analyticsService.logLoginFailure(
+        method: AnalyticsLoginMethod.password,
+        failureReason: AnalyticsLoginFailureReason.classify(
+          e,
+          wasIncorrectCode: isInvalidCreds,
+        ),
+      );
       if (message.toString() == "FailedUsernameIsLocked") {
         _emitFailure(
           emit,
