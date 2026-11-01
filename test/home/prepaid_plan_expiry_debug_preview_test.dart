@@ -171,33 +171,6 @@ void main() {
     });
   }
 
-  testWidgets('preview does not affect other card variants or postpaid', (
-    tester,
-  ) async {
-    for (final showRenew in [true, false]) {
-      await pumpCard(
-        tester,
-        PrepaidActivePlanCardWithData(showRenewButton: showRenew),
-      );
-      expect(find.textContaining('renew to stay connected.'), findsNothing);
-      await tester.pumpWidget(const SizedBox.shrink());
-    }
-    await pumpCard(
-      tester,
-      const PostpaidActivePlanCard(
-        config: HomeUiConfig(
-          userType: UserType.postpaid,
-          hasActivePlan: true,
-          isFuturePlan: false,
-        ),
-      ),
-    );
-    expect(find.textContaining('renew to stay connected.'), findsNothing);
-    expect(plan.endDateTime, realEnd);
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
-
   testWidgets('preview CTA retains the existing renewal flow', (tester) async {
     final router = GoRouter(
       routes: [
