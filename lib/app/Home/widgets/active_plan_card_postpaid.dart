@@ -46,11 +46,19 @@ class PostpaidActivePlanCard extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
+        final isRestricted = context
+            .watch<AppUiConfigCubit>()
+            .state
+            .isRestricted;
+        final enforceFullHeight =
+            state.isLoading || state.isInitial || !isRestricted;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
             height: (state.isLoading || state.isInitial) ? 216 : null,
-            constraints: const BoxConstraints(minHeight: 216),
+            constraints: BoxConstraints(
+              minHeight: enforceFullHeight ? 216 : 0,
+            ),
             padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
             decoration: BoxDecoration(
               image: const DecorationImage(
@@ -61,16 +69,23 @@ class PostpaidActivePlanCard extends StatelessWidget {
             ),
             child: (state.isLoading || state.isInitial)
                 ? const ActivePlanCardSkeleton()
-                : _buildContent(context, state.earliestAddOnsPrimaryPlan),
+                : _buildContent(
+                    context,
+                    state.earliestAddOnsPrimaryPlan,
+                    isRestricted,
+                  ),
           ),
         );
       },
     );
   }
 
-  Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
+  Widget _buildContent(
+    BuildContext context,
+    BasePlanModel? activePlan,
+    bool isRestricted,
+  ) {
     final expiry = _expiryDateTime();
-    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
