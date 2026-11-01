@@ -34,7 +34,9 @@ bool isAllowedBoltOnName(String planName) {
 /// The incoming list is assumed to already be sorted by earliest start date
 /// (as produced by `BundleResponseParser._sortByEarliestStartDate`), so this
 /// simply picks the first match.
-BasePlanModel? firstAddOnEligiblePrimary(List<BasePlanModel> sortedPrimaryPlans) {
+BasePlanModel? firstAddOnEligiblePrimary(
+  List<BasePlanModel> sortedPrimaryPlans,
+) {
   for (final plan in sortedPrimaryPlans) {
     if (isAddOnEligiblePrimaryName(plan.planName)) return plan;
   }

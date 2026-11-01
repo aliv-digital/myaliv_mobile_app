@@ -56,9 +56,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
             height: (state.isLoading || state.isInitial) ? 216 : null,
-            constraints: BoxConstraints(
-              minHeight: enforceFullHeight ? 216 : 0,
-            ),
+            constraints: BoxConstraints(minHeight: enforceFullHeight ? 216 : 0),
             padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
             decoration: BoxDecoration(
               image: const DecorationImage(

@@ -21,13 +21,13 @@ void main() {
     launched.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, (call) async {
-      if (call.method == 'launch') {
-        launched.add((call.arguments as Map)['url'] as String);
-        return true;
-      }
-      if (call.method == 'canLaunch') return true;
-      return null;
-    });
+          if (call.method == 'launch') {
+            launched.add((call.arguments as Map)['url'] as String);
+            return true;
+          }
+          if (call.method == 'canLaunch') return true;
+          return null;
+        });
   });
 
   tearDown(() {
