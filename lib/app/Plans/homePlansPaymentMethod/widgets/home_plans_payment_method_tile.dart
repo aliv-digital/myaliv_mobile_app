@@ -18,6 +18,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
   /// drop in a richer leading (e.g. [SavedCardBrandBox]) for parity with
   /// other payment screens.
   final Widget? leadingWidget;
+  final Widget? titleTrailing;
 
   const HomePlansPaymentMethodTile({
     super.key,
@@ -33,6 +34,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
     this.textToIndicatorGap =
         HomePlansPaymentMethodTheme.savedCardTextToIndicatorGap,
     this.leadingWidget,
+    this.titleTrailing,
   });
 
   @override
@@ -71,13 +73,21 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style:
-                        titleStyle ??
-                        (selected
-                            ? HomePlansPaymentMethodTheme.selectedMethodTitle
-                            : HomePlansPaymentMethodTheme.methodTitle),
+                  // Keep labels and the full wallet balance on one line so
+                  // every payment option shares the same row height.
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: titleTrailing == null
+                        ? Text(title, style: _titleStyle)
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(title, style: _titleStyle),
+                              const SizedBox(width: 10),
+                              titleTrailing!,
+                            ],
+                          ),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -133,4 +143,10 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
       ),
     );
   }
+
+  TextStyle get _titleStyle =>
+      titleStyle ??
+      (selected
+          ? HomePlansPaymentMethodTheme.selectedMethodTitle
+          : HomePlansPaymentMethodTheme.methodTitle);
 }
