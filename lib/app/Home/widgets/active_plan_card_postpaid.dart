@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -69,6 +70,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
     final expiry = _expiryDateTime();
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,10 +110,11 @@ class PostpaidActivePlanCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 14),
-
         // ================= CTA =================
-        const UpgradeCreditLimitButton(),
+        if (!isRestricted) ...[
+          const SizedBox(height: 14),
+          const UpgradeCreditLimitButton(),
+        ],
       ],
     );
   }
