@@ -14,6 +14,7 @@ enum PurchasePrepaidAction {
   autoTopUp,
   sendTopUp,
   addOns,
+  autoPay,
 }
 
 class PurchasePrepaidMenuItem extends Equatable {

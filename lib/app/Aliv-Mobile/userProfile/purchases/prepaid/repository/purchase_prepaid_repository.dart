@@ -63,6 +63,10 @@ class PurchasePrepaidRepository {
           action: PurchasePrepaidAction.futurePlans,
         ),
         PurchasePrepaidMenuItem(
+          title: 'auto pay',
+          action: PurchasePrepaidAction.autoPay,
+        ),
+        PurchasePrepaidMenuItem(
           title: 'my limits',
           action: PurchasePrepaidAction.myLimits,
         ),

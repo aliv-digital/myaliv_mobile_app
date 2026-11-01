@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 // import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -93,15 +95,31 @@ class _PurchasePrepaidView extends StatelessWidget {
                     SliverPadding(
                       padding: const EdgeInsets.only(top: 6),
                       sliver: SliverToBoxAdapter(
-                        child: PurchasePrepaidMenuList(
-                          items: state.items,
-                          showTopDivider: false,
-                          onTapItem: (item) {
-                            context.read<PurchasePrepaidBloc>().add(
-                              PurchasePrepaidItemTapped(item.action),
-                            );
-                          },
-                        ),
+                        child:
+                            BlocBuilder<AccountInfoCubit, AccountInfoState>(
+                              buildWhen: (p, c) =>
+                                  p.autoPayInvoice != c.autoPayInvoice,
+                              builder: (context, acctState) {
+                                final visibleItems = acctState.autoPayInvoice
+                                    ? state.items
+                                          .where(
+                                            (i) =>
+                                                i.action !=
+                                                PurchasePrepaidAction.autoPay,
+                                          )
+                                          .toList()
+                                    : state.items;
+                                return PurchasePrepaidMenuList(
+                                  items: visibleItems,
+                                  showTopDivider: false,
+                                  onTapItem: (item) {
+                                    context.read<PurchasePrepaidBloc>().add(
+                                      PurchasePrepaidItemTapped(item.action),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                       ),
                     ),
                   ],
@@ -176,6 +194,10 @@ class _PurchasePrepaidView extends StatelessWidget {
         // context.read<PlansCubit>().changeTab(HomePlanTab.addOns);
         context.push(AppRoutes.purchaseAddOns);
         // context.go('${AppRoutes.plans}?tab=addOns');
+        break;
+
+      case PurchasePrepaidAction.autoPay:
+        context.push(AppRoutes.autoPayPostpaidScreen);
         break;
     }
     //   case PurchasePrepaidAction.topUpPrepaidNumber:
