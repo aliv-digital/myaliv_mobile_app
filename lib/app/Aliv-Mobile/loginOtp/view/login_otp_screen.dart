@@ -153,54 +153,52 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
               );
             }
           },
-          child: Column(
-            children: [
-              Expanded(
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    const SliverToBoxAdapter(child: OtpHeader()),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: LoginOtpPaddings.contentHorizontal,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: LoginOtpSizes.contentTopGap),
-                            OtpCodeFields(
-                              key: _codeFieldsKey,
-                              boxHeight: LoginOtpSizes.otpBoxHeight,
-                              gap: LoginOtpSizes.otpBoxGap,
-                            ),
-                            SizedBox(
-                              height: LoginOtpSizes.otpToBottomActionsGap,
-                            ),
-                            OtpBottomActions(
-                              clearCodeOnResend: widget.clearCodeOnResend,
-                              onResendPressed: widget.clearCodeOnResend
-                                  ? () =>
-                                        _codeFieldsKey.currentState?.clearCode()
-                                  : null,
-                            ),
-                            SizedBox(height: LoginOtpSizes.contentBottomGap),
-                          ],
-                        ),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              const SliverToBoxAdapter(child: OtpHeader()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: LoginOtpPaddings.contentHorizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: LoginOtpSizes.contentTopGap),
+                      OtpCodeFields(
+                        key: _codeFieldsKey,
+                        boxHeight: LoginOtpSizes.otpBoxHeight,
+                        gap: LoginOtpSizes.otpBoxGap,
                       ),
+                      SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
+                      OtpBottomActions(
+                        clearCodeOnResend: widget.clearCodeOnResend,
+                        onResendPressed: widget.clearCodeOnResend
+                            ? () => _codeFieldsKey.currentState?.clearCode()
+                            : null,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        LoginOtpSizes.contentHorizontalPadding,
+                        LoginOtpSizes.changePhoneTopGap,
+                        LoginOtpSizes.contentHorizontalPadding,
+                        LoginOtpSizes.changePhoneBottomOffset,
+                      ),
+                      child: _ChangePhoneNumberAction(),
                     ),
                   ],
                 ),
-              ),
-              // Keep the action outside the scrollable form and above stripes.
-              const Padding(
-                padding: EdgeInsets.fromLTRB(
-                  LoginOtpSizes.contentHorizontalPadding,
-                  LoginOtpSizes.contentBottomGap,
-                  LoginOtpSizes.contentHorizontalPadding,
-                  LoginOtpSizes.changePhoneBottomOffset,
-                ),
-                child: _ChangePhoneNumberAction(),
               ),
             ],
           ),
