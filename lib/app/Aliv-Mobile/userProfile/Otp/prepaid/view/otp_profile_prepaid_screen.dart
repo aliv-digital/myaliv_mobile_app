@@ -31,6 +31,7 @@ class _OtpProfilePrepaidView extends StatelessWidget {
     return StripedScaffold(
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+      stripesReserveSpace: true,
 
       body: SafeArea(
         child: BlocListener<OtpProfilePrepaidBloc, OtpProfilePrepaidState>(
@@ -52,7 +53,9 @@ class _OtpProfilePrepaidView extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(),
             child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               slivers: [
                 const SliverToBoxAdapter(child: OtpProfilePrepaidHeader()),
@@ -64,9 +67,9 @@ class _OtpProfilePrepaidView extends StatelessWidget {
                       children: const [
                         SizedBox(height: 24),
                         OtpProfilePrepaidCodeFields(),
-                        SizedBox(height: 54),
+                        SizedBox(height: 50),
                         OtpProfilePrepaidBottomActions(),
-                        SizedBox(height: 24),
+                        SizedBox(height: 16),
                       ],
                     ),
                   ),
