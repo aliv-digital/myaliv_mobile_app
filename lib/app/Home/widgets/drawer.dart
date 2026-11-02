@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
@@ -16,14 +18,16 @@ import '../model/logout_bottom_sheet.dart';
 /// Format phone number as (XXX)-XXX-XXXX
 String _formatPhone(String phone) {
   if (phone.isEmpty) return '';
-  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  var cleaned = phone.contains('_') ? phone.split('_').first : phone;
+  cleaned = cleaned.replaceAll('*dc*', '').replaceAll('*DC*', '').trim();
+  final digits = cleaned.replaceAll(RegExp(r'\D'), '');
   if (digits.length == 10) {
     return '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
   }
   if (digits.length == 11 && digits.startsWith('1')) {
     return '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
   }
-  return phone;
+  return cleaned;
 }
 
 class AppMenuDrawer extends StatelessWidget {
@@ -33,7 +37,8 @@ class AppMenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRestricted = context.read<AppUiConfigCubit>().state.isRestricted;
+    final uiConfig = context.watch<AppUiConfigCubit>().state;
+    final isRestricted = uiConfig.isRestricted;
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
@@ -51,10 +56,36 @@ class AppMenuDrawer extends StatelessWidget {
                     child: BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
                       bloc: instance<DeviceLimitsCubit>(),
                       builder: (context, state) {
-                        final fullName = resolveUserDisplayName(devices: state);
-                        final phone = _formatPhone(
-                          state.deviceLimits?.tn ?? '',
-                        );
+                        final activeId = uiConfig.activeDeviceId;
+                        DeviceLimitsModel? activeDevice;
+                        if (activeId != null) {
+                          for (final d in state.allDeviceLimits) {
+                            if (d.deviceId == activeId) {
+                              activeDevice = d;
+                              break;
+                            }
+                          }
+                        }
+                        activeDevice ??= state.activeDeviceLimits;
+
+                        final fullName = () {
+                          final f = activeDevice?.fName;
+                          final l = activeDevice?.lName;
+                          final activeName = (f != null || l != null)
+                              ? '${f ?? ''} ${l ?? ''}'.trim()
+                              : null;
+                          if (activeName != null && activeName.isNotEmpty) {
+                            return activeName;
+                          }
+                          return resolveActiveDeviceDisplayName(devices: state);
+                        }();
+
+                        final rawPhone =
+                            activeDevice?.tn ??
+                            ActiveDevice.tn() ??
+                            state.deviceLimits?.tn ??
+                            '';
+                        final phone = _formatPhone(rawPhone);
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

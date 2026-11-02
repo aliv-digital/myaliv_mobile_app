@@ -85,8 +85,10 @@ class UserProfileReceiptRepository {
 
   String _formatPhoneNumber(String value) {
     final trimmed = value.trim();
-    final digitsOnly = trimmed.replaceAll(RegExp(r'\D'), '');
-    if (digitsOnly.isEmpty) return trimmed;
+    var cleaned = trimmed.contains('_') ? trimmed.split('_').first : trimmed;
+    cleaned = cleaned.replaceAll('*dc*', '').replaceAll('*DC*', '').trim();
+    final digitsOnly = cleaned.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.isEmpty) return cleaned;
 
     if (digitsOnly.length == 10) {
       return '(${digitsOnly.substring(0, 3)})-'
@@ -100,7 +102,7 @@ class UserProfileReceiptRepository {
           '${digitsOnly.substring(7)}';
     }
 
-    return trimmed;
+    return cleaned;
   }
 
   String _firstNonEmpty(List<String?> values) {

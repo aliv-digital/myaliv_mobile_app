@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_d
 import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_on_receipt_section.dart';
+import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -91,7 +92,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
           HomePlanPurchaseReceiptDetailItem(label: 'time', value: timeText),
           HomePlanPurchaseReceiptDetailItem(
             label: 'phone no.',
-            value: phoneNumber,
+            value: PhoneNumberFormatterService.format(phoneNumber),
           ),
           const HomePlanPurchaseReceiptDetailItem(
             label: 'email address',

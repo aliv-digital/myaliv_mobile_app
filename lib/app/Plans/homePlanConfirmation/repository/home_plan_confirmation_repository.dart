@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 import '../models/home_plan_confirmation_models.dart';
@@ -58,8 +59,13 @@ class HomePlanConfirmationRepository {
       vat: items.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
+    final activeTn = ActiveDevice.tn()?.trim() ?? '';
+    final phone = args.phoneNumber.trim().isNotEmpty
+        ? args.phoneNumber
+        : (activeTn.isNotEmpty ? activeTn : '');
+
     return HomePlanConfirmationData(
-      phoneNumber: args.phoneNumber,
+      phoneNumber: phone,
       headerTitle: args.accountHolderName,
       beginsOnDateText: '',
       items: items,

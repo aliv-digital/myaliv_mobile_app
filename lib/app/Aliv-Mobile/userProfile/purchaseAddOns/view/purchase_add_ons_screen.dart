@@ -23,15 +23,24 @@ class PurchaseAddOnsScreen extends StatefulWidget {
 }
 
 class _PurchaseAddOnsScreenState extends State<PurchaseAddOnsScreen> {
+  late final PlansCubit _plansCubit;
+
   @override
   void initState() {
     super.initState();
+    _plansCubit = context.read<PlansCubit>();
+    _plansCubit.clearSelectedAddOns();
     final userType = context.read<AppUiConfigCubit>().state.userType;
-    final cubit = context.read<PlansCubit>();
-    cubit.started(userType: userType, initialTab: HomePlanTab.addOns);
-    if (cubit.state.selectedTab != HomePlanTab.addOns) {
-      cubit.changeTab(HomePlanTab.addOns);
+    _plansCubit.started(userType: userType, initialTab: HomePlanTab.addOns);
+    if (_plansCubit.state.selectedTab != HomePlanTab.addOns) {
+      _plansCubit.changeTab(HomePlanTab.addOns);
     }
+  }
+
+  @override
+  void dispose() {
+    _plansCubit.clearSelectedAddOns();
+    super.dispose();
   }
 
   @override

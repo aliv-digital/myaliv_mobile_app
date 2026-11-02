@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -414,7 +415,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
 
   return HomePlanConfirmationRouteArgs(
     phoneNumber: _accountPhoneNumber(accountState),
-    accountHolderName: resolveUserDisplayName(account: accountState),
+    accountHolderName: resolveActiveDeviceDisplayName(account: accountState),
     primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
     primaryPlanName: _primaryPlanName(
       selectedApiPlan: selectedApiPlan,
@@ -432,6 +433,9 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
 }
 
 String _accountPhoneNumber(AccountInfoState accountState) {
+  final activeTn = ActiveDevice.tn()?.trim() ?? '';
+  if (activeTn.isNotEmpty) return activeTn;
+
   final accountInfo = accountState.accountInfo;
   // final username = accountInfo?.username.trim() ?? '';
   // if (username.isNotEmpty) return username;
