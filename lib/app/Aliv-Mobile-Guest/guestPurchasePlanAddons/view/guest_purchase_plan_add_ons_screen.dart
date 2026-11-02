@@ -169,7 +169,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                     const GuestPurchasePlanAddOnsSkipPressed(),
                   );
                 },
-                onHomeTap: () => context.go(AppRoutes.logIn),
+                onHomeTap: () => context.go(AppRoutes.guestSplash),
               ),
               Expanded(
                 child:

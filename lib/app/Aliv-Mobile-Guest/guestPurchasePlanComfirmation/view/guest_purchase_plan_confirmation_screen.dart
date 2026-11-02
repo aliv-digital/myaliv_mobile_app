@@ -280,7 +280,7 @@ class _GuestPurchasePlanConfirmationViewState
                         height: 63,
                         title: 'confirmation and payment',
                         onBack: () => Navigator.of(context).maybePop(),
-                        onHomeTap: () => context.go(AppRoutes.logIn),
+                        onHomeTap: () => context.go(AppRoutes.guestSplash),
                         showBackArrow: true,
                         showHome: false,
                         backgroundColor:

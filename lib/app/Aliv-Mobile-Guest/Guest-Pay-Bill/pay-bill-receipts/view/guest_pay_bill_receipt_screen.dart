@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/widgets/receipt_failure_card.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
@@ -45,16 +46,20 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestPayBillReceiptBloc(
           repository: ctx.read<GuestPayBillReceiptRepository>(),
         )..add(GuestPayBillReceiptStarted(receiptData)),
-        child: _GuestPayBillReceiptView(orderId: args.orderId),
+        child: _GuestPayBillReceiptView(
+          orderId: args.orderId,
+          isPaymentFailed: args.isPaymentFailed,
+        ),
       ),
     );
   }
 }
 
 class _GuestPayBillReceiptView extends StatelessWidget {
-  const _GuestPayBillReceiptView({this.orderId});
+  const _GuestPayBillReceiptView({this.orderId, this.isPaymentFailed = false});
 
   final String? orderId;
+  final bool isPaymentFailed;
 
   void _onBackHomePressed(BuildContext context) {
     context.read<GuestPayBillReceiptBloc>().add(
@@ -136,6 +141,18 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                     builder: (context, state) {
                       final data = state.data;
                       if (data == null) return const SizedBox.shrink();
+
+                      if (isPaymentFailed) {
+                        return ReceiptFailureCard(
+                          data: _toDefaultReceiptData(data, orderId),
+                          buttonText: 'back to home page',
+                          onBackHome: () {
+                            _onBackHomePressed(context);
+                          },
+                          pageBackground:
+                              GuestPayBillReceiptTheme.screenBackground,
+                        );
+                      }
 
                       return DefaultReceiptSuccessCard(
                         data: _toDefaultReceiptData(data, orderId),

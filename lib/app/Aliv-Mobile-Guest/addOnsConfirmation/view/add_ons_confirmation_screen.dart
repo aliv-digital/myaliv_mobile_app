@@ -102,7 +102,7 @@ class _AddOnsConfirmationViewState extends State<_AddOnsConfirmationView> {
                   DefaultAppBar(
                     showHome: true,
                     onHomeTap: () {
-                      context.go(AppRoutes.logIn);
+                      context.go(AppRoutes.guestSplash);
                     },
                     title: 'confirmation and payment',
                     onBack: () {

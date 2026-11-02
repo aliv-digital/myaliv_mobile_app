@@ -528,7 +528,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               onBack: () {
                 context.pop();
               },
-              onHomeTap: () => context.go(AppRoutes.logIn),
+              onHomeTap: () => context.go(AppRoutes.guestSplash),
             ),
 
             // _TopBar(

@@ -814,6 +814,27 @@ class AppRouter {
             return GuestPayBillReceiptScreen(args: receiptArgs);
           }
 
+          if (receiptArgs is Map) {
+            return GuestPayBillReceiptScreen(
+              args: GuestPayBillReceiptArgs(
+                serviceName:
+                    receiptArgs['serviceName'] as String? ?? 'ALIV Postpaid',
+                identifierLabel:
+                    receiptArgs['identifierLabel'] as String? ?? 'phone no.',
+                identifierValue:
+                    receiptArgs['identifierValue'] as String? ?? '242-801-0000',
+                amount: (receiptArgs['amount'] as num?)?.toDouble() ?? 200.00,
+                dateText: receiptArgs['dateText'] as String? ?? 'Mar 22, 2023',
+                timeText: receiptArgs['timeText'] as String? ?? '07:30 am',
+                paymentMethod:
+                    receiptArgs['paymentMethod'] as String? ?? 'credit card',
+                orderId: receiptArgs['orderId'] as String?,
+                isPaymentFailed:
+                    receiptArgs['isPaymentFailed'] as bool? ?? false,
+              ),
+            );
+          }
+
           return const GuestPayBillReceiptScreen(
             args: GuestPayBillReceiptArgs(
               serviceName: 'ALIV Postpaid',
