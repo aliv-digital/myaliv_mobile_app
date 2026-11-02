@@ -239,12 +239,12 @@ class DeviceLimitsModel {
 
   // ============ Formatted getters for credit limit screen ============
 
-  String get localTextFormatted => maxAllowedLocalText.toStringAsFixed(2);
-  String get localDataFormatted => maxAllowedLocalData.toStringAsFixed(2);
-  String get localVoiceFormatted => maxAllowedLocalVoice.toStringAsFixed(2);
+  String get localTextFormatted => maxAllowedLocalText.toStringAsFixed(0);
+  String get localDataFormatted => maxAllowedLocalData.toStringAsFixed(0);
+  String get localVoiceFormatted => maxAllowedLocalVoice.toStringAsFixed(0);
   String get internationalFormatted =>
-      maxAllowedInternational.toStringAsFixed(2);
-  String get roamingFormatted => maxAllowedRoaming.toStringAsFixed(2);
+      maxAllowedInternational.toStringAsFixed(0);
+  String get roamingFormatted => maxAllowedRoaming.toStringAsFixed(0);
 
   @override
   String toString() {

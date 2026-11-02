@@ -138,16 +138,8 @@ void main() {
         .load();
   });
 
-  for (final value in [
-    '1',
-    '1.0',
-    '40.45',
-    '100',
-    '100.00',
-    '12.3456',
-    ' 100.25 ',
-  ]) {
-    test('accepts a non-fractional decimal >= 1: $value', () {
+  for (final value in ['1', '40', '100', '125', ' 125 ', '99999']) {
+    test('accepts a whole number >= 1: $value', () {
       expect(validateCreditLimitValue(value), isNull);
     });
   }
@@ -160,6 +152,9 @@ void main() {
     '0.01',
     '0.001',
     '0.99',
+    '1.0',
+    '40.45',
+    '100.00',
     '.5',
     '100.',
     '-100',
@@ -182,28 +177,28 @@ void main() {
     '.',
     '--1',
   ]) {
-    test('rejects a value below 1 or outside decimal notation: "$value"', () {
+    test('rejects a non-whole-number or sub-1 value: "$value"', () {
       expect(validateCreditLimitValue(value), 'invalid value');
     });
   }
 
-  test('rejects a decimal that exceeds the finite double range', () {
+  test('rejects an integer that exceeds the signed 64-bit range', () {
     expect(validateCreditLimitValue('9' * 400), 'invalid value');
   });
 
   test('accepted values keep the existing request mapping', () {
     final request = UpdateLimitsRequest.fromFormValues(
       localText: '125',
-      localData: '125.50',
+      localData: '150',
       localVoice: '10',
-      international: '3.25',
+      international: '3',
       roaming: '5',
     );
     expect(request.toJson(), {
       'MaxAllowedLocalText': 125.0,
-      'MaxAllowedLocalData': 125.5,
+      'MaxAllowedLocalData': 150.0,
       'MaxAllowedLocalVoice': 10.0,
-      'MaxAllowedInternational': 3.25,
+      'MaxAllowedInternational': 3.0,
       'MaxAllowedRoaming': 5.0,
     });
   });
@@ -216,8 +211,8 @@ void main() {
       try {
         await h.pump(tester, width: width);
         expect(find.text('invalid value'), findsNothing);
-        const invalid = ['abc', '1.2.3', '158-88848888', r'$10', 'NaN'];
-        const valid = ['125', '125.50', '10', '3.25', '5'];
+        const invalid = ['0', '0', '0', '0', '0'];
+        const valid = ['125', '150', '10', '3', '5'];
         for (var i = 0; i < 5; i++) {
           final field = find.byType(LimitFieldWithController).at(i);
           final input = find.descendant(
