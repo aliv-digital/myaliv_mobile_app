@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
@@ -33,6 +34,11 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
     AccountInfoState accountState, {
     required String fallbackPhoneNumber,
   }) {
+    // Honour the home-screen dropdown: child line's TN wins over the
+    // account owner's primary when a child is selected.
+    final activeTn = ActiveDevice.tn()?.trim() ?? '';
+    if (activeTn.isNotEmpty) return activeTn;
+
     final accountInfo = accountState.accountInfo;
     final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
     if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
@@ -47,7 +53,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountState = instance<AccountInfoCubit>().state;
-    final userName = resolveUserDisplayName(account: accountState);
+    final userName = resolveActiveDeviceDisplayName(account: accountState);
     final userPhoneNumber = _accountPhoneNumber(
       accountState,
       fallbackPhoneNumber: data.phoneNumber,

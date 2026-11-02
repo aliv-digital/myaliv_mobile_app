@@ -134,6 +134,27 @@ class DeviceLimitsState {
     return '${f ?? ''} ${l ?? ''}'.trim();
   }
 
+  /// First name of the dropdown-selected device (falls back to primary).
+  String? get activeFName {
+    final f = activeDeviceLimits?.fName;
+    return (f == null || f.isEmpty) ? null : f;
+  }
+
+  /// Last name of the dropdown-selected device (falls back to primary).
+  String? get activeLName {
+    final l = activeDeviceLimits?.lName;
+    return (l == null || l.isEmpty) ? null : l;
+  }
+
+  /// Full name of the dropdown-selected device. Returns null when neither
+  /// first nor last name is available for the active line.
+  String? get activeFullName {
+    final f = activeFName;
+    final l = activeLName;
+    if (f == null && l == null) return null;
+    return '${f ?? ''} ${l ?? ''}'.trim();
+  }
+
   /// First subscriber contract that is not null
   SubscriberContract? get subscriberContract {
     for (final device in allDeviceLimits) {

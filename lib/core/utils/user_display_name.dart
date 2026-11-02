@@ -23,6 +23,27 @@ String resolveUserDisplayName({
       _nameFromEmail(accountState.email);
 }
 
+/// Resolves the display name for the home-screen dropdown-selected line.
+///
+/// Preference order:
+///   1. Active device's `fName + lName` from `DeviceLimitsState` — the line
+///      the user is currently viewing.
+///   2. `resolveUserDisplayName` — account owner / any device / email.
+///
+/// Use on confirmation-and-payment surfaces (plan purchase, roaming,
+/// top-up) so the name matches the line the purchase routes to. Keep
+/// `resolveUserDisplayName` for account-owner surfaces (drawer, profile,
+/// receipts).
+String resolveActiveDeviceDisplayName({
+  AccountInfoState? account,
+  DeviceLimitsState? devices,
+}) {
+  final deviceState = devices ?? instance<DeviceLimitsCubit>().state;
+  final activeName = deviceState.activeFullName;
+  if (activeName != null && activeName.isNotEmpty) return activeName;
+  return resolveUserDisplayName(account: account, devices: deviceState);
+}
+
 String _nameFromEmail(String? email) {
   final normalized = email?.trim() ?? '';
   if (normalized.isEmpty || !normalized.contains('@')) return 'User';
