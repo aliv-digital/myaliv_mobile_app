@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,10 @@ class _UsageScreenState extends State<UsageScreen>
     with TickerProviderStateMixin {
   TabController? _tabController;
   int _tabLength = 0;
+  // Tracks the previously-rendered tab index so `plan_summary_viewed` only
+  // fires on *entries* to the current-plan tab (initial + re-entry), not on
+  // every rebuild while already on it.
+  int _lastTabIndex = -1;
 
   @override
   void initState() {
@@ -33,16 +38,29 @@ class _UsageScreenState extends State<UsageScreen>
 
     final HomeUiConfig config = context.read<AppUiConfigCubit>().state;
     _tabLength = _tabs(config).length;
+    final initialIndex = _resolveInitialTabIndex(config);
     _tabController = TabController(
       length: _tabLength,
-      initialIndex: _resolveInitialTabIndex(config),
+      initialIndex: initialIndex,
       vsync: this,
     )..addListener(_handleTabChanged);
+    _lastTabIndex = initialIndex;
+
+    if (initialIndex == 0) {
+      _logPlanSummaryViewed(config);
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<AppUiConfigCubit>().clearNavigationIntent();
     });
+  }
+
+  void _logPlanSummaryViewed(HomeUiConfig config) {
+    if (!instance.isRegistered<AnalyticsService>()) return;
+    instance<AnalyticsService>().logPlanSummaryViewed(
+      planType: config.userType.label,
+    );
   }
 
   @override
@@ -54,6 +72,13 @@ class _UsageScreenState extends State<UsageScreen>
 
   void _handleTabChanged() {
     if (!mounted) return;
+    final currentIndex = _tabController?.index ?? 0;
+    // Fire only on an entry into tab 0 from a different tab — avoids
+    // double-firing on the ongoing-animation callbacks TabController emits.
+    if (currentIndex == 0 && _lastTabIndex != 0) {
+      _logPlanSummaryViewed(context.read<AppUiConfigCubit>().state);
+    }
+    _lastTabIndex = currentIndex;
     setState(() {});
   }
 

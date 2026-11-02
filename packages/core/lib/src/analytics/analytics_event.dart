@@ -27,4 +27,12 @@ abstract final class AnalyticsEvent {
 
   // ── Support ───────────────────────────────────────────────────────────────
   static const String supportChatOpened = 'support_chat_opened';
+
+  // ── Self-serve ────────────────────────────────────────────────────────────
+  static const String accountDetailsUpdated = 'account_details_updated';
+  static const String dataBalanceViewed = 'data_balance_viewed';
+  static const String planSummaryViewed = 'plan_summary_viewed';
+  static const String invoiceViewed = 'invoice_viewed';
+  static const String invoiceDownloaded = 'invoice_downloaded';
+  static const String accountLineSwitched = 'account_line_switched';
 }

@@ -15,6 +15,29 @@ abstract final class AnalyticsParam {
   static const String hashedUserId = 'hashed_user_id';
   static const String failureReason = 'failure_reason';
   static const String otpChannel = 'otp_channel';
+
+  // ── Self-serve ────────────────────────────────────────────────────────────
+  static const String fieldType = 'field_type';
+  static const String status = 'status';
+  static const String planType = 'plan_type';
+}
+
+/// Fixed vocabulary for `field_type` on `account_details_updated`.
+///
+/// Describes WHICH account field was edited. The field *value* (new email,
+/// new address, …) is never attached to the event — only the category.
+abstract final class AnalyticsAccountField {
+  static const String name = 'name';
+  static const String address = 'address';
+  static const String email = 'email';
+}
+
+/// Fixed vocabulary for `status` on `account_details_updated`. Lets GA4
+/// compute the "started an edit vs. finished saving" funnel without
+/// inventing a second event name.
+abstract final class AnalyticsAccountUpdateStatus {
+  static const String attempted = 'attempted';
+  static const String completed = 'completed';
 }
 
 /// Fixed vocabulary for the `method` parameter on `login` / `login_failure`.

@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/cubit/review_invoice_postpaid_state.dart';
@@ -10,12 +11,19 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
   ReviewInvoicePostpaidCubit({
     required ReviewInvoicePostpaidRepository repository,
     required InvoicePdfService pdfService,
+    AnalyticsService? analyticsService,
   }) : _repository = repository,
        _pdfService = pdfService,
+       _analyticsService =
+           analyticsService ??
+           (instance.isRegistered<AnalyticsService>()
+               ? instance<AnalyticsService>()
+               : AnalyticsService()),
        super(const ReviewInvoicePostpaidState());
 
   final ReviewInvoicePostpaidRepository _repository;
   final InvoicePdfService _pdfService;
+  final AnalyticsService _analyticsService;
 
   /// Loads invoices from the API.
   Future<void> loadInvoices() async {
@@ -49,6 +57,8 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
         debugPrint('Opening cached PDF for invoice ${invoice.invoiceId}');
       }
       await _pdfService.openPdf(cachedPath);
+      // Cached hit — the file was already on disk, so no `invoice_downloaded`.
+      await _analyticsService.logInvoiceViewed();
       return;
     }
 
@@ -66,7 +76,9 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       );
 
       emit(state.copyWith(clearDownloadingId: true));
+      await _analyticsService.logInvoiceDownloaded();
       await _pdfService.openPdf(savedFilePath);
+      await _analyticsService.logInvoiceViewed();
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error downloading PDF: $e');

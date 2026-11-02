@@ -80,6 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load best plans
     context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
+    // Fire once per Home entry (initState) — the balance is visible on this
+    // screen, so GA4 counts each tab/app entry as one "view", regardless of
+    // how many refreshes happen afterwards.
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logDataBalanceViewed();
+    }
+
     // Balance, bucket usage summary, and consumption limits are all loaded in
     // _refreshToggleStatus() after DeviceLimitsCubit resolves the DeviceID
     // from GET /Account/devices.

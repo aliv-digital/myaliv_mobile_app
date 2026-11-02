@@ -84,6 +84,9 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     } else {
       context.read<AppUiConfigCubit>().switchToDevice(target.deviceId);
     }
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logAccountLineSwitched();
+    }
     _reloadData(target.deviceId);
   }
 

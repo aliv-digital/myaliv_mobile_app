@@ -295,6 +295,49 @@ class AnalyticsService {
   /// Log when the user navigates to the support chatbot.
   Future<void> logSupportChatOpened() => _log(AnalyticsEvent.supportChatOpened);
 
+  // ── Self-serve ────────────────────────────────────────────────────────────
+
+  /// Log an account-detail edit. [status] = `attempted` is fired when the
+  /// user submits; [status] = `completed` is fired after the API succeeds.
+  /// The field value (new email, new address, …) is NEVER attached — only
+  /// the category in [fieldType].
+  Future<void> logAccountDetailsUpdated({
+    required String fieldType,
+    required String status,
+  }) =>
+      _log(
+        AnalyticsEvent.accountDetailsUpdated,
+        params: {
+          AnalyticsParam.fieldType: fieldType,
+          AnalyticsParam.status: status,
+        },
+      );
+
+  /// Log the user landing on a surface that shows their remaining data
+  /// balance. Fired once per surface entry (not per rebuild), so GA4 can
+  /// report unique users + frequency rather than cardinality.
+  Future<void> logDataBalanceViewed() => _log(AnalyticsEvent.dataBalanceViewed);
+
+  /// Log the user opening their current-plan / account summary.
+  /// [planType] is `prepaid` or `postpaid` (from `UserType.label`).
+  Future<void> logPlanSummaryViewed({required String planType}) => _log(
+        AnalyticsEvent.planSummaryViewed,
+        params: {AnalyticsParam.planType: planType},
+      );
+
+  /// Log a successful invoice view (PDF opened). Fires on both cache-hit
+  /// and fresh-download paths — tracks views independently of downloads.
+  Future<void> logInvoiceViewed() => _log(AnalyticsEvent.invoiceViewed);
+
+  /// Log a completed invoice download — only on fresh download/save, not
+  /// on cache hits (the file is already on disk).
+  Future<void> logInvoiceDownloaded() => _log(AnalyticsEvent.invoiceDownloaded);
+
+  /// Log the user switching the active account / mobile line via the
+  /// phone-number dropdown.
+  Future<void> logAccountLineSwitched() =>
+      _log(AnalyticsEvent.accountLineSwitched);
+
   // ── Private ───────────────────────────────────────────────────────────────
 
   Future<void> _log(

@@ -10,9 +10,15 @@ import 'edit_email_prepaid_state.dart';
 class EditEmailPrepaidBloc
     extends Bloc<EditEmailPrepaidEvent, EditEmailPrepaidState> {
   final EditEmailPrepaidRepository repository;
+  final AnalyticsService _analyticsService;
 
-  EditEmailPrepaidBloc(this.repository)
-    : super(EditEmailPrepaidState.initial()) {
+  EditEmailPrepaidBloc(this.repository, {AnalyticsService? analyticsService})
+    : _analyticsService =
+          analyticsService ??
+          (instance.isRegistered<AnalyticsService>()
+              ? instance<AnalyticsService>()
+              : AnalyticsService()),
+      super(EditEmailPrepaidState.initial()) {
     on<EditEmailPrepaidStarted>(_onStarted);
     on<EditEmailPrepaidBackPressed>(_onBack);
     on<EditEmailPrepaidHomePressed>(_onHome);
@@ -102,12 +108,20 @@ class EditEmailPrepaidBloc
           errorMessage: null,
         ),
       );
+      await _analyticsService.logAccountDetailsUpdated(
+        fieldType: AnalyticsAccountField.email,
+        status: AnalyticsAccountUpdateStatus.attempted,
+      );
       final newEmail = state.email.trim();
       final ok = await repository.updateEmail(newEmail);
       if (ok) {
         final accountInfoCubit = instance<AccountInfoCubit>();
         accountInfoCubit.updateEmailLocally(newEmail);
         unawaited(accountInfoCubit.fetchAccountInfo(forceRefresh: true));
+        await _analyticsService.logAccountDetailsUpdated(
+          fieldType: AnalyticsAccountField.email,
+          status: AnalyticsAccountUpdateStatus.completed,
+        );
         emit(
           state.copyWith(
             status: EditEmailPrepaidStatus.success,
