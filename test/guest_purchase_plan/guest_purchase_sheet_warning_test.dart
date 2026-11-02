@@ -10,6 +10,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widget
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/wallet_payment_activate_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -21,10 +24,11 @@ const _ownerStandalone =
     'your standalone plan can start immediately, or on a date of your choice.';
 
 class _FakeNetworkService extends NetworkService {
-  _FakeNetworkService(this.plans)
+  _FakeNetworkService(this.plans, {required this.existingPlans})
     : super(authManager: AuthManager(), onHardLogout: _noopLogout);
 
   final List<Map<String, dynamic>> plans;
+  final Map<String, dynamic> existingPlans;
 
   static Future<void> _noopLogout() async {}
 
@@ -42,7 +46,7 @@ class _FakeNetworkService extends NetworkService {
   }) async {
     return Response<T>(
       requestOptions: RequestOptions(path: path),
-      data: plans as T,
+      data: (path == Api.guestExistingPlansUrl ? existingPlans : plans) as T,
     );
   }
 }
@@ -80,6 +84,9 @@ Map<String, dynamic> _plan({
 void main() {
   late List<String> visited;
   late List<Object?> roamingExtras;
+  late List<Object?> confirmationExtras;
+  late List<Object?> addOnExtras;
+  late Map<String, dynamic> existingPlans;
 
   setUpAll(() async {
     await (FontLoader('CircularPro')
@@ -94,6 +101,13 @@ void main() {
   setUp(() async {
     visited = [];
     roamingExtras = [];
+    confirmationExtras = [];
+    addOnExtras = [];
+    existingPlans = {
+      'PrimaryPlans': <Map<String, dynamic>>[],
+      'SecondaryPlans': <Map<String, dynamic>>[],
+      'StandAlonePlans': <Map<String, dynamic>>[],
+    };
     await instance.reset();
     instance.registerSingleton<NetworkService>(
       _FakeNetworkService([
@@ -106,7 +120,7 @@ void main() {
           frequency: 'D',
           group: 'Roaming',
         ),
-      ]),
+      ], existingPlans: existingPlans),
     );
   });
 
@@ -125,6 +139,12 @@ void main() {
         visited.add(path);
         if (path == AppRoutes.roamingPlanConfirmation) {
           roamingExtras.add(state.extra);
+        }
+        if (path == AppRoutes.guestPurchasePlanConfirmation) {
+          confirmationExtras.add(state.extra);
+        }
+        if (path == AppRoutes.guestPurchasePlanAddOns) {
+          addOnExtras.add(state.extra);
         }
         return Scaffold(body: Text('stub $path'));
       },
@@ -183,15 +203,22 @@ void main() {
 
     await tester.tap(find.text('activate now'));
     await tester.pumpAndSettle();
-    expect(visited, [AppRoutes.guestPurchasePlanAddOns]);
+    expect(visited, [AppRoutes.guestPurchasePlanConfirmation]);
+    final args =
+        confirmationExtras.single! as GuestPurchasePlanConfirmationRouteArgs;
+    expect(args.phoneNumber, '242-555-1234');
+    expect(args.primaryPlanName, 'freedom30');
+    expect(args.primaryPlanPrice, 33);
+    expect(args.primaryPlanBasePrice, 30);
+    expect(args.selectedPlan?.id, 'p1');
+    expect(args.forceNow, isTrue);
+    expect(args.flow, GuestPurchasePlanConfirmationEntryFlow.skip);
+    expect(args.selectedAddOns, isEmpty);
   });
 
-  testWidgets('without /Guest/existingplans data the sheet falls back to the '
-      'no-active-plan copy for every primary (no plan-name special cases)', (
-    tester,
-  ) async {
-    // The fake NetworkService only serves the catalog; /Guest/existingplans
-    // yields no bundles, so earliestAddOnsPrimaryPlan is null. The sheet
+  testWidgets('empty /Guest/existingplans uses direct confirmation for every '
+      'primary (no plan-name special cases)', (tester) async {
+    // /Guest/existingplans returns empty plan lists. The sheet
     // decision tree must pick WalletPaymentActivateBottomSheet (the "no
     // active plan" branch) uniformly — no plan-name routing.
     await pumpScreen(tester);
@@ -202,6 +229,70 @@ void main() {
     expect(find.byType(WalletPaymentActivateOrFutureBottomSheet), findsNothing);
     expect(find.text('activate now'), findsOneWidget);
     expect(find.text('future plan'), findsNothing);
+    await tester.tap(find.text('activate now'));
+    await tester.pumpAndSettle();
+    expect(visited, [AppRoutes.guestPurchasePlanConfirmation]);
+  });
+
+  for (final scenario in [
+    'expired primary',
+    'future primary',
+    'secondary only',
+  ]) {
+    testWidgets('$scenario does not open add-ons for a primary purchase', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final plan = _plan(
+        id: 'existing',
+        name: 'liberty70',
+        type: scenario == 'secondary only' ? 'S' : 'P',
+        frequency: 'M',
+      );
+      plan['StartDate'] = now
+          .add(Duration(days: scenario == 'future primary' ? 2 : -30))
+          .toIso8601String();
+      plan['EndDate'] = now
+          .add(Duration(days: scenario == 'expired primary' ? -1 : 30))
+          .toIso8601String();
+      existingPlans[scenario == 'secondary only'
+          ? 'SecondaryPlans'
+          : 'PrimaryPlans'] = [
+        plan,
+      ];
+      await pumpScreen(tester);
+      await purchaseNow(tester, 'freedom30');
+      expect(find.text(_noActivePlan), findsOneWidget);
+      await tester.tap(find.text('activate now'));
+      await tester.pumpAndSettle();
+      expect(visited, [AppRoutes.guestPurchasePlanConfirmation]);
+    });
+  }
+
+  testWidgets('active primary keeps the existing add-ons route', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    existingPlans['PrimaryPlans'] = [
+      {
+        ..._plan(id: 'active', name: 'liberty70', type: 'P', frequency: 'M'),
+        'StartDate': now.subtract(const Duration(days: 1)).toIso8601String(),
+        'EndDate': now.add(const Duration(days: 30)).toIso8601String(),
+      },
+    ];
+    await pumpScreen(tester);
+    await purchaseNow(tester, 'freedom30');
+    expect(
+      find.byType(WalletPaymentActivateOrFutureBottomSheet),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('activate now'));
+    await tester.pumpAndSettle();
+    expect(visited, [AppRoutes.guestPurchasePlanAddOns]);
+    final args = addOnExtras.single! as GuestPurchasePlanAddOnsRouteArgs;
+    expect(args.selectedPlan.id, 'p1');
+    expect(args.selectedBasePlan?.planId, 'p1');
+    expect(args.existingActivePlan?.planId, 'active');
   });
 
   testWidgets('standalone uses guest copy with activate now and date picker', (

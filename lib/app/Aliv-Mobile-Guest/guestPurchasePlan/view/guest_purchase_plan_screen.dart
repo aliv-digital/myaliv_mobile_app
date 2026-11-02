@@ -168,7 +168,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
     };
   }
 
-  GuestPurchasePlanConfirmationRouteArgs _mifiConfirmationArgs(
+  GuestPurchasePlanConfirmationRouteArgs _immediateConfirmationArgs(
     GuestPlanDisplayModel plan,
   ) {
     return GuestPurchasePlanConfirmationRouteArgs(
@@ -393,7 +393,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               if (selectedTab == PlanTab.mifi) {
                 context.push(
                   AppRoutes.guestPurchasePlanConfirmation,
-                  extra: _mifiConfirmationArgs(plan),
+                  extra: _immediateConfirmationArgs(plan),
                 );
                 return;
               }
@@ -432,22 +432,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
 
-            // MiFi plans do not support add-ons, so their purchase flow goes
-            // straight to confirmation with the selected plan details.
-            if (selectedTab == PlanTab.mifi) {
-              context.push(
-                AppRoutes.guestPurchasePlanConfirmation,
-                extra: _mifiConfirmationArgs(plan),
-              );
-              return;
-            }
-
+            // Add-ons require an existing active primary plan.
             context.push(
-              AppRoutes.guestPurchasePlanAddOns,
-              extra: GuestPurchasePlanAddOnsRouteArgs(
-                phoneNumber: phoneNumber,
-                selectedPlan: plan,
-              ),
+              AppRoutes.guestPurchasePlanConfirmation,
+              extra: _immediateConfirmationArgs(plan),
             );
           },
         );
