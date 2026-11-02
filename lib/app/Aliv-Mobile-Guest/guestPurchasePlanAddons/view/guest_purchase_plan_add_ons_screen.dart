@@ -80,6 +80,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
             id: item.id,
             title: item.title,
             price: item.price,
+            vatAmount: item.vatAmount,
           ),
         )
         .toList();

@@ -155,6 +155,7 @@ class GuestPurchasePlanAddOnsBloc
             subtitleLabel: addOn.label,
             subtitleValue: addOn.value,
             price: addOn.price,
+            vatAmount: addOn.vatAmount,
           ),
         )
         .toList(growable: false);

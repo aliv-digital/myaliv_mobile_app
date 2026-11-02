@@ -53,6 +53,7 @@ class AddOnItem extends Equatable {
   final String subtitleLabel; // "data balance"
   final String subtitleValue; // "1gb"
   final double price; // 5.00
+  final double vatAmount;
   final String currencySymbol; // "$"
 
   const AddOnItem({
@@ -61,6 +62,7 @@ class AddOnItem extends Equatable {
     required this.subtitleLabel,
     required this.subtitleValue,
     required this.price,
+    this.vatAmount = 0,
     this.currencySymbol = r'$',
   });
 
@@ -71,6 +73,7 @@ class AddOnItem extends Equatable {
     subtitleLabel,
     subtitleValue,
     price,
+    vatAmount,
     currencySymbol,
   ];
 }

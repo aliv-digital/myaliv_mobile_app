@@ -30,16 +30,14 @@ class GuestPurchasePlanConfirmationRepository {
             label: 'add-on',
             title: addOn.title,
             subtitle: beginsText,
-            price: addOn.price,
+            price: addOn.price + addOn.vatAmount,
+            basePrice: addOn.price,
           ),
         ),
       );
     }
 
-    final totals = PurchaseTotals(
-      subTotal: items.fold<double>(0, (sum, item) => sum + item.price),
-      vat: 0,
-    );
+    final totals = PurchaseTotals.fromItems(items);
 
     return GuestPurchasePlanConfirmationData(
       phoneNumber: args.phoneNumber,

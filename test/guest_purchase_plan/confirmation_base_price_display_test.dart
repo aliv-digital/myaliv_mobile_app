@@ -34,7 +34,7 @@ void main() {
       'libertyGlobal',
     ]) {
       testWidgets(
-        '$category VAT $vat: label uses base, existing totals unchanged',
+        '$category VAT $vat: label uses base and payable total is preserved',
         (tester) async {
           final api = BasePlanModel.fromApiMap({
             'PlanID': '123',
@@ -129,8 +129,11 @@ void main() {
                         ? 7.43
                         : 0);
                 expect(data.items.first.price, gross);
-                expect(data.totals.subTotal, expectedTotal);
-                expect(data.totals.vat, 0);
+                expect(
+                  data.totals.subTotal,
+                  closeTo(expectedTotal - vat, 0.001),
+                );
+                expect(data.totals.vat, closeTo(vat, 0.001));
                 expect(data.totals.total, expectedTotal);
                 await tester.pumpWidget(
                   MaterialApp(

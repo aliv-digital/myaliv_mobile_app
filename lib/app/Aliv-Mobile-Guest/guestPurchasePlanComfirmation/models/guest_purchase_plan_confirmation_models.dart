@@ -9,15 +9,17 @@ class GuestPurchasePlanConfirmationSelectedAddOn extends Equatable {
   final String id;
   final String title;
   final double price;
+  final double vatAmount;
 
   const GuestPurchasePlanConfirmationSelectedAddOn({
     required this.id,
     required this.title,
     required this.price,
+    this.vatAmount = 0,
   });
 
   @override
-  List<Object?> get props => [id, title, price];
+  List<Object?> get props => [id, title, price, vatAmount];
 }
 
 class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
@@ -26,7 +28,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
   final String primaryPlanName;
   final double primaryPlanPrice;
 
-  /// Label-only API base price; [primaryPlanPrice] retains total semantics.
+  /// API price before VAT; [primaryPlanPrice] includes VAT.
   final double? primaryPlanBasePrice;
   final String futurePlanStartDate;
   final GuestPurchasePlanConfirmationEntryFlow flow;
@@ -82,9 +84,10 @@ class PurchaseLineItem extends Equatable {
   /// e.g. "begins immediately"
   final String subtitle;
 
+  /// Amount including VAT.
   final double price;
 
-  /// Label-only base price. Never used to calculate totals or payment amounts.
+  /// Amount before VAT, used for the price label and subtotal breakdown.
   final double? basePrice;
 
   const PurchaseLineItem({
@@ -114,6 +117,15 @@ class PurchaseTotals extends Equatable {
   final double vat;
 
   const PurchaseTotals({required this.subTotal, required this.vat});
+
+  factory PurchaseTotals.fromItems(Iterable<PurchaseLineItem> items) {
+    final subTotal = items.fold<double>(
+      0,
+      (sum, item) => sum + (item.basePrice ?? item.price),
+    );
+    final grossTotal = items.fold<double>(0, (sum, item) => sum + item.price);
+    return PurchaseTotals(subTotal: subTotal, vat: grossTotal - subTotal);
+  }
 
   double get total => subTotal + vat;
 
