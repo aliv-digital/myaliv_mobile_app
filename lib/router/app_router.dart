@@ -590,6 +590,7 @@ class AppRouter {
           String emailAddress = 'guest';
           String paymentMethod = 'credit card';
           String? orderId;
+          bool isPaymentFailed = false;
 
           final extra = state.extra;
           if (extra is Map) {
@@ -613,6 +614,9 @@ class AppRouter {
             paymentMethod =
                 (extra['paymentMethod'] as String?) ?? paymentMethod;
             orderId = extra['orderId'] as String?;
+            if (extra['isPaymentFailed'] == true) {
+              isPaymentFailed = true;
+            }
           }
 
           return GuestPurchasePlanReceiptScreen(
@@ -625,6 +629,7 @@ class AppRouter {
             emailAddress: emailAddress,
             paymentMethod: paymentMethod,
             orderId: orderId,
+            isPaymentFailed: isPaymentFailed,
           );
         },
       ),

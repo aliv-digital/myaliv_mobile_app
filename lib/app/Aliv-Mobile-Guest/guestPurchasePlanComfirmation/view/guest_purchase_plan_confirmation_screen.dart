@@ -222,15 +222,16 @@ class _GuestPurchasePlanConfirmationViewState
                                     success.orderId ?? '',
                                   );
                                   if (orderId == null || orderId <= 0) {
+                                    receiptExtra['isPaymentFailed'] = true;
                                     navigator.pop();
-                                    AppToast.show(
-                                      message:
-                                          'Payment could not be confirmed. Please try again.',
-                                      type: ToastType.error,
+                                    router.push(
+                                      AppRoutes.guestPurchasePlanReceipt,
+                                      extra: receiptExtra,
                                     );
                                     return;
                                   }
                                   receiptExtra['orderId'] = success.orderId;
+                                  receiptExtra['isPaymentFailed'] = false;
                                   navigator.pop();
                                   router.push(
                                     AppRoutes.guestPurchasePlanReceipt,
@@ -238,10 +239,11 @@ class _GuestPurchasePlanConfirmationViewState
                                   );
                                 },
                                 onFailure: (String message) {
+                                  receiptExtra['isPaymentFailed'] = true;
                                   navigator.pop();
-                                  AppToast.show(
-                                    message: message,
-                                    type: ToastType.error,
+                                  router.push(
+                                    AppRoutes.guestPurchasePlanReceipt,
+                                    extra: receiptExtra,
                                   );
                                 },
                               ),

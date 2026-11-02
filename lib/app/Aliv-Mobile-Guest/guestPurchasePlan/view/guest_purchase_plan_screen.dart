@@ -103,7 +103,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
     return const add_ons_models.FairUsePolicy(
       title: 'fair use policy',
       description:
-          'add-ons can only be added to your active primary plan and expires when it ends.',
+          'add-ons can only be added to your active primary plan and expires when it ends. if you don’t want an add-on select skip.',
     );
   }
 
