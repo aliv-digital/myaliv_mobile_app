@@ -1062,7 +1062,10 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.myPlans,
-        builder: (context, state) => const UsageScreen(standalone: true),
+        builder: (context, state) => const BottomShell(
+          interceptSystemBack: false,
+          child: UsageScreen(standalone: true),
+        ),
       ),
       GoRoute(
         path: AppRoutes.upgradeCreditLimit,
