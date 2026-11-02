@@ -6,6 +6,10 @@ class RoamingPlanConfirmationRepository {
   Future<RoamingPlanConfirmationData> load({
     required RoamingPlanConfirmationRouteArgs args,
   }) async {
+    // Mirror the authenticated flow: `price` is the base portion and
+    // `vatAmount` is the VAT portion so subtotal/vat/total render correctly.
+    final double base = args.planBasePrice ?? args.planPrice;
+
     final items = <PurchaseLineItem>[
       PurchaseLineItem(
         id: args.planId,
@@ -15,14 +19,15 @@ class RoamingPlanConfirmationRepository {
         subtitle: args.forceNow
             ? 'begins immediately'
             : 'begins ${_shortDate(args.beginDate)}',
-        price: args.planPrice,
+        price: base,
         basePrice: args.planBasePrice,
+        vatAmount: args.planVatAmount,
       ),
     ];
 
     final totals = PurchaseTotals(
       subTotal: items.fold<double>(0, (s, x) => s + x.price),
-      vat: 0,
+      vat: items.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
     return RoamingPlanConfirmationData(

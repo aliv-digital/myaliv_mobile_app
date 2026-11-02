@@ -80,6 +80,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
             id: item.id,
             title: item.title,
             price: item.price,
+            vatAmount: item.vatAmount,
           ),
         )
         .toList();
@@ -90,6 +91,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
       primaryPlanName: args.selectedPlan.title,
       primaryPlanPrice: args.selectedPlan.price,
       primaryPlanBasePrice: args.selectedPlan.basePrice,
+      primaryPlanVatAmount: args.selectedPlan.vatAmount,
       flow: flow,
       selectedAddOns: selectedAddOns,
       selectedPlan: args.selectedPlan,

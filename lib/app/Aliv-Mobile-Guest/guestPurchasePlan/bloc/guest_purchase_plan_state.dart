@@ -32,6 +32,15 @@ class GuestPurchasePlanState {
   /// fallback before the data arrives.
   final bool isLoadingBundles;
 
+  /// Catalog tabs whose plan list is empty (post visibility filter).
+  /// Sourced once from the shared catalogue cache after `_onStarted`.
+  /// Empty until `catalogueLoaded` flips to true.
+  final Set<PlanTab> emptyPlanTabs;
+
+  /// True after the first /Guest/available-plans response has been
+  /// categorized, so the view can safely hide empty tabs.
+  final bool catalogueLoaded;
+
   final String? errorMessage;
 
   const GuestPurchasePlanState({
@@ -46,6 +55,8 @@ class GuestPurchasePlanState {
     this.standAlonePlans = const [],
     this.selectedPrimaryPlan,
     this.isLoadingBundles = false,
+    this.emptyPlanTabs = const <PlanTab>{},
+    this.catalogueLoaded = false,
     this.errorMessage,
   });
 
@@ -78,6 +89,9 @@ class GuestPurchasePlanState {
     bool clearSelectedPrimaryPlan = false,
     bool? isLoadingBundles,
 
+    Set<PlanTab>? emptyPlanTabs,
+    bool? catalogueLoaded,
+
     String? errorMessage,
   }) {
     return GuestPurchasePlanState(
@@ -95,6 +109,8 @@ class GuestPurchasePlanState {
           ? null
           : (selectedPrimaryPlan ?? this.selectedPrimaryPlan),
       isLoadingBundles: isLoadingBundles ?? this.isLoadingBundles,
+      emptyPlanTabs: emptyPlanTabs ?? this.emptyPlanTabs,
+      catalogueLoaded: catalogueLoaded ?? this.catalogueLoaded,
       errorMessage: errorMessage,
     );
   }

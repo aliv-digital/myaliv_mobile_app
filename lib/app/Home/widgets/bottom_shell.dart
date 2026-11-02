@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../../../router/app_routes.dart';
 import 'bottom_tab_icon.dart';
@@ -11,17 +13,21 @@ class BottomShell extends StatelessWidget {
   final Widget child;
   const BottomShell({super.key, required this.child});
 
-  int _indexFromLocation(String location) {
+  int _indexFromLocation(String location, {required bool isRestricted}) {
     if (location.startsWith(AppRoutes.usage)) return 1;
-    if (location.startsWith(AppRoutes.plans)) return 2;
-    if (location.startsWith(AppRoutes.menu)) return 3;
+    if (!isRestricted && location.startsWith(AppRoutes.plans)) return 2;
+    if (location.startsWith(AppRoutes.menu)) return isRestricted ? 2 : 3;
     return 0; // home
   }
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = _indexFromLocation(location);
+    final currentIndex = _indexFromLocation(
+      location,
+      isRestricted: isRestricted,
+    );
 
     return WillPopScope(
       onWillPop: () async {
@@ -60,22 +66,20 @@ class BottomShell extends StatelessWidget {
                 elevation: 0,
                 currentIndex: currentIndex,
                 onTap: (index) {
-                  switch (index) {
-                    case 0:
-                      context.go(AppRoutes.home);
-                      break;
-                    case 1:
-                      context.go(AppRoutes.usage);
-                      break;
-                    case 2:
-                      context.go(AppRoutes.plans);
-                      break;
-                    case 3:
-                      // context.go(AppRoutes.menu);
-                      // 🔥 OPEN DRAWER INSTEAD OF ROUTE
-                      bottomShellKey.currentState?.openDrawer();
-                      break;
+                  if (index == 0) {
+                    context.go(AppRoutes.home);
+                    return;
                   }
+                  if (index == 1) {
+                    context.go(AppRoutes.usage);
+                    return;
+                  }
+                  if (!isRestricted && index == 2) {
+                    context.go(AppRoutes.plans);
+                    return;
+                  }
+                  // Menu (index 2 when restricted, 3 otherwise) opens drawer.
+                  bottomShellKey.currentState?.openDrawer();
                 },
                 type: BottomNavigationBarType.fixed,
                 backgroundColor: Colors.white,
@@ -105,13 +109,14 @@ class BottomShell extends StatelessWidget {
                     ),
                     label: 'Usage',
                   ),
-                  BottomNavigationBarItem(
-                    icon: BottomTabIcon(
-                      asset: 'assets/icons/ListStar.svg',
-                      isActive: currentIndex == 2,
+                  if (!isRestricted)
+                    BottomNavigationBarItem(
+                      icon: BottomTabIcon(
+                        asset: 'assets/icons/ListStar.svg',
+                        isActive: currentIndex == 2,
+                      ),
+                      label: 'Plans',
                     ),
-                    label: 'Plans',
-                  ),
                   BottomNavigationBarItem(
                     icon: BottomTabIcon(
                       asset: 'assets/icons/menu.svg',

@@ -551,15 +551,21 @@ class _HomePlanViewState extends State<_HomePlanView> {
                     onBack: context.pop,
                     onHomeTap: () => context.go(AppRoutes.home),
                   ),
-                  if (!isPostpaid)
-                    HomePlanTabs(
-                      selected: state.selectedTab,
-                      tabs: tabs,
-                      onChanged: (tab) =>
-                          context.read<PlansCubit>().changeTab(tab),
-                    ),
-                  if (!isPostpaid) const SizedBox(height: 6),
-                  HomePlanSectionHeader(selectedTab: state.selectedTab),
+                  // Hide the tab bar + section header while plans are
+                  // loading/failing so the user only sees shimmer, not a
+                  // stale tab row or title.
+                  if (state.status == PlansStatus.success ||
+                      state.status == PlansStatus.refreshing) ...[
+                    if (!isPostpaid)
+                      HomePlanTabs(
+                        selected: state.selectedTab,
+                        tabs: tabs,
+                        onChanged: (tab) =>
+                            context.read<PlansCubit>().changeTab(tab),
+                      ),
+                    if (!isPostpaid) const SizedBox(height: 6),
+                    HomePlanSectionHeader(selectedTab: state.selectedTab),
+                  ],
                   Expanded(
                     child: BlocBuilder<PlansCubit, PlansState>(
                       builder: (context, currentState) {

@@ -44,6 +44,7 @@ class GuestPurchasePlanBloc
     emit(state.copyWith(isLoadingBundles: true));
 
     unawaited(_loadBundles(emit));
+    unawaited(_loadCatalogueMeta(emit));
     await _loadByTab(emit, tab: state.selectedTab);
   }
 
@@ -105,6 +106,30 @@ class GuestPurchasePlanBloc
     emit(state.copyWith(selectedPrimaryPlan: event.plan));
   }
 
+  /// Fetches the catalogue once (shares the same cached future as the
+  /// per-tab loader) and emits the set of empty tabs so the view can hide
+  /// them. Failures are silent — the full tab list stays visible, which
+  /// is the pre-filter behaviour.
+  Future<void> _loadCatalogueMeta(
+    Emitter<GuestPurchasePlanState> emit,
+  ) async {
+    try {
+      final empty = await repository.fetchEmptyPlanTabs();
+      if (emit.isDone) return;
+      emit(
+        state.copyWith(
+          emptyPlanTabs: empty,
+          catalogueLoaded: true,
+        ),
+      );
+    } catch (_) {
+      if (emit.isDone) return;
+      // Leave catalogueLoaded = false so the view falls back to showing
+      // every tab. A real catalogue failure will also surface via the
+      // per-tab _loadByTab call's failure status.
+    }
+  }
+
   /// Fetches /Guest/existingplans and emits the primary/secondary/
   /// stand-alone/add-ons slice. Runs concurrently with catalog loading.
   Future<void> _loadBundles(Emitter<GuestPurchasePlanState> emit) async {
@@ -136,6 +161,7 @@ class GuestPurchasePlanBloc
       label: source.label,
       value: source.value,
       price: source.price,
+      vatAmount: source.vatAmount,
     );
   }
 

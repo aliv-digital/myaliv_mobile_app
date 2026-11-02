@@ -9,15 +9,17 @@ class GuestPurchasePlanConfirmationSelectedAddOn extends Equatable {
   final String id;
   final String title;
   final double price;
+  final double vatAmount;
 
   const GuestPurchasePlanConfirmationSelectedAddOn({
     required this.id,
     required this.title,
     required this.price,
+    this.vatAmount = 0,
   });
 
   @override
-  List<Object?> get props => [id, title, price];
+  List<Object?> get props => [id, title, price, vatAmount];
 }
 
 class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
@@ -28,6 +30,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
 
   /// Label-only API base price; [primaryPlanPrice] retains total semantics.
   final double? primaryPlanBasePrice;
+  final double primaryPlanVatAmount;
   final String futurePlanStartDate;
   final GuestPurchasePlanConfirmationEntryFlow flow;
   final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
@@ -41,6 +44,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanPrice,
     required this.flow,
     this.primaryPlanBasePrice,
+    this.primaryPlanVatAmount = 0,
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
     this.forceNow = true,
@@ -61,6 +65,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     primaryPlanName,
     primaryPlanPrice,
     primaryPlanBasePrice,
+    primaryPlanVatAmount,
     futurePlanStartDate,
     flow,
     selectedAddOns,
@@ -82,10 +87,18 @@ class PurchaseLineItem extends Equatable {
   /// e.g. "begins immediately"
   final String subtitle;
 
+  /// Base amount before VAT. [vatAmount] carries the VAT portion so the
+  /// confirmation ticket can show `sub total` + `vat` + `total` the same way
+  /// as the authenticated flow (`home_plan_confirmation_models.dart`).
   final double price;
 
-  /// Label-only base price. Never used to calculate totals or payment amounts.
+  /// Label-only base price. Kept for backward compatibility with
+  /// `PurchaseItemRow` which still prefers it for the per-item row.
   final double? basePrice;
+
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const PurchaseLineItem({
     required this.id,
@@ -95,6 +108,7 @@ class PurchaseLineItem extends Equatable {
     required this.subtitle,
     required this.price,
     this.basePrice,
+    this.vatAmount = 0,
   });
 
   @override
@@ -106,6 +120,7 @@ class PurchaseLineItem extends Equatable {
     subtitle,
     price,
     basePrice,
+    vatAmount,
   ];
 }
 

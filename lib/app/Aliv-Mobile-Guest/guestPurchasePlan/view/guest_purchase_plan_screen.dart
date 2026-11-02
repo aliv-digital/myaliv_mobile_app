@@ -63,7 +63,44 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
   static const double _addOnsTabHorizontalPadding = 25;
 
+  static const List<PlanTab> _allTabs = <PlanTab>[
+    PlanTab.daily,
+    PlanTab.weekly,
+    PlanTab.monthly,
+    PlanTab.roaming,
+    PlanTab.roameasy,
+    PlanTab.addOns,
+    PlanTab.mifi,
+    PlanTab.libertyGlobal,
+  ];
+
   static final DateFormat _cardDateFormat = DateFormat('dd/MM/yy');
+
+  /// Visible-tab filter. The catalogue tabs are hidden when their list is
+  /// empty (post visibility filter), and the add-ons tab is hidden when
+  /// /Guest/existingplans has returned no bolt-ons for the entered number.
+  ///
+  /// Returns the full list while the catalogue is still loading so the
+  /// user sees shimmer on their expected tab. The safety net at the
+  /// bottom protects against ever returning an empty list, since the
+  /// auto-switch fallback relies on `tabs.first`.
+  List<PlanTab> _visibleTabs(GuestPurchasePlanState state) {
+    final visible = <PlanTab>[];
+    for (final tab in _allTabs) {
+      if (tab == PlanTab.addOns) {
+        // Add-ons rely on /Guest/existingplans. While that's in flight we
+        // don't yet know if there are bolt-ons, so keep the tab visible.
+        if (state.isLoadingBundles || state.addOns.isNotEmpty) {
+          visible.add(tab);
+        }
+        continue;
+      }
+      if (!state.catalogueLoaded || !state.emptyPlanTabs.contains(tab)) {
+        visible.add(tab);
+      }
+    }
+    return visible.isEmpty ? _allTabs : visible;
+  }
 
   /// Builds the add-ons tab summary from the entered number's real
   /// active primary plan (from /Guest/existingplans). When no active
@@ -159,6 +196,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
       'planDuration': plan.subtitle,
       'planPrice': plan.price,
       'planBasePrice': plan.basePrice,
+      'planVatAmount': plan.vatAmount,
       'selectedPlan': plan,
       'benefits': plan.benefits,
       'destination': plan.destination,
@@ -177,6 +215,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
       primaryPlanName: plan.title,
       primaryPlanPrice: plan.price,
       primaryPlanBasePrice: plan.basePrice,
+      primaryPlanVatAmount: plan.vatAmount,
       selectedPlan: plan,
       flow: GuestPurchasePlanConfirmationEntryFlow.skip,
       forceNow: true,
@@ -193,6 +232,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
       primaryPlanName: plan.title,
       primaryPlanPrice: plan.price,
       primaryPlanBasePrice: plan.basePrice,
+      primaryPlanVatAmount: plan.vatAmount,
       selectedPlan: plan,
       futurePlanStartDate: futurePlanStartDate,
       flow: GuestPurchasePlanConfirmationEntryFlow.skip,
@@ -500,6 +540,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                               id: addOn.id,
                               title: addOn.title,
                               price: addOn.price,
+                              vatAmount: addOn.vatAmount,
                             ),
                       )
                       .toList(growable: false);
@@ -538,26 +579,60 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
             // scrollable tab for plans
             BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
-              buildWhen: (p, c) => p.selectedTab != c.selectedTab,
+              buildWhen: (p, c) =>
+                  p.selectedTab != c.selectedTab ||
+                  p.status != c.status ||
+                  p.catalogueLoaded != c.catalogueLoaded ||
+                  p.emptyPlanTabs != c.emptyPlanTabs ||
+                  p.addOns != c.addOns ||
+                  p.isLoadingBundles != c.isLoadingBundles,
               builder: (context, state) {
-                debugPrint('selected tab: ${state.selectedTab}');
-                return PlanTabs(
-                  selected: state.selectedTab,
-                  onChanged: (tab) {
+                // Hide the tab bar entirely while the first catalogue load
+                // is in flight so the user only sees shimmer, not a stale
+                // tab row.
+                if (state.status != GuestPurchasePlanStatus.loaded) {
+                  return const SizedBox.shrink();
+                }
+
+                final tabs = _visibleTabs(state);
+
+                if (!tabs.contains(state.selectedTab) && tabs.isNotEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
                     context.read<GuestPurchasePlanBloc>().add(
-                      GuestPurchasePlanTabChanged(tab),
+                      GuestPurchasePlanTabChanged(tabs.first),
                     );
-                  },
+                  });
+                }
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    PlanTabs(
+                      selected: state.selectedTab,
+                      tabs: tabs,
+                      onChanged: (tab) {
+                        context.read<GuestPurchasePlanBloc>().add(
+                          GuestPurchasePlanTabChanged(tab),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                  ],
                 );
               },
             ),
 
-            const SizedBox(height: 6),
-
             BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
-              buildWhen: (p, c) => p.selectedTab != c.selectedTab,
+              buildWhen: (p, c) =>
+                  p.selectedTab != c.selectedTab || p.status != c.status,
               builder: (context, state) {
                 if (state.selectedTab == PlanTab.addOns) {
+                  return const SizedBox.shrink();
+                }
+
+                // Hide the section header while plans are loading/failing
+                // so the user only sees shimmer, not a stale title.
+                if (state.status != GuestPurchasePlanStatus.loaded) {
                   return const SizedBox.shrink();
                 }
 

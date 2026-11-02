@@ -76,6 +76,28 @@ class GuestPurchasePlanRepository {
     );
   }
 
+  /// Returns the set of plan tabs whose catalogue slice is empty after the
+  /// shared visibility filter — used by the view layer to hide empty tabs
+  /// from the horizontal tab bar. `PlanTab.addOns` is never included here
+  /// (add-ons emptiness is driven by /Guest/existingplans, not the catalog).
+  Future<Set<PlanTab>> fetchEmptyPlanTabs() async {
+    final catalogue = await (_catalogueRequest ??= _fetchCatalogue());
+    _cachedCatalogue = catalogue;
+
+    bool isEmpty(List<BasePlanModel> list) =>
+        PlanVisibilityFilter.visibleBasePlans(list).isEmpty;
+
+    final empty = <PlanTab>{};
+    if (isEmpty(catalogue.dailyPlans)) empty.add(PlanTab.daily);
+    if (isEmpty(catalogue.weeklyPlans)) empty.add(PlanTab.weekly);
+    if (isEmpty(catalogue.monthlyPlans)) empty.add(PlanTab.monthly);
+    if (isEmpty(catalogue.roamingPlans)) empty.add(PlanTab.roaming);
+    if (isEmpty(catalogue.roamEasyPlans)) empty.add(PlanTab.roameasy);
+    if (isEmpty(catalogue.mifiPlans)) empty.add(PlanTab.mifi);
+    if (isEmpty(catalogue.libertyGlobalPlans)) empty.add(PlanTab.libertyGlobal);
+    return empty;
+  }
+
   /// Looks up the raw [BasePlanModel] by `planId` across every catalog
   /// tab. Used when the user taps a primary plan tile so the activate-now
   /// sheet decision tree and the dedicated add-ons screen can access

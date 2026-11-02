@@ -33,187 +33,194 @@ void main() {
       'roameasy',
       'libertyGlobal',
     ]) {
-      testWidgets(
-        '$category VAT $vat: label uses base, existing totals unchanged',
-        (tester) async {
-          final api = BasePlanModel.fromApiMap({
-            'PlanID': '123',
-            'PlanName': category,
-            'PlanAmount': 41.26,
-            'VATAmount': vat,
-            'PlanType': 'P',
-          });
-          final display = const GuestPlanPresentationMapper().map(api);
-          final gross = api.planAmount + api.vatAmount;
-          expect(display.price, gross);
-          expect(display.formattedPrice, AppUtils.formatPrice(gross));
+      testWidgets('$category VAT $vat: subtotal is base, vat is VAT', (
+        tester,
+      ) async {
+        final api = BasePlanModel.fromApiMap({
+          'PlanID': '123',
+          'PlanName': category,
+          'PlanAmount': 41.26,
+          'VATAmount': vat,
+          'PlanType': 'P',
+        });
+        final display = const GuestPlanPresentationMapper().map(api);
+        final gross = api.planAmount + api.vatAmount;
+        expect(display.price, gross);
+        expect(display.formattedPrice, AppUtils.formatPrice(gross));
 
-          for (final scheduled in [false, true]) {
-            if (['roaming', 'roameasy', 'libertyGlobal'].contains(category)) {
-              final args = roaming.RoamingPlanConfirmationRouteArgs.fromExtra(
-                {
-                  'phoneNumber': '2425550100',
-                  'planId': display.id,
-                  'planName': display.title,
-                  'planPrice': display.price,
-                  'planBasePrice': display.basePrice,
-                  'beginDate': DateTime(2027, 2, 3),
-                  'showDateField': scheduled,
-                  'forceNow': !scheduled,
-                },
-                fallbackPhoneNumber: '',
-                fallbackShowDateField: false,
+        for (final scheduled in [false, true]) {
+          if (['roaming', 'roameasy', 'libertyGlobal'].contains(category)) {
+            final args = roaming.RoamingPlanConfirmationRouteArgs.fromExtra(
+              {
+                'phoneNumber': '2425550100',
+                'planId': display.id,
+                'planName': display.title,
+                'planPrice': display.price,
+                'planBasePrice': display.basePrice,
+                'planVatAmount': display.vatAmount,
+                'beginDate': DateTime(2027, 2, 3),
+                'showDateField': scheduled,
+                'forceNow': !scheduled,
+              },
+              fallbackPhoneNumber: '',
+              fallbackShowDateField: false,
+            );
+            expect(
+              args.copyWith(beginDate: DateTime(2027, 3, 4)).planBasePrice,
+              api.planAmount,
+            );
+            expect(
+              args.copyWith(beginDate: DateTime(2027, 3, 4)).planVatAmount,
+              api.vatAmount,
+            );
+            final repository = RoamingPlanConfirmationRepository();
+            final original = await repository.load(args: args);
+            final data = repository.updateBeginDate(
+              data: original,
+              beginDate: DateTime(2027, 3, 4),
+            );
+            expect(data.items.single.price, api.planAmount);
+            expect(data.items.single.basePrice, api.planAmount);
+            expect(data.items.single.vatAmount, api.vatAmount);
+            expect(data.totals.subTotal, api.planAmount);
+            expect(data.totals.vat, api.vatAmount);
+            expect(data.totals.total, gross);
+            await tester.pumpWidget(
+              MaterialApp(
+                home: Scaffold(
+                  body: roaming_card.PurchaseSummaryCard(
+                    data: data,
+                    showDateField: scheduled,
+                    onRemoveItem: (_) {},
+                  ),
+                ),
+              ),
+            );
+            expect(
+              find.descendant(
+                of: find.byType(roaming_row.PurchaseItemRow),
+                matching: find.text(AppUtils.formatPrice(api.planAmount)),
+              ),
+              findsOneWidget,
+            );
+          } else {
+            for (final flow
+                in primary.GuestPurchasePlanConfirmationEntryFlow.values) {
+              const addonBase = 7.43;
+              const addonVat = 0.65;
+              final args = primary.GuestPurchasePlanConfirmationRouteArgs(
+                phoneNumber: '2425550100',
+                accountHolderName: 'Guest',
+                primaryPlanName: display.title,
+                primaryPlanPrice: display.price,
+                primaryPlanBasePrice: display.basePrice,
+                primaryPlanVatAmount: display.vatAmount,
+                selectedPlan: display,
+                flow: flow,
+                forceNow: !scheduled,
+                futurePlanStartDate: '2027-02-03',
+                selectedAddOns: const [
+                  primary.GuestPurchasePlanConfirmationSelectedAddOn(
+                    id: '456',
+                    title: 'addon',
+                    price: addonBase,
+                    vatAmount: addonVat,
+                  ),
+                ],
               );
-              expect(
-                args.copyWith(beginDate: DateTime(2027, 3, 4)).planBasePrice,
-                api.planAmount,
-              );
-              final repository = RoamingPlanConfirmationRepository();
-              final original = await repository.load(args: args);
-              final data = repository.updateBeginDate(
-                data: original,
-                beginDate: DateTime(2027, 3, 4),
-              );
-              expect(data.items.single.price, gross);
-              expect(data.items.single.basePrice, api.planAmount);
-              expect(data.totals.subTotal, gross);
-              expect(data.totals.vat, 0);
-              expect(data.totals.total, gross);
+              final data = await GuestPurchasePlanConfirmationRepository()
+                  .load(args: args);
+              final includesAddOn =
+                  flow ==
+                  primary.GuestPurchasePlanConfirmationEntryFlow.proceed;
+              final expectedSubTotal =
+                  api.planAmount + (includesAddOn ? addonBase : 0);
+              final expectedVat =
+                  api.vatAmount + (includesAddOn ? addonVat : 0);
+              expect(data.items.first.price, api.planAmount);
+              expect(data.items.first.vatAmount, api.vatAmount);
+              expect(data.totals.subTotal, expectedSubTotal);
+              expect(data.totals.vat, expectedVat);
+              expect(data.totals.total, expectedSubTotal + expectedVat);
               await tester.pumpWidget(
                 MaterialApp(
                   home: Scaffold(
-                    body: roaming_card.PurchaseSummaryCard(
-                      data: data,
-                      showDateField: scheduled,
-                      onRemoveItem: (_) {},
+                    body: Column(
+                      children: [
+                        for (final item in data.items)
+                          primary_row.PurchaseItemRow(
+                            item: item,
+                            onRemove: () {},
+                          ),
+                      ],
                     ),
                   ),
                 ),
               );
               expect(
-                find.descendant(
-                  of: find.byType(roaming_row.PurchaseItemRow),
-                  matching: find.text(AppUtils.formatPrice(api.planAmount)),
-                ),
+                find.text(AppUtils.formatPrice(api.planAmount)),
                 findsOneWidget,
               );
-            } else {
-              for (final flow
-                  in primary.GuestPurchasePlanConfirmationEntryFlow.values) {
-                final args = primary.GuestPurchasePlanConfirmationRouteArgs(
-                  phoneNumber: '2425550100',
-                  accountHolderName: 'Guest',
-                  primaryPlanName: display.title,
-                  primaryPlanPrice: display.price,
-                  primaryPlanBasePrice: display.basePrice,
-                  selectedPlan: display,
-                  flow: flow,
-                  forceNow: !scheduled,
-                  futurePlanStartDate: '2027-02-03',
-                  selectedAddOns: const [
-                    primary.GuestPurchasePlanConfirmationSelectedAddOn(
-                      id: '456',
-                      title: 'addon',
-                      price: 7.43,
-                    ),
-                  ],
-                );
-                final data = await GuestPurchasePlanConfirmationRepository()
-                    .load(args: args);
-                final expectedTotal =
-                    gross +
-                    (flow ==
-                            primary
-                                .GuestPurchasePlanConfirmationEntryFlow
-                                .proceed
-                        ? 7.43
-                        : 0);
-                expect(data.items.first.price, gross);
-                expect(data.totals.subTotal, expectedTotal);
-                expect(data.totals.vat, 0);
-                expect(data.totals.total, expectedTotal);
-                await tester.pumpWidget(
-                  MaterialApp(
-                    home: Scaffold(
-                      body: Column(
-                        children: [
-                          for (final item in data.items)
-                            primary_row.PurchaseItemRow(
-                              item: item,
-                              onRemove: () {},
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+              if (data.items.length > 1) {
                 expect(
-                  find.text(AppUtils.formatPrice(api.planAmount)),
+                  find.text(AppUtils.formatPrice(data.items.last.price)),
                   findsOneWidget,
                 );
-                if (data.items.length > 1) {
-                  expect(
-                    find.text(AppUtils.formatPrice(data.items.last.price)),
-                    findsOneWidget,
-                  );
-                }
               }
             }
           }
-        },
-      );
+        }
+      });
     }
   }
 
-  testWidgets(
-    'guest add-ons already display API base without changing totals',
-    (tester) async {
-      final parsed = BundleResponseParser.parse({
-        'PrimaryPlans': [
-          {
-            'PlanID': '1',
-            'PlanName': 'liberty40',
-            'AvailableBoltOns': [
-              {
-                'PlanID': '2',
-                'PlanName': 'liberty data1',
-                'PlanAmount': 13.57,
-                'VATAmount': 1.21,
-              },
-            ],
-          },
-        ],
-      });
-      final addon = parsed.addOns.single;
-      final data = await AddOnsConfirmationRepository().load(
-        args: addons.AddOnsConfirmationRouteArgs(
-          phoneNumber: '2425550100',
-          selectedAddOns: [
-            addons.AddOnsConfirmationSelectedAddOn(
-              id: addon.id,
-              title: addon.title,
-              price: addon.price,
-            ),
+  testWidgets('guest add-ons split base and VAT in the totals', (tester) async {
+    final parsed = BundleResponseParser.parse({
+      'PrimaryPlans': [
+        {
+          'PlanID': '1',
+          'PlanName': 'liberty40',
+          'AvailableBoltOns': [
+            {
+              'PlanID': '2',
+              'PlanName': 'liberty data1',
+              'PlanAmount': 13.57,
+              'VATAmount': 1.21,
+            },
           ],
-        ),
-      );
-      expect(addon.vatAmount, 1.21);
-      expect(data.totals.subTotal, addon.price);
-      expect(data.totals.vat, 0);
-      expect(data.totals.total, addon.price);
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: addon_row.PurchaseItemRow(
-              item: data.items.single,
-              onRemove: () {},
-            ),
+        },
+      ],
+    });
+    final addon = parsed.addOns.single;
+    final data = await AddOnsConfirmationRepository().load(
+      args: addons.AddOnsConfirmationRouteArgs(
+        phoneNumber: '2425550100',
+        selectedAddOns: [
+          addons.AddOnsConfirmationSelectedAddOn(
+            id: addon.id,
+            title: addon.title,
+            price: addon.price,
+            vatAmount: addon.vatAmount,
+          ),
+        ],
+      ),
+    );
+    expect(addon.vatAmount, 1.21);
+    expect(data.totals.subTotal, addon.price);
+    expect(data.totals.vat, addon.vatAmount);
+    expect(data.totals.total, addon.price + addon.vatAmount);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: addon_row.PurchaseItemRow(
+            item: data.items.single,
+            onRemove: () {},
           ),
         ),
-      );
-      expect(find.text(AppUtils.formatPrice(addon.price)), findsOneWidget);
-    },
-  );
+      ),
+    );
+    expect(find.text(AppUtils.formatPrice(addon.price)), findsOneWidget);
+  });
 
   test(
     'display fields participate in equality without changing monetary fields',

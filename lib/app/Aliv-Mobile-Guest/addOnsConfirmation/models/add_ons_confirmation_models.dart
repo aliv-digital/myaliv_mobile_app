@@ -15,7 +15,12 @@ class PurchaseLineItem extends Equatable {
   /// e.g. "begins immediately"
   final String subtitle;
 
+  /// Base portion of the price. The VAT portion is tracked separately in
+  /// [vatAmount] so the ticket card renders `sub total` / `vat` / `total`.
   final double price;
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const PurchaseLineItem({
     required this.id,
@@ -24,10 +29,19 @@ class PurchaseLineItem extends Equatable {
     required this.title,
     required this.subtitle,
     required this.price,
+    this.vatAmount = 0,
   });
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+    id,
+    type,
+    label,
+    title,
+    subtitle,
+    price,
+    vatAmount,
+  ];
 }
 
 class PurchaseTotals extends Equatable {
@@ -73,6 +87,7 @@ class AddOnsConfirmationSelectedAddOn extends Equatable {
     required this.id,
     required this.title,
     required this.price,
+    this.vatAmount = 0,
   });
 
   /// Catalog `BasePlanModel.planId` — the numeric id the backend expects
@@ -80,9 +95,10 @@ class AddOnsConfirmationSelectedAddOn extends Equatable {
   final String id;
   final String title;
   final double price;
+  final double vatAmount;
 
   @override
-  List<Object?> get props => [id, title, price];
+  List<Object?> get props => [id, title, price, vatAmount];
 }
 
 /// Navigation args for `AppRoutes.addOnsConfirmation`.

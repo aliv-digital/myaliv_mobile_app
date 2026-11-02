@@ -3,7 +3,8 @@ class AddOnModel {
   final String title; // e.g. liberty data 1
   final String label; // e.g. data balance
   final String value; // e.g. 1gb
-  final double price; // e.g. 5.00
+  final double price; // base amount before VAT (matches HomePlanAddOnModel.price)
+  final double vatAmount;
 
   const AddOnModel({
     required this.id,
@@ -11,5 +12,6 @@ class AddOnModel {
     required this.label,
     required this.value,
     required this.price,
+    this.vatAmount = 0,
   });
 }
