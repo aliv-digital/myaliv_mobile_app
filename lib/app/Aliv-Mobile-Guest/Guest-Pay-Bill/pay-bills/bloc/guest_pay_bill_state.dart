@@ -80,7 +80,9 @@ class GuestPayBillState extends Equatable {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
+  static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper(
+    requireBahamasAreaCode: true,
+  );
 
   LoginCountrySelection get _loginCountrySelection => LoginCountrySelection(
     isoCode: selectedCountry.isoCode,

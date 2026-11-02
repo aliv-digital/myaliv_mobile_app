@@ -15,6 +15,10 @@ class GuestPurchasePlanConfirmationRepository {
         args.primaryPlanBasePrice ??
         args.selectedPlan?.basePrice ??
         args.primaryPlanPrice;
+    // Older callers carry VAT through the selected plan or gross/base prices.
+    final double primaryVat = args.primaryPlanVatAmount != 0
+        ? args.primaryPlanVatAmount
+        : (args.selectedPlan?.vatAmount ?? args.primaryPlanPrice - primaryBase);
 
     final List<PurchaseLineItem> items = <PurchaseLineItem>[
       PurchaseLineItem(
@@ -25,7 +29,7 @@ class GuestPurchasePlanConfirmationRepository {
         subtitle: beginsText,
         price: primaryBase,
         basePrice: args.primaryPlanBasePrice ?? args.selectedPlan?.basePrice,
-        vatAmount: args.primaryPlanVatAmount,
+        vatAmount: primaryVat,
       ),
     ];
 
@@ -45,10 +49,7 @@ class GuestPurchasePlanConfirmationRepository {
       );
     }
 
-    final totals = PurchaseTotals(
-      subTotal: items.fold<double>(0, (sum, item) => sum + item.price),
-      vat: items.fold<double>(0, (sum, item) => sum + item.vatAmount),
-    );
+    final totals = PurchaseTotals.fromItems(items);
 
     return GuestPurchasePlanConfirmationData(
       phoneNumber: args.phoneNumber,

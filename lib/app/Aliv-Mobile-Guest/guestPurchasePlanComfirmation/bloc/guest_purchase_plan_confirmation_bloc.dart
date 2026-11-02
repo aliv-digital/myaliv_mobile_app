@@ -82,10 +82,7 @@ class GuestPurchasePlanConfirmationBloc
     // Removing an add-on only removes that add-on and preserves the primary plan.
     final updatedItems = data.items.where((x) => x.id != event.itemId).toList();
 
-    final totals = PurchaseTotals(
-      subTotal: updatedItems.fold<double>(0, (s, x) => s + x.price),
-      vat: updatedItems.fold<double>(0, (s, x) => s + x.vatAmount),
-    );
+    final totals = PurchaseTotals.fromItems(updatedItems);
 
     emit(
       state.copyWith(

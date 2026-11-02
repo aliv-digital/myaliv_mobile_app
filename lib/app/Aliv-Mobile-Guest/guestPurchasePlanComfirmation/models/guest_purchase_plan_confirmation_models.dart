@@ -28,7 +28,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
   final String primaryPlanName;
   final double primaryPlanPrice;
 
-  /// Label-only API base price; [primaryPlanPrice] retains total semantics.
+  /// API price before VAT; [primaryPlanPrice] includes VAT.
   final double? primaryPlanBasePrice;
   final double primaryPlanVatAmount;
   final String futurePlanStartDate;
@@ -129,6 +129,13 @@ class PurchaseTotals extends Equatable {
   final double vat;
 
   const PurchaseTotals({required this.subTotal, required this.vat});
+
+  factory PurchaseTotals.fromItems(Iterable<PurchaseLineItem> items) {
+    return PurchaseTotals(
+      subTotal: items.fold<double>(0, (sum, item) => sum + item.price),
+      vat: items.fold<double>(0, (sum, item) => sum + item.vatAmount),
+    );
+  }
 
   double get total => subTotal + vat;
 

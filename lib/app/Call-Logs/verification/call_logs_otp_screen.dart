@@ -47,6 +47,8 @@ class CallLogsOtpScreen extends StatelessWidget {
         initialPhoneNumber: apiPhoneNumber,
         initialApiPhoneNumber: apiPhoneNumber,
         preventDuplicateSubmissions: true,
+        incorrectAttemptLimitMessage:
+            'Too many failed OTP attempts. Please try again.',
         offlineVerificationMessage:
             "We couldn't verify the OTP due to a network error. Please try again later",
       ),

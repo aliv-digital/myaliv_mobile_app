@@ -128,8 +128,9 @@ void main() {
                   ),
                 ],
               );
-              final data = await GuestPurchasePlanConfirmationRepository()
-                  .load(args: args);
+              final data = await GuestPurchasePlanConfirmationRepository().load(
+                args: args,
+              );
               final includesAddOn =
                   flow ==
                   primary.GuestPurchasePlanConfirmationEntryFlow.proceed;
