@@ -110,18 +110,11 @@ class GuestPurchasePlanBloc
   /// per-tab loader) and emits the set of empty tabs so the view can hide
   /// them. Failures are silent — the full tab list stays visible, which
   /// is the pre-filter behaviour.
-  Future<void> _loadCatalogueMeta(
-    Emitter<GuestPurchasePlanState> emit,
-  ) async {
+  Future<void> _loadCatalogueMeta(Emitter<GuestPurchasePlanState> emit) async {
     try {
       final empty = await repository.fetchEmptyPlanTabs();
       if (emit.isDone) return;
-      emit(
-        state.copyWith(
-          emptyPlanTabs: empty,
-          catalogueLoaded: true,
-        ),
-      );
+      emit(state.copyWith(emptyPlanTabs: empty, catalogueLoaded: true));
     } catch (_) {
       if (emit.isDone) return;
       // Leave catalogueLoaded = false so the view falls back to showing

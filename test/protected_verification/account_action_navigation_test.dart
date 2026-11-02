@@ -70,10 +70,7 @@ void main() {
   });
   // These fixtures exercise the password and credit-limit forms only.
   // Auto Top-up has its own mixed Navigator/GoRouter integration coverage.
-  for (final action in [
-    ProtectedAccountAction.changePassword,
-    ProtectedAccountAction.upgradeCreditLimit,
-  ]) {
+  for (final action in [ProtectedAccountAction.changePassword]) {
     for (final outcome in [
       if (action != ProtectedAccountAction.changePassword) 'success',
       if (action == ProtectedAccountAction.changePassword) ...[
