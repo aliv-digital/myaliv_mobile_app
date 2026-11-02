@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +19,14 @@ class HomeQuickActions extends StatelessWidget {
   });
 
   Future<void> _defaultOpenAlivDeals() async {
-    final uri = Uri.parse('https://www.bealiv.com/deals/');
+    const urlString = 'https://www.bealiv.com/deals/';
+    final uri = Uri.parse(urlString);
+    if (instance.isRegistered<AnalyticsService>()) {
+      await instance<AnalyticsService>().logOutboundClick(
+        linkDestination: 'deals',
+        linkUrl: urlString,
+      );
+    }
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw 'Could not open store locator';
     }

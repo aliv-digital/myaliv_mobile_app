@@ -64,6 +64,30 @@ class _HomePlansPaymentMethodViewState
   void initState() {
     super.initState();
     _loadWalletBalanceIfPossible();
+    _logBeginCheckout();
+  }
+
+  void _logBeginCheckout() {
+    if (!instance.isRegistered<AnalyticsService>()) return;
+    final state = context.read<HomePlansPaymentMethodBloc>().state;
+    if (state.selectedItems.isEmpty) return;
+    instance<AnalyticsService>().logBeginCheckout(
+      value: state.amount,
+      items: state.selectedItems
+          .map(
+            (item) => AnalyticsEventItem(
+              itemId: item.id,
+              itemName: item.title,
+              itemCategory:
+                  item.planType == HomePlansPaymentPlanType.primary
+                      ? AnalyticsItemCategory.plan
+                      : AnalyticsItemCategory.addon,
+              price: item.price,
+              quantity: 1,
+            ),
+          )
+          .toList(),
+    );
   }
 
   Future<void> _loadWalletBalanceIfPossible() async {

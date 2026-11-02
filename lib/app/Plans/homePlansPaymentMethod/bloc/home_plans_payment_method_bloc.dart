@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import '../model/home_plans_payment_method_models.dart';
 import '../repository/home_plans_payment_method_repository.dart';
 import 'home_plans_payment_method_event.dart';
@@ -8,9 +10,16 @@ import 'home_plans_payment_method_state.dart';
 class HomePlansPaymentMethodBloc
     extends Bloc<HomePlansPaymentMethodEvent, HomePlansPaymentMethodState> {
   final HomePlansPaymentMethodRepository repository;
+  final AnalyticsService _analyticsService;
 
-  HomePlansPaymentMethodBloc({required this.repository})
-    : super(HomePlansPaymentMethodState.initial()) {
+  HomePlansPaymentMethodBloc({
+    required this.repository,
+    AnalyticsService? analyticsService,
+  })  : _analyticsService = analyticsService ??
+            (instance.isRegistered<AnalyticsService>()
+                ? instance<AnalyticsService>()
+                : AnalyticsService()),
+        super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
     on<HomePlansChargeToAccountSelected>(_onChargeToAccountSelected);
@@ -82,6 +91,7 @@ class HomePlansPaymentMethodBloc
     HomePlansPaymentMethodSelected event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
+    _fireAddPaymentInfoIfChanged(HomePlansPaymentMode.card);
     emit(
       state.copyWith(
         paymentMode: HomePlansPaymentMode.card,
@@ -104,6 +114,7 @@ class HomePlansPaymentMethodBloc
     HomePlansChargeToAccountSelected event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
+    _fireAddPaymentInfoIfChanged(HomePlansPaymentMode.chargeToMyAccount);
     emit(
       state.copyWith(
         paymentMode: HomePlansPaymentMode.chargeToMyAccount,
@@ -117,6 +128,7 @@ class HomePlansPaymentMethodBloc
     HomePlansPayWithCardPressed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
+    _fireAddPaymentInfoIfChanged(HomePlansPaymentMode.payWithCard);
     emit(state.copyWith(paymentMode: HomePlansPaymentMode.payWithCard));
   }
 
@@ -125,6 +137,7 @@ class HomePlansPaymentMethodBloc
     HomePlansPayFromWalletPressed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
+    _fireAddPaymentInfoIfChanged(HomePlansPaymentMode.payFromWallet);
     emit(state.copyWith(paymentMode: HomePlansPaymentMode.payFromWallet));
   }
 
@@ -134,6 +147,11 @@ class HomePlansPaymentMethodBloc
   ) async {
     // Do not hit the wallet payment API unless balance can cover the order.
     if (!_hasEnoughWalletBalance(event.walletBalance)) {
+      await _analyticsService.logPurchaseFailed(
+        failureReason: AnalyticsPurchaseFailureReason.insufficientWalletBalance,
+        paymentMethod: _paymentMethodLabel(state.paymentMode),
+        value: state.amount,
+      );
       emit(
         state.copyWith(
           walletWarningMessage: 'Insufficient wallet balance',
@@ -254,6 +272,7 @@ class HomePlansPaymentMethodBloc
       ),
     );
 
+    await _firePurchaseAttempted();
     try {
       final orderId = await invoke();
       await _logPurchaseAnalytics(transactionId: orderId?.toString());
@@ -266,6 +285,7 @@ class HomePlansPaymentMethodBloc
         ),
       );
     } catch (error) {
+      await _firePurchaseFailed(error);
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.failure,
@@ -299,6 +319,7 @@ class HomePlansPaymentMethodBloc
       ),
     );
 
+    await _firePurchaseAttempted();
     try {
       await repository.payNow(methodId: state.selectedMethodId!);
       await _logPurchaseAnalytics();
@@ -308,7 +329,8 @@ class HomePlansPaymentMethodBloc
           navTarget: HomePlansPaymentMethodNavTarget.paid,
         ),
       );
-    } catch (_) {
+    } catch (error) {
+      await _firePurchaseFailed(error);
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.failure,
@@ -350,29 +372,105 @@ class HomePlansPaymentMethodBloc
     if (state.selectedItems.isEmpty) return;
     final item = state.selectedItems.first;
     final isPrimary = item.planType == HomePlansPaymentPlanType.primary;
+    final paymentMethod = _paymentMethodLabel(state.paymentMode);
+    final promoCode = _resolvedPromoCode();
 
-    await instance<AnalyticsService>().logPurchase(
+    await _analyticsService.logPurchase(
       itemId: item.id,
       itemName: item.title,
       itemCategory: isPrimary
           ? AnalyticsItemCategory.plan
           : AnalyticsItemCategory.addon,
       amount: state.amount,
-      paymentMethod: _paymentMethodLabel(state.paymentMode),
+      paymentMethod: paymentMethod,
       transactionId: transactionId,
+      // "funding attributes of a purchase" per spec — promo code wins over
+      // payment method when both are present (that was the actual funding
+      // choice; the card/wallet was just the top-up medium).
+      fundingSource: promoCode != null ? 'promo_code' : paymentMethod,
+      promoCode: promoCode,
+      planType: _planTypeLabel(),
     );
   }
 
+  Future<void> _firePurchaseAttempted() async {
+    await _analyticsService.logPurchaseAttempted(
+      paymentMethod: _paymentMethodLabel(state.paymentMode),
+      value: state.amount,
+      planType: _planTypeLabel(),
+    );
+  }
+
+  Future<void> _firePurchaseFailed(Object error) async {
+    await _analyticsService.logPurchaseFailed(
+      failureReason: AnalyticsPurchaseFailureReason.classify(error),
+      paymentMethod: _paymentMethodLabel(state.paymentMode),
+      value: state.amount,
+    );
+  }
+
+  void _fireAddPaymentInfoIfChanged(HomePlansPaymentMode newMode) {
+    if (state.paymentMode == newMode) return;
+    _analyticsService.logAddPaymentInfo(
+      paymentType: _paymentMethodLabel(newMode),
+      value: state.amount,
+      items: _itemsForAnalytics(),
+    );
+  }
+
+  List<AnalyticsEventItem> _itemsForAnalytics() {
+    return state.selectedItems
+        .map(
+          (item) => AnalyticsEventItem(
+            itemId: item.id,
+            itemName: item.title,
+            itemCategory: item.planType == HomePlansPaymentPlanType.primary
+                ? AnalyticsItemCategory.plan
+                : AnalyticsItemCategory.addon,
+            price: item.price,
+            quantity: 1,
+          ),
+        )
+        .toList();
+  }
+
+  String? _resolvedPromoCode() {
+    if (state.promoCodes.isEmpty) return null;
+    // The spec expects a single `promo_code` string. If multiple codes are
+    // applied, join their IDs — rare, and non-sensitive IDs are safe to send.
+    final ids = state.promoCodes
+        .map((p) => p.promoCodeId.toString())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (ids.isEmpty) return null;
+    return ids.join(',');
+  }
+
+  String _planTypeLabel() {
+    if (!instance.isRegistered<AppUiConfigCubit>()) {
+      // Fallback for test contexts where DI isn't fully bootstrapped.
+      return state.subscriberType == HomePlansSubscriberType.postpaid
+          ? 'postpaid'
+          : 'prepaid';
+    }
+    return instance<AppUiConfigCubit>().state.userType.label;
+  }
+
+  /// Maps the internal [HomePlansPaymentMode] enum to the GA4 fixed vocab in
+  /// [AnalyticsPaymentType]. Both `card` (saved card) and `payWithCard`
+  /// (new card entry) collapse into `credit_card` because the backend does
+  /// not distinguish debit from credit (Open Q10: splitting requires
+  /// Finance sign-off + an IT change request). `chargeToMyAccount` is kept
+  /// outside the spec's 4-value vocab because the spec has no term for it.
   String _paymentMethodLabel(HomePlansPaymentMode mode) {
     switch (mode) {
       case HomePlansPaymentMode.card:
-        return 'saved_card';
       case HomePlansPaymentMode.payWithCard:
-        return 'new_card';
+        return AnalyticsPaymentType.creditCard;
       case HomePlansPaymentMode.payFromWallet:
-        return 'wallet';
+        return AnalyticsPaymentType.wallet;
       case HomePlansPaymentMode.chargeToMyAccount:
-        return 'charge_to_account';
+        return AnalyticsPaymentType.chargeToAccount;
     }
   }
 }

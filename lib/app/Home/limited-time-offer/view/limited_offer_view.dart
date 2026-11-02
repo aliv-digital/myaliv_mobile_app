@@ -1,8 +1,10 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_state.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/models/limited_offer_model.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/widgets/animated_timer_box.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
@@ -76,7 +78,7 @@ class _LimitedOfferViewState extends State<LimitedOfferView> {
             child: GestureDetector(
               onTap: _hasExpiredOffer
                   ? null
-                  : () => _handleTap(context, offer!.link),
+                  : () => _handleTap(context, offer!),
               child: Container(
                 width: double.infinity,
                 height: 112,
@@ -234,8 +236,15 @@ class _LimitedOfferViewState extends State<LimitedOfferView> {
 
   /// Handle tap on offer card
   ///
-  /// Opens the offer link in external browser if available
-  void _handleTap(BuildContext context, String? link) {
+  /// Fires `select_promotion` first, then opens the offer link if available.
+  void _handleTap(BuildContext context, LimitedOfferModel offer) {
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logSelectPromotion(
+        promotionId: offer.id.toString(),
+        promotionName: offer.title,
+      );
+    }
+    final link = offer.link;
     if (link == null || link.isEmpty) {
       return;
     }

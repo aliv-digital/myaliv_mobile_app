@@ -35,4 +35,17 @@ abstract final class AnalyticsEvent {
   static const String invoiceViewed = 'invoice_viewed';
   static const String invoiceDownloaded = 'invoice_downloaded';
   static const String accountLineSwitched = 'account_line_switched';
+
+  // ── Commerce (GA4 standard ecommerce funnel) ──────────────────────────────
+  // view_item_list → select_item → begin_checkout → add_payment_info →
+  // purchase_attempted → purchase | purchase_failed
+  static const String viewItemList = 'view_item_list';
+  static const String selectItem = 'select_item';
+  static const String beginCheckout = 'begin_checkout';
+  static const String addPaymentInfo = 'add_payment_info';
+  static const String purchaseAttempted = 'purchase_attempted';
+  static const String purchaseFailed = 'purchase_failed';
+  static const String selectPromotion = 'select_promotion';
+  static const String rewardsBalanceViewed = 'rewards_balance_viewed';
+  static const String outboundClick = 'outbound_click';
 }

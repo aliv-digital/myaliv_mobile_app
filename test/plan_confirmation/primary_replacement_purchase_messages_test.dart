@@ -136,6 +136,36 @@ void main() {
         amount: any(named: 'amount'),
         paymentMethod: any(named: 'paymentMethod'),
         transactionId: any(named: 'transactionId'),
+        promoCode: any(named: 'promoCode'),
+        fundingSource: any(named: 'fundingSource'),
+        planType: any(named: 'planType'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => analytics.logBeginCheckout(
+        value: any(named: 'value'),
+        items: any(named: 'items'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => analytics.logAddPaymentInfo(
+        paymentType: any(named: 'paymentType'),
+        value: any(named: 'value'),
+        items: any(named: 'items'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => analytics.logPurchaseAttempted(
+        paymentMethod: any(named: 'paymentMethod'),
+        value: any(named: 'value'),
+        planType: any(named: 'planType'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => analytics.logPurchaseFailed(
+        failureReason: any(named: 'failureReason'),
+        paymentMethod: any(named: 'paymentMethod'),
+        value: any(named: 'value'),
       ),
     ).thenAnswer((_) async {});
     instance.registerSingleton<DeviceLimitsCubit>(devices);
@@ -372,7 +402,35 @@ void main() {
             selectedBeginDate: any(named: 'selectedBeginDate'),
           ),
         );
-        verifyZeroInteractions(analytics);
+        // Cancellation path: top-of-funnel events (begin_checkout) may have
+        // fired on screen entry, but no sale/attempt/failure should have.
+        verifyNever(
+          () => analytics.logPurchase(
+            itemId: any(named: 'itemId'),
+            itemName: any(named: 'itemName'),
+            itemCategory: any(named: 'itemCategory'),
+            amount: any(named: 'amount'),
+            paymentMethod: any(named: 'paymentMethod'),
+            transactionId: any(named: 'transactionId'),
+            promoCode: any(named: 'promoCode'),
+            fundingSource: any(named: 'fundingSource'),
+            planType: any(named: 'planType'),
+          ),
+        );
+        verifyNever(
+          () => analytics.logPurchaseAttempted(
+            paymentMethod: any(named: 'paymentMethod'),
+            value: any(named: 'value'),
+            planType: any(named: 'planType'),
+          ),
+        );
+        verifyNever(
+          () => analytics.logPurchaseFailed(
+            failureReason: any(named: 'failureReason'),
+            paymentMethod: any(named: 'paymentMethod'),
+            value: any(named: 'value'),
+          ),
+        );
         verifyZeroInteractions(plans);
         verify(
           () => repository.fetchPaymentMethods(
@@ -418,6 +476,9 @@ void main() {
         amount: any(named: 'amount'),
         paymentMethod: any(named: 'paymentMethod'),
         transactionId: any(named: 'transactionId'),
+        promoCode: any(named: 'promoCode'),
+        fundingSource: any(named: 'fundingSource'),
+        planType: any(named: 'planType'),
       ),
     ).thenAnswer((_) => analyticsDone.future);
     await openPayment(tester);

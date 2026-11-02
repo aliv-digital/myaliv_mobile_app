@@ -17,6 +17,9 @@ class RewardPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logRewardsBalanceViewed();
+    }
     return BlocProvider(
       create: (_) => instance<RewardPrepaidCubit>()..fetchRewards(),
       child: const _RewardPrepaidView(),

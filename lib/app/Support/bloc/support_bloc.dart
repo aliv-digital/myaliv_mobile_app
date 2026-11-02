@@ -39,6 +39,10 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
         break;
 
       case SupportMenuAction.storeLocator:
+        await instance<AnalyticsService>().logOutboundClick(
+          linkDestination: 'store_locator',
+          linkUrl: repository.storeLocatorUri.toString(),
+        );
         _emitLaunch(
           emit,
           uri: repository.storeLocatorUri,

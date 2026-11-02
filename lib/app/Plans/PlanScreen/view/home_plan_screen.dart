@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +50,11 @@ class _HomePlanView extends StatefulWidget {
 }
 
 class _HomePlanViewState extends State<_HomePlanView> {
+  // Fire `view_item_list` once per screen entry, after plans data arrives.
+  // We don't know the plan list at initState, so arm a one-shot latch and
+  // let the BlocListener fire it on the first `success` state.
+  bool _viewItemListFired = false;
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +63,36 @@ class _HomePlanViewState extends State<_HomePlanView> {
       userType: userType,
       initialTab: widget.initialTab,
       rewardSugName: widget.rewardSugName,
+    );
+  }
+
+  void _maybeFireViewItemList(PlansState state) {
+    if (_viewItemListFired) return;
+    if (state.status != PlansStatus.success) return;
+    if (!instance.isRegistered<AnalyticsService>()) {
+      _viewItemListFired = true;
+      return;
+    }
+    final apiPlans = <BasePlanModel>[
+      ...state.dailyApiPlans,
+      ...state.weeklyApiPlans,
+      ...state.monthlyApiPlans,
+    ];
+    if (apiPlans.isEmpty) return;
+    _viewItemListFired = true;
+    instance<AnalyticsService>().logViewItemList(
+      itemListName: 'plans',
+      items: apiPlans
+          .map(
+            (p) => AnalyticsEventItem(
+              itemId: p.planId,
+              itemName: p.planName,
+              itemCategory: AnalyticsItemCategory.plan,
+              price: p.planAmount,
+              quantity: 1,
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -184,6 +220,18 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
     _logExistingPlanDates(cubit.state);
 
+    if (selectedApiPlan != null && instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logSelectItem(
+        itemListName: 'plans',
+        item: AnalyticsEventItem(
+          itemId: selectedApiPlan.planId,
+          itemName: selectedApiPlan.planName,
+          itemCategory: AnalyticsItemCategory.plan,
+          price: selectedApiPlan.planAmount,
+          quantity: 1,
+        ),
+      );
+    }
     cubit.purchaseNowPressed(plan);
     showHomePlanPurchaseBottomSheet(
       context: context,
@@ -474,19 +522,33 @@ class _HomePlanViewState extends State<_HomePlanView> {
     final isPostpaid = homeUiConfig.userType == UserType.postpaid;
     final appBarTitle = isPostpaid ? 'roaming data add-ons' : 'plans';
 
-    return BlocListener<PlansCubit, PlansState>(
-      listenWhen: (previous, current) {
-        return previous.pendingToast?.id != current.pendingToast?.id;
-      },
-      listener: (context, state) {
-        final toast = state.pendingToast;
-        if (toast == null) {
-          return;
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PlansCubit, PlansState>(
+          listenWhen: (previous, current) {
+            return previous.pendingToast?.id != current.pendingToast?.id;
+          },
+          listener: (context, state) {
+            final toast = state.pendingToast;
+            if (toast == null) {
+              return;
+            }
 
-        AppToast.show(message: toast.message, type: ToastType.error);
-        context.read<PlansCubit>().toastConsumed();
-      },
+            AppToast.show(message: toast.message, type: ToastType.error);
+            context.read<PlansCubit>().toastConsumed();
+          },
+        ),
+        // Latch-based view_item_list — fires once when plans data first
+        // arrives on this screen entry.
+        BlocListener<PlansCubit, PlansState>(
+          listenWhen: (previous, current) =>
+              previous.status != current.status ||
+              previous.dailyApiPlans.length != current.dailyApiPlans.length ||
+              previous.weeklyApiPlans.length != current.weeklyApiPlans.length ||
+              previous.monthlyApiPlans.length != current.monthlyApiPlans.length,
+          listener: (_, state) => _maybeFireViewItemList(state),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: HomePlanTheme.screenBackground,
         bottomNavigationBar: BlocBuilder<PlansCubit, PlansState>(

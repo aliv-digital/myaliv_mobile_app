@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,12 +24,33 @@ import 'package:myaliv_mobile_app/app/Home/best-plans/models/best_plan_model.dar
 /// // In build method:
 /// BestPlansView(),
 /// ```
-class BestPlansView extends StatelessWidget {
+class BestPlansView extends StatefulWidget {
   const BestPlansView({super.key});
 
   @override
+  State<BestPlansView> createState() => _BestPlansViewState();
+}
+
+class _BestPlansViewState extends State<BestPlansView> {
+  bool _viewItemListFired = false;
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BestPlanCubit, BestPlanState>(
+    return BlocConsumer<BestPlanCubit, BestPlanState>(
+      listenWhen: (p, c) => p.plans.length != c.plans.length,
+      listener: (_, state) {
+        if (_viewItemListFired) return;
+        if (!state.hasPlans || state.isEmpty) return;
+        if (!instance.isRegistered<AnalyticsService>()) {
+          _viewItemListFired = true;
+          return;
+        }
+        _viewItemListFired = true;
+        instance<AnalyticsService>().logViewItemList(
+          itemListName: 'best_plans',
+          items: state.plans.map(_itemFromPlan).toList(),
+        );
+      },
       builder: (context, state) {
         // Don't show widget if:
         // - No plans available
@@ -57,7 +79,7 @@ class BestPlansView extends StatelessWidget {
                 child: _BestPlanCard(
                   plan: plan,
                   height: 170,
-                  onTap: () => _handleTap(context, plan.link),
+                  onTap: () => _handleTap(context, plan),
                 ),
               );
             },
@@ -67,10 +89,28 @@ class BestPlansView extends StatelessWidget {
     );
   }
 
-  /// Handle tap on plan card
-  ///
-  /// Opens the plan link in external browser if available
-  void _handleTap(BuildContext context, String? link) {
+  AnalyticsEventItem _itemFromPlan(BestPlanModel plan) {
+    return AnalyticsEventItem(
+      itemId: plan.id.toString(),
+      itemName: plan.planName,
+      itemCategory: AnalyticsItemCategory.plan,
+      // Price arrives as a string with currency formatting — strip anything
+      // non-numeric and parse. If parsing fails, omit price rather than send 0.
+      price: double.tryParse(plan.price.replaceAll(RegExp(r'[^0-9.]'), '')),
+      quantity: 1,
+    );
+  }
+
+  /// Handle tap on plan card. Fires `select_item` first, then launches the
+  /// plan's external link.
+  void _handleTap(BuildContext context, BestPlanModel plan) {
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logSelectItem(
+        itemListName: 'best_plans',
+        item: _itemFromPlan(plan),
+      );
+    }
+    final link = plan.link;
     if (link == null || link.isEmpty) {
       return;
     }

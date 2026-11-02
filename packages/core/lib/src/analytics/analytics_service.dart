@@ -9,6 +9,10 @@ import 'analytics_param.dart';
 
 export 'analytics_event.dart';
 export 'analytics_param.dart';
+// Re-export AnalyticsEventItem so feature code can build ecommerce item
+// lists without importing firebase_analytics directly.
+export 'package:firebase_analytics/firebase_analytics.dart'
+    show AnalyticsEventItem;
 
 /// Centralised Firebase Analytics service for the My Aliv app.
 ///
@@ -239,6 +243,9 @@ class AnalyticsService {
     required double amount,
     required String paymentMethod,
     String? transactionId,
+    String? promoCode,
+    String? fundingSource,
+    String? planType,
   }) async {
     if (!_initialized || _analytics == null) {
       debugPrint(
@@ -246,6 +253,19 @@ class AnalyticsService {
       return;
     }
     try {
+      final params = <String, Object>{
+        AnalyticsParam.paymentMethod: paymentMethod,
+        AnalyticsParam.promoCodeApplied: promoCode != null && promoCode.isNotEmpty,
+      };
+      if (promoCode != null && promoCode.isNotEmpty) {
+        params[AnalyticsParam.promoCode] = promoCode;
+      }
+      if (fundingSource != null && fundingSource.isNotEmpty) {
+        params[AnalyticsParam.fundingSource] = fundingSource;
+      }
+      if (planType != null && planType.isNotEmpty) {
+        params[AnalyticsParam.planType] = planType;
+      }
       await _analytics!.logPurchase(
         currency: 'BSD',
         value: amount,
@@ -259,7 +279,7 @@ class AnalyticsService {
             quantity: 1,
           ),
         ],
-        parameters: {AnalyticsParam.paymentMethod: paymentMethod},
+        parameters: params,
       );
       if (kDebugMode) {
         final txn = transactionId == null ? '' : ' txn=$transactionId';
@@ -337,6 +357,167 @@ class AnalyticsService {
   /// phone-number dropdown.
   Future<void> logAccountLineSwitched() =>
       _log(AnalyticsEvent.accountLineSwitched);
+
+  // ── Commerce funnel ───────────────────────────────────────────────────────
+
+  /// Log the user viewing a plan catalogue surface. Uses GA4's native
+  /// `view_item_list` so the ecommerce funnel in Monetisation reports is
+  /// populated end-to-end.
+  Future<void> logViewItemList({
+    required String itemListName,
+    required List<AnalyticsEventItem> items,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logViewItemList(
+        itemListName: itemListName,
+        items: items,
+      );
+      if (kDebugMode) {
+        debugPrint(
+            '📊 Analytics → "view_item_list" [$itemListName] ${items.length} items');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "view_item_list" — $e');
+    }
+  }
+
+  /// Log the user tapping a specific plan in a catalogue surface.
+  Future<void> logSelectItem({
+    required String itemListName,
+    required AnalyticsEventItem item,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logSelectItem(
+        itemListName: itemListName,
+        items: [item],
+      );
+      if (kDebugMode) {
+        debugPrint(
+            '📊 Analytics → "select_item" [$itemListName] ${item.itemId}');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "select_item" — $e');
+    }
+  }
+
+  /// Log the user entering the checkout screen for one or more plans.
+  Future<void> logBeginCheckout({
+    required double value,
+    required List<AnalyticsEventItem> items,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logBeginCheckout(
+        currency: 'BSD',
+        value: value,
+        items: items,
+      );
+      if (kDebugMode) {
+        debugPrint('📊 Analytics → "begin_checkout" $value BSD');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "begin_checkout" — $e');
+    }
+  }
+
+  /// Log the user committing to a specific payment method, before submit.
+  /// [paymentType] is one of [AnalyticsPaymentType].
+  Future<void> logAddPaymentInfo({
+    required String paymentType,
+    required double value,
+    required List<AnalyticsEventItem> items,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logAddPaymentInfo(
+        paymentType: paymentType,
+        currency: 'BSD',
+        value: value,
+        items: items,
+      );
+      if (kDebugMode) {
+        debugPrint('📊 Analytics → "add_payment_info" $paymentType');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "add_payment_info" — $e');
+    }
+  }
+
+  /// Log a payment submission *before* the API result is known. The matching
+  /// `purchase` or `purchase_failed` event follows.
+  Future<void> logPurchaseAttempted({
+    required String paymentMethod,
+    required double value,
+    required String planType,
+  }) =>
+      _log(
+        AnalyticsEvent.purchaseAttempted,
+        params: {
+          AnalyticsParam.paymentMethod: paymentMethod,
+          AnalyticsParam.amount: value,
+          AnalyticsParam.currency: 'BSD',
+          AnalyticsParam.planType: planType,
+        },
+      );
+
+  /// Log a payment failure. [failureReason] must be a fixed value from
+  /// [AnalyticsPurchaseFailureReason] — use `classify()` for raw exceptions.
+  Future<void> logPurchaseFailed({
+    required String failureReason,
+    required String paymentMethod,
+    required double value,
+  }) =>
+      _log(
+        AnalyticsEvent.purchaseFailed,
+        params: {
+          AnalyticsParam.failureReason: failureReason,
+          AnalyticsParam.paymentMethod: paymentMethod,
+          AnalyticsParam.amount: value,
+          AnalyticsParam.currency: 'BSD',
+        },
+      );
+
+  /// Log the user tapping into a specific promotion (e.g. a limited-time
+  /// offer on the Home screen). Uses GA4's native `select_promotion`.
+  Future<void> logSelectPromotion({
+    required String promotionId,
+    required String promotionName,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logSelectPromotion(
+        promotionId: promotionId,
+        promotionName: promotionName,
+      );
+      if (kDebugMode) {
+        debugPrint(
+            '📊 Analytics → "select_promotion" $promotionId / $promotionName');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "select_promotion" — $e');
+    }
+  }
+
+  /// Log the user viewing their rewards balance. Prepaid-only surface.
+  Future<void> logRewardsBalanceViewed() =>
+      _log(AnalyticsEvent.rewardsBalanceViewed);
+
+  /// Log the user tapping an in-app link that redirects to an external
+  /// web property (e.g. Store Locator → bealiv.com). Activity *after* the
+  /// redirect belongs to web analytics on the destination site.
+  Future<void> logOutboundClick({
+    required String linkDestination,
+    required String linkUrl,
+  }) =>
+      _log(
+        AnalyticsEvent.outboundClick,
+        params: {
+          AnalyticsParam.linkDestination: linkDestination,
+          AnalyticsParam.linkUrl: linkUrl,
+        },
+      );
 
   // ── Private ───────────────────────────────────────────────────────────────
 
