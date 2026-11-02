@@ -9,6 +9,7 @@ import 'guest_pay_bill_state.dart';
 
 class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   final GuestPayBillRepository repo;
+  int _verificationRevision = 0;
 
   GuestPayBillBloc({GuestPayBillRepository? repo})
     : repo = repo ?? GuestPayBillRepository(),
@@ -57,6 +58,7 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillServiceChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         selectedService: event.service,
@@ -66,7 +68,8 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
         name: '',
         mobileNumber: '',
         confirmMobileNumber: '',
-        accountInfo: null,
+        amountText: '',
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         submitStatus: GuestPayBillSubmitStatus.idle,
         errorMessage: null,
@@ -78,10 +81,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillCountryChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         selectedCountry: event.country,
-        accountInfo: null,
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         errorMessage: null,
       ),
@@ -92,10 +96,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillAccountNumberChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         accountNumber: event.value,
-        accountInfo: null,
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         errorMessage: null,
       ),
@@ -106,10 +111,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillNameChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         name: event.value,
-        accountInfo: null,
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         errorMessage: null,
       ),
@@ -120,10 +126,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillMobileChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         mobileNumber: event.value,
-        accountInfo: null,
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         errorMessage: null,
       ),
@@ -134,10 +141,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillConfirmMobileChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
+    _verificationRevision++;
     emit(
       state.copyWith(
         confirmMobileNumber: event.value,
-        accountInfo: null,
+        clearAccountInfo: true,
         verifyStatus: GuestPayBillVerifyStatus.idle,
         errorMessage: null,
       ),
@@ -157,30 +165,36 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   ) async {
     if (!state.canVerify) return;
 
+    final requestState = state;
+    final revision = ++_verificationRevision;
     emit(
       state.copyWith(
         verifyStatus: GuestPayBillVerifyStatus.loading,
         errorMessage: null,
-        accountInfo: null,
+        clearAccountInfo: true,
       ),
     );
 
     try {
-      final info = state.isAlivPostpaid
+      final info = requestState.isAlivPostpaid
           ? await repo.verifyAlivPostpaid(
-              mobileNumber: state.mobileNumber,
-              confirmMobileNumber: state.confirmMobileNumber,
+              mobileNumber: requestState.mobileNumber,
+              confirmMobileNumber: requestState.confirmMobileNumber,
             )
-          : state.isAlivFibr
+          : requestState.isAlivFibr
           ? await repo.verifyAlivFibr(
-              accountNumberOrUsername: state.accountNumber,
-              enteredName: state.name,
+              accountNumberOrUsername: requestState.accountNumber,
+              enteredName: requestState.name,
             )
           : await repo.verifyRev(
-              accountNumber: state.accountNumber,
-              enteredName: state.name,
+              accountNumber: requestState.accountNumber,
+              enteredName: requestState.name,
             );
 
+      // A response belongs only to the service and inputs that requested it.
+      if (emit.isDone || revision != _verificationRevision) {
+        return;
+      }
       emit(
         state.copyWith(
           verifyStatus: GuestPayBillVerifyStatus.success,
@@ -188,16 +202,19 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
         ),
       );
     } catch (e) {
+      if (emit.isDone || revision != _verificationRevision) {
+        return;
+      }
       final serverMessage = _extractMessage(e);
       emit(
         state.copyWith(
           verifyStatus: GuestPayBillVerifyStatus.failure,
           errorMessage:
               serverMessage ??
-              (state.isAlivPostpaid
+              (requestState.isAlivPostpaid
                   ? 'Mobile number mismatch or invalid.'
                   : 'Account not found. Please check details.'),
-          accountInfo: null,
+          clearAccountInfo: true,
         ),
       );
     }

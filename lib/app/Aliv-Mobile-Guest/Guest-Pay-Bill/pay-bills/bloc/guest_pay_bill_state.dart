@@ -152,6 +152,8 @@ class GuestPayBillState extends Equatable {
 
   bool get canSubmit {
     return selectedService != null &&
+        verifyStatus == GuestPayBillVerifyStatus.success &&
+        canVerify &&
         accountInfo != null &&
         amountValue > 0 &&
         !isBelowMinimumPayment &&
@@ -170,6 +172,7 @@ class GuestPayBillState extends Equatable {
     String? amountText,
     GuestPayBillVerifyStatus? verifyStatus,
     PayBillAccountInfo? accountInfo,
+    bool clearAccountInfo = false,
     String? errorMessage,
     GuestPayBillSubmitStatus? submitStatus,
   }) {
@@ -184,7 +187,7 @@ class GuestPayBillState extends Equatable {
       confirmMobileNumber: confirmMobileNumber ?? this.confirmMobileNumber,
       amountText: amountText ?? this.amountText,
       verifyStatus: verifyStatus ?? this.verifyStatus,
-      accountInfo: accountInfo ?? this.accountInfo,
+      accountInfo: clearAccountInfo ? null : (accountInfo ?? this.accountInfo),
       errorMessage: errorMessage,
       submitStatus: submitStatus ?? this.submitStatus,
     );

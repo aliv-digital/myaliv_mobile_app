@@ -462,6 +462,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                         GuestPayBillTheme.contentBottomPadding,
                       ),
                       child: Column(
+                        // Reset field text along with Bloc inputs on service changes.
+                        key: ValueKey(state.selectedService?.code),
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
