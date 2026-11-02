@@ -157,16 +157,13 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
                               context.go(AppRoutes.home);
                               AppSession.resetAppRoute();
                             } else {
-                              GoRouter.of(context)
-                                ..go(AppRoutes.welcome)
-                                ..push(AppRoutes.guestSplash);
+                              context.go(AppRoutes.logIn);
                             }
                           }
 
                           if (isPaymentFailed) {
                             return ReceiptFailureCard(
                               data: data,
-                              buttonText: 'back to home page',
                               onBackHome: onBackHome,
                               pageBackground: GuestPurchasePlanReceiptTheme
                                   .circleBackground,
@@ -175,7 +172,6 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
 
                           return DefaultReceiptSuccessCard(
                             data: data,
-                            backButtonText: 'back to home page',
                             onBackHome: onBackHome,
                             pageBackground:
                                 GuestPurchasePlanReceiptTheme.circleBackground,
