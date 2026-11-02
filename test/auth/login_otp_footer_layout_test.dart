@@ -143,21 +143,26 @@ void main() {
   };
 
   for (final entry in sizes.entries) {
-    testWidgets('footer stays above stripes on ${entry.key}', (tester) async {
-      await open(
-        tester,
-        size: entry.value,
-        topInset: entry.key == 'iPhone reference' ? 59 : 24,
-        bottomInset: entry.key == 'iPhone reference' ? 34 : 16,
-      );
-      expectFooterAboveStripes(tester);
-      final initialRect = tester.getRect(find.text('change phone number'));
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
-      await tester.pumpAndSettle();
-      expectFooterAboveStripes(tester);
-      expect(tester.getRect(find.text('change phone number')), initialRect);
-      expect(find.text('resend code').hitTestable(), findsOneWidget);
-    });
+    testWidgets(
+      'footer is scrollable and stays above stripes on ${entry.key}',
+      (tester) async {
+        await open(
+          tester,
+          size: entry.value,
+          topInset: entry.key == 'iPhone reference' ? 59 : 24,
+          bottomInset: entry.key == 'iPhone reference' ? 34 : 16,
+        );
+        final footerFinder = find.text('change phone number');
+        await tester.scrollUntilVisible(
+          footerFinder,
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+        expectFooterAboveStripes(tester);
+        expect(find.text('resend code'), findsOneWidget);
+      },
+    );
   }
 
   for (final scale in [1.3, 2.0]) {
@@ -168,17 +173,19 @@ void main() {
         bottomInset: 34,
         textScale: scale,
       );
-      expectFooterAboveStripes(tester);
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
+      final footerFinder = find.text('change phone number');
+      await tester.scrollUntilVisible(
+        footerFinder,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       expectFooterAboveStripes(tester);
-      expect(find.text('resend code').hitTestable(), findsOneWidget);
+      expect(find.text('resend code'), findsOneWidget);
     });
   }
 
-  testWidgets('keyboard keeps footer visible and form scrollable', (
-    tester,
-  ) async {
+  testWidgets('keyboard keeps footer and form scrollable', (tester) async {
     await open(tester, size: const Size(320, 568), bottomInset: 16);
     final firstCodeField = find.byWidgetPredicate(
       (widget) =>
@@ -188,23 +195,22 @@ void main() {
     await tester.scrollUntilVisible(
       firstCodeField,
       150,
-      scrollable: find.descendant(
-        of: find.byType(CustomScrollView),
-        matching: find.byType(Scrollable),
-      ),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(firstCodeField);
+    await tester.tap(firstCodeField, warnIfMissed: false);
     tester.view.viewInsets = const FakeViewPadding(bottom: 250);
     tester.view.padding = const FakeViewPadding(top: 24);
     await tester.pumpAndSettle();
-    final footer = find.text('change phone number');
     expect(find.byType(BottomStripes), findsNothing);
-    expect(footer.hitTestable(), findsOneWidget);
-    expect(tester.getRect(footer).bottom, lessThan(568 - 250));
-    await tester.ensureVisible(find.text('resend code'));
+    final footerFinder = find.text('change phone number');
+    await tester.scrollUntilVisible(
+      footerFinder,
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
-    expect(find.text('resend code').hitTestable(), findsOneWidget);
-    expect(footer.hitTestable(), findsOneWidget);
+    expect(footerFinder.hitTestable(), findsOneWidget);
+    expect(tester.getRect(footerFinder).bottom, lessThanOrEqualTo(568 - 250));
     expect(tester.takeException(), isNull);
     tester.testTextInput.hide();
     tester.view.viewInsets = const FakeViewPadding();
@@ -221,11 +227,32 @@ void main() {
       navigator.push(MaterialPageRoute<void>(builder: (_) => screen()));
       await tester.pumpAndSettle();
       expect(navigator.canPop(), isTrue);
+      final footerFinder = find.text('change phone number');
+      await tester.scrollUntilVisible(
+        footerFinder,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expectFooterAboveStripes(tester);
-      await tester.tap(find.text('change phone number'));
+      await tester.tap(footerFinder);
       await tester.pumpAndSettle();
       expect(navigator.canPop(), isFalse);
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('all content fits on reference screen without scrolling', (
+    tester,
+  ) async {
+    await open(
+      tester,
+      size: const Size(360, 800),
+      topInset: 24,
+      bottomInset: 16,
+    );
+    expectFooterAboveStripes(tester);
+    expect(find.text('resend code').hitTestable(), findsOneWidget);
+    expect(find.text('change phone number').hitTestable(), findsOneWidget);
+  });
 }

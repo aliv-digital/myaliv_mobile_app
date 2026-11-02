@@ -41,11 +41,12 @@ class LoginOtpSizes {
   // Scroll content layout spacing.
   static const double contentHorizontalPadding = 41;
   static const double contentTopGap = 24;
-  static const double otpToBottomActionsGap = 54;
+  static const double otpToBottomActionsGap = 50;
 
   static const double contentBottomGap = 26;
+  static const double changePhoneTopGap = 12;
 
-  // Bottom fixed action placement over stripes.
+  // Bottom action placement over stripes.
   static const double changePhoneBottomOffset = 22;
 
   // OTP single-cell dimensions. Shrunk to 44 to keep the 6-cell row on

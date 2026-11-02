@@ -12,7 +12,7 @@ class OtpHeader extends StatelessWidget {
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: LoginOtpSizes.backLeft, top: 28),
+          padding: EdgeInsets.only(left: LoginOtpSizes.backLeft, top: 14),
           iconWidth: LoginOtpSizes.backIconWidth,
           iconHeight: LoginOtpSizes.backIconHeight,
           onPressed: () {
