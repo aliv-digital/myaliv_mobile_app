@@ -150,6 +150,76 @@ void main() {
     expectNoLookup();
   });
 
+  for (final size in [const Size(320, 800), const Size(430, 932)]) {
+    for (final fieldIndex in [0, 1]) {
+      testWidgets(
+        'field $fieldIndex keeps missing-242 error while typing at $size',
+        (tester) async {
+          await tester.binding.setSurfaceSize(size);
+          addTearDown(() => tester.binding.setSurfaceSize(null));
+          await pumpScreen(tester);
+          if (fieldIndex == 1) {
+            await enter(tester, mobile: '2428999208');
+          }
+
+          for (final digits in [
+            '899920',
+            '8999208',
+            '89992080',
+            '8999208000',
+          ]) {
+            // Clear between inputs to avoid interpreting replacement of
+            // formatted text as deletion in the Bahamas input formatter.
+            await tester.enterText(phone(fieldIndex), '');
+            await tester.enterText(phone(fieldIndex), digits);
+            await tester.pumpAndSettle();
+
+            expect(
+              tester.widget<TextField>(phone(fieldIndex)).focusNode!.hasFocus,
+              isTrue,
+            );
+            expect(find.text(_invalid), findsOneWidget);
+            expect(find.text(_mismatch), findsNothing);
+            expect(canVerify(tester), isFalse);
+            expect(tester.takeException(), isNull);
+          }
+
+          await submit(tester);
+          expectNoLookup();
+        },
+      );
+    }
+  }
+
+  testWidgets(
+    'matching seven-digit numbers stay invalid until 242 is entered',
+    (tester) async {
+      await pumpScreen(tester);
+      await enter(tester, mobile: '8999208', confirm: '8999208');
+      expect(find.text(_invalid), findsNWidgets(2));
+      expect(find.text(_mismatch), findsNothing);
+      expect(canVerify(tester), isFalse);
+      await submit(tester);
+      expectNoLookup();
+
+      await enter(tester, mobile: '', confirm: '');
+      expect(find.text(_invalid), findsNothing);
+      await enter(tester, mobile: '2428999208', confirm: '2428999208');
+      expect(find.text(_invalid), findsNothing);
+      expect(find.text(_mismatch), findsNothing);
+      expect(canVerify(tester), isTrue);
+      await submit(tester);
+      verify(
+        () => network.request<dynamic>(
+          Api.guestBalanceUrl,
+          method: HttpMethod.post,
+          data: {'ChannelType': 'SelfCare', 'PhoneNumber': '2428999208'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+    },
+  );
+
   testWidgets('BILL-004 valid but different numbers are blocked inline', (
     tester,
   ) async {
