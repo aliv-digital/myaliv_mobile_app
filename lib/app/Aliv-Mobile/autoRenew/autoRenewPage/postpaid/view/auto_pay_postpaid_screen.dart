@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepai
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_payment_method_section.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_proceed_action_button.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/dashed_add_card_button.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/shared/auto_pay_selection_resolver.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
@@ -16,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_m
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/postpaid_pay_with_new_card_flow.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/add_saved_card_flow.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -45,6 +47,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   bool _payWithCardSelected = false;
   bool _disabling = false;
   bool _paying = false;
+  bool _addingCard = false;
   bool _seededFromServer = false;
 
   @override
@@ -123,6 +126,18 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
       );
     } finally {
       if (mounted) setState(() => _paying = false);
+    }
+  }
+
+  Future<void> _addNewCard() async {
+    if (_addingCard) return;
+    setState(() => _addingCard = true);
+    try {
+      await AddSavedCardFlow(
+        savedCardsCubit: context.read<SavedCardsCubit>(),
+      ).open(context, appBarColor: AutoRenewPrepaidTheme.primary);
+    } finally {
+      if (mounted) setState(() => _addingCard = false);
     }
   }
 
@@ -215,10 +230,27 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                       }),
                     ),
                     const SizedBox(
+                      height: AutoRenewPrepaidTheme.sectionToDashedGap,
+                    ),
+                    BlocBuilder<SavedCardsCubit, SavedCardsState>(
+                      buildWhen: (p, c) => p.isAddingCard != c.isAddingCard,
+                      builder: (context, state) {
+                        return DashedAddCardButton(
+                          onTap: _addNewCard,
+                          isLoading: _addingCard && state.isAddingCard,
+                          isEnabled:
+                              !_addingCard &&
+                              !state.isAddingCard &&
+                              !_disabling &&
+                              !_paying,
+                        );
+                      },
+                    ),
+                    const SizedBox(
                       height: AutoRenewPrepaidTheme.dashedToActionGap,
                     ),
                     AutoRenewPrepaidProceedActionButton(
-                      isEnabled: _canProceed,
+                      isEnabled: _canProceed && !_addingCard,
                       isLoading: _disabling || _paying,
                       onPressed: _onProceed,
                     ),

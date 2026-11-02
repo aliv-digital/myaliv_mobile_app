@@ -139,18 +139,15 @@ void main() {
   });
 
   for (final value in [
-    '0',
+    '1',
+    '1.0',
+    '40.45',
     '100',
     '100.00',
     '12.3456',
-    '.5',
-    '100.',
-    '-100',
-    '-12.50',
-    '+100.25',
     ' 100.25 ',
   ]) {
-    test('accepts a finite integer or decimal: $value', () {
+    test('accepts a non-fractional decimal >= 1: $value', () {
       expect(validateCreditLimitValue(value), isNull);
     });
   }
@@ -158,6 +155,16 @@ void main() {
   for (final value in [
     '',
     ' ',
+    '0',
+    '0.1',
+    '0.01',
+    '0.001',
+    '0.99',
+    '.5',
+    '100.',
+    '-100',
+    '-12.50',
+    '+100.25',
     'abc',
     '100abc',
     '158-88848888',
@@ -175,7 +182,7 @@ void main() {
     '.',
     '--1',
   ]) {
-    test('rejects a value outside integer/decimal notation: "$value"', () {
+    test('rejects a value below 1 or outside decimal notation: "$value"', () {
       expect(validateCreditLimitValue(value), 'invalid value');
     });
   }
@@ -188,16 +195,16 @@ void main() {
     final request = UpdateLimitsRequest.fromFormValues(
       localText: '125',
       localData: '125.50',
-      localVoice: '0',
-      international: '-3.25',
-      roaming: '.5',
+      localVoice: '10',
+      international: '3.25',
+      roaming: '5',
     );
     expect(request.toJson(), {
       'MaxAllowedLocalText': 125.0,
       'MaxAllowedLocalData': 125.5,
-      'MaxAllowedLocalVoice': 0.0,
-      'MaxAllowedInternational': -3.25,
-      'MaxAllowedRoaming': 0.5,
+      'MaxAllowedLocalVoice': 10.0,
+      'MaxAllowedInternational': 3.25,
+      'MaxAllowedRoaming': 5.0,
     });
   });
 
@@ -210,7 +217,7 @@ void main() {
         await h.pump(tester, width: width);
         expect(find.text('invalid value'), findsNothing);
         const invalid = ['abc', '1.2.3', '158-88848888', r'$10', 'NaN'];
-        const valid = ['125', '125.50', '0', '-3.25', '.5'];
+        const valid = ['125', '125.50', '10', '3.25', '5'];
         for (var i = 0; i < 5; i++) {
           final field = find.byType(LimitFieldWithController).at(i);
           final input = find.descendant(
