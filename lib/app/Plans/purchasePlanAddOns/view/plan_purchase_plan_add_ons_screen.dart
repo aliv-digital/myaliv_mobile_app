@@ -132,7 +132,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
 
     return HomePlanConfirmationRouteArgs(
       phoneNumber: _accountPhoneNumber(accountState),
-      accountHolderName: resolveUserDisplayName(account: accountState),
+      accountHolderName: resolveActiveDeviceDisplayName(account: accountState),
       primaryPlanId: state.selectedApiPlan?.planId.trim() ?? '',
       primaryPlanName: _primaryPlanName(state),
       // Pass the raw API type code so the confirmation repository can decide

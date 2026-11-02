@@ -9,6 +9,17 @@ class GuestPurchasePlanConfirmationRepository {
     // the same future date — inherit the primary's begin text.
     final String beginsText = _planBeginsText(args);
 
+    // Mirror the authenticated flow (home_plan_confirmation_repository.dart):
+    // `price` is the base portion, `vatAmount` is the VAT portion.
+    final double primaryBase =
+        args.primaryPlanBasePrice ??
+        args.selectedPlan?.basePrice ??
+        args.primaryPlanPrice;
+    // Older callers carry VAT through the selected plan or gross/base prices.
+    final double primaryVat = args.primaryPlanVatAmount != 0
+        ? args.primaryPlanVatAmount
+        : (args.selectedPlan?.vatAmount ?? args.primaryPlanPrice - primaryBase);
+
     final List<PurchaseLineItem> items = <PurchaseLineItem>[
       PurchaseLineItem(
         id: 'primary',
@@ -16,8 +27,9 @@ class GuestPurchasePlanConfirmationRepository {
         label: 'primary plan',
         title: args.primaryPlanName,
         subtitle: beginsText,
-        price: args.primaryPlanPrice,
+        price: primaryBase,
         basePrice: args.primaryPlanBasePrice ?? args.selectedPlan?.basePrice,
+        vatAmount: primaryVat,
       ),
     ];
 
@@ -30,8 +42,8 @@ class GuestPurchasePlanConfirmationRepository {
             label: 'add-on',
             title: addOn.title,
             subtitle: beginsText,
-            price: addOn.price + addOn.vatAmount,
-            basePrice: addOn.price,
+            price: addOn.price,
+            vatAmount: addOn.vatAmount,
           ),
         ),
       );

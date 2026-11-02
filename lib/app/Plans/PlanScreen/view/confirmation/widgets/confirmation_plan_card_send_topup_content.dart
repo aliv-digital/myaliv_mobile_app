@@ -1,10 +1,8 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-
-import '../utils/confirmation_formatters.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/utils/confirmation_formatters.dart';
 
 class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
   final DateTime? date;

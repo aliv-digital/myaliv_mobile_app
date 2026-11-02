@@ -91,6 +91,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
       primaryPlanName: args.selectedPlan.title,
       primaryPlanPrice: args.selectedPlan.price,
       primaryPlanBasePrice: args.selectedPlan.basePrice,
+      primaryPlanVatAmount: args.selectedPlan.vatAmount,
       flow: flow,
       selectedAddOns: selectedAddOns,
       selectedPlan: args.selectedPlan,

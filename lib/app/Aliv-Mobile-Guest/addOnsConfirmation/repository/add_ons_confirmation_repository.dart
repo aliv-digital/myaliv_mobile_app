@@ -18,13 +18,14 @@ class AddOnsConfirmationRepository {
             // they cannot be scheduled (see guestAddOnsBodyFor3DS).
             subtitle: 'begins immediately',
             price: addOn.price,
+            vatAmount: addOn.vatAmount,
           ),
         )
         .toList(growable: false);
 
     final totals = PurchaseTotals(
       subTotal: items.fold<double>(0, (s, x) => s + x.price),
-      vat: 0,
+      vat: items.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
     return AddOnsConfirmationData(

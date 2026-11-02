@@ -5,8 +5,14 @@ import '../theme/theme.dart';
 class PlanTabs extends StatelessWidget {
   final PlanTab selected;
   final ValueChanged<PlanTab> onChanged;
+  final List<PlanTab>? tabs;
 
-  const PlanTabs({super.key, required this.selected, required this.onChanged});
+  const PlanTabs({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+    this.tabs,
+  });
 
   static const _tabs = <PlanTab, String>{
     PlanTab.daily: 'daily',
@@ -30,6 +36,7 @@ class PlanTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final visibleTabs = tabs ?? _tabs.keys.toList(growable: false);
     return Container(
       color: GuestPurchasePlanTheme.tabBarBackground,
       padding: const EdgeInsets.only(
@@ -43,10 +50,10 @@ class PlanTabs extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
-              itemCount: _tabs.length,
+              itemCount: visibleTabs.length,
               separatorBuilder: (_, __) => const SizedBox(width: 26),
               itemBuilder: (context, i) {
-                final tab = _tabs.keys.elementAt(i);
+                final tab = visibleTabs[i];
                 final label = _tabs[tab]!;
                 final isActive = tab == selected;
 

@@ -30,6 +30,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
 
   /// API price before VAT; [primaryPlanPrice] includes VAT.
   final double? primaryPlanBasePrice;
+  final double primaryPlanVatAmount;
   final String futurePlanStartDate;
   final GuestPurchasePlanConfirmationEntryFlow flow;
   final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
@@ -43,6 +44,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanPrice,
     required this.flow,
     this.primaryPlanBasePrice,
+    this.primaryPlanVatAmount = 0,
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
     this.forceNow = true,
@@ -63,6 +65,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     primaryPlanName,
     primaryPlanPrice,
     primaryPlanBasePrice,
+    primaryPlanVatAmount,
     futurePlanStartDate,
     flow,
     selectedAddOns,
@@ -84,11 +87,18 @@ class PurchaseLineItem extends Equatable {
   /// e.g. "begins immediately"
   final String subtitle;
 
-  /// Amount including VAT.
+  /// Base amount before VAT. [vatAmount] carries the VAT portion so the
+  /// confirmation ticket can show `sub total` + `vat` + `total` the same way
+  /// as the authenticated flow (`home_plan_confirmation_models.dart`).
   final double price;
 
-  /// Amount before VAT, used for the price label and subtotal breakdown.
+  /// Label-only base price. Kept for backward compatibility with
+  /// `PurchaseItemRow` which still prefers it for the per-item row.
   final double? basePrice;
+
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const PurchaseLineItem({
     required this.id,
@@ -98,6 +108,7 @@ class PurchaseLineItem extends Equatable {
     required this.subtitle,
     required this.price,
     this.basePrice,
+    this.vatAmount = 0,
   });
 
   @override
@@ -109,6 +120,7 @@ class PurchaseLineItem extends Equatable {
     subtitle,
     price,
     basePrice,
+    vatAmount,
   ];
 }
 
@@ -119,12 +131,10 @@ class PurchaseTotals extends Equatable {
   const PurchaseTotals({required this.subTotal, required this.vat});
 
   factory PurchaseTotals.fromItems(Iterable<PurchaseLineItem> items) {
-    final subTotal = items.fold<double>(
-      0,
-      (sum, item) => sum + (item.basePrice ?? item.price),
+    return PurchaseTotals(
+      subTotal: items.fold<double>(0, (sum, item) => sum + item.price),
+      vat: items.fold<double>(0, (sum, item) => sum + item.vatAmount),
     );
-    final grossTotal = items.fold<double>(0, (sum, item) => sum + item.price);
-    return PurchaseTotals(subTotal: subTotal, vat: grossTotal - subTotal);
   }
 
   double get total => subTotal + vat;

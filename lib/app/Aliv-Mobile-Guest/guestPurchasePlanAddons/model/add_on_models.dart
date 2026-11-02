@@ -52,7 +52,8 @@ class AddOnItem extends Equatable {
   final String title; // "liberty data 1"
   final String subtitleLabel; // "data balance"
   final String subtitleValue; // "1gb"
-  final double price; // 5.00
+  final double
+  price; // base amount before VAT (matches HomePlanAddOnModel.price)
   final double vatAmount;
   final String currencySymbol; // "$"
 

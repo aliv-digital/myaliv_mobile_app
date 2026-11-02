@@ -11,6 +11,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
 
   /// Label-only API base price; [planPrice] still drives existing totals.
   final double? planBasePrice;
+  final double planVatAmount;
   final DateTime beginDate;
   final bool showDateField;
   final bool forceNow;
@@ -22,6 +23,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
     required this.planDuration,
     required this.planPrice,
     this.planBasePrice,
+    this.planVatAmount = 0,
     required this.beginDate,
     required this.showDateField,
     required this.forceNow,
@@ -39,6 +41,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
         : DateTime.tryParse(rawBeginDate?.toString() ?? '');
     final rawPrice = values['planPrice'];
     final rawBasePrice = values['planBasePrice'];
+    final rawVatAmount = values['planVatAmount'];
     final showDateField = values['showDateField'] is bool
         ? values['showDateField'] as bool
         : fallbackShowDateField;
@@ -50,6 +53,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
       planDuration: values['planDuration']?.toString() ?? '7 days',
       planPrice: rawPrice is num ? rawPrice.toDouble() : 20,
       planBasePrice: rawBasePrice is num ? rawBasePrice.toDouble() : null,
+      planVatAmount: rawVatAmount is num ? rawVatAmount.toDouble() : 0,
       beginDate: parsedBeginDate ?? DateTime.now(),
       showDateField: showDateField,
       forceNow: values['forceNow'] is bool
@@ -66,6 +70,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
       planDuration: planDuration,
       planPrice: planPrice,
       planBasePrice: planBasePrice,
+      planVatAmount: planVatAmount,
       beginDate: beginDate ?? this.beginDate,
       showDateField: showDateField,
       forceNow: forceNow,
@@ -80,6 +85,7 @@ class RoamingPlanConfirmationRouteArgs extends Equatable {
     planDuration,
     planPrice,
     planBasePrice,
+    planVatAmount,
     beginDate,
     showDateField,
     forceNow,
@@ -99,10 +105,17 @@ class PurchaseLineItem extends Equatable {
   /// e.g. "begins immediately"
   final String subtitle;
 
+  /// Base portion of the price. VAT lives on [vatAmount] so the ticket card
+  /// renders `sub total` / `vat` / `total` consistently with the authenticated
+  /// flow.
   final double price;
 
-  /// Label-only base price. Never used to calculate totals or payment amounts.
+  /// Label-only base price, kept for the per-item price row display.
   final double? basePrice;
+
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const PurchaseLineItem({
     required this.id,
@@ -112,6 +125,7 @@ class PurchaseLineItem extends Equatable {
     required this.subtitle,
     required this.price,
     this.basePrice,
+    this.vatAmount = 0,
   });
 
   PurchaseLineItem copyWith({String? subtitle}) {
@@ -123,6 +137,7 @@ class PurchaseLineItem extends Equatable {
       subtitle: subtitle ?? this.subtitle,
       price: price,
       basePrice: basePrice,
+      vatAmount: vatAmount,
     );
   }
 
@@ -135,6 +150,7 @@ class PurchaseLineItem extends Equatable {
     subtitle,
     price,
     basePrice,
+    vatAmount,
   ];
 }
 

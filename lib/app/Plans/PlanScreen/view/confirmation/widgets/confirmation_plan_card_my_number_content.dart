@@ -32,7 +32,7 @@ class ConfirmationPlanCardMyNumberContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ownPhone = getOwnPhoneNumber(context: context);
-    final fullName = resolveUserDisplayName();
+    final fullName = resolveActiveDeviceDisplayName();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
