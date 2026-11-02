@@ -19,7 +19,9 @@ class ConfirmationPlanCardMyNumberContent extends StatelessWidget {
     // top-ups / purchases made while viewing a child reflect that child's
     // number instead of the account owner's primary.
     final activeTn = ActiveDevice.tn();
-    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
+    if (activeTn != null && activeTn.isNotEmpty) {
+      return formatConfirmationPhone(activeTn);
+    }
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     return formatConfirmationPhone(
       accountInfo?.primaryPhoneNumber ??

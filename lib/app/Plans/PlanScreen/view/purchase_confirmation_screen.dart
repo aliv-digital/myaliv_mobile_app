@@ -233,6 +233,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   String _accountPhoneNumber() {
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) {
+      return activeTn;
+    }
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     return _firstNonEmpty(<String?>[
       accountInfo?.primaryPhoneNumber,

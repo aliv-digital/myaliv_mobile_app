@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -33,10 +34,13 @@ class HomePlanAddOnsActions {
       return;
     }
 
-    final fullName = resolveUserDisplayName(account: accountState);
-    final phoneNumber = accountInfo.phoneNumber.isNotEmpty
-        ? accountInfo.phoneNumber
-        : accountInfo.primaryPhoneNumber;
+    final fullName = resolveActiveDeviceDisplayName(account: accountState);
+    final activeTn = ActiveDevice.tn()?.trim() ?? '';
+    final phoneNumber = activeTn.isNotEmpty
+        ? activeTn
+        : (accountInfo.phoneNumber.isNotEmpty
+              ? accountInfo.phoneNumber
+              : accountInfo.primaryPhoneNumber);
 
     final activePlan = state.earliestAddOnsPrimaryPlan;
 

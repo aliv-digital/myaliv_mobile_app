@@ -3,7 +3,9 @@ class PhoneNumberFormatterService {
 
   static String format(String phoneNumber) {
     final trimmed = phoneNumber.trim();
-    final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+    var cleaned = trimmed.contains('_') ? trimmed.split('_').first : trimmed;
+    cleaned = cleaned.replaceAll('*dc*', '').replaceAll('*DC*', '').trim();
+    final digits = cleaned.replaceAll(RegExp(r'\D'), '');
 
     if (digits.length == 10) {
       return '(${digits.substring(0, 3)})-'
@@ -17,6 +19,6 @@ class PhoneNumberFormatterService {
           '${digits.substring(7)}';
     }
 
-    return trimmed;
+    return cleaned;
   }
 }
