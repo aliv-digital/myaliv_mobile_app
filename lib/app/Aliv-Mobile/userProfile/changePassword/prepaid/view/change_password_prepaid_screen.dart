@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
@@ -59,7 +60,9 @@ class _ChangePasswordPrepaidScreenState
     final devices = instance<DeviceLimitsCubit>();
     final initialAccount = account.state.accountInfo;
     final identity = (initialAccount?.idAcc, initialAccount?.username);
-    final deviceId = devices.state.deviceLimits?.deviceId;
+    // Snapshot the active device id so a mid-flow switch invalidates the
+    // in-progress change-password journey.
+    final deviceId = ActiveDevice.id();
     _verification = ActionVerificationCoordinator<ProtectedAccountAction>();
     final phone = (initialAccount?.phoneNumber.isNotEmpty == true)
         ? initialAccount!.phoneNumber
@@ -95,8 +98,8 @@ class _ChangePasswordPrepaidScreenState
       }),
     );
     _subscriptions.add(
-      devices.stream.listen((state) {
-        if (state.deviceLimits?.deviceId != deviceId) {
+      devices.stream.listen((_) {
+        if (ActiveDevice.id() != deviceId) {
           _invalidate();
         }
       }),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../bloc/make_payment_confirmation_postpaid_bloc.dart';
 import '../bloc/make_payment_confirmation_postpaid_event.dart';
@@ -41,7 +42,9 @@ class MakePaymentConfirmationPostPaidScreen extends StatelessWidget {
     // the shared BalanceCubit for every screen that reads it.
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
     await deviceLimitsCubit.loadDeviceLimits();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    // Honour the dropdown-selected child line (ActiveDevice); falls back
+    // to primary when no override is set.
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) return;
     await instance<BalanceCubit>().loadBalances(deviceAccountId: deviceId);
   }

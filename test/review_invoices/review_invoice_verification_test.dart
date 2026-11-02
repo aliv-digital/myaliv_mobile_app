@@ -31,7 +31,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/re
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_visit_screen.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/view/purchases_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
@@ -260,7 +260,7 @@ class _Harness {
                 ),
               GoRoute(
                 path: AppRoutes.purchasesPrepaidScreen,
-                builder: (_, _) => const PurchasesPrepaidScreen(),
+                builder: (_, _) => const PurchasesScreen(),
               ),
               GoRoute(
                 path: AppRoutes.reviewInvoicePostPaidScreen,

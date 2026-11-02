@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import '../repository/make_payment_confirmation_postpaid_repository.dart';
@@ -36,8 +37,15 @@ class MakePaymentConfirmationPostPaidBloc
     final balanceState = instance<BalanceCubit>().state;
 
     final customerName = resolveUserDisplayName(devices: deviceLimitsState);
-    final tn = deviceLimitsState.deviceLimits?.tn.trim();
-    final rawPhone = (tn != null && tn.isNotEmpty) ? tn : data.accountNumber;
+    // Honour the home-screen dropdown: when the user has switched to a
+    // child line, show the child's TN; fall back to primary, then route.
+    final activeTn = ActiveDevice.tn()?.trim();
+    final primaryTn = deviceLimitsState.deviceLimits?.tn.trim();
+    final rawPhone = (activeTn != null && activeTn.isNotEmpty)
+        ? activeTn
+        : (primaryTn != null && primaryTn.isNotEmpty
+              ? primaryTn
+              : data.accountNumber);
     final accountNumber = _formatPhone(rawPhone);
     final amount = BalanceCurrencyFormatterService.format(
       balanceState.walletBalance,

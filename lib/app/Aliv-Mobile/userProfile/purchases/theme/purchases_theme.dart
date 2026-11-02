@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PurchasePrepaidTheme {
+class PurchasesTheme {
   static const Color primary = Color(0xFF645D9C); // screenshot-like purple
   static const Color pageBg = Color(0xFFF7F7F7);
   static const Color tileBg = Colors.white;

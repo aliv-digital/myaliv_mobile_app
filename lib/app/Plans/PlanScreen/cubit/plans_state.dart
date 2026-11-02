@@ -74,10 +74,6 @@ class PlansState extends Equatable {
     this.optimisticSecondaryPlans = const [],
     // Refresh tracking — not persisted
     this.isRefreshingBundles = false,
-    // Device whose plans/bundles are currently loaded. Null = primary line.
-    // Persisted so pull-to-refresh after a child-line switch keeps targeting
-    // the same line.
-    this.activeDeviceId,
   });
 
   final PlansStatus status;
@@ -134,13 +130,6 @@ class PlansState extends Equatable {
   /// to show a shimmer skeleton when the list is empty and a refresh is running.
   /// Not serialised to disk.
   final bool isRefreshingBundles;
-
-  /// Device id whose plans/bundles the current state belongs to. `null`
-  /// means the primary device (home-screen phone dropdown shows the primary
-  /// line). Set by `_fetchAllPlans` after a successful load; consumed by
-  /// `refreshCurrentTab` / `refreshBundlesOnly` so pull-to-refresh stays on
-  /// the same line the user is viewing.
-  final int? activeDeviceId;
 
   // ═══════════════════════════════════════════════════════════════════
   // GETTERS (SAME as HomePlanState - UI depends on these)
@@ -439,7 +428,6 @@ class PlansState extends Equatable {
       'standAlonePlans': standAlonePlans.map((p) => p.toJson()).toList(),
       'lastFetchedAt': lastFetchedAt?.toIso8601String(),
       'addOnsApiLastSyncedAt': addOnsApiLastSyncedAt?.toIso8601String(),
-      'activeDeviceId': activeDeviceId,
     };
   }
 
@@ -506,9 +494,6 @@ class PlansState extends Equatable {
       addOnsApiLastSyncedAt: json['addOnsApiLastSyncedAt'] != null
           ? DateTime.tryParse(json['addOnsApiLastSyncedAt'] as String)
           : null,
-      activeDeviceId: json['activeDeviceId'] is int
-          ? json['activeDeviceId'] as int
-          : null,
     );
   }
 
@@ -562,8 +547,6 @@ class PlansState extends Equatable {
     List<BasePlanModel>? optimisticSecondaryPlans,
     bool clearOptimisticSecondaryPlans = false,
     bool? isRefreshingBundles,
-    int? activeDeviceId,
-    bool clearActiveDeviceId = false,
   }) {
     return PlansState(
       status: status ?? this.status,
@@ -601,9 +584,6 @@ class PlansState extends Equatable {
           ? const []
           : (optimisticSecondaryPlans ?? this.optimisticSecondaryPlans),
       isRefreshingBundles: isRefreshingBundles ?? this.isRefreshingBundles,
-      activeDeviceId: clearActiveDeviceId
-          ? null
-          : (activeDeviceId ?? this.activeDeviceId),
     );
   }
 
@@ -634,6 +614,5 @@ class PlansState extends Equatable {
     optimisticActivePlan,
     optimisticSecondaryPlans,
     isRefreshingBundles,
-    activeDeviceId,
   ];
 }

@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/enable_auto_payment_sheet.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -72,6 +73,7 @@ class _PostpaidBillingCardContentState
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
@@ -85,30 +87,31 @@ class _PostpaidBillingCardContentState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ================= AUTO PAY ROW =================
-            Row(
-              children: [
-                Text(
-                  'auto pay',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.32,
+            if (!isRestricted) ...[
+              Row(
+                children: [
+                  Text(
+                    'auto pay',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.32,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                Opacity(
-                  opacity: widget.isLoading ? 0.6 : 1.0,
-                  child: _FigmaToggle(
-                    value: _localValue,
-                    onChanged: widget.isLoading ? null : _onChanged,
+                  const Spacer(),
+                  Opacity(
+                    opacity: widget.isLoading ? 0.6 : 1.0,
+                    child: _FigmaToggle(
+                      value: _localValue,
+                      onChanged: widget.isLoading ? null : _onChanged,
+                    ),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
+                ],
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // ================= BALANCE DUE =================
             Row(
@@ -161,8 +164,8 @@ class _PostpaidBillingCardContentState
               ],
             ),
 
-            // ================= PAY NOW BUTTON (hidden when auto-pay is ON) =================
-            if (!_localValue) ...[
+            // ================= PAY NOW BUTTON (hidden when auto-pay is ON or user is read-only) =================
+            if (!_localValue && !isRestricted) ...[
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,

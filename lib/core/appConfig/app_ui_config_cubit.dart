@@ -82,6 +82,11 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
     state.copyWith(isViewingChildLine: false, clearActiveDeviceId: true),
   );
 
+  /// Reset to the default/anonymous config. Called on hard logout so the
+  /// next user doesn't inherit the previous session's dropdown selection
+  /// or user type.
+  void reset() => emit(_defaultConfig);
+
   /// Clears one-time navigation intent after the target screen uses it.
   void clearNavigationIntent() {
     if (!state.openMyLimits && !state.isFuturePlan && !state.isCurrentPlan) {

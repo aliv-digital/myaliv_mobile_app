@@ -26,55 +26,57 @@ class BiometricTurnOffConfirmBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: SettingsTheme.sheetBg,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
+    return Container(
+      decoration: const BoxDecoration(
+        color: SettingsTheme.sheetBg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.of(context).pop(false),
+                child: IconButton(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: SettingsTheme.sheetMessage,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: _SheetButton(
-                    label: 'no',
-                    backgroundColor: Colors.white,
-                    textColor: SettingsTheme.sheetPrimary,
-                    onPressed: () => Navigator.of(context).pop(false),
+              const SizedBox(height: 4),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: SettingsTheme.sheetMessage,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SheetButton(
+                      label: 'no',
+                      backgroundColor: Colors.white,
+                      textColor: SettingsTheme.sheetPrimary,
+                      onPressed: () => Navigator.of(context).pop(false),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _SheetButton(
-                    label: 'yes',
-                    backgroundColor: SettingsTheme.sheetPrimary,
-                    textColor: SettingsTheme.sheetPrimaryText,
-                    onPressed: () => Navigator.of(context).pop(true),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _SheetButton(
+                      label: 'yes',
+                      backgroundColor: SettingsTheme.sheetPrimary,
+                      textColor: SettingsTheme.sheetPrimaryText,
+                      onPressed: () => Navigator.of(context).pop(true),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

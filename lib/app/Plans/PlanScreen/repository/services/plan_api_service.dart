@@ -7,13 +7,13 @@ class PlanApiService extends BasePlanApiClient {
   PlanApiService({super.networkService, super.authManager})
     : super(debugName: 'plan-api-service');
 
-  Future<String> fetchRawPlansJson({int? deviceId}) async {
-    final resolvedDeviceId = resolveDeviceAccountId(deviceId);
+  Future<String> fetchRawPlansJson() async {
+    final deviceId = requireDeviceAccountId();
 
-    debugLog('Fetching plans for device=$resolvedDeviceId');
+    debugLog('Fetching plans for device=$deviceId');
 
     final response = await networkService.request<String>(
-      "${Api.getAllPlans}/$resolvedDeviceId/available-plans",
+      "${Api.getAllPlans}/$deviceId/available-plans",
       method: HttpMethod.get,
     );
 
@@ -27,13 +27,13 @@ class PlanApiService extends BasePlanApiClient {
     return response.data ?? '';
   }
 
-  Future<String> fetchRawBundlesJson({int? deviceId}) async {
-    final resolvedDeviceId = resolveDeviceAccountId(deviceId);
+  Future<String> fetchRawBundlesJson() async {
+    final deviceId = requireDeviceAccountId();
 
-    debugLog('Fetching bundles for device=$resolvedDeviceId');
+    debugLog('Fetching bundles for device=$deviceId');
 
     final response = await networkService.request<String>(
-      "${Api.getBundles}/$resolvedDeviceId/bundles",
+      "${Api.getBundles}/$deviceId/bundles",
       method: HttpMethod.get,
     );
 

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -45,11 +46,17 @@ class PostpaidActivePlanCard extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
+        final isRestricted = context
+            .watch<AppUiConfigCubit>()
+            .state
+            .isRestricted;
+        final enforceFullHeight =
+            state.isLoading || state.isInitial || !isRestricted;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
             height: (state.isLoading || state.isInitial) ? 216 : null,
-            constraints: const BoxConstraints(minHeight: 216),
+            constraints: BoxConstraints(minHeight: enforceFullHeight ? 216 : 0),
             padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
             decoration: BoxDecoration(
               image: const DecorationImage(
@@ -60,14 +67,22 @@ class PostpaidActivePlanCard extends StatelessWidget {
             ),
             child: (state.isLoading || state.isInitial)
                 ? const ActivePlanCardSkeleton()
-                : _buildContent(context, state.earliestAddOnsPrimaryPlan),
+                : _buildContent(
+                    context,
+                    state.earliestAddOnsPrimaryPlan,
+                    isRestricted,
+                  ),
           ),
         );
       },
     );
   }
 
-  Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
+  Widget _buildContent(
+    BuildContext context,
+    BasePlanModel? activePlan,
+    bool isRestricted,
+  ) {
     final expiry = _expiryDateTime();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,10 +123,11 @@ class PostpaidActivePlanCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 14),
-
         // ================= CTA =================
-        const UpgradeCreditLimitButton(),
+        if (!isRestricted) ...[
+          const SizedBox(height: 14),
+          const UpgradeCreditLimitButton(),
+        ],
       ],
     );
   }

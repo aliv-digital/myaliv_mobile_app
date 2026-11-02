@@ -62,6 +62,18 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     );
   }
 
+  Future<void> _logBiometricLogin({String? userId}) async {
+    if (!instance.isRegistered<AnalyticsService>()) return;
+    final analytics = instance<AnalyticsService>();
+    final resolvedUserId =
+        userId ?? (await CredentialStore().load())?.apiPhone ?? '';
+    await analytics.logLogin(
+      userId: resolvedUserId,
+      method: AnalyticsLoginMethod.biometric,
+    );
+    await analytics.setLoggedIn();
+  }
+
   Future<void> _authenticate(
     BuildContext context, {
     required bool isFace,
@@ -102,6 +114,7 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     if (existingSession != null && !existingSession.refreshExpired) {
       cubit.markSessionAuthenticated();
       await SessionTimeoutService().markActive();
+      await _logBiometricLogin();
       if (!context.mounted) return;
       context.go(AppRoutes.home);
       return;
@@ -134,13 +147,16 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
             session: session,
             appUiConfigCubit: context.read<AppUiConfigCubit>(),
           );
+          await _logBiometricLogin(userId: creds.apiPhone);
           if (!context.mounted) return;
           cubit.markSessionAuthenticated();
           AppToast.show(message: 'Welcome!', type: ToastType.success);
           context.go(AppRoutes.home);
 
         case LoginMfaChallenge(:final mfaToken):
-          // API still requires OTP — forward to OTP screen.
+          // API still requires OTP — forward to OTP screen. The eventual
+          // `login` event fires from LoginOtpBloc with method=otp; we lose
+          // the "biometric-initiated" signal in GA4 at that point.
           context.push(
             AppRoutes.loginOtp,
             extra: LoginOtpRouteArgs(
@@ -150,7 +166,13 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
             ),
           );
       }
-    } catch (_) {
+    } catch (e) {
+      if (instance.isRegistered<AnalyticsService>()) {
+        await instance<AnalyticsService>().logLoginFailure(
+          method: AnalyticsLoginMethod.biometric,
+          failureReason: AnalyticsLoginFailureReason.classify(e),
+        );
+      }
       if (!context.mounted) return;
       AppToast.show(
         message: 'Sign-in failed. Please try again.',

@@ -32,7 +32,7 @@ class LoginHeader extends StatelessWidget {
                 if (context.canPop()) {
                   context.pop();
                 } else {
-                  context.go(AppRoutes.splash); // or do nothing
+                  context.go(AppRoutes.welcome);
                 }
               },
             ),

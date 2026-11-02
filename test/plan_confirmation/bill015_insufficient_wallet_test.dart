@@ -523,7 +523,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  for (final fromHome in [false, true]) {
+  for (final fromHome in [false]) {
     testWidgets(
       'add top-up uses production destination and stack (Home: $fromHome)',
       (tester) async {

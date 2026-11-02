@@ -33,6 +33,7 @@ dependencies:
 
   # Utilities
   intl: ^0.20.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

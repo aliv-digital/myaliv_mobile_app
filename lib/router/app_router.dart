@@ -93,7 +93,7 @@ import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
 import '../app/Aliv-Mobile/userProfile/purchaseAddOns/view/purchase_add_ons_screen.dart';
-import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/purchases/view/purchases_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
 import '../app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
@@ -453,7 +453,7 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.purchasesPrepaidScreen,
-        builder: (context, state) => const PurchasesPrepaidScreen(),
+        builder: (context, state) => const PurchasesScreen(),
       ),
       GoRoute(
         path: AppRoutes.rewardDetailsPrepaidScreen,

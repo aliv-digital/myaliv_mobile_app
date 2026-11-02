@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 /// Status enum for Device Limits state
 enum DeviceLimitsStatus { initial, loading, loaded, updating, updated, failure }
@@ -59,6 +60,23 @@ class DeviceLimitsState {
   /// Returns null if list is empty.
   DeviceLimitsModel? get deviceLimits =>
       allDeviceLimits.isNotEmpty ? allDeviceLimits.first : null;
+
+  /// Resolves the device model that matches the home-screen dropdown's
+  /// current selection. Falls back to the primary device when no override
+  /// is set (via `ActiveDevice.id()`), matching cold-start behaviour.
+  ///
+  /// Lives on the state so the auto-renew / auto-top-up getters below
+  /// return attributes for the line the user is actually viewing after a
+  /// dropdown switch — otherwise the toggle on the home card would show
+  /// primary's status while the API call acts on the child.
+  DeviceLimitsModel? get activeDeviceLimits {
+    final activeId = ActiveDevice.id();
+    if (activeId == null) return deviceLimits;
+    for (final d in allDeviceLimits) {
+      if (d.deviceId == activeId) return d;
+    }
+    return deviceLimits;
+  }
 
   /// Check if we have device limits data
   bool get hasDeviceLimits => allDeviceLimits.isNotEmpty;
@@ -126,19 +144,20 @@ class DeviceLimitsState {
     return null;
   }
 
-  /// Auto-renew status from first device
-  bool get autoRenew => deviceLimits?.autoRenew ?? false;
+  /// Auto-renew status for the dropdown-selected line (falls back to primary).
+  bool get autoRenew => activeDeviceLimits?.autoRenew ?? false;
 
   // ============ Auto Top-up Getters ============
 
-  /// Balance threshold for auto top-up ("when balance falls below")
-  double get balanceThreshold => deviceLimits?.balanceThreshold ?? 0;
+  /// Balance threshold for auto top-up ("when balance falls below") for the
+  /// dropdown-selected line (falls back to primary).
+  double get balanceThreshold => activeDeviceLimits?.balanceThreshold ?? 0;
 
-  /// Auto top-up amount (matches grid or custom amount)
-  double get autoTopUpAmount => deviceLimits?.autoTopUpAmount ?? 0;
+  /// Auto top-up amount for the dropdown-selected line.
+  double get autoTopUpAmount => activeDeviceLimits?.autoTopUpAmount ?? 0;
 
-  /// Auto top-up card token
-  String get autoTopUpCardToken => deviceLimits?.autoTopUp ?? '';
+  /// Auto top-up card token for the dropdown-selected line.
+  String get autoTopUpCardToken => activeDeviceLimits?.autoTopUp ?? '';
 
   /// Check if auto top-up is configured
   bool get hasAutoTopUp =>

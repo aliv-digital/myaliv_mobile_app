@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -221,7 +222,9 @@ class HomePlanConfirmationBloc
       await deviceLimitsCubit.loadDeviceLimits();
     }
 
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    // Honour the dropdown-selected child line (ActiveDevice); falls back to
+    // primary when no override is set.
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) {
       throw Exception('Device ID not found.');
     }

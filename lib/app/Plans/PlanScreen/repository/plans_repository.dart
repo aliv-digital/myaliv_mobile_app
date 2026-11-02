@@ -51,7 +51,6 @@ class PlansRepository {
   Future<PlanCategorizationResult> fetchCategorizedPlans({
     bool forceRefresh = false,
     Duration cacheTtl = const Duration(hours: 1),
-    int? deviceId,
   }) async {
     // Return cached data if available and fresh
     if (!forceRefresh &&
@@ -61,7 +60,7 @@ class PlansRepository {
     }
 
     // Fetch from API
-    final rawJson = await _apiService.fetchRawPlansJson(deviceId: deviceId);
+    final rawJson = await _apiService.fetchRawPlansJson();
 
     // Parse JSON to list of maps
     final rawPlans = await _parserService.parseRawJson(rawJson);
@@ -88,7 +87,6 @@ class PlansRepository {
   Future<Map<String, dynamic>> fetchBundles({
     bool forceRefresh = false,
     Duration cacheTtl = const Duration(hours: 1),
-    int? deviceId,
   }) async {
     // Return cached data if available and fresh
     if (!forceRefresh && _cacheService.hasFreshBundles(ttl: cacheTtl)) {
@@ -97,7 +95,7 @@ class PlansRepository {
     }
 
     // Fetch from API
-    final rawJson = await _apiService.fetchRawBundlesJson(deviceId: deviceId);
+    final rawJson = await _apiService.fetchRawBundlesJson();
 
     // Parse JSON
     final bundles = await _parserService.parseBundlesJson(rawJson);
@@ -135,13 +133,11 @@ class PlansRepository {
   Future<AddOnsResult> fetchAddOnsData({
     bool forceRefresh = false,
     Duration cacheTtl = const Duration(hours: 1),
-    int? deviceId,
   }) async {
     try {
       final bundles = await fetchBundles(
         forceRefresh: forceRefresh,
         cacheTtl: cacheTtl,
-        deviceId: deviceId,
       );
 
       final result = BundleResponseParser.parse(bundles);

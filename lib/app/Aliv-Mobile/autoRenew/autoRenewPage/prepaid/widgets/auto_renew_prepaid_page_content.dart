@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/add_saved_card_flow.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
@@ -309,7 +310,7 @@ class _AutoRenewPrepaidPageContentState
 
   Future<void> _disableAutoRenew(BuildContext context) async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) {
       AppToast.show(
         message: 'Device info not available',
@@ -340,7 +341,7 @@ class _AutoRenewPrepaidPageContentState
       return;
     }
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) {
       AppToast.show(
         message: 'Device info not available',
@@ -358,7 +359,7 @@ class _AutoRenewPrepaidPageContentState
             mounted &&
             context.mounted &&
             ownerRoute?.isActive == true &&
-            deviceLimitsCubit.state.deviceLimits?.deviceId == deviceId &&
+            ActiveDevice.id() == deviceId &&
             context.read<AutoRenewPrepaidBloc>().state.isWalletSelected,
         openOtp: (args) {
           if (!context.mounted || ownerRoute?.isCurrent != true) {

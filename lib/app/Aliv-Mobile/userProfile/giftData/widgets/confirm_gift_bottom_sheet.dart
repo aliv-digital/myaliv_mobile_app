@@ -86,97 +86,102 @@ class _ConfirmGiftBottomSheetScaffoldState
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        decoration: const BoxDecoration(
-          color: GiftDataTheme.sheetBg,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(GiftDataTheme.sheetRadius),
-          ),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: GiftDataTheme.sheetBg,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GiftDataTheme.sheetRadius),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row: back arrow + title
-            Row(
-              children: [
-                InkResponse(
-                  onTap: () => Navigator.of(context).pop(false),
-                  radius: 20,
-                  child: const Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 22,
-                      color: GiftDataTheme.textPrimary,
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row: back arrow + title
+              Row(
+                children: [
+                  InkResponse(
+                    onTap: () => Navigator.of(context).pop(false),
+                    radius: 20,
+                    child: const Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 22,
+                        color: GiftDataTheme.textPrimary,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'confirm data gift',
-                  style: GiftDataTheme.sheetTitle,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _SheetRow(
-              icon: IconsaxPlusLinear.gift,
-              label: 'gift amount',
-              value: widget.amountLabel,
-            ),
-            const _SheetDivider(),
-            _SheetRow.leading(
-              leading: SvgPicture.asset(
-                AssetConstant.dataIconSVG,
-                width: 20,
-                height: 20,
-                colorFilter: const ColorFilter.mode(
-                  GiftDataTheme.primaryPurple,
-                  BlendMode.srcIn,
-                ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'confirm data gift',
+                    style: GiftDataTheme.sheetTitle,
+                  ),
+                ],
               ),
-              label: 'available to send',
-              value: widget.availableLabel,
-            ),
-            const _SheetDivider(),
-            _SheetRow(
-              icon: IconsaxPlusLinear.user,
-              label: 'recipient',
-              value: widget.recipient,
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: GiftDataTheme.ctaHeight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: GiftDataTheme.primaryPurple,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
+              const SizedBox(height: 16),
+              _SheetRow(
+                icon: IconsaxPlusLinear.gift,
+                label: 'gift amount',
+                value: widget.amountLabel,
+              ),
+              const _SheetDivider(),
+              _SheetRow.leading(
+                leading: SvgPicture.asset(
+                  AssetConstant.dataIconSVG,
+                  width: 20,
+                  height: 20,
+                  colorFilter: const ColorFilter.mode(
+                    GiftDataTheme.primaryPurple,
+                    BlendMode.srcIn,
                   ),
                 ),
-                onPressed: _submitting ? null : _handleConfirm,
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
-                    : const Text('confirm gift', style: GiftDataTheme.ctaLabel),
+                label: 'available to send',
+                value: widget.availableLabel,
               ),
-            ),
-          ],
+              const _SheetDivider(),
+              _SheetRow(
+                icon: IconsaxPlusLinear.user,
+                label: 'recipient',
+                value: widget.recipient,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: GiftDataTheme.ctaHeight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: GiftDataTheme.primaryPurple,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                  onPressed: _submitting ? null : _handleConfirm,
+                  child: _submitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          'confirm gift',
+                          style: GiftDataTheme.ctaLabel,
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

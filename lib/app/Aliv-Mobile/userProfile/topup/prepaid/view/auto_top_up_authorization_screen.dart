@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -86,8 +87,7 @@ class _AutoTopUpAuthorizationScreenState
     try {
       final snapshot = AutoTopUpSubmissionSnapshot(
         attemptId: widget.verifiedResult.attemptId,
-        deviceId:
-            instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0,
+        deviceId: ActiveDevice.id() ?? 0,
         balanceThreshold: widget.balanceThreshold,
         autoTopUpAmount: widget.autoTopUpAmount,
         cardToken: widget.cardToken,

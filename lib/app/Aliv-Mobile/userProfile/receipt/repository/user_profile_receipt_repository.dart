@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import '../models/user_profile_receipt_data.dart';
 import '../models/user_profile_receipt_route_args.dart';
@@ -35,6 +36,12 @@ class UserProfileReceiptRepository {
   }
 
   String _loggedInPhoneNumber() {
+    // Prefer the home-screen dropdown's active line so receipts for
+    // top-ups / purchases made while viewing a child reflect that child's
+    // number instead of the account owner's primary.
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
+
     if (!instance.isRegistered<AccountInfoCubit>()) return '';
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     if (accountInfo == null) return '';

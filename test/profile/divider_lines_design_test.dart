@@ -4,9 +4,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/postpaid/t
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/postpaid/widgets/profile_menu_item_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/theme/profile_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/widgets/profile_menu_item_tile.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/model/purchase_prepaid_models.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/theme/purchase_prepaid_theme.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/purchase_prepaid_menu_list.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/model/purchases_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/theme/purchases_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/widgets/purchases_menu_list.dart';
 
 void main() {
   group('Bugs 41, 42, 43 - Divider Line Indent and Size Tests', () {
@@ -81,22 +81,22 @@ void main() {
       'Bug 43: Purchases menu list has 20px horizontalPad and top/inter-item dividers',
       (tester) async {
         const items = [
-          PurchasePrepaidMenuItem(
+          PurchasesMenuItem(
             title: 'buy plans',
-            action: PurchasePrepaidAction.buyPlans,
+            action: PurchasesAction.buyPlans,
           ),
-          PurchasePrepaidMenuItem(
+          PurchasesMenuItem(
             title: 'make payment',
-            action: PurchasePrepaidAction.makePayment,
+            action: PurchasesAction.makePayment,
           ),
         ];
 
-        expect(PurchasePrepaidTheme.horizontalPad, 20.0);
+        expect(PurchasesTheme.horizontalPad, 20.0);
 
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: PurchasePrepaidMenuList(items: items, onTapItem: (_) {}),
+              body: PurchasesMenuList(items: items, onTapItem: (_) {}),
             ),
           ),
         );
@@ -109,7 +109,7 @@ void main() {
         for (final divider in dividers) {
           expect(divider.indent, 20.0);
           expect(divider.endIndent, 20.0);
-          expect(divider.color, PurchasePrepaidTheme.divider);
+          expect(divider.color, PurchasesTheme.divider);
         }
       },
     );

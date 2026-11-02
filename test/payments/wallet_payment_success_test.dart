@@ -257,19 +257,13 @@ void main() {
       ),
     ).thenAnswer((_) => planPayment.future);
     when(
-      () => analytics.logPlanPurchase(
-        planId: any(named: 'planId'),
-        planName: any(named: 'planName'),
+      () => analytics.logPurchase(
+        itemId: any(named: 'itemId'),
+        itemName: any(named: 'itemName'),
+        itemCategory: any(named: 'itemCategory'),
         amount: any(named: 'amount'),
         paymentMethod: any(named: 'paymentMethod'),
-      ),
-    ).thenAnswer((_) async {});
-    when(
-      () => analytics.logAddonPurchase(
-        addonId: any(named: 'addonId'),
-        addonName: any(named: 'addonName'),
-        amount: any(named: 'amount'),
-        paymentMethod: any(named: 'paymentMethod'),
+        transactionId: any(named: 'transactionId'),
       ),
     ).thenAnswer((_) async {});
     when(

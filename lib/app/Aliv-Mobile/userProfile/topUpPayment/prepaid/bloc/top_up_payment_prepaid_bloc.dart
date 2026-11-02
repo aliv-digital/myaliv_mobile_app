@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepa
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/bloc/top_up_payment_prepaid_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/models/payment_summary.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/repository/top_up_payment_prepaid_repository.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 class TopUpPaymentPrepaidBloc
     extends Bloc<TopUpPaymentPrepaidEvent, TopUpPaymentPrepaidState> {
@@ -170,10 +171,16 @@ class TopUpPaymentPrepaidBloc
     );
   }
 
-  /// Top-up URL requires the account holder's primary phone number, which is
-  /// owned by [AccountInfoCubit]. The `recipientPhone` on state.summary is
-  /// display metadata only and is not appropriate for the API path.
+  /// Top-up URL requires the phone number of the line being topped up.
+  /// Honour the dropdown-selected child line via [ActiveDevice.tn] so the
+  /// child's balance gets credited; falls back to the authenticated
+  /// account's primary number when nothing is selected.
+  ///
+  /// `recipientPhone` on state.summary is display metadata only and is not
+  /// appropriate for the API path.
   String _accountPrimaryPhone() {
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
     if (primary.isNotEmpty) return primary;

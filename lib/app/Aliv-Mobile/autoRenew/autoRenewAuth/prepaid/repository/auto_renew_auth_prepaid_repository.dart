@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import '../verification/auto_renew_authorization_submission.dart';
@@ -104,7 +105,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
     String? cardToken,
   }) async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) return false;
 
     // Call appropriate API based on payment method

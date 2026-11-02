@@ -20,7 +20,7 @@ class HomePlanTabs extends StatefulWidget {
     HomePlanTab.monthly: 'monthly',
     HomePlanTab.roaming: 'roaming',
     HomePlanTab.roameasy: 'roameasy',
-    HomePlanTab.addOns: 'add ons',
+    HomePlanTab.addOns: 'add-ons',
     HomePlanTab.mifi: 'mifi',
     HomePlanTab.libertyGlobal: 'liberty global',
     HomePlanTab.postpaidRoaming: 'roaming data',

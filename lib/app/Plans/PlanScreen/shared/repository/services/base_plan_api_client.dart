@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:core/core.dart';
 
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import '../base_plan_repository_exception.dart';
 
 /// Base API client with shared error handling logic.
@@ -79,20 +79,20 @@ abstract class BasePlanApiClient {
     }
   }
 
-  /// Fetch the primary device's `DeviceID` from [DeviceLimitsCubit].
+  /// Resolve the active device's id for `/device/{id}/...` endpoints.
+  ///
+  /// Delegates to [ActiveDevice] so the dropdown-selected child line is
+  /// honoured app-wide; falls back to the primary device from
+  /// `DeviceLimitsCubit` when nothing has been selected (cold start).
   ///
   /// `/device/{id}/...` endpoints expect the DEVICE id (from
-  /// `/Account/devices`), not the account's `id_acc` from `/Account`
-  /// — those are different numbers. Passing `id_acc` returns 501
-  /// `InvalidDevice`.
-  ///
-  /// [AuthCompletionService] eagerly loads `DeviceLimitsCubit` right
-  /// after login, so the primary device is always available by the
-  /// time any authed feature request runs.
+  /// `/Account/devices`), not the account's `id_acc` from `/Account`.
+  /// Passing `id_acc` returns 501 `InvalidDevice`.
   String requireDeviceAccountId() {
     requireAuth();
-    final primary = instance<DeviceLimitsCubit>().state.deviceLimits;
-    if (primary == null) {
+    try {
+      return ActiveDevice.require().toString();
+    } on StateError {
       throw BasePlanRepositoryException(
         type: BasePlanRepositoryErrorType.unauthorized,
         serverMessage: 'Device account id unavailable',
@@ -100,18 +100,6 @@ abstract class BasePlanApiClient {
         source: debugName,
       );
     }
-    return primary.deviceId.toString();
-  }
-
-  /// Resolve the device id for this call: use [override] when non-null and
-  /// positive; otherwise fall back to the primary device via
-  /// [requireDeviceAccountId]. Lets callers target a child line explicitly
-  /// (e.g. after the user switches via the home-screen phone dropdown)
-  /// without changing primary-only call sites like `checkConnectivity`.
-  String resolveDeviceAccountId(int? override) {
-    requireAuth();
-    if (override != null && override > 0) return override.toString();
-    return requireDeviceAccountId();
   }
 
   /// Map HTTP error to typed exception (shared logic)

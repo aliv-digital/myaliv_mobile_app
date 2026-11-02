@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/bloc/change_password_prepaid_bloc.dart';
@@ -336,13 +337,22 @@ void main() {
           request: any(named: 'request'),
         ),
       ).thenAnswer((_) async => true);
+      // ActiveDevice.id() reads DeviceLimitsCubit from GetIt (and
+      // AppUiConfigCubit which is optional / falls through to primary).
+      if (instance.isRegistered<DeviceLimitsCubit>()) {
+        instance.unregister<DeviceLimitsCubit>();
+      }
+      instance.registerSingleton<DeviceLimitsCubit>(devices);
       submission = UpgradeCreditLimitSubmission(deviceLimitsCubit: devices);
       challenges = 0;
       ownerActive = true;
       outcome = 'success';
       pending = null;
     });
-    tearDown(() => submission.close());
+    tearDown(() async {
+      submission.close();
+      await instance.reset();
+    });
     Future<bool> submit() => submission.submit(
       deviceId: 123,
       request: _request,

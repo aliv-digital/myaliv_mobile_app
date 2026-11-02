@@ -14,7 +14,7 @@ class PlanTabs extends StatelessWidget {
     PlanTab.monthly: 'monthly',
     PlanTab.roaming: 'roaming',
     PlanTab.roameasy: 'roameasy',
-    PlanTab.addOns: 'add ons',
+    PlanTab.addOns: 'add-ons',
     PlanTab.mifi: 'mifi',
     PlanTab.libertyGlobal: 'liberty global',
   };

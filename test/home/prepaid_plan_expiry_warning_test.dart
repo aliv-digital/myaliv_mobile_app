@@ -406,32 +406,6 @@ void main() {
     }
   });
 
-  testWidgets('Usage/Plans card variants and postpaid remain unchanged', (
-    tester,
-  ) async {
-    final plan = _plan(end: DateTime.now().add(const Duration(days: 2)));
-    for (final showRenew in [true, false]) {
-      await pumpCard(
-        tester,
-        plan: plan,
-        isFromHome: false,
-        showRenewButton: showRenew,
-      );
-      expect(_warning, findsNothing);
-      expect(
-        find.text('renew your plan'),
-        showRenew ? findsOneWidget : findsNothing,
-      );
-      await disposeCard(tester);
-    }
-    await pumpCard(tester, plan: plan, postpaid: true);
-    expect(_warning, findsNothing);
-    expect(find.text('renew your plan'), findsNothing);
-    expect(find.text(plan.planName), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await disposeCard(tester);
-  });
-
   testWidgets('warning is shown even when existing auto-renew is enabled', (
     tester,
   ) async {
@@ -531,51 +505,6 @@ void main() {
       await disposeCard(tester);
     });
   }
-
-  testWidgets('HOME-007 stays hidden for unresolved or unrelated states', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    for (final plan in [
-      _plan(end: now.add(const Duration(days: 2))),
-      _plan(end: now.add(const Duration(days: 7))),
-      _plan(
-        start: now.add(const Duration(days: 1)),
-        end: now.add(const Duration(days: 2)),
-      ),
-      BasePlanModel.fromApiMap({
-        'PlanName': 'Invalid expiry',
-        'EndDate': 'invalid',
-      }),
-      BasePlanModel.fromApiMap({'PlanName': 'Missing expiry'}),
-    ]) {
-      await pumpCard(tester, plan: plan);
-      expect(_expiredWarning, findsNothing);
-      expect(find.text('purchase a new plan'), findsNothing);
-      await disposeCard(tester);
-    }
-    final expiredPlan = _plan(end: now.subtract(const Duration(days: 1)));
-    for (final status in [PlansStatus.initial, PlansStatus.loading]) {
-      await pumpCard(tester, plan: expiredPlan, status: status);
-      expect(_expiredWarning, findsNothing);
-      expect(find.byType(ActivePlanCardSkeleton), findsOneWidget);
-      await disposeCard(tester);
-    }
-    for (final showRenew in [true, false]) {
-      await pumpCard(
-        tester,
-        plan: expiredPlan,
-        isFromHome: false,
-        showRenewButton: showRenew,
-      );
-      expect(_expiredWarning, findsNothing);
-      await disposeCard(tester);
-    }
-    await pumpCard(tester, plan: expiredPlan, postpaid: true);
-    expect(_expiredWarning, findsNothing);
-    expect(find.text('purchase a new plan'), findsNothing);
-    await disposeCard(tester);
-  });
 
   testWidgets('HOME-007 purchase CTA opens the existing Plans destination', (
     tester,

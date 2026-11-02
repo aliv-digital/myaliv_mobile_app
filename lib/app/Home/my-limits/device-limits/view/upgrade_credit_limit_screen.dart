@@ -13,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/widgets/limit_amount_input_field.dart';
@@ -107,7 +108,8 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
       setState(() => _showValidationErrors = true);
       return;
     }
-    final deviceId = state.deviceLimits?.deviceId ?? 0;
+    // Honour the dropdown-selected child line (ActiveDevice).
+    final deviceId = ActiveDevice.id() ?? 0;
     if (deviceId <= 0) {
       AppToast.show(
         message: 'Device information not available',
@@ -159,9 +161,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
           coordinator: _verification,
           purpose: ProtectedAccountAction.upgradeCreditLimit,
           attemptId: attemptId,
-          isOwnerActive: () =>
-              instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ==
-              deviceId,
+          isOwnerActive: () => ActiveDevice.id() == deviceId,
         ),
       );
     } on CallLogsVerificationException catch (error) {

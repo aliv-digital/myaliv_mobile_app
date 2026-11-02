@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import '../utils/confirmation_formatters.dart';
@@ -14,16 +14,25 @@ class ConfirmationPlanCardMyNumberContent extends StatelessWidget {
     required this.topUpAmount,
   });
 
-  @override
-  Widget build(BuildContext context) {
+  String getOwnPhoneNumber({required BuildContext context}) {
+    // Prefer the home-screen dropdown's active line
+    // top-ups / purchases made while viewing a child reflect that child's
+    // number instead of the account owner's primary.
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    final fullName = resolveUserDisplayName();
-    final ownPhone = formatConfirmationPhone(
+    return formatConfirmationPhone(
       accountInfo?.primaryPhoneNumber ??
           accountInfo?.altPhoneNumber ??
           accountInfo?.phoneNumber ??
           '',
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ownPhone = getOwnPhoneNumber(context: context);
+    final fullName = resolveUserDisplayName();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

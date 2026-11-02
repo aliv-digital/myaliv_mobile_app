@@ -8,7 +8,6 @@ import 'package:myaliv_mobile_app/app/Call-Logs/repository/services/transactions
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/transactions_repository.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 /// Sets up dependency injection for Call Logs feature.
 ///
@@ -52,10 +51,7 @@ Future<void> setupCallLogsInjection() async {
   // Register Call Logs cubit as factory (new instance per screen)
   if (!instance.isRegistered<CallLogsCubit>()) {
     instance.registerFactory<CallLogsCubit>(
-      () => CallLogsCubit(
-        repository: instance<CallLogsRepository>(),
-        deviceLimitsCubit: instance<DeviceLimitsCubit>(),
-      ),
+      () => CallLogsCubit(repository: instance<CallLogsRepository>()),
     );
   }
 
@@ -77,10 +73,7 @@ Future<void> setupCallLogsInjection() async {
   // Register Transactions cubit as factory (new instance per screen)
   if (!instance.isRegistered<TransactionsCubit>()) {
     instance.registerFactory<TransactionsCubit>(
-      () => TransactionsCubit(
-        repository: instance<TransactionsRepository>(),
-        deviceLimitsCubit: instance<DeviceLimitsCubit>(),
-      ),
+      () => TransactionsCubit(repository: instance<TransactionsRepository>()),
     );
   }
 }

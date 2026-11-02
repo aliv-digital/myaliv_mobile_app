@@ -13,6 +13,14 @@ import '../repository/otp_attempt_failure.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 
+/// Which calling flow is driving the OTP screen. The bloc keeps a single
+/// code-verification path but has to fire different analytics events
+/// depending on whether the user is signing in or recovering a password
+/// (recovery OTP success leaves the user unauthenticated — no `login` /
+/// `logged_in` property to set — and the matching failure event is
+/// `password_reset_failed`, not `login_failure`).
+enum AuthFlow { login, passwordRecovery }
+
 class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   /// The Kansys JWT API dispatches 6-digit PINs (was 4 under the legacy
   /// two-factor-auth endpoint).
@@ -27,6 +35,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   final String offlineVerificationMessage;
   final bool resetValidationOnResend;
   final String? incorrectAttemptLimitMessage;
+  final AuthFlow authFlow;
   bool _submissionInProgress = false;
 
   LoginOtpBloc({
@@ -42,6 +51,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     this.offlineVerificationMessage = 'No Internet Connection',
     this.resetValidationOnResend = false,
     this.incorrectAttemptLimitMessage,
+    this.authFlow = AuthFlow.login,
   }) : authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
@@ -170,7 +180,14 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
-      await _analyticsService.logLogin();
+      await _analyticsService.logOtpVerified();
+      await _analyticsService.logLogin(userId: apiPhoneNumber);
+      await _analyticsService.setLoggedIn();
+      // Recovery flow fires `password_reset_completed` from the create-
+      // password success handler — not here — since OTP verification is
+      // only a mid-flow step. The user IS authenticated at this point
+      // (backend returns a session on recovery OTP success too), hence
+      // `login`+`logged_in` fire on both paths.
 
       emit(
         state.copyWith(
@@ -190,11 +207,36 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       final normalized = message.toLowerCase();
       final treatAsInvalidCode =
           normalized.contains('two factor') || normalized.contains('twofactor');
+      final wasIncorrectCode = OtpAttemptFailure.isIncorrectCode(e);
       final incorrectAttempts =
           e is OtpAttemptFailure && e.incorrectAttempts > 0
           ? e.incorrectAttempts
-          : state.incorrectAttempts +
-                (OtpAttemptFailure.isIncorrectCode(e) ? 1 : 0);
+          : state.incorrectAttempts + (wasIncorrectCode ? 1 : 0);
+
+      final otpFailureReason = AnalyticsOtpFailureReason.classify(
+        e,
+        wasIncorrectCode: wasIncorrectCode,
+      );
+      if (otpFailureReason != null) {
+        await _analyticsService.logOtpFailed(failureReason: otpFailureReason);
+      }
+      if (authFlow == AuthFlow.login) {
+        await _analyticsService.logLoginFailure(
+          method: AnalyticsLoginMethod.otp,
+          failureReason: AnalyticsLoginFailureReason.classify(
+            e,
+            wasIncorrectCode: wasIncorrectCode,
+          ),
+        );
+      } else {
+        await _analyticsService.logPasswordResetFailed(
+          failureReason: AnalyticsPasswordResetFailureReason.classify(
+            e,
+            wasIncorrectCode: wasIncorrectCode,
+          ),
+        );
+      }
+
       final failureState = state.copyWith(
         status: LoginOtpStatus.failure,
         errorType: errorType,
@@ -287,6 +329,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         phoneNumber: apiPhoneNumber,
         mfaToken: mfaToken,
       );
+      await _analyticsService.logOtpRequested();
       final updatedKey = resendResponse.mfaToken ?? mfaToken;
       emit(
         state.copyWith(

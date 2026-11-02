@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/logic/add_on_eligibility.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
@@ -19,9 +20,10 @@ class BundleResponseParser {
 
     final sortedPrimaryPlans = _sortByEarliestStartDate(primaryPlans);
 
-    final addOns = sortedPrimaryPlans.isNotEmpty
-        ? _mapAvailableBoltOnsToUiAddOns(sortedPrimaryPlans.first)
-        : <HomePlanAddOnModel>[];
+    final eligiblePrimary = firstAddOnEligiblePrimary(sortedPrimaryPlans);
+    final addOns = eligiblePrimary == null
+        ? <HomePlanAddOnModel>[]
+        : _mapAvailableBoltOnsToUiAddOns(eligiblePrimary);
 
     final secondaryPlans = _sortByEarliestStartDate(
       _asMapList(bundles['SecondaryPlans'])
@@ -82,6 +84,7 @@ class BundleResponseParser {
     BasePlanModel primaryPlan,
   ) {
     return primaryPlan.availableBoltOns
+        .where((addOnPlan) => isAllowedBoltOnName(addOnPlan.planName))
         .map(
           (addOnPlan) => HomePlanAddOnModel(
             id: addOnPlan.planId,

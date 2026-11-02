@@ -24,6 +24,12 @@ class SendTopupRepository {
     }
 
     try {
+      // TODO(backend): /Order/transfer payload has no `FromDeviceId`. When
+      // the home-screen dropdown has selected a child line (ActiveDevice),
+      // the transfer still debits the parent primary line's wallet because
+      // the backend resolves the sender from the JWT. Needs a backend
+      // contract change before "send top-up from this line's wallet" is
+      // possible for child-selected sessions.
       await _networkService.request<dynamic>(
         Api.orderTransferUrl,
         method: HttpMethod.post,

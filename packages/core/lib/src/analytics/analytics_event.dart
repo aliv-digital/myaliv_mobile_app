@@ -5,14 +5,22 @@
 abstract final class AnalyticsEvent {
   // ── Auth ──────────────────────────────────────────────────────────────────
   static const String login = 'login';
+  static const String loginFailure = 'login_failure';
+  static const String logout = 'logout';
+
+  // ── OTP (shared across login + password-reset flows) ──────────────────────
+  static const String otpRequested = 'otp_requested';
+  static const String otpVerified = 'otp_verified';
+  static const String otpFailed = 'otp_failed';
+
+  // ── Password reset ────────────────────────────────────────────────────────
+  static const String passwordResetStarted = 'password_reset_started';
+  static const String passwordResetCompleted = 'password_reset_completed';
+  static const String passwordResetFailed = 'password_reset_failed';
 
   // ── Wallet ────────────────────────────────────────────────────────────────
   static const String walletTopUp = 'wallet_top_up';
   static const String walletFunding = 'wallet_funding';
-
-  // ── Plans ─────────────────────────────────────────────────────────────────
-  static const String planPurchase = 'plan_purchase';
-  static const String addonPurchase = 'addon_purchase';
 
   // ── Payments ──────────────────────────────────────────────────────────────
   static const String billPayment = 'bill_payment';

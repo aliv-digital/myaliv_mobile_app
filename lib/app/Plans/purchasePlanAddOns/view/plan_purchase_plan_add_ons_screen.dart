@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
@@ -155,6 +156,11 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
   }
 
   String _accountPhoneNumber(AccountInfoState accountState) {
+    // Honour the home-screen dropdown: child line's TN wins over the
+    // account owner's primary when a child is selected.
+    final activeTn = ActiveDevice.tn()?.trim() ?? '';
+    if (activeTn.isNotEmpty) return activeTn;
+
     final accountInfo = accountState.accountInfo;
     final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
     if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;

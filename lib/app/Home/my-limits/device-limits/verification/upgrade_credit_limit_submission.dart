@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import '../cubit/device_limits_cubit.dart';
 import '../models/update_limits_request.dart';
@@ -28,7 +29,7 @@ class UpgradeCreditLimitSubmission {
       final verified = await verifyAction(attemptId);
       if (_closed ||
           !isOwnerActive() ||
-          deviceLimitsCubit.state.deviceLimits?.deviceId != deviceId ||
+          ActiveDevice.id() != deviceId ||
           verified == null ||
           !identical(verified.attemptId, attemptId) ||
           verified.purpose != ProtectedAccountAction.upgradeCreditLimit ||

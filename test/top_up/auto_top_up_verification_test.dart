@@ -264,9 +264,18 @@ void main() {
         mutations++;
         return true;
       });
+      // ActiveDevice.id() reads DeviceLimitsCubit from GetIt (and
+      // AppUiConfigCubit, which is optional).
+      if (instance.isRegistered<DeviceLimitsCubit>()) {
+        instance.unregister<DeviceLimitsCubit>();
+      }
+      instance.registerSingleton<DeviceLimitsCubit>(devices);
       submission = AutoTopUpSubmission(deviceLimitsCubit: devices);
     });
-    tearDown(() => submission.close());
+    tearDown(() async {
+      submission.close();
+      await instance.reset();
+    });
 
     for (final type in ['enable', 'threshold', 'amount', 'card']) {
       test(

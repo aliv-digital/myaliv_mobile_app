@@ -172,10 +172,11 @@ void main() {
         'PrimaryPlans': [
           {
             'PlanID': '1',
+            'PlanName': 'liberty40',
             'AvailableBoltOns': [
               {
                 'PlanID': '2',
-                'PlanName': 'addon',
+                'PlanName': 'liberty data1',
                 'PlanAmount': 13.57,
                 'VATAmount': 1.21,
               },

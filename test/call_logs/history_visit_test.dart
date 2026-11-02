@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/view/purchases_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
@@ -127,12 +127,11 @@ class _Harness {
       ),
     );
     instance.registerFactory<CallLogsCubit>(
-      () => CallLogsCubit(repository: calls, deviceLimitsCubit: devices),
+      () => CallLogsCubit(repository: calls),
     );
     instance.registerFactory<TransactionsCubit>(
       () => TransactionsCubit(
         repository: TransactionsRepository(apiClient: transactionApi),
-        deviceLimitsCubit: devices,
       ),
     );
     uiConfig = AppUiConfigCubit(
@@ -142,6 +141,9 @@ class _Harness {
         isFuturePlan: false,
       ),
     );
+    // ActiveDevice.id() resolves via GetIt-registered singletons.
+    instance.registerSingleton<DeviceLimitsCubit>(devices);
+    instance.registerSingleton<AppUiConfigCubit>(uiConfig);
     when(() => auth.saveSession(any())).thenAnswer((invocation) async {
       saves++;
       savedSession = invocation.positionalArguments.first as TokenSession;
@@ -217,7 +219,7 @@ class _Harness {
                 ),
               GoRoute(
                 path: AppRoutes.purchasesPrepaidScreen,
-                builder: (_, _) => const PurchasesPrepaidScreen(),
+                builder: (_, _) => const PurchasesScreen(),
               ),
               GoRoute(
                 path: AppRoutes.profilePrepaidScreen,

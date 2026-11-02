@@ -64,6 +64,9 @@ class _PasswordRecoveryCreatePasswordScreenState
 
   Future<void> _onSuccess(BuildContext context, String newPassword) async {
     final args = _args;
+    if (instance.isRegistered<AnalyticsService>()) {
+      await instance<AnalyticsService>().logPasswordResetCompleted();
+    }
     if (!context.mounted) return;
     context.go(AppRoutes.home);
     if (args == null) return;

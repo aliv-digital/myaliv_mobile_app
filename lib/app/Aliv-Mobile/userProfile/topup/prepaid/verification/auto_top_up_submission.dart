@@ -1,5 +1,6 @@
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 /// Form-local data only; never passed through the OTP route or persisted.
 class AutoTopUpSubmissionSnapshot {
@@ -38,8 +39,7 @@ class AutoTopUpSubmission {
     if (_closed || _pending != null || deviceLimitsCubit.state.isUpdating) {
       return null;
     }
-    if (snapshot.deviceId <= 0 ||
-        deviceLimitsCubit.state.deviceLimits?.deviceId != snapshot.deviceId) {
+    if (snapshot.deviceId <= 0 || ActiveDevice.id() != snapshot.deviceId) {
       return false;
     }
     if (!identical(verifiedResult.attemptId, snapshot.attemptId) ||
@@ -51,7 +51,7 @@ class AutoTopUpSubmission {
       if (_closed ||
           !identical(_pending, snapshot) ||
           !isCurrent(snapshot) ||
-          deviceLimitsCubit.state.deviceLimits?.deviceId != snapshot.deviceId ||
+          ActiveDevice.id() != snapshot.deviceId ||
           !verifiedResult.consume()) {
         return null;
       }
