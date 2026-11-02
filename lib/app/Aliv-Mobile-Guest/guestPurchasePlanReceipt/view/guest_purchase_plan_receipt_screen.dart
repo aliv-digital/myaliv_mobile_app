@@ -4,14 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/utils/guest_plan_phone_formatter.dart';
 import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_event.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/repository/guest_purchase_plan_receipt_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/widgets/receipt_failure_card.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import '../../../../core/utils/app_session.dart';
-import '../../../../resources/widgets/default_receipt_success_card.dart';
-import '../bloc/guest_purchase_plan_receipt_event.dart';
-import '../bloc/guest_purchase_plan_receipt_state.dart';
-import '../theme/theme.dart';
 
 class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   const GuestPurchasePlanReceiptScreen({
@@ -27,6 +28,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
     this.orderId,
+    this.isPaymentFailed = false,
   });
 
   final String phoneNumber;
@@ -39,6 +41,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   final String emailAddress;
   final String statusMessage;
   final String? orderId;
+  final bool isPaymentFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +88,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
           repository: ctx.read<GuestPurchasePlanReceiptRepository>(),
         )..add(GuestPurchasePlanReceiptStarted(receiptData)),
         child: _GuestPurchasePlanReceiptView(
+          isPaymentFailed: isPaymentFailed,
           statusMessage: (int.tryParse(orderId ?? '') ?? 0) > 0
               ? 'The plan was purchased successfully.'
               : statusMessage,
@@ -95,10 +99,14 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
 }
 
 class _GuestPurchasePlanReceiptView extends StatelessWidget {
-  const _GuestPurchasePlanReceiptView({required this.statusMessage});
+  const _GuestPurchasePlanReceiptView({
+    required this.statusMessage,
+    this.isPaymentFailed = false,
+  });
 
   static const _bg = Color(0xFFF1F2FA);
   final String statusMessage;
+  final bool isPaymentFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -143,17 +151,28 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
                           final data = state.data;
                           if (data == null) return const SizedBox.shrink();
 
+                          void onBackHome() {
+                            if (AppSession.appRoute == 'prepaidPlan' ||
+                                AppSession.appRoute == 'addOnsPrepaid') {
+                              context.go(AppRoutes.home);
+                              AppSession.resetAppRoute();
+                            } else {
+                              context.go(AppRoutes.logIn);
+                            }
+                          }
+
+                          if (isPaymentFailed) {
+                            return ReceiptFailureCard(
+                              data: data,
+                              onBackHome: onBackHome,
+                              pageBackground: GuestPurchasePlanReceiptTheme
+                                  .circleBackground,
+                            );
+                          }
+
                           return DefaultReceiptSuccessCard(
                             data: data,
-                            onBackHome: () {
-                              if (AppSession.appRoute == 'prepaidPlan' ||
-                                  AppSession.appRoute == 'addOnsPrepaid') {
-                                context.go(AppRoutes.home);
-                                AppSession.resetAppRoute();
-                              } else {
-                                context.go(AppRoutes.logIn);
-                              }
-                            },
+                            onBackHome: onBackHome,
                             pageBackground:
                                 GuestPurchasePlanReceiptTheme.circleBackground,
                             statusMessage: statusMessage,
@@ -162,36 +181,6 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
                       ),
                 ),
               ),
-
-              /// Failure ticket (if you want to show only on fail later, put condition using state.status)
-              // SliverToBoxAdapter(
-              //   child: Center(
-              //     child: ConstrainedBox(
-              //       constraints: const BoxConstraints(maxWidth: 420),
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(
-              //           left: 24,
-              //           right: 24,
-              //           top: 29,
-              //           bottom: 30,
-              //         ),
-              //         child: BlocBuilder<GuestPurchasePlanReceiptBloc, GuestPurchasePlanReceiptState>(
-              //           builder: (context, state) {
-              //             final data = state.data;
-              //             if (data == null) return const SizedBox.shrink();
-              //
-              //             return PaymentFailedTicket(
-              //               phone: "242-300-2548",
-              //               onPressed: () {
-              //                 Navigator.pop(context);
-              //               },
-              //             );
-              //           },
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),

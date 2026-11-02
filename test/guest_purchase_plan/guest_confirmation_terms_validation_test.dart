@@ -16,6 +16,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirm
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/widgets/terms_notice.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/widgets/receipt_failure_card.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/card_payment_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
@@ -154,6 +155,7 @@ void main() {
               addOnNames: extra['addOnNames'] as List<String>,
               emailAddress: extra['emailAddress'] as String,
               orderId: extra['orderId'] as String?,
+              isPaymentFailed: extra['isPaymentFailed'] as bool? ?? false,
             );
           },
         ),
@@ -239,26 +241,25 @@ void main() {
   }
 
   for (final orderId in [null, '', '0', '-1', 'invalid']) {
-    testWidgets(
-      'unconfirmed Guest order "$orderId" never reports purchase success',
-      (tester) async {
-        final router = await pumpScreen(tester);
-        final payment = await startPayment(tester);
-        payment.onSuccess(
-          PaymentSuccess(orderId: orderId, queryParams: const {}),
-        );
-        await tester.pumpAndSettle();
-        expect(
-          find.text('Payment could not be confirmed. Please try again.'),
-          findsOneWidget,
-        );
-        expect(find.text(_purchased), findsNothing);
-        expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
-        expect(router.routeInformationProvider.value.uri.path, '/');
-        await tester.pump(const Duration(seconds: 4));
-        await tester.pumpWidget(const SizedBox.shrink());
-      },
-    );
+    testWidgets('unconfirmed Guest order "$orderId" shows failure receipt', (
+      tester,
+    ) async {
+      final router = await pumpScreen(tester);
+      final payment = await startPayment(tester);
+      payment.onSuccess(
+        PaymentSuccess(orderId: orderId, queryParams: const {}),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(_purchased), findsNothing);
+      expect(find.byType(GuestPurchasePlanReceiptScreen), findsOneWidget);
+      expect(find.byType(ReceiptFailureCard), findsOneWidget);
+      expect(find.text('Payment Failed'), findsOneWidget);
+      expect(
+        router.routerDelegate.currentConfiguration.last.route.path,
+        AppRoutes.guestPurchasePlanReceipt,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
   }
 
   for (final failure in [
@@ -266,22 +267,26 @@ void main() {
     'Purchase failed',
     'Network unavailable',
   ]) {
-    testWidgets(
-      'Guest failure "$failure" preserves its message without success',
-      (tester) async {
-        final router = await pumpScreen(tester);
-        final payment = await startPayment(tester);
-        payment.onFailure(failure);
-        await tester.pumpAndSettle();
-        expect(find.text(failure), findsOneWidget);
-        expect(find.text(_purchased), findsNothing);
-        expect(find.text('The number you entered is invalid'), findsNothing);
-        expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
-        expect(router.routeInformationProvider.value.uri.path, '/');
-        await tester.pump(const Duration(seconds: 4));
-        await tester.pumpWidget(const SizedBox.shrink());
-      },
-    );
+    testWidgets('Guest failure "$failure" shows failure receipt', (
+      tester,
+    ) async {
+      final router = await pumpScreen(tester);
+      final payment = await startPayment(tester);
+      payment.onFailure(failure);
+      await tester.pumpAndSettle();
+      expect(find.text(_purchased), findsNothing);
+      expect(find.byType(GuestPurchasePlanReceiptScreen), findsOneWidget);
+      expect(find.byType(ReceiptFailureCard), findsOneWidget);
+      expect(find.text('Payment Failed'), findsOneWidget);
+      expect(
+        router.routerDelegate.currentConfiguration.last.route.path,
+        AppRoutes.guestPurchasePlanReceipt,
+      );
+      await tester.tap(find.text('back to login page'));
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, AppRoutes.logIn);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
   }
 
   for (final orderId in [null, '0']) {

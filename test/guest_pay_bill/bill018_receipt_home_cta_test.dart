@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/widgets/receipt_failure_card.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -34,7 +35,10 @@ void main() {
 
   tearDown(AppSession.resetAppRoute);
 
-  Future<GoRouter> pumpReceipt(WidgetTester tester) async {
+  Future<GoRouter> pumpReceipt(
+    WidgetTester tester, {
+    GuestPayBillReceiptArgs args = _args,
+  }) async {
     tester.view.physicalSize = const Size(390, 1400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -44,7 +48,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/receipt',
-          builder: (_, _) => const GuestPayBillReceiptScreen(args: _args),
+          builder: (_, _) => GuestPayBillReceiptScreen(args: args),
         ),
         GoRoute(
           path: AppRoutes.welcome,
@@ -97,6 +101,43 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('welcome'), findsOneWidget);
   });
+
+  testWidgets(
+    'payment failed receipt shows failure card and returns to guest home',
+    (tester) async {
+      const failedArgs = GuestPayBillReceiptArgs(
+        serviceName: 'ALIV Postpaid',
+        identifierLabel: 'phone no.',
+        identifierValue: '242-555-1234',
+        amount: 16,
+        dateText: 'Oct 11, 2026',
+        timeText: '10:00 am',
+        paymentMethod: 'credit card',
+        isPaymentFailed: true,
+      );
+      await pumpReceipt(tester, args: failedArgs);
+      expect(find.byType(ReceiptFailureCard), findsOneWidget);
+      expect(find.byType(DefaultReceiptSuccessCard), findsNothing);
+      expect(find.text('Payment Failed'), findsOneWidget);
+      expect(
+        find.text('There was a problem processing\nyour order.'),
+        findsOneWidget,
+      );
+      expect(find.text(_cta), findsOneWidget);
+      expect(find.text(_title), findsNothing);
+
+      await tester.ensureVisible(find.text(_cta));
+      await tester.tap(find.text(_cta));
+      await tester.pumpAndSettle();
+      expect(find.text('guest home'), findsOneWidget);
+      expect(find.text('login'), findsNothing);
+      expect(find.text('home'), findsNothing);
+
+      await tester.tap(find.text('guest home'));
+      await tester.pumpAndSettle();
+      expect(find.text('welcome'), findsOneWidget);
+    },
+  );
 
   testWidgets('regular postpaidPayment receipt still goes to home', (
     tester,

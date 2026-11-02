@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
+import '../models/add_ons_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
@@ -102,7 +102,7 @@ class _AddOnsConfirmationViewState extends State<_AddOnsConfirmationView> {
                   DefaultAppBar(
                     showHome: true,
                     onHomeTap: () {
-                      context.go(AppRoutes.logIn);
+                      context.go(AppRoutes.guestSplash);
                     },
                     title: 'confirmation and payment',
                     onBack: () {
@@ -305,15 +305,16 @@ class _AddOnsConfirmationViewState extends State<_AddOnsConfirmationView> {
                 onSuccess: (PaymentSuccess success) {
                   final orderId = int.tryParse(success.orderId ?? '');
                   if (orderId == null || orderId <= 0) {
+                    receiptExtra['isPaymentFailed'] = true;
                     navigator.pop();
-                    AppToast.show(
-                      message:
-                          'Payment could not be confirmed. Please try again.',
-                      type: ToastType.error,
+                    router.push(
+                      AppRoutes.guestPurchasePlanReceipt,
+                      extra: receiptExtra,
                     );
                     return;
                   }
                   receiptExtra['orderId'] = success.orderId;
+                  receiptExtra['isPaymentFailed'] = false;
                   navigator.pop();
                   router.push(
                     AppRoutes.guestPurchasePlanReceipt,
@@ -321,8 +322,12 @@ class _AddOnsConfirmationViewState extends State<_AddOnsConfirmationView> {
                   );
                 },
                 onFailure: (String message) {
+                  receiptExtra['isPaymentFailed'] = true;
                   navigator.pop();
-                  AppToast.show(message: message, type: ToastType.error);
+                  router.push(
+                    AppRoutes.guestPurchasePlanReceipt,
+                    extra: receiptExtra,
+                  );
                 },
               ),
             ),

@@ -442,7 +442,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                 onBack: () {
                   context.pop();
                 },
-                onHomeTap: () => context.go(AppRoutes.logIn),
+                onHomeTap: () => context.go(AppRoutes.guestSplash),
               ),
               Expanded(
                 child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(

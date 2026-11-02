@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/focused_input_border_wrapper.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/theme/rev_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
@@ -94,15 +95,14 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
                   controller: _controller,
                   focusNode: _focusNode,
                   onChanged: widget.onChanged,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: RevPrepaidTheme.input,
                   decoration: InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
-                    hintText: '0.00',
+                    hintText: '0',
                     hintStyle: RevPrepaidTheme.hintText,
                   ),
                 ),

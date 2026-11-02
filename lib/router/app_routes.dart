@@ -2,6 +2,7 @@ class AppRoutes {
   static const home = '/home';
 
   static const usage = '/usage';
+  static const myPlans = '/my-plans';
   static const upgradeCreditLimit = '/upgrade-credit-limit';
   static const plans = '/plans';
   static const menu = '/menu';

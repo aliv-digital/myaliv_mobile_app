@@ -12,7 +12,9 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class UsageScreen extends StatefulWidget {
-  const UsageScreen({super.key});
+  const UsageScreen({super.key, this.standalone = false});
+
+  final bool standalone;
 
   static const Color purple = Color(0xFF645D9C);
 
@@ -145,13 +147,22 @@ class _UsageScreenState extends State<UsageScreen>
           centerTitle: false,
           backgroundColor: UsageScreen.purple,
           elevation: 0,
+          automaticallyImplyLeading: false,
+          leading: widget.standalone
+              ? IconButton(
+                  tooltip: 'Back',
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => context.pop(),
+                )
+              : null,
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: UsageScreen.purple,
             statusBarIconBrightness: Brightness.light,
             statusBarBrightness: Brightness.dark,
           ),
+          titleSpacing: widget.standalone ? 0 : null,
           title: Padding(
-            padding: const EdgeInsets.only(left: 16.0),
+            padding: EdgeInsets.only(left: widget.standalone ? 0 : 16.0),
             child: Text(
               title,
               style: const TextStyle(
