@@ -231,7 +231,7 @@ class _RoamingPlanConfirmationViewState
                   DefaultAppBar(
                     showHome: true,
                     onHomeTap: () {
-                      context.go(AppRoutes.logIn);
+                      context.go(AppRoutes.guestSplash);
                     },
                     title: 'confirmation and payment',
                     onBack: () {

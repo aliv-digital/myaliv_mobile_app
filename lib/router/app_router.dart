@@ -590,6 +590,7 @@ class AppRouter {
           String emailAddress = 'guest';
           String paymentMethod = 'credit card';
           String? orderId;
+          bool isPaymentFailed = false;
 
           final extra = state.extra;
           if (extra is Map) {
@@ -613,6 +614,9 @@ class AppRouter {
             paymentMethod =
                 (extra['paymentMethod'] as String?) ?? paymentMethod;
             orderId = extra['orderId'] as String?;
+            if (extra['isPaymentFailed'] == true) {
+              isPaymentFailed = true;
+            }
           }
 
           return GuestPurchasePlanReceiptScreen(
@@ -625,6 +629,7 @@ class AppRouter {
             emailAddress: emailAddress,
             paymentMethod: paymentMethod,
             orderId: orderId,
+            isPaymentFailed: isPaymentFailed,
           );
         },
       ),
@@ -807,6 +812,27 @@ class AppRouter {
 
           if (receiptArgs is GuestPayBillReceiptArgs) {
             return GuestPayBillReceiptScreen(args: receiptArgs);
+          }
+
+          if (receiptArgs is Map) {
+            return GuestPayBillReceiptScreen(
+              args: GuestPayBillReceiptArgs(
+                serviceName:
+                    receiptArgs['serviceName'] as String? ?? 'ALIV Postpaid',
+                identifierLabel:
+                    receiptArgs['identifierLabel'] as String? ?? 'phone no.',
+                identifierValue:
+                    receiptArgs['identifierValue'] as String? ?? '242-801-0000',
+                amount: (receiptArgs['amount'] as num?)?.toDouble() ?? 200.00,
+                dateText: receiptArgs['dateText'] as String? ?? 'Mar 22, 2023',
+                timeText: receiptArgs['timeText'] as String? ?? '07:30 am',
+                paymentMethod:
+                    receiptArgs['paymentMethod'] as String? ?? 'credit card',
+                orderId: receiptArgs['orderId'] as String?,
+                isPaymentFailed:
+                    receiptArgs['isPaymentFailed'] as bool? ?? false,
+              ),
+            );
           }
 
           return const GuestPayBillReceiptScreen(

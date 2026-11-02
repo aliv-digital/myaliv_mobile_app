@@ -7,6 +7,7 @@ class GuestPayBillReceiptArgs {
   final String timeText;
   final String paymentMethod;
   final String? orderId;
+  final bool isPaymentFailed;
 
   const GuestPayBillReceiptArgs({
     required this.serviceName,
@@ -17,5 +18,6 @@ class GuestPayBillReceiptArgs {
     required this.timeText,
     this.paymentMethod = 'credit card',
     this.orderId,
+    this.isPaymentFailed = false,
   });
 }

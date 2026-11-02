@@ -87,6 +87,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
   GuestPayBillReceiptArgs _buildReceiptArgs(
     GuestPayBillConfirmState state, {
     String? orderId,
+    bool isPaymentFailed = false,
   }) {
     final now = DateTime.now();
     return GuestPayBillReceiptArgs(
@@ -97,6 +98,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
       dateText: _formatDate(now),
       timeText: _formatTime(now),
       orderId: orderId,
+      isPaymentFailed: isPaymentFailed,
     );
   }
 
@@ -160,22 +162,25 @@ class _GuestPayBillConfirmView extends StatelessWidget {
             final orderId = int.tryParse(success.orderId ?? '');
             if (orderId == null || orderId <= 0) {
               navigator.pop();
-              AppToast.show(
-                message: 'Payment failed. Please try again.',
-                type: ToastType.error,
+              final receiptArgs = _buildReceiptArgs(
+                state,
+                isPaymentFailed: true,
               );
+              router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
               return;
             }
             navigator.pop();
             final receiptArgs = _buildReceiptArgs(
               state,
               orderId: success.orderId,
+              isPaymentFailed: false,
             );
             router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
           },
           onFailure: (String message) {
             navigator.pop();
-            AppToast.show(message: message, type: ToastType.error);
+            final receiptArgs = _buildReceiptArgs(state, isPaymentFailed: true);
+            router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
           },
           onHomeTap: () {
             navigator.pop();
@@ -292,7 +297,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                       onBack: () {
                         context.pop();
                       },
-                      onHomeTap: () => context.go(AppRoutes.logIn),
+                      onHomeTap: () => context.go(AppRoutes.guestSplash),
                     ),
                   ),
                   // Padded body container below app bar
