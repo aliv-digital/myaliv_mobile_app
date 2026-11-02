@@ -271,6 +271,36 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// Guest roaming / roameasy 3DS envelope: POST /Guest/purchaseplan.
+  ///
+  /// Same endpoint as [guestPurchasePlanBodyFor3DS] but the plan id lands in
+  /// `StandalonePlans` — roaming plans are treated as standalone (plan type
+  /// `A`) by the backend, matching the authenticated roaming flow in
+  /// `HomeRoamingConfirmationRepository`. Supports both immediate activation
+  /// (`forceNow: true`) and a future start date.
+  static Map<String, dynamic> guestRoamingPlanBodyFor3DS({
+    required int planId,
+    required String phoneNumber,
+    required bool forceNow,
+    DateTime? startDate,
+  }) {
+    final rawPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return <String, dynamic>{
+      'Bundle': <String, dynamic>{
+        'PrimaryPlans': <int>[],
+        'SecondaryPlans': <int>[],
+        'StandalonePlans': <int>[planId],
+        if (!forceNow && startDate != null)
+          'StartDate': _formatStartDate(startDate),
+      },
+      'ForceNow': forceNow,
+      'ChannelType': 'SelfCare',
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+      'PhoneNumber': rawPhone,
+    };
+  }
+
   /// Guest add-ons purchase 3DS envelope: POST /Guest/purchaseplan.
   ///
   /// Same endpoint as [guestPurchasePlanBodyFor3DS] but with no primary

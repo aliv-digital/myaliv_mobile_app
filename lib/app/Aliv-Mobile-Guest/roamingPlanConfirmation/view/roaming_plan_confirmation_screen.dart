@@ -3,10 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/models/roaming_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -160,7 +166,9 @@ class _RoamingPlanConfirmationViewState
                     if (!state.isTermsChecked) return;
 
                     final data = state.data;
+                    final routeArgs = state.routeArgs;
                     if (data == null ||
+                        routeArgs == null ||
                         data.items.isEmpty ||
                         data.totals.total <= 0) {
                       return;
@@ -177,30 +185,97 @@ class _RoamingPlanConfirmationViewState
                         '';
                     if (primaryPlanName.isEmpty) return;
 
-                    setState(() => _isSubmittingPayment = true);
+                    final planId = int.tryParse(routeArgs.planId);
+                    if (planId == null) {
+                      AppToast.show(
+                        message: 'Plan details missing. Please try again.',
+                        type: ToastType.error,
+                      );
+                      return;
+                    }
 
                     context.read<RoamingPlanConfirmationBloc>().add(
                       const RoamingPlanConfirmationPayNowPressed(),
                     );
+
                     final addOnNames = data.items
                         .where((item) => item.type == PurchaseLineType.addOn)
                         .map((item) => item.title)
                         .toList(growable: false);
                     final now = DateTime.now();
+                    final receiptExtra = <String, Object?>{
+                      'phoneNumber': data.phoneNumber,
+                      'amount': data.totals.total,
+                      'planName': primaryPlanName,
+                      'addOnNames': addOnNames,
+                      'dateText': DateFormat('MMM d, yyyy').format(now),
+                      'timeText': DateFormat(
+                        'h:mm a',
+                      ).format(now).toLowerCase(),
+                      'emailAddress': 'guest',
+                    };
+
+                    final body =
+                        ChangeBundleRequestFactory.guestRoamingPlanBodyFor3DS(
+                          planId: planId,
+                          phoneNumber: routeArgs.phoneNumber,
+                          forceNow: routeArgs.forceNow,
+                          startDate: routeArgs.forceNow
+                              ? null
+                              : routeArgs.beginDate,
+                        );
+
+                    final request = PaymentRequest(
+                      url: Api.guestPurchasePlanUrl,
+                      body: body,
+                      redirectScheme: 'myaliv',
+                      skipAuth: true,
+                    );
+
+                    final navigator = Navigator.of(context);
+                    final router = GoRouter.of(context);
+
+                    setState(() => _isSubmittingPayment = true);
+
                     try {
-                      context
+                      navigator
                           .push(
-                            AppRoutes.guestPurchasePlanReceipt,
-                            extra: <String, Object?>{
-                              'phoneNumber': data.phoneNumber,
-                              'amount': data.totals.total,
-                              'planName': primaryPlanName,
-                              'addOnNames': addOnNames,
-                              'dateText': DateFormat('MMM d, yyyy').format(now),
-                              'timeText': DateFormat(
-                                'h:mm a',
-                              ).format(now).toLowerCase(),
-                            },
+                            MaterialPageRoute<void>(
+                              builder: (_) => PaymentIFrameScreen(
+                                request: request,
+                                appBarBgColor: Colors.white,
+                                title: 'payment',
+                                onSuccess: (PaymentSuccess success) {
+                                  final orderId = int.tryParse(
+                                    success.orderId ?? '',
+                                  );
+                                  if (orderId == null || orderId <= 0) {
+                                    receiptExtra['isPaymentFailed'] = true;
+                                    navigator.pop();
+                                    router.push(
+                                      AppRoutes.guestPurchasePlanReceipt,
+                                      extra: receiptExtra,
+                                    );
+                                    return;
+                                  }
+                                  receiptExtra['orderId'] = success.orderId;
+                                  receiptExtra['isPaymentFailed'] = false;
+                                  navigator.pop();
+                                  router.push(
+                                    AppRoutes.guestPurchasePlanReceipt,
+                                    extra: receiptExtra,
+                                  );
+                                },
+                                onFailure: (String message) {
+                                  receiptExtra['isPaymentFailed'] = true;
+                                  navigator.pop();
+                                  router.push(
+                                    AppRoutes.guestPurchasePlanReceipt,
+                                    extra: receiptExtra,
+                                  );
+                                },
+                              ),
+                            ),
                           )
                           .whenComplete(() {
                             if (mounted) {

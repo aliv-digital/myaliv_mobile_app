@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/card_payment_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
@@ -49,6 +50,17 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
   void initState() {
     super.initState();
     _fetchAndLoad();
+  }
+
+  @override
+  void dispose() {
+    // The 3DS form inside the WebView focuses card inputs, raising the native
+    // keyboard. Flutter's focus system doesn't own that focus, so without an
+    // explicit hide the IME stays visible after this screen pops and bleeds
+    // into whatever screen the user lands on next.
+    FocusManager.instance.primaryFocus?.unfocus();
+    SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+    super.dispose();
   }
 
   Future<void> _fetchAndLoad() async {
