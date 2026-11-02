@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -123,6 +124,7 @@ class PlanPurchasePlanAddOnsBloc
       expireDate: plan.endDateTime != null
           ? _cardDateFormat.format(plan.endDateTime!)
           : '--/--',
+      expireTime: plan.endDateTime.formatHmAOrEmpty(),
     );
   }
 

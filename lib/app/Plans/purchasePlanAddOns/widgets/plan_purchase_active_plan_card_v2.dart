@@ -15,7 +15,7 @@ class PlanPurchaseActivePlanCardV2 extends StatelessWidget {
   final PlanPurchaseActivePlanSummary plan;
   final ValueChanged<bool> onAutoRenewChanged;
   static const double _cardWidth = 340;
-  static const double _cardHeight = 150;
+  static const double _cardHeight = 184;
   static const double _cardRadius = 12;
 
   @override
@@ -27,6 +27,7 @@ class PlanPurchaseActivePlanCardV2 extends StatelessWidget {
       activeDate: plan.activeDate,
       expireLabel: plan.expireDateLabel,
       expireDate: plan.expireDate,
+      expireTime: plan.expireTime,
       autoRenew: plan.autoRenew,
       onAutoRenewChanged: onAutoRenewChanged,
       maxWidth: _cardWidth,

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_add_on_models.dart'
     as plan_add_ons_models;
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_add_on_tile.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_fair_use_policy_card.dart';
-import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
-import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -75,8 +71,6 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fairUsePolicy = _fairUsePolicy();
-    final isPostpaid =
-        context.watch<AppUiConfigCubit>().state.userType == UserType.postpaid;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -86,10 +80,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
         16,
       ),
       children: <Widget>[
-        if (isPostpaid)
-          const PostpaidCurrentPlan(showRenewButton: false)
-        else
-          const PrepaidActivePlanCardWithData(showRenewButton: false),
+        const PrepaidActivePlanCardWithData(showRenewButton: false),
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
           policy: fairUsePolicy,

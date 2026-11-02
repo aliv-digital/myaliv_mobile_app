@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart';
+import 'package:core/core.dart';
 
 import '../../guestPurchasePlan/models/plan_model.dart';
 import '../model/add_on_models.dart';
@@ -130,6 +131,7 @@ class GuestPurchasePlanAddOnsBloc
       expireDate: endUtc != null
           ? _cardDateFormat.format(endUtc.toLocal())
           : '--/--/--',
+      expireTime: endUtc?.toLocal().formatHmAOrEmpty() ?? '',
     );
   }
 

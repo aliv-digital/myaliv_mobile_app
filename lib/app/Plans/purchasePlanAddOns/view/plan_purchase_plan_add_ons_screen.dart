@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:core/core.dart' hide instance;
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -412,6 +413,7 @@ class _ActivePlanCardState extends State<_ActivePlanCard> {
         selectedPlan?.endDateTime,
         fallback: '--/--',
       ),
+      expireTime: (selectedPlan?.endDateTime).formatHmAOrEmpty(),
       showAutoRenew: false,
     );
   }

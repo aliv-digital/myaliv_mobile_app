@@ -222,6 +222,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                               activeDate: plan.activeDate,
                               expireLabel: plan.expireDateLabel,
                               expireDate: plan.expireDate,
+                              expireTime: plan.expireTime,
                               topRight: AppSession.appRoute == 'addOnsPrepaid'
                                   ? AutoRenewToggle(initialValue: true)
                                   : null,

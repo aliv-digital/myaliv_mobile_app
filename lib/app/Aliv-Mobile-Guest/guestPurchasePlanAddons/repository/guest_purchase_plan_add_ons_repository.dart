@@ -12,6 +12,7 @@ class GuestPurchasePlanAddOnsRepository {
       activeDate: '20/08/24',
       expireDateLabel: 'expire',
       expireDate: '19/09/24',
+      expireTime: '11:59 PM',
     );
   }
 

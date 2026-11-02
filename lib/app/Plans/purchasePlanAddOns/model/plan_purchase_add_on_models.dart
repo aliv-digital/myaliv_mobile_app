@@ -8,6 +8,7 @@ class PlanPurchaseActivePlanSummary extends Equatable {
   final String activeDate; // "20/08/24"
   final String expireDateLabel; // "expire"
   final String expireDate; // "19/09/24"
+  final String expireTime;
 
   const PlanPurchaseActivePlanSummary({
     required this.label,
@@ -17,9 +18,13 @@ class PlanPurchaseActivePlanSummary extends Equatable {
     required this.activeDate,
     required this.expireDateLabel,
     required this.expireDate,
+    this.expireTime = '',
   });
 
-  PlanPurchaseActivePlanSummary copyWith({bool? autoRenew}) {
+  PlanPurchaseActivePlanSummary copyWith({
+    bool? autoRenew,
+    String? expireTime,
+  }) {
     return PlanPurchaseActivePlanSummary(
       label: label,
       name: name,
@@ -28,6 +33,7 @@ class PlanPurchaseActivePlanSummary extends Equatable {
       activeDate: activeDate,
       expireDateLabel: expireDateLabel,
       expireDate: expireDate,
+      expireTime: expireTime ?? this.expireTime,
     );
   }
 
@@ -40,6 +46,7 @@ class PlanPurchaseActivePlanSummary extends Equatable {
     activeDate,
     expireDateLabel,
     expireDate,
+    expireTime,
   ];
 }
 

@@ -164,7 +164,7 @@ class GuestPurchasePlanAddOnsTheme {
   // Top gap from card edge to "active plan" text.
   static const double planRedCardTopTextGap = 13;
   // Bottom gap from card edge to active/expire date row.
-  static const double planRedCardBottomRowGap = 26;
+  static const double planRedCardBottomRowGap = 14;
   // Horizontal padding inside red plan card.
   static const double planRedCardHorizontalPadding = 16;
   static const EdgeInsets planRedCardContentPadding = EdgeInsets.fromLTRB(

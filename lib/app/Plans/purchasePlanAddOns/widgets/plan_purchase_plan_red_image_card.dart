@@ -13,12 +13,13 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
     required this.activeDate,
     required this.expireLabel,
     required this.expireDate,
+    this.expireTime = '',
     this.autoRenew = true,
     this.onAutoRenewChanged,
     this.showAutoRenew = true,
     this.topRight,
     this.maxWidth = 380,
-    this.height = 150,
+    this.height = 184,
     this.borderRadius = 12,
   });
 
@@ -28,6 +29,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
   final String activeDate;
   final String expireLabel;
   final String expireDate;
+  final String expireTime;
   final bool autoRenew;
   final ValueChanged<bool>? onAutoRenewChanged;
   final bool showAutoRenew;
@@ -93,19 +95,82 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Row(
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _DateBlock(
-                            label: activeLabel,
-                            value: activeDate,
-                            alignEnd: false,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  activeLabel,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontFamily: 'CircularPro',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  expireLabel,
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontFamily: 'CircularPro',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const Spacer(),
-                          _DateBlock(
-                            label: expireLabel,
-                            value: expireDate,
-                            alignEnd: true,
+                          const SizedBox(height: 4),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                activeDate,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontFamily: 'CircularPro',
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 2.25,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                expireDate,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontFamily: 'CircularPro',
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 2.25,
+                                ),
+                              ),
+                            ],
                           ),
+                          if (expireTime.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                expireTime,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'CircularPro',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ],
@@ -249,48 +314,6 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
         borderRadius: BorderRadius.circular(999),
         child: child,
       ),
-    );
-  }
-}
-
-class _DateBlock extends StatelessWidget {
-  const _DateBlock({
-    required this.label,
-    required this.value,
-    required this.alignEnd,
-  });
-
-  final String label;
-  final String value;
-  final bool alignEnd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: alignEnd
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: PlanPurchasePlanAddOnsTheme.t(
-            12,
-            weight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: PlanPurchasePlanAddOnsTheme.t(
-            15,
-            weight: FontWeight.w900,
-            color: Colors.white,
-            height: 1.0,
-          ).copyWith(letterSpacing: 2.25),
-        ),
-      ],
     );
   }
 }

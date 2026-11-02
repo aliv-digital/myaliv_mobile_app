@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
@@ -37,7 +39,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
     super.key,
     this.showRenewButton = true,
     this.isFromHome = false,
-    this.dateRowCrossAxisAlignment = CrossAxisAlignment.center,
+    this.dateRowCrossAxisAlignment = CrossAxisAlignment.start,
     this.contentBottomPadding,
   });
 
@@ -59,11 +61,11 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         final redCreditCard = isFromHome
             ? AssetConstant.homeRedCardSVG
             : AssetConstant.redCreditCardSVG;
-        final cardHeight = showRenewButton ? 216.0 : 166.0;
+        final cardHeight = showRenewButton ? 216.0 : 184.0;
         final cardPadding =
             (showRenewButton
                     ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
-                    : const EdgeInsets.fromLTRB(16, 13, 16, 26))
+                    : const EdgeInsets.fromLTRB(16, 13, 16, 14))
                 .copyWith(bottom: contentBottomPadding);
 
         final card = ClipRRect(
@@ -80,7 +82,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                   padding: cardPadding,
                   child: (state.isLoading || state.isInitial)
                       ? ActivePlanCardSkeleton(showRenewButton: showRenewButton)
-                      : _buildContent(state.earliestAddOnsPrimaryPlan),
+                      : _buildContent(context, state.earliestAddOnsPrimaryPlan),
                 ),
               ],
             ),
@@ -110,7 +112,29 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BasePlanModel? activePlan) {
+  DateTime? _effectiveExpiryDate(
+    BuildContext context,
+    BasePlanModel? activePlan,
+  ) {
+    bool isPostpaid = false;
+    try {
+      isPostpaid =
+          context.watch<AppUiConfigCubit?>()?.state.userType ==
+          UserType.postpaid;
+    } catch (_) {
+      isPostpaid = false;
+    }
+    if (isPostpaid ||
+        (activePlan?.endDateTime != null &&
+            activePlan!.endDateTime!.year >= 2035)) {
+      final now = DateTime.now();
+      return DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+    }
+    return activePlan?.endDateTime;
+  }
+
+  Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
+    final expiryDate = _effectiveExpiryDate(context, activePlan);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,8 +156,8 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         _DatesRow(
           crossAxisAlignment: dateRowCrossAxisAlignment,
           activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
-          expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
-          expireTime: (activePlan?.endDateTime).formatHmAOrEmpty(),
+          expireDate: expiryDate.formatDdMmYyOrDash(),
+          expireTime: expiryDate.formatHmAOrEmpty(),
         ),
         if (showRenewButton) ...[
           const SizedBox(height: 14),
@@ -536,10 +560,10 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
   }
 }
 
-/// Dates row showing active and expire dates
+/// Dates row showing active and expire dates with guaranteed baseline alignment
 class _DatesRow extends StatelessWidget {
   const _DatesRow({
-    required this.crossAxisAlignment,
+    this.crossAxisAlignment = CrossAxisAlignment.start,
     required this.activeDate,
     required this.expireDate,
     this.expireTime = '',
@@ -552,72 +576,73 @@ class _DatesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: crossAxisAlignment,
-      children: [
-        _DateBlock(title: 'active', value: activeDate),
-        const Spacer(),
-        _DateBlock(
-          title: 'expire',
-          value: expireDate,
-          subtitle: expireTime,
-          alignRight: true,
-        ),
-      ],
-    );
-  }
-}
-
-/// Date block (active/expire)
-class _DateBlock extends StatelessWidget {
-  const _DateBlock({
-    required this.title,
-    required this.value,
-    this.subtitle = '',
-    this.alignRight = false,
-  });
-
-  final String title;
-  final String value;
-  final String subtitle;
-  final bool alignRight;
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignRight
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
-          ),
+        Row(
+          children: const [
+            Text(
+              'active',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Spacer(),
+            Text(
+              'expire',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            letterSpacing: 2.25,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              activeDate,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.25,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              expireDate,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.25,
+              ),
+            ),
+          ],
         ),
-        if (subtitle.isNotEmpty) ...[
+        if (expireTime.isNotEmpty) ...[
           const SizedBox(height: 2),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 11,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              expireTime,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
