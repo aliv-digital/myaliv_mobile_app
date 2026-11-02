@@ -55,7 +55,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
     return const plan_add_ons_models.PlanPurchaseFairUsePolicy(
       title: 'fair use policy',
       description:
-          'add-ons can only be added to your active primary plan and expires when it ends.',
+          'add-ons can only be added to your active primary plan and expires when it ends. if you don’t want an add-on select skip.',
     );
   }
 
