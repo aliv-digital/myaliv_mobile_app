@@ -255,7 +255,8 @@ class AnalyticsService {
     try {
       final params = <String, Object>{
         AnalyticsParam.paymentMethod: paymentMethod,
-        AnalyticsParam.promoCodeApplied: promoCode != null && promoCode.isNotEmpty,
+        AnalyticsParam.promoCodeApplied:
+            promoCode != null && promoCode.isNotEmpty,
       };
       if (promoCode != null && promoCode.isNotEmpty) {
         params[AnalyticsParam.promoCode] = promoCode;

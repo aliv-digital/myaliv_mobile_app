@@ -78,10 +78,9 @@ class _HomePlansPaymentMethodViewState
             (item) => AnalyticsEventItem(
               itemId: item.id,
               itemName: item.title,
-              itemCategory:
-                  item.planType == HomePlansPaymentPlanType.primary
-                      ? AnalyticsItemCategory.plan
-                      : AnalyticsItemCategory.addon,
+              itemCategory: item.planType == HomePlansPaymentPlanType.primary
+                  ? AnalyticsItemCategory.plan
+                  : AnalyticsItemCategory.addon,
               price: item.price,
               quantity: 1,
             ),

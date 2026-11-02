@@ -15,11 +15,12 @@ class HomePlansPaymentMethodBloc
   HomePlansPaymentMethodBloc({
     required this.repository,
     AnalyticsService? analyticsService,
-  })  : _analyticsService = analyticsService ??
-            (instance.isRegistered<AnalyticsService>()
-                ? instance<AnalyticsService>()
-                : AnalyticsService()),
-        super(HomePlansPaymentMethodState.initial()) {
+  }) : _analyticsService =
+           analyticsService ??
+           (instance.isRegistered<AnalyticsService>()
+               ? instance<AnalyticsService>()
+               : AnalyticsService()),
+       super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
     on<HomePlansChargeToAccountSelected>(_onChargeToAccountSelected);
