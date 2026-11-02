@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/profile_postpaid_bloc.dart';
@@ -89,6 +90,13 @@ class _ProfilePostpaidView extends StatelessWidget {
                             title: item.title,
                             enabled: item.enabled,
                             onTap: () {
+                              if (item.id == 'my_plans') {
+                                context
+                                    .read<AppUiConfigCubit>()
+                                    .showCurrentPlansView();
+                                context.push(AppRoutes.myPlans);
+                                return;
+                              }
                               context.read<ProfilePostpaidBloc>().add(
                                 ProfilePostpaidItemPressed(item),
                               );

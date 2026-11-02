@@ -192,7 +192,7 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                                 context
                                     .read<AppUiConfigCubit>()
                                     .showCurrentPlansView();
-                                context.go(AppRoutes.usage);
+                                context.push(AppRoutes.myPlans);
                               }
 
                               if (item.id == 'call_logs') {
