@@ -16,6 +16,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_s
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/postpaid_pay_with_new_card_flow.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/add_saved_card_flow.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -146,6 +147,12 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     setState(() => _disabling = true);
 
     final success = await instance<AccountInfoCubit>().disableAutoPayInvoice();
+
+    if (success) {
+      // Spec: clear the customer renewal-card record after the invoice flag
+      // flips to false. Silent — invoice PUT owns UX feedback.
+      await instance<DeviceLimitsCubit>().clearAutoRenewCardSilently();
+    }
 
     if (!mounted) return;
     setState(() => _disabling = false);

@@ -205,17 +205,23 @@ class DeviceLimitsApiService {
     }
   }
 
-  /// Enable auto-renew from credit card
+  /// POST /CreditCard/auto-renew with the given token and agreement text.
   ///
-  /// PUT /CreditCard/auto-renew
-  /// Body: `{ "Token": "<token>", "AgreementText": "I agree to automatic renewal" }`
-  /// Returns true if API response { "Success": true }
-  Future<bool> enableAutoRenewCard({required String token}) async {
+  /// Body: `{ "Token": "<token>", "AgreementText": "<agreementText>" }`
+  /// Returns true if API response { "Success": true }.
+  ///
+  /// Used for enable flows (saved-card token or empty-token wallet enable with
+  /// real agreement text) and disable flows (empty token + empty agreement text
+  /// to clear the customer's renewal-card record).
+  Future<bool> enableAutoRenewCard({
+    required String token,
+    String agreementText = 'I agree to automatic renewal',
+  }) async {
     try {
       final response = await _networkService.request<dynamic>(
         Api.creditCardAutoRenew,
         method: HttpMethod.post,
-        data: {'Token': token, 'AgreementText': 'I agree to automatic renewal'},
+        data: {'Token': token, 'AgreementText': agreementText},
       );
 
       final data = response.data;
