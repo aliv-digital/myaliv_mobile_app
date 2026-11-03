@@ -49,22 +49,39 @@ void main() {
     ('Log in to Pay', 'https://my.rev.bs/'),
   ]) {
     for (final size in [const Size(320, 700), const Size(430, 932)]) {
-      testWidgets('$label opens $url directly at $size', (tester) async {
-        await pumpLanding(tester);
-        tester.view.physicalSize = size;
-        await tester.pumpAndSettle();
-        expect(launched, isEmpty);
+      for (final action in ['continue', 'cancel', 'dismiss', 'back']) {
+        testWidgets('$label confirms before $action at $size', (tester) async {
+          await pumpLanding(tester);
+          tester.view.physicalSize = size;
+          await tester.pumpAndSettle();
+          expect(launched, isEmpty);
 
-        await tester.tap(find.text(label));
-        await tester.pumpAndSettle();
+          await tester.tap(find.text(label));
+          await tester.pumpAndSettle();
 
-        expect(launched, [url]);
-        expect(find.byType(BottomSheet), findsNothing);
-        expect(find.text(_question), findsNothing);
-        expect(find.text('continue'), findsNothing);
-        expect(find.text('cancel'), findsNothing);
-        expect(tester.takeException(), isNull);
-      });
+          expect(launched, isEmpty);
+          expect(find.byType(BottomSheet), findsOneWidget);
+          expect(find.text(_question), findsOneWidget);
+          expect(find.text('continue'), findsOneWidget);
+          expect(find.text('cancel'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+
+          if (action == 'dismiss') {
+            await tester.tapAt(const Offset(8, 8));
+          } else if (action == 'back') {
+            await tester.binding.handlePopRoute();
+          } else {
+            await tester.tap(find.text(action));
+          }
+          await tester.pumpAndSettle();
+
+          expect(launched, action == 'continue' ? [url] : isEmpty);
+          expect(find.byType(BottomSheet), findsNothing);
+          expect(find.text(_question), findsNothing);
+          expect(find.text(label), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        });
+      }
     }
   }
 }
