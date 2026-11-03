@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
@@ -13,6 +14,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import '../models/plan_model.dart';
 import '../services/guest_add_on_filter_service.dart';
 import '../services/guest_plan_presentation_mapper.dart';
+import '../services/guest_primary_plan_filter_service.dart';
 
 enum PlanTab {
   daily,
@@ -32,13 +34,16 @@ class GuestPurchasePlanRepository {
     PlanParserService? parserService,
     GuestPlanPresentationMapper? presentationMapper,
     GuestAddOnFilterService? addOnFilterService,
+    GuestPrimaryPlanFilterService? primaryPlanFilterService,
   }) : _phoneNumber = _normalizePhoneNumber(phoneNumber),
        _networkService = networkService ?? instance<NetworkService>(),
        _parserService = parserService ?? PlanParserService(),
        _presentationMapper =
            presentationMapper ?? const GuestPlanPresentationMapper(),
        _addOnFilterService =
-           addOnFilterService ?? const GuestAddOnFilterService();
+           addOnFilterService ?? const GuestAddOnFilterService(),
+       _primaryPlanFilterService =
+           primaryPlanFilterService ?? const GuestPrimaryPlanFilterService();
 
   static String _normalizePhoneNumber(String input) {
     final digits = input.replaceAll(RegExp(r'\D'), '');
@@ -55,6 +60,7 @@ class GuestPurchasePlanRepository {
   final PlanParserService _parserService;
   final GuestPlanPresentationMapper _presentationMapper;
   final GuestAddOnFilterService _addOnFilterService;
+  final GuestPrimaryPlanFilterService _primaryPlanFilterService;
 
   Future<PlanCategorizationResult>? _catalogueRequest;
   PlanCategorizationResult? _cachedCatalogue;
@@ -76,30 +82,64 @@ class GuestPurchasePlanRepository {
     };
 
     return _presentationMapper.mapAll(
-      PlanVisibilityFilter.visibleBasePlans(plans),
+      _visiblePlans(plans, tab: tab),
       isRoamEasy: tab == PlanTab.roameasy,
     );
   }
 
+  List<BasePlanModel> _visiblePlans(
+    List<BasePlanModel> plans, {
+    required PlanTab tab,
+  }) {
+    final visible = PlanVisibilityFilter.visibleBasePlans(plans);
+    final category = switch (tab) {
+      PlanTab.daily => PlanCategory.daily,
+      PlanTab.weekly => PlanCategory.weekly,
+      PlanTab.monthly => PlanCategory.monthly,
+      PlanTab.roaming => PlanCategory.roaming,
+      PlanTab.roameasy => PlanCategory.roameasy,
+      PlanTab.libertyGlobal => PlanCategory.libertyGlobal,
+      PlanTab.mifi => PlanCategory.mifi,
+      _ => null,
+    };
+    return category == null
+        ? visible
+        : _primaryPlanFilterService.filter(visible, category: category);
+  }
+
   /// Returns the set of plan tabs whose catalogue slice is empty after the
-  /// shared visibility filter — used by the view layer to hide empty tabs
+  /// shared and guest visibility filters — used by the view to hide empty tabs
   /// from the horizontal tab bar. `PlanTab.addOns` is never included here
   /// (add-ons emptiness is driven by /Guest/existingplans, not the catalog).
   Future<Set<PlanTab>> fetchEmptyPlanTabs() async {
     final catalogue = await (_catalogueRequest ??= _fetchCatalogue());
     _cachedCatalogue = catalogue;
 
-    bool isEmpty(List<BasePlanModel> list) =>
-        PlanVisibilityFilter.visibleBasePlans(list).isEmpty;
+    bool isEmpty(List<BasePlanModel> list, PlanTab tab) =>
+        _visiblePlans(list, tab: tab).isEmpty;
 
     final empty = <PlanTab>{};
-    if (isEmpty(catalogue.dailyPlans)) empty.add(PlanTab.daily);
-    if (isEmpty(catalogue.weeklyPlans)) empty.add(PlanTab.weekly);
-    if (isEmpty(catalogue.monthlyPlans)) empty.add(PlanTab.monthly);
-    if (isEmpty(catalogue.roamingPlans)) empty.add(PlanTab.roaming);
-    if (isEmpty(catalogue.roamEasyPlans)) empty.add(PlanTab.roameasy);
-    if (isEmpty(catalogue.mifiPlans)) empty.add(PlanTab.mifi);
-    if (isEmpty(catalogue.libertyGlobalPlans)) empty.add(PlanTab.libertyGlobal);
+    if (isEmpty(catalogue.dailyPlans, PlanTab.daily)) {
+      empty.add(PlanTab.daily);
+    }
+    if (isEmpty(catalogue.weeklyPlans, PlanTab.weekly)) {
+      empty.add(PlanTab.weekly);
+    }
+    if (isEmpty(catalogue.monthlyPlans, PlanTab.monthly)) {
+      empty.add(PlanTab.monthly);
+    }
+    if (isEmpty(catalogue.roamingPlans, PlanTab.roaming)) {
+      empty.add(PlanTab.roaming);
+    }
+    if (isEmpty(catalogue.roamEasyPlans, PlanTab.roameasy)) {
+      empty.add(PlanTab.roameasy);
+    }
+    if (isEmpty(catalogue.mifiPlans, PlanTab.mifi)) {
+      empty.add(PlanTab.mifi);
+    }
+    if (isEmpty(catalogue.libertyGlobalPlans, PlanTab.libertyGlobal)) {
+      empty.add(PlanTab.libertyGlobal);
+    }
     return empty;
   }
 
