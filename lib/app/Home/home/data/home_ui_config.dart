@@ -17,6 +17,7 @@ class HomeUiConfig {
   final bool isCurrentPlan;
   final bool openMyLimits;
   final LineRole lineRole;
+  final LineRole primaryLineRole;
   final bool isViewingChildLine;
   final int? activeDeviceId;
 
@@ -27,18 +28,16 @@ class HomeUiConfig {
     required this.isFuturePlan,
     this.isCurrentPlan = false,
     this.lineRole = LineRole.parent,
+    LineRole? primaryLineRole,
     this.isViewingChildLine = false,
     this.activeDeviceId,
-  });
+  }) : primaryLineRole = primaryLineRole ?? lineRole;
 
   bool get isPrepaid => userType == UserType.prepaid;
 
   bool get isPostpaid => userType == UserType.postpaid;
 
-  /// True iff the logged-in user is a read-only subscriber.
-  /// Switching lines via the phone dropdown must not change this —
-  /// restriction is a property of the user, not the line being viewed.
-  /// Parent (own or child line) and full-access are always false.
+  /// True iff the currently active line has read-only restrictions.
   bool get isRestricted => lineRole == LineRole.readOnly;
 
   HomeUiConfig copyWith({
@@ -48,6 +47,7 @@ class HomeUiConfig {
     bool? openMyLimits,
     bool? isCurrentPlan,
     LineRole? lineRole,
+    LineRole? primaryLineRole,
     bool? isViewingChildLine,
     int? activeDeviceId,
     bool clearActiveDeviceId = false,
@@ -59,6 +59,7 @@ class HomeUiConfig {
       openMyLimits: openMyLimits ?? this.openMyLimits,
       isCurrentPlan: isCurrentPlan ?? this.isCurrentPlan,
       lineRole: lineRole ?? this.lineRole,
+      primaryLineRole: primaryLineRole ?? this.primaryLineRole,
       isViewingChildLine: isViewingChildLine ?? this.isViewingChildLine,
       activeDeviceId: clearActiveDeviceId
           ? null
