@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/daily_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
@@ -87,6 +88,7 @@ void main() {
   late List<Object?> confirmationExtras;
   late List<Object?> addOnExtras;
   late Map<String, dynamic> existingPlans;
+  late List<Map<String, dynamic>> plans;
 
   setUpAll(() async {
     await (FontLoader('CircularPro')
@@ -109,18 +111,19 @@ void main() {
       'StandAlonePlans': <Map<String, dynamic>>[],
     };
     await instance.reset();
+    plans = [
+      _plan(id: 'p1', name: 'freedom30', type: 'P', frequency: 'M'),
+      _plan(id: 'p2', name: 'liberty70', type: 'P', frequency: 'M'),
+      _plan(
+        id: 'r1',
+        name: 'travel20',
+        type: 'A',
+        frequency: 'D',
+        group: 'Roaming',
+      ),
+    ];
     instance.registerSingleton<NetworkService>(
-      _FakeNetworkService([
-        _plan(id: 'p1', name: 'freedom30', type: 'P', frequency: 'M'),
-        _plan(id: 'p2', name: 'liberty70', type: 'P', frequency: 'M'),
-        _plan(
-          id: 'r1',
-          name: 'travel20',
-          type: 'A',
-          frequency: 'D',
-          group: 'Roaming',
-        ),
-      ], existingPlans: existingPlans),
+      _FakeNetworkService(plans, existingPlans: existingPlans),
     );
   });
 
@@ -176,7 +179,8 @@ void main() {
     final card = find.ancestor(
       of: find.text(planName),
       matching: find.byWidgetPredicate(
-        (w) => w is MonthlyPlanCard || w is RoamingPlanCard,
+        (w) =>
+            w is DailyPlanCard || w is MonthlyPlanCard || w is RoamingPlanCard,
       ),
     );
     final button = find.descendant(
@@ -294,6 +298,62 @@ void main() {
     expect(args.selectedBasePlan?.planId, 'p1');
     expect(args.existingActivePlan?.planId, 'active');
   });
+
+  for (final planName in ['freedom5', '  FrEeDoM5  ', 'freedom50']) {
+    testWidgets(
+      'active primary buying $planName uses the expected guest route',
+      (tester) async {
+        plans.add(_plan(id: 'd1', name: planName, type: 'P', frequency: 'D'));
+        final now = DateTime.now();
+        existingPlans['PrimaryPlans'] = [
+          {
+            ..._plan(
+              id: 'active',
+              name: 'liberty70',
+              type: 'P',
+              frequency: 'M',
+            ),
+            'StartDate': now
+                .subtract(const Duration(days: 1))
+                .toIso8601String(),
+            'EndDate': now.add(const Duration(days: 30)).toIso8601String(),
+          },
+        ];
+        await pumpScreen(tester);
+        await openTab(tester, 'daily');
+        await purchaseNow(tester, planName.trim());
+        expect(
+          find.byType(WalletPaymentActivateOrFutureBottomSheet),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.text('activate now'));
+        await tester.pumpAndSettle();
+
+        if (planName == 'freedom50') {
+          expect(visited, [AppRoutes.guestPurchasePlanAddOns]);
+          final args = addOnExtras.single! as GuestPurchasePlanAddOnsRouteArgs;
+          expect(args.selectedPlan.id, 'd1');
+          expect(args.existingActivePlan?.planId, 'active');
+        } else {
+          expect(visited, [AppRoutes.guestPurchasePlanConfirmation]);
+          expect(addOnExtras, isEmpty);
+          final args =
+              confirmationExtras.single!
+                  as GuestPurchasePlanConfirmationRouteArgs;
+          expect(args.phoneNumber, '242-555-1234');
+          expect(args.primaryPlanName, planName.trim());
+          expect(args.selectedPlan?.id, 'd1');
+          expect(args.primaryPlanPrice, 33);
+          expect(args.primaryPlanBasePrice, 30);
+          expect(args.primaryPlanVatAmount, 3);
+          expect(args.forceNow, isTrue);
+          expect(args.flow, GuestPurchasePlanConfirmationEntryFlow.skip);
+          expect(args.selectedAddOns, isEmpty);
+        }
+      },
+    );
+  }
 
   testWidgets('standalone uses guest copy with activate now and date picker', (
     tester,

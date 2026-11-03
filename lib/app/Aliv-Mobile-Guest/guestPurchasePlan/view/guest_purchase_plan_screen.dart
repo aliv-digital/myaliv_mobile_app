@@ -429,8 +429,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
 
-              // MiFi plans skip add-ons; go straight to confirmation.
-              if (selectedTab == PlanTab.mifi) {
+              // Guest freedom5 and MiFi purchases go straight to confirmation.
+              if (selectedTab == PlanTab.mifi ||
+                  plan.title.trim().toLowerCase() == 'freedom5') {
                 context.push(
                   AppRoutes.guestPurchasePlanConfirmation,
                   extra: _immediateConfirmationArgs(plan),
