@@ -91,20 +91,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     final store = CredentialStore();
     final saveMyPassword = await store.loadSaveMyPasswordPref();
-    if (!saveMyPassword) {
-      emit(state.copyWith(saveMyPassword: false));
-      return;
-    }
     final creds = await store.load();
     if (creds == null) {
-      emit(state.copyWith(saveMyPassword: true));
+      emit(state.copyWith(saveMyPassword: saveMyPassword));
       return;
     }
     emit(
       state.copyWith(
-        saveMyPassword: true,
+        saveMyPassword: saveMyPassword,
         phone: creds.displayPhone ?? '',
-        password: creds.password,
+        password: saveMyPassword ? creds.password : '',
         prefillVersion: state.prefillVersion + 1,
       ),
     );

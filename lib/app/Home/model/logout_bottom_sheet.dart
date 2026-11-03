@@ -220,8 +220,16 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
                               if (!context.mounted) return;
 
                               if (res) {
-                                context.pop();
-                                context.go(AppRoutes.welcome);
+                                // performHardLogout may have already
+                                // navigated to welcome, emptying go_router's
+                                // stack. Only pop if there's still something
+                                // to pop (e.g. the modal is still on top).
+                                if (context.canPop()) {
+                                  context.pop();
+                                }
+                                if (context.mounted) {
+                                  context.go(AppRoutes.welcome);
+                                }
                               } else {
                                 setState(() => _isLoggingOut = false);
                                 AppToast.show(
