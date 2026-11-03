@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
@@ -56,12 +57,17 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                     previous.standAlonePlans != current.standAlonePlans));
       },
       builder: (context, state) {
+        final isRestricted = context
+            .watch<AppUiConfigCubit>()
+            .state
+            .isRestricted;
+        final effectiveShowRenewButton = showRenewButton && !isRestricted;
         final redCreditCard = isFromHome
             ? AssetConstant.homeRedCardSVG
             : AssetConstant.redCreditCardSVG;
-        final cardHeight = showRenewButton ? 216.0 : 166.0;
+        final cardHeight = effectiveShowRenewButton ? 216.0 : 166.0;
         final cardPadding =
-            (showRenewButton
+            (effectiveShowRenewButton
                     ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
                     : const EdgeInsets.fromLTRB(16, 13, 16, 26))
                 .copyWith(bottom: contentBottomPadding);
@@ -79,8 +85,13 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                 Padding(
                   padding: cardPadding,
                   child: (state.isLoading || state.isInitial)
-                      ? ActivePlanCardSkeleton(showRenewButton: showRenewButton)
-                      : _buildContent(state.earliestAddOnsPrimaryPlan),
+                      ? ActivePlanCardSkeleton(
+                          showRenewButton: effectiveShowRenewButton,
+                        )
+                      : _buildContent(
+                          state.earliestAddOnsPrimaryPlan,
+                          effectiveShowRenewButton,
+                        ),
                 ),
               ],
             ),
@@ -110,7 +121,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BasePlanModel? activePlan) {
+  Widget _buildContent(BasePlanModel? activePlan, bool showRenewSection) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -135,7 +146,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
           expireTime: (activePlan?.endDateTime).formatHmAOrEmpty(),
         ),
-        if (showRenewButton) ...[
+        if (showRenewSection) ...[
           const SizedBox(height: 14),
           // Hide renew button when auto-renew is ON
           BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
@@ -386,19 +397,20 @@ class _TopRow extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        // Auto-renew toggle using DeviceLimitsCubit
-        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-          bloc: instance<DeviceLimitsCubit>(),
-          buildWhen: (previous, current) =>
-              previous.autoRenew != current.autoRenew ||
-              previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
-          builder: (context, state) {
-            return _AutoRenewToggle(
-              value: state.autoRenew,
-              isLoading: state.isTogglingAutoRenew,
-            );
-          },
-        ),
+        // Auto-renew toggle using DeviceLimitsCubit (hidden for read-only users)
+        if (!context.watch<AppUiConfigCubit>().state.isRestricted)
+          BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+            bloc: instance<DeviceLimitsCubit>(),
+            buildWhen: (previous, current) =>
+                previous.autoRenew != current.autoRenew ||
+                previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+            builder: (context, state) {
+              return _AutoRenewToggle(
+                value: state.autoRenew,
+                isLoading: state.isTogglingAutoRenew,
+              );
+            },
+          ),
       ],
     );
   }

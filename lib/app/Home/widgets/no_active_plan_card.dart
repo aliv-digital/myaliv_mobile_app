@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Empty state shown on the home screen when the user has no active plan.
@@ -11,6 +13,7 @@ class NoActivePlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.watch<AppUiConfigCubit>().state.isRestricted;
     return Container(
       color: HomeScreen.blueBackground,
       width: MediaQuery.of(context).size.width,
@@ -31,8 +34,10 @@ class NoActivePlanCard extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 20),
-          _PurchasePlanButton(onPressed: () => context.go(AppRoutes.plans)),
+          if (!isRestricted) ...[
+            const SizedBox(height: 20),
+            _PurchasePlanButton(onPressed: () => context.go(AppRoutes.plans)),
+          ],
         ],
       ),
     );
