@@ -34,6 +34,111 @@ class HomeQuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (config.isRestricted) {
+      return _buildRestrictedQuickActions(context);
+    }
+    return _buildStandardQuickActions(context);
+  }
+
+  Widget _buildRestrictedQuickActions(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final tileHeight = (constraints.maxWidth - 20) / 3;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: tileHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          context
+                              .read<AppUiConfigCubit>()
+                              .showFuturePlansView();
+                          context.go(AppRoutes.usage);
+                        },
+                        child: const ActionTile(
+                          'assets/icons/ListStarQuick.svg',
+                          'future\nplans',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          context.push(AppRoutes.myProfilePrepaidScreen);
+                        },
+                        child: const ActionTile(
+                          'assets/icons/At.svg',
+                          'update\nemail',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          context.push(AppRoutes.referFriendPrepaidScreen);
+                        },
+                        child: const ActionTile(
+                          'assets/icons/UsersThree.svg',
+                          'refer a friend',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: tileHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: onOpenAlivDeals ?? _defaultOpenAlivDeals,
+                        child: const ActionTile(
+                          'assets/icons/aliv_quick.svg',
+                          'ALIV deals',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          context.push(AppRoutes.callSupportScreen);
+                        },
+                        child: const ActionTile(
+                          'assets/icons/headphone.svg',
+                          'help & support',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStandardQuickActions(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
       child: GridView.count(
@@ -43,18 +148,19 @@ class HomeQuickActions extends StatelessWidget {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         children: [
-          if (!config.isRestricted)
-            GestureDetector(
-              onTap: () {
-                context.go(AppRoutes.plans);
-              },
-              child: const ActionTile(
-                'assets/icons/ListStarQuick.svg',
-                'buy\nplans',
-              ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              context.go(AppRoutes.plans);
+            },
+            child: const ActionTile(
+              'assets/icons/ListStarQuick.svg',
+              'buy\nplans',
             ),
-          if (config.userType.isPostpaid && !config.isRestricted)
+          ),
+          if (config.userType.isPostpaid)
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 context.read<AppUiConfigCubit>().showMyLimitsView();
                 context.go(AppRoutes.usage);
@@ -65,6 +171,7 @@ class HomeQuickActions extends StatelessWidget {
               ),
             ),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               context.push(AppRoutes.addOrEditCardsPrepaidScreen);
             },
@@ -74,6 +181,7 @@ class HomeQuickActions extends StatelessWidget {
             ),
           ),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               context.push(AppRoutes.myProfilePrepaidScreen);
             },
@@ -81,6 +189,7 @@ class HomeQuickActions extends StatelessWidget {
           ),
           if (config.userType.isPrepaid)
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 context.push(AppRoutes.referFriendPrepaidScreen);
               },
@@ -90,6 +199,7 @@ class HomeQuickActions extends StatelessWidget {
               ),
             ),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: onOpenAlivDeals ?? _defaultOpenAlivDeals,
             child: const ActionTile(
               'assets/icons/aliv_quick.svg',
@@ -97,6 +207,7 @@ class HomeQuickActions extends StatelessWidget {
             ),
           ),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               context.push(AppRoutes.callSupportScreen);
             },

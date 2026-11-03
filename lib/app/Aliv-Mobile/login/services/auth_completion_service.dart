@@ -130,6 +130,8 @@ class AuthCompletionService {
     final roleId = await instance<RoleApiClient>().fetchRoleId(
       primaryDevice.deviceId,
     );
+    debugPrint('role id: $roleId');
+
     final LineRole lineRole;
     if (accountInfo.parentAccountId == 0) {
       lineRole = LineRole.parent;
@@ -138,7 +140,7 @@ class AuthCompletionService {
     } else {
       lineRole = LineRole.readOnly;
     }
-
+    debugPrint("check line role$lineRole${LineRole.readOnly}");
     appUiConfigCubit.setConfig(
       HomeUiConfig(
         userType: accountInfoCubit.state.isPostpaid

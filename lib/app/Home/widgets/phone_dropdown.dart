@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -90,7 +91,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     _reloadData(target.deviceId);
   }
 
-  void _reloadData(int deviceId) {
+  void _reloadData(int deviceId) async {
     final uiConfig = context.read<AppUiConfigCubit>().state;
     instance<BalanceCubit>().loadBalances(
       deviceAccountId: deviceId,
