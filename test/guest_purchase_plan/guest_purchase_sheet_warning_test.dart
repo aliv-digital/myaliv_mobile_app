@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/daily_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/weekly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
@@ -180,7 +181,10 @@ void main() {
       of: find.text(planName),
       matching: find.byWidgetPredicate(
         (w) =>
-            w is DailyPlanCard || w is MonthlyPlanCard || w is RoamingPlanCard,
+            w is DailyPlanCard ||
+            w is WeeklyPlanCard ||
+            w is MonthlyPlanCard ||
+            w is RoamingPlanCard,
       ),
     );
     final button = find.descendant(
@@ -388,6 +392,9 @@ void main() {
   testWidgets('active primary keeps the existing add-ons route', (
     tester,
   ) async {
+    plans.first['AvailableBoltOns'] = [
+      _plan(id: 'allowed', name: 'freedom data1', type: 'S', frequency: 'M'),
+    ];
     final now = DateTime.now();
     existingPlans['PrimaryPlans'] = [
       {
@@ -415,7 +422,17 @@ void main() {
     testWidgets(
       'active primary buying $planName uses the expected guest route',
       (tester) async {
-        plans.add(_plan(id: 'd1', name: planName, type: 'P', frequency: 'D'));
+        plans.add({
+          ..._plan(id: 'd1', name: planName, type: 'P', frequency: 'D'),
+          'AvailableBoltOns': [
+            _plan(
+              id: 'allowed',
+              name: 'freedom data1',
+              type: 'S',
+              frequency: 'D',
+            ),
+          ],
+        });
         final now = DateTime.now();
         existingPlans['PrimaryPlans'] = [
           {
@@ -456,6 +473,83 @@ void main() {
           expect(args.phoneNumber, '242-555-1234');
           expect(args.primaryPlanName, planName.trim());
           expect(args.selectedPlan?.id, 'd1');
+          expect(args.primaryPlanPrice, 33);
+          expect(args.primaryPlanBasePrice, 30);
+          expect(args.primaryPlanVatAmount, 3);
+          expect(args.forceNow, isTrue);
+          expect(args.flow, GuestPurchasePlanConfirmationEntryFlow.skip);
+          expect(args.selectedAddOns, isEmpty);
+        }
+      },
+    );
+  }
+
+  for (final (scenario, names, shouldShow) in [
+    ('no add-ons', <String>[], false),
+    (
+      'numbered add-ons',
+      ['freedom45 data1', 'freedom45 data10', 'freedom35 data2'],
+      false,
+    ),
+    ('unrelated add-ons', ['travel data1'], false),
+    ('generic add-on', ['freedom data1'], true),
+    ('mixed add-ons', ['freedom45 data1', 'liberty data2'], true),
+    ('reordered name', ['DATA freedom 10 offer'], true),
+  ]) {
+    testWidgets(
+      'active primary purchase with $scenario chooses the right route',
+      (tester) async {
+        plans[0] = {
+          ..._plan(id: 'p1', name: 'freedom45', type: 'P', frequency: 'W'),
+          'AvailableBoltOns': [
+            for (final name in names)
+              _plan(id: name, name: name, type: 'S', frequency: 'W'),
+          ],
+        };
+        final now = DateTime.now();
+        existingPlans['PrimaryPlans'] = [
+          {
+            ..._plan(
+              id: 'active',
+              name: 'liberty70',
+              type: 'P',
+              frequency: 'M',
+            ),
+            'StartDate': now
+                .subtract(const Duration(days: 1))
+                .toIso8601String(),
+            'EndDate': now.add(const Duration(days: 30)).toIso8601String(),
+            'AvailableBoltOns': [
+              _plan(
+                id: 'existing-addon',
+                name: 'liberty data1',
+                type: 'S',
+                frequency: 'M',
+              ),
+            ],
+          },
+        ];
+        await pumpScreen(tester);
+        await openTab(tester, 'weekly');
+        await purchaseNow(tester, 'freedom45');
+        await tester.tap(find.text('activate now'));
+        await tester.pumpAndSettle();
+
+        if (shouldShow) {
+          expect(visited, [AppRoutes.guestPurchasePlanAddOns]);
+          final args = addOnExtras.single! as GuestPurchasePlanAddOnsRouteArgs;
+          expect(args.selectedPlan.id, 'p1');
+          expect(args.selectedBasePlan?.planName, 'freedom45');
+          expect(args.existingActivePlan?.planId, 'active');
+        } else {
+          expect(visited, [AppRoutes.guestPurchasePlanConfirmation]);
+          expect(addOnExtras, isEmpty);
+          final args =
+              confirmationExtras.single!
+                  as GuestPurchasePlanConfirmationRouteArgs;
+          expect(args.selectedPlan?.id, 'p1');
+          expect(args.primaryPlanName, 'freedom45');
+          expect(args.phoneNumber, '242-555-1234');
           expect(args.primaryPlanPrice, 33);
           expect(args.primaryPlanBasePrice, 30);
           expect(args.primaryPlanVatAmount, 3);

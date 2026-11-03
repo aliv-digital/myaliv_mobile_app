@@ -1,7 +1,7 @@
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
-/// Guest add-ons tab rules. Does not change the shared bundle parser or plans.
+/// Guest add-on rules for the tab and purchase flow.
 class GuestAddOnFilterService {
   const GuestAddOnFilterService();
 
@@ -43,7 +43,14 @@ class GuestAddOnFilterService {
     if (primary == null) {
       return const [];
     }
-    return primary.availableBoltOns
+    return filterAvailableAddOns(primary.availableBoltOns);
+  }
+
+  /// Catalog add-ons can be checked before the selected plan becomes active.
+  List<HomePlanAddOnModel> filterAvailableAddOns(
+    Iterable<BasePlanModel> addOns,
+  ) {
+    return addOns
         .where((addOn) => matchesName(addOn.planName))
         .map(_toDisplayModel)
         .toList(growable: false);
