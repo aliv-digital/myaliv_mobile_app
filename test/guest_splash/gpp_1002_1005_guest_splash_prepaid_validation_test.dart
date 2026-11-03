@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/guest_purchase_plan_route_args.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -188,7 +190,10 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(harness.routeExtras, <Object?>[
-          <String, String>{'phoneNumber': '(242)-899-9958'},
+          const GuestPurchasePlanRouteArgs(
+            phoneNumber: '(242)-899-9958',
+            paymentOption: PaymentOption.prepay,
+          ),
         ]);
         expect(find.text('guest purchase plan destination'), findsOneWidget);
       },
@@ -229,8 +234,8 @@ void main() {
     );
   });
 
-  group('GPP-1005 — Active Prepaid Subscriber Validation', () {
-    testWidgets('Postpaid number is blocked with appropriate error message', (
+  group('GPP-1005 — Active Subscriber Validation', () {
+    testWidgets('active postpaid proceeds with the verified payment option', (
       tester,
     ) async {
       final repo = _MockGuestSplashRepository(
@@ -247,16 +252,64 @@ void main() {
       await tester.pump();
 
       await tester.tap(_continueButton());
-      await tester.pump();
-      await tester.pump();
+      await tester.pumpAndSettle();
 
+      expect(harness.routeExtras, [
+        const GuestPurchasePlanRouteArgs(
+          phoneNumber: '(242)-801-1616',
+          paymentOption: PaymentOption.postpay,
+        ),
+      ]);
+      expect(find.text('guest purchase plan destination'), findsOneWidget);
+    });
+
+    testWidgets('inactive postpaid stays blocked', (tester) async {
+      final harness = await _pumpBottomSheet(
+        tester,
+        repository: _MockGuestSplashRepository(
+          subscriberInfo: const GuestSubscriberInfo(
+            accountStatus: 'SU',
+            paymentOption: 'PostPay',
+          ),
+        ),
+      );
+      await tester.enterText(_phoneField(0), '2428011616');
+      await tester.enterText(_phoneField(1), '2428011616');
+      await tester.tap(_continueButton());
+      await tester.pumpAndSettle();
       expect(harness.routeExtras, isEmpty);
-      expect(find.text('guest purchase plan destination'), findsNothing);
       expect(
-        find.text(GuestSplashTheme.invalidActivePrepaidErrorMessage),
+        find.text(GuestSplashTheme.invalidActiveMobileErrorMessage),
         findsOneWidget,
       );
       await tester.pump(const Duration(seconds: 4));
+    });
+
+    test('subscriber eligibility preserves the prepaid-only getter', () {
+      const prepaid = GuestSubscriberInfo(
+        accountStatus: 'AC',
+        paymentOption: 'PrePay',
+      );
+      const postpaid = GuestSubscriberInfo(
+        accountStatus: 'active',
+        paymentOption: ' PostPaid ',
+      );
+      expect(prepaid.canPurchasePlan, isTrue);
+      expect(prepaid.isActivePrepaid, isTrue);
+      expect(postpaid.canPurchasePlan, isTrue);
+      expect(postpaid.planPaymentOption, PaymentOption.postpay);
+      expect(postpaid.isActivePrepaid, isFalse);
+      expect(
+        const GuestSubscriberInfo(accountStatus: 'AC').canPurchasePlan,
+        isFalse,
+      );
+      expect(
+        const GuestSubscriberInfo(
+          accountStatus: 'SU',
+          paymentOption: 'PostPay',
+        ).canPurchasePlan,
+        isFalse,
+      );
     });
 
     testWidgets('Suspended or inactive account is blocked with error message', (
@@ -282,7 +335,7 @@ void main() {
       expect(harness.routeExtras, isEmpty);
       expect(find.text('guest purchase plan destination'), findsNothing);
       expect(
-        find.text(GuestSplashTheme.invalidActivePrepaidErrorMessage),
+        find.text(GuestSplashTheme.invalidActiveMobileErrorMessage),
         findsOneWidget,
       );
       await tester.pump(const Duration(seconds: 4));
@@ -306,7 +359,7 @@ void main() {
         expect(harness.routeExtras, isEmpty);
         expect(find.text('guest purchase plan destination'), findsNothing);
         expect(
-          find.text(GuestSplashTheme.invalidActivePrepaidErrorMessage),
+          find.text(GuestSplashTheme.invalidActiveMobileErrorMessage),
           findsOneWidget,
         );
         await tester.pump(const Duration(seconds: 4));
@@ -333,7 +386,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(harness.routeExtras, <Object?>[
-        <String, String>{'phoneNumber': '(242)-555-1234'},
+        const GuestPurchasePlanRouteArgs(
+          phoneNumber: '(242)-555-1234',
+          paymentOption: PaymentOption.prepay,
+        ),
       ]);
       expect(find.text('guest purchase plan destination'), findsOneWidget);
     });

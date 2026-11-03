@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_group.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
@@ -11,7 +14,9 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 import '../models/plan_model.dart';
+import '../services/guest_add_on_filter_service.dart';
 import '../services/guest_plan_presentation_mapper.dart';
+import '../services/guest_primary_plan_filter_service.dart';
 
 enum PlanTab {
   daily,
@@ -27,14 +32,22 @@ enum PlanTab {
 class GuestPurchasePlanRepository {
   GuestPurchasePlanRepository({
     required String phoneNumber,
+    PaymentOption? paymentOption,
     NetworkService? networkService,
     PlanParserService? parserService,
     GuestPlanPresentationMapper? presentationMapper,
+    GuestAddOnFilterService? addOnFilterService,
+    GuestPrimaryPlanFilterService? primaryPlanFilterService,
   }) : _phoneNumber = _normalizePhoneNumber(phoneNumber),
+       _paymentOption = paymentOption,
        _networkService = networkService ?? instance<NetworkService>(),
        _parserService = parserService ?? PlanParserService(),
        _presentationMapper =
-           presentationMapper ?? const GuestPlanPresentationMapper();
+           presentationMapper ?? const GuestPlanPresentationMapper(),
+       _addOnFilterService =
+           addOnFilterService ?? const GuestAddOnFilterService(),
+       _primaryPlanFilterService =
+           primaryPlanFilterService ?? const GuestPrimaryPlanFilterService();
 
   static String _normalizePhoneNumber(String input) {
     final digits = input.replaceAll(RegExp(r'\D'), '');
@@ -47,9 +60,12 @@ class GuestPurchasePlanRepository {
   }
 
   final String _phoneNumber;
+  final PaymentOption? _paymentOption;
   final NetworkService _networkService;
   final PlanParserService _parserService;
   final GuestPlanPresentationMapper _presentationMapper;
+  final GuestAddOnFilterService _addOnFilterService;
+  final GuestPrimaryPlanFilterService _primaryPlanFilterService;
 
   Future<PlanCategorizationResult>? _catalogueRequest;
   PlanCategorizationResult? _cachedCatalogue;
@@ -63,7 +79,7 @@ class GuestPurchasePlanRepository {
       PlanTab.daily => catalogue.dailyPlans,
       PlanTab.weekly => catalogue.weeklyPlans,
       PlanTab.monthly => catalogue.monthlyPlans,
-      PlanTab.roaming => catalogue.roamingPlans,
+      PlanTab.roaming => _roamingPlans(catalogue),
       PlanTab.roameasy => catalogue.roamEasyPlans,
       PlanTab.mifi => catalogue.mifiPlans,
       PlanTab.libertyGlobal => catalogue.libertyGlobalPlans,
@@ -71,30 +87,81 @@ class GuestPurchasePlanRepository {
     };
 
     return _presentationMapper.mapAll(
-      PlanVisibilityFilter.visibleBasePlans(plans),
+      _visiblePlans(plans, tab: tab),
       isRoamEasy: tab == PlanTab.roameasy,
     );
   }
 
+  List<BasePlanModel> _roamingPlans(PlanCategorizationResult catalogue) => [
+    ...catalogue.roamingPlans,
+    // Adapt the shared postpaid model only at the guest boundary. Its wire
+    // values (including PaymentOption, prices, VAT and buckets) are preserved.
+    ...catalogue.postpaidRoamingPlans
+        .where(
+          (plan) =>
+              plan.planType.trim().toUpperCase() == 'A' &&
+              PlanGroup.parse(plan.planGroup) == PlanGroup.roaming,
+        )
+        .map((plan) => BasePlanModel.fromApiMap(plan.toJson())),
+  ];
+
+  List<BasePlanModel> _visiblePlans(
+    List<BasePlanModel> plans, {
+    required PlanTab tab,
+  }) {
+    final visible = PlanVisibilityFilter.visibleBasePlans(plans);
+    final category = switch (tab) {
+      PlanTab.daily => PlanCategory.daily,
+      PlanTab.weekly => PlanCategory.weekly,
+      PlanTab.monthly => PlanCategory.monthly,
+      PlanTab.roaming => PlanCategory.roaming,
+      PlanTab.roameasy => PlanCategory.roameasy,
+      PlanTab.libertyGlobal => PlanCategory.libertyGlobal,
+      PlanTab.mifi => PlanCategory.mifi,
+      _ => null,
+    };
+    return category == null
+        ? visible
+        : _primaryPlanFilterService.filter(
+            visible,
+            category: category,
+            paymentOption: _paymentOption,
+          );
+  }
+
   /// Returns the set of plan tabs whose catalogue slice is empty after the
-  /// shared visibility filter — used by the view layer to hide empty tabs
+  /// shared and guest visibility filters — used by the view to hide empty tabs
   /// from the horizontal tab bar. `PlanTab.addOns` is never included here
   /// (add-ons emptiness is driven by /Guest/existingplans, not the catalog).
   Future<Set<PlanTab>> fetchEmptyPlanTabs() async {
     final catalogue = await (_catalogueRequest ??= _fetchCatalogue());
     _cachedCatalogue = catalogue;
 
-    bool isEmpty(List<BasePlanModel> list) =>
-        PlanVisibilityFilter.visibleBasePlans(list).isEmpty;
+    bool isEmpty(List<BasePlanModel> list, PlanTab tab) =>
+        _visiblePlans(list, tab: tab).isEmpty;
 
     final empty = <PlanTab>{};
-    if (isEmpty(catalogue.dailyPlans)) empty.add(PlanTab.daily);
-    if (isEmpty(catalogue.weeklyPlans)) empty.add(PlanTab.weekly);
-    if (isEmpty(catalogue.monthlyPlans)) empty.add(PlanTab.monthly);
-    if (isEmpty(catalogue.roamingPlans)) empty.add(PlanTab.roaming);
-    if (isEmpty(catalogue.roamEasyPlans)) empty.add(PlanTab.roameasy);
-    if (isEmpty(catalogue.mifiPlans)) empty.add(PlanTab.mifi);
-    if (isEmpty(catalogue.libertyGlobalPlans)) empty.add(PlanTab.libertyGlobal);
+    if (isEmpty(catalogue.dailyPlans, PlanTab.daily)) {
+      empty.add(PlanTab.daily);
+    }
+    if (isEmpty(catalogue.weeklyPlans, PlanTab.weekly)) {
+      empty.add(PlanTab.weekly);
+    }
+    if (isEmpty(catalogue.monthlyPlans, PlanTab.monthly)) {
+      empty.add(PlanTab.monthly);
+    }
+    if (isEmpty(_roamingPlans(catalogue), PlanTab.roaming)) {
+      empty.add(PlanTab.roaming);
+    }
+    if (isEmpty(catalogue.roamEasyPlans, PlanTab.roameasy)) {
+      empty.add(PlanTab.roameasy);
+    }
+    if (isEmpty(catalogue.mifiPlans, PlanTab.mifi)) {
+      empty.add(PlanTab.mifi);
+    }
+    if (isEmpty(catalogue.libertyGlobalPlans, PlanTab.libertyGlobal)) {
+      empty.add(PlanTab.libertyGlobal);
+    }
     return empty;
   }
 
@@ -113,7 +180,7 @@ class GuestPurchasePlanRepository {
       catalogue.dailyPlans,
       catalogue.weeklyPlans,
       catalogue.monthlyPlans,
-      catalogue.roamingPlans,
+      _roamingPlans(catalogue),
       catalogue.roamEasyPlans,
       catalogue.mifiPlans,
       catalogue.libertyGlobalPlans,
@@ -196,7 +263,13 @@ class GuestPurchasePlanRepository {
     );
 
     final bundles = _normalizeBundlesMap(response.data);
-    return BundleResponseParser.parse(bundles);
+    final parsed = BundleResponseParser.parse(bundles);
+    return AddOnsResult(
+      addOns: _addOnFilterService.filter(parsed.primaryPlans),
+      primaryPlans: parsed.primaryPlans,
+      secondaryPlans: parsed.secondaryPlans,
+      standAlonePlans: parsed.standAlonePlans,
+    );
   }
 
   Map<String, dynamic> _normalizeBundlesMap(dynamic data) {

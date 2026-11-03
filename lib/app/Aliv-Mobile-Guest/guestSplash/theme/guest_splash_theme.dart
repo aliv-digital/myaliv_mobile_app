@@ -3,6 +3,8 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestSplashTheme {
+  static const String invalidActiveMobileErrorMessage =
+      'please enter a valid, active ALIV mobile number';
   // Primary purple from Figma.
   static final Color purple = HexColor.fromHex('#645D9C');
 

@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart'
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import '../repository/services/authenticated_add_on_filter_service.dart';
 
 /// Optimistically-injected active plan shown immediately after a successful
 /// purchase, before the real /bundles refresh returns updated data.
@@ -149,6 +150,13 @@ class PlansState extends Equatable {
   BasePlanModel? get earliestAddOnsPrimaryPlan =>
       optimisticActivePlan ??
       (addOnsApiPrimaryPlans.isEmpty ? null : addOnsApiPrimaryPlans.first);
+
+  /// Active primary used only for purchasing add-ons. Historical and future
+  /// plans remain available to Home, usage and scheduling.
+  BasePlanModel? get addOnsPrimaryPlan =>
+      const AuthenticatedAddOnFilterService().activePrimaryPlan(
+        effectivePrimaryPlans,
+      );
 
   /// Primary plans list that includes the optimistic plan when bundles has not
   /// yet confirmed it. Use this wherever a list (not just the first plan) is

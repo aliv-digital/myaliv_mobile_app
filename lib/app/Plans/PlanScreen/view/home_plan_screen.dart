@@ -493,7 +493,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       case HomePlanTab.postpaidRoaming:
         return state.postpaidRoamingApiPlans.isEmpty;
       case HomePlanTab.addOns:
-        return state.addOns.isEmpty;
+        return state.addOnsPrimaryPlan == null || state.addOns.isEmpty;
     }
   }
 
@@ -503,13 +503,16 @@ class _HomePlanViewState extends State<_HomePlanView> {
     final isAuthoritative =
         state.status == PlansStatus.success ||
         state.status == PlansStatus.refreshing;
-    if (!isAuthoritative) return allTabs;
+    final fallbackTabs = allTabs
+        .where((tab) => tab != HomePlanTab.addOns || !_isTabEmpty(tab, state))
+        .toList(growable: false);
+    if (!isAuthoritative) return fallbackTabs;
 
     final visible = allTabs
         .where((tab) => !_isTabEmpty(tab, state))
         .toList(growable: false);
 
-    if (visible.isEmpty) return allTabs;
+    if (visible.isEmpty) return fallbackTabs;
     return visible;
   }
 

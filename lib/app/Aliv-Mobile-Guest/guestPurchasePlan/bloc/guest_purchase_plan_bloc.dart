@@ -15,8 +15,10 @@ class GuestPurchasePlanBloc
     extends Bloc<GuestPurchasePlanEvent, GuestPurchasePlanState> {
   final GuestPurchasePlanRepository repository;
 
-  GuestPurchasePlanBloc(this.repository)
-    : super(GuestPurchasePlanState.initial()) {
+  GuestPurchasePlanBloc(this.repository, {PlanTab initialTab = PlanTab.monthly})
+    : super(
+        GuestPurchasePlanState.initial().copyWith(selectedTab: initialTab),
+      ) {
     on<GuestPurchasePlanStarted>(_onStarted);
     on<GuestPurchasePlanTabChanged>(_onTabChanged);
     on<GuestPurchasePlanToggleExpanded>(_onToggleExpanded);

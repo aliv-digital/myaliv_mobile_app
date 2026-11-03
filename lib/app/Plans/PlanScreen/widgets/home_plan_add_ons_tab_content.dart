@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../cubit/plans_state.dart';
+import '../cubit/plans_cubit.dart';
 import '../models/add_on_model.dart';
 import '../repository/plan_types.dart';
 
@@ -89,7 +90,13 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
         if (isPostpaid)
           const PostpaidCurrentPlan(showRenewButton: false)
         else
-          const PrepaidActivePlanCardWithData(showRenewButton: false),
+          PrepaidActivePlanCardWithData(
+            showRenewButton: false,
+            activePlanOverride: context
+                .watch<PlansCubit>()
+                .state
+                .addOnsPrimaryPlan,
+          ),
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
           policy: fairUsePolicy,
@@ -147,7 +154,11 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
       isVatExclusive: false,
       buttonText: 'proceed',
       amountText: AppUtils.formatPrice(total),
-      isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
+      isButtonEnabled:
+          state.addOnsPrimaryPlan != null &&
+          state.addOns.any(
+            (addOn) => state.selectedAddOnIds.contains(addOn.id),
+          ),
       onPayNow: onPayNow,
     );
   }

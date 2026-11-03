@@ -58,6 +58,7 @@ import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_scr
 import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlan/models/guest_purchase_plan_route_args.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
@@ -876,8 +877,17 @@ class AppRouter {
         builder: (context, state) {
           String phoneNumber = '';
           final extra = state.extra;
+          if (extra is GuestPurchasePlanRouteArgs) {
+            return GuestPurchasePlanScreen(
+              phoneNumber: extra.phoneNumber,
+              paymentOption: extra.paymentOption,
+            );
+          }
           if (extra is Map) {
-            phoneNumber = (extra['phoneNumber'] as String?) ?? '';
+            final legacyPhone = extra['phoneNumber'];
+            if (legacyPhone is String) {
+              phoneNumber = legacyPhone;
+            }
           }
           return GuestPurchasePlanScreen(phoneNumber: phoneNumber);
         },

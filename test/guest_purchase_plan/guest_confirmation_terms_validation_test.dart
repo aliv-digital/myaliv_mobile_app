@@ -334,7 +334,7 @@ void main() {
           data: [
             <String, dynamic>{
               'PlanID': '30',
-              'PlanName': 'freedom30',
+              'PlanName': 'liberty70',
               'PlanDescription': '30-day plan',
               'PlanAmount': 30,
               'VATAmount': '3.00',

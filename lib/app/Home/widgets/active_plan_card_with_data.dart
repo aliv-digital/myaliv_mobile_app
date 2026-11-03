@@ -33,6 +33,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool isFromHome;
   final CrossAxisAlignment dateRowCrossAxisAlignment;
   final double? contentBottomPadding;
+  final BasePlanModel? activePlanOverride;
 
   const PrepaidActivePlanCardWithData({
     super.key,
@@ -40,6 +41,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
     this.isFromHome = false,
     this.dateRowCrossAxisAlignment = CrossAxisAlignment.center,
     this.contentBottomPadding,
+    this.activePlanOverride,
   });
 
   @override
@@ -89,7 +91,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                           showRenewButton: effectiveShowRenewButton,
                         )
                       : _buildContent(
-                          state.earliestAddOnsPrimaryPlan,
+                          activePlanOverride ?? state.earliestAddOnsPrimaryPlan,
                           effectiveShowRenewButton,
                         ),
                 ),

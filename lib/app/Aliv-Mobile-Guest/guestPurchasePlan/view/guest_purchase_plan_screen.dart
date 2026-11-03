@@ -17,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_group.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -31,6 +32,7 @@ import '../bloc/guest_purchase_plan_state.dart';
 import '../models/add_on_model.dart';
 import '../models/plan_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
+import '../services/guest_add_on_filter_service.dart';
 import '../theme/theme.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
@@ -41,25 +43,40 @@ import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 import '../widgets/weekly_plan_card.dart';
 
 class GuestPurchasePlanScreen extends StatelessWidget {
-  const GuestPurchasePlanScreen({super.key, this.phoneNumber = ''});
+  const GuestPurchasePlanScreen({
+    super.key,
+    this.phoneNumber = '',
+    this.paymentOption,
+  });
 
   final String phoneNumber;
+  final PaymentOption? paymentOption;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => GuestPurchasePlanBloc(
-        GuestPurchasePlanRepository(phoneNumber: phoneNumber),
+        GuestPurchasePlanRepository(
+          phoneNumber: phoneNumber,
+          paymentOption: paymentOption,
+        ),
+        initialTab: paymentOption == PaymentOption.postpay
+            ? PlanTab.roaming
+            : PlanTab.monthly,
       )..add(GuestPurchasePlanStarted()),
-      child: _GuestPurchasePlanView(phoneNumber: phoneNumber),
+      child: _GuestPurchasePlanView(
+        phoneNumber: phoneNumber,
+        paymentOption: paymentOption,
+      ),
     );
   }
 }
 
 class _GuestPurchasePlanView extends StatelessWidget {
-  const _GuestPurchasePlanView({this.phoneNumber = ''});
+  const _GuestPurchasePlanView({this.phoneNumber = '', this.paymentOption});
 
   final String phoneNumber;
+  final PaymentOption? paymentOption;
 
   static const double _addOnsTabHorizontalPadding = 25;
 
@@ -85,6 +102,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
   /// bottom protects against ever returning an empty list, since the
   /// auto-switch fallback relies on `tabs.first`.
   List<PlanTab> _visibleTabs(GuestPurchasePlanState state) {
+    if (paymentOption == PaymentOption.postpay) {
+      return const [PlanTab.roaming];
+    }
     final visible = <PlanTab>[];
     for (final tab in _allTabs) {
       if (tab == PlanTab.addOns) {
@@ -99,7 +119,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
         visible.add(tab);
       }
     }
-    return visible.isEmpty ? _allTabs : visible;
+    return visible.isEmpty
+        ? _allTabs.where((tab) => tab != PlanTab.addOns).toList(growable: false)
+        : visible;
   }
 
   /// Builds the add-ons tab summary from the entered number's real
@@ -111,7 +133,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
   add_ons_models.ActivePlanSummary _activePlanSummaryFromState(
     GuestPurchasePlanState state,
   ) {
-    final BasePlanModel? plan = state.earliestAddOnsPrimaryPlan;
+    final BasePlanModel? plan = const GuestAddOnFilterService()
+        .activePrimaryPlan(state.addOnsApiPrimaryPlans);
     final bool hasPlan = plan != null && plan.planName.trim().isNotEmpty;
 
     return add_ons_models.ActivePlanSummary(
@@ -429,8 +452,15 @@ class _GuestPurchasePlanView extends StatelessWidget {
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
 
-              // MiFi plans skip add-ons; go straight to confirmation.
-              if (selectedTab == PlanTab.mifi) {
+              final matchingAddOns = const GuestAddOnFilterService()
+                  .filterAvailableAddOns(
+                    basePlan?.availableBoltOns ?? const [],
+                  );
+
+              // Skip the page when no listed add-ons can be offered.
+              if (selectedTab == PlanTab.mifi ||
+                  plan.title.trim().toLowerCase() == 'freedom5' ||
+                  matchingAddOns.isEmpty) {
                 context.push(
                   AppRoutes.guestPurchasePlanConfirmation,
                   extra: _immediateConfirmationArgs(plan),

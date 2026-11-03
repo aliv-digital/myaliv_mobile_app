@@ -2,10 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_frequency_estimator.dart';
 
 import '../../guestPurchasePlan/models/plan_model.dart';
+import '../../guestPurchasePlan/services/guest_add_on_filter_service.dart';
 import '../model/add_on_models.dart';
 import '../repository/guest_purchase_plan_add_ons_repository.dart';
 import 'guest_purchase_plan_add_ons_event.dart';
@@ -14,9 +14,14 @@ import 'guest_purchase_plan_add_ons_state.dart';
 class GuestPurchasePlanAddOnsBloc
     extends Bloc<GuestPurchasePlanAddOnsEvent, GuestPurchasePlanAddOnsState> {
   final GuestPurchasePlanAddOnsRepository repository;
+  final GuestAddOnFilterService _addOnFilterService;
 
-  GuestPurchasePlanAddOnsBloc({required this.repository})
-    : super(GuestPurchasePlanAddOnsState.initial()) {
+  GuestPurchasePlanAddOnsBloc({
+    required this.repository,
+    GuestAddOnFilterService? addOnFilterService,
+  }) : _addOnFilterService =
+           addOnFilterService ?? const GuestAddOnFilterService(),
+       super(GuestPurchasePlanAddOnsState.initial()) {
     on<GuestPurchasePlanAddOnsStarted>(_onStarted);
     on<GuestPurchasePlanAddOnsAutoRenewToggled>(_onAutoRenewToggled);
     on<GuestPurchasePlanAddOnsSelectionToggled>(_onSelectionToggled);
@@ -134,20 +139,10 @@ class GuestPurchasePlanAddOnsBloc
   }
 
   /// Builds the add-on tile list from the selected plan's
-  /// `AvailableBoltOns` using the same label/value derivation the
-  /// prepaid flow uses (via [BundleResponseParser]).
+  /// `AvailableBoltOns`, using the same guest rules as the route decision.
   List<AddOnItem> _buildAddOnItems(BasePlanModel selected) {
-    // The parser's internal label/value math is per-plan — call parse()
-    // on a synthetic one-primary-plan map so we get the already-wired
-    // bolt-on conversion for free, keeping label semantics identical to
-    // prepaid add-ons.
-    final syntheticBundle = <String, dynamic>{
-      'PrimaryPlans': <Map<String, dynamic>>[selected.toJson()],
-      'SecondaryPlans': const <Map<String, dynamic>>[],
-      'StandAlonePlans': const <Map<String, dynamic>>[],
-    };
-    final result = BundleResponseParser.parse(syntheticBundle);
-    return result.addOns
+    return _addOnFilterService
+        .filterAvailableAddOns(selected.availableBoltOns)
         .map(
           (addOn) => AddOnItem(
             id: addOn.id,
