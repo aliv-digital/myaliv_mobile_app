@@ -192,6 +192,118 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (final scenario in [
+    'no primary',
+    'future primary',
+    'expired primary',
+    'no add-ons',
+    'no matches',
+    'matching add-ons',
+    'reordered name',
+    'empty catalogue',
+    'expired then active primary',
+    'only numbered plan add-ons',
+    'generic and numbered plan add-ons',
+  ]) {
+    testWidgets('guest add-ons tab visibility: $scenario', (tester) async {
+      final now = DateTime.now();
+      if (scenario == 'empty catalogue') {
+        plans.clear();
+      } else if (scenario != 'no primary') {
+        existingPlans['PrimaryPlans'] = [
+          {
+            ..._plan(
+              id: 'active',
+              name: 'freedom45',
+              type: 'P',
+              frequency: 'W',
+            ),
+            'StartDate': now
+                .add(Duration(days: scenario == 'future primary' ? 1 : -2))
+                .toIso8601String(),
+            'EndDate': now
+                .add(Duration(days: scenario == 'expired primary' ? -1 : 7))
+                .toIso8601String(),
+            'AvailableBoltOns': scenario == 'no add-ons'
+                ? []
+                : [
+                    _plan(
+                      id: 'addon',
+                      name: switch (scenario) {
+                        'no matches' => 'travel data1',
+                        'reordered name' => 'DATA freedom 10 offer',
+                        _ => 'freedom data1',
+                      },
+                      type: 'S',
+                      frequency: 'W',
+                    ),
+                  ],
+          },
+        ];
+        if (scenario == 'only numbered plan add-ons' ||
+            scenario == 'generic and numbered plan add-ons') {
+          final primary = (existingPlans['PrimaryPlans'] as List).single as Map;
+          primary['AvailableBoltOns'] = [
+            for (final name in [
+              'freedom45 data1',
+              'freedom45 data10',
+              'freedom45 data2',
+              'freedom45 data3',
+              'freedom35 data1',
+              'freedom35 data2',
+            ])
+              _plan(id: name, name: name, type: 'S', frequency: 'W'),
+            if (scenario == 'generic and numbered plan add-ons')
+              _plan(
+                id: 'generic',
+                name: 'freedom data1',
+                type: 'S',
+                frequency: 'W',
+              ),
+          ];
+        }
+        if (scenario == 'expired then active primary') {
+          (existingPlans['PrimaryPlans'] as List).insert(0, {
+            ..._plan(
+              id: 'expired',
+              name: 'liberty-expired',
+              type: 'P',
+              frequency: 'M',
+            ),
+            'StartDate': now
+                .subtract(const Duration(days: 5))
+                .toIso8601String(),
+            'EndDate': now.subtract(const Duration(days: 3)).toIso8601String(),
+          });
+        }
+      }
+      await pumpScreen(tester);
+      final shouldShow =
+          scenario == 'matching add-ons' ||
+          scenario == 'reordered name' ||
+          scenario == 'expired then active primary' ||
+          scenario == 'generic and numbered plan add-ons';
+      expect(find.text('add-ons'), shouldShow ? findsOneWidget : findsNothing);
+      if (shouldShow) {
+        await openTab(tester, 'add-ons');
+        expect(
+          find.text(
+            scenario == 'reordered name'
+                ? 'DATA freedom 10 offer'
+                : 'freedom data1',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('proceed'), findsOneWidget);
+        expect(find.text('freedom45'), findsOneWidget);
+        expect(find.text('liberty-expired'), findsNothing);
+        expect(find.text('freedom45 data10'), findsNothing);
+        expect(find.text('freedom35 data1'), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('first primary uses the guest no-active-plan copy', (
     tester,
   ) async {

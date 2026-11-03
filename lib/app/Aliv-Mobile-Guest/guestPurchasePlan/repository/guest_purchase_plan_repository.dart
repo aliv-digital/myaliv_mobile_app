@@ -11,6 +11,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 import '../models/plan_model.dart';
+import '../services/guest_add_on_filter_service.dart';
 import '../services/guest_plan_presentation_mapper.dart';
 
 enum PlanTab {
@@ -30,11 +31,14 @@ class GuestPurchasePlanRepository {
     NetworkService? networkService,
     PlanParserService? parserService,
     GuestPlanPresentationMapper? presentationMapper,
+    GuestAddOnFilterService? addOnFilterService,
   }) : _phoneNumber = _normalizePhoneNumber(phoneNumber),
        _networkService = networkService ?? instance<NetworkService>(),
        _parserService = parserService ?? PlanParserService(),
        _presentationMapper =
-           presentationMapper ?? const GuestPlanPresentationMapper();
+           presentationMapper ?? const GuestPlanPresentationMapper(),
+       _addOnFilterService =
+           addOnFilterService ?? const GuestAddOnFilterService();
 
   static String _normalizePhoneNumber(String input) {
     final digits = input.replaceAll(RegExp(r'\D'), '');
@@ -50,6 +54,7 @@ class GuestPurchasePlanRepository {
   final NetworkService _networkService;
   final PlanParserService _parserService;
   final GuestPlanPresentationMapper _presentationMapper;
+  final GuestAddOnFilterService _addOnFilterService;
 
   Future<PlanCategorizationResult>? _catalogueRequest;
   PlanCategorizationResult? _cachedCatalogue;
@@ -196,7 +201,13 @@ class GuestPurchasePlanRepository {
     );
 
     final bundles = _normalizeBundlesMap(response.data);
-    return BundleResponseParser.parse(bundles);
+    final parsed = BundleResponseParser.parse(bundles);
+    return AddOnsResult(
+      addOns: _addOnFilterService.filter(parsed.primaryPlans),
+      primaryPlans: parsed.primaryPlans,
+      secondaryPlans: parsed.secondaryPlans,
+      standAlonePlans: parsed.standAlonePlans,
+    );
   }
 
   Map<String, dynamic> _normalizeBundlesMap(dynamic data) {

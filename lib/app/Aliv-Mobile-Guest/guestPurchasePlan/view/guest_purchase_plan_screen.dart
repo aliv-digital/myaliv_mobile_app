@@ -31,6 +31,7 @@ import '../bloc/guest_purchase_plan_state.dart';
 import '../models/add_on_model.dart';
 import '../models/plan_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
+import '../services/guest_add_on_filter_service.dart';
 import '../theme/theme.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
@@ -99,7 +100,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
         visible.add(tab);
       }
     }
-    return visible.isEmpty ? _allTabs : visible;
+    return visible.isEmpty
+        ? _allTabs.where((tab) => tab != PlanTab.addOns).toList(growable: false)
+        : visible;
   }
 
   /// Builds the add-ons tab summary from the entered number's real
@@ -111,7 +114,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
   add_ons_models.ActivePlanSummary _activePlanSummaryFromState(
     GuestPurchasePlanState state,
   ) {
-    final BasePlanModel? plan = state.earliestAddOnsPrimaryPlan;
+    final BasePlanModel? plan = const GuestAddOnFilterService()
+        .activePrimaryPlan(state.addOnsApiPrimaryPlans);
     final bool hasPlan = plan != null && plan.planName.trim().isNotEmpty;
 
     return add_ons_models.ActivePlanSummary(

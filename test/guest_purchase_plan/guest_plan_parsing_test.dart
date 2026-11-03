@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/repository/guest_purchase_plan_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_parser_service.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_visibility_filter.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
@@ -75,6 +76,83 @@ Map<String, dynamic> _plan({
 }
 
 void main() {
+  group('guest existing-plan add-ons filter', () {
+    test(
+      'accepts reordered names without changing plan data or shared parsing',
+      () async {
+        final now = DateTime.now();
+        final bundles = {
+          'PrimaryPlans': [
+            {
+              ..._plan(),
+              'StartDate': now
+                  .subtract(const Duration(days: 1))
+                  .toIso8601String(),
+              'EndDate': now.add(const Duration(days: 1)).toIso8601String(),
+              'AvailableBoltOns': [
+                _plan(id: 'allowed', name: 'data 10 freedom offer', type: 'S'),
+                _plan(id: 'hidden', name: 'travel data1', type: 'S'),
+              ],
+            },
+          ],
+          'SecondaryPlans': [_plan(id: 'secondary', type: 'S')],
+          'StandAlonePlans': [_plan(id: 'standalone', type: 'A')],
+        };
+        final network = _FakeNetworkService(bundles);
+        final repository = GuestPurchasePlanRepository(
+          phoneNumber: '(242) 555-0100',
+          networkService: network,
+        );
+        final shared = BundleResponseParser.parse(bundles);
+        final result = await repository.fetchExistingBundles();
+
+        expect(result.addOns.single.id, 'allowed');
+        expect(result.addOns.single.title, 'data 10 freedom offer');
+        expect(result.addOns.single.price, 30);
+        expect(result.addOns.single.vatAmount, 3);
+        expect(
+          result.primaryPlans.map((p) => p.toJson()),
+          shared.primaryPlans.map((p) => p.toJson()),
+        );
+        expect(
+          result.secondaryPlans.map((p) => p.toJson()),
+          shared.secondaryPlans.map((p) => p.toJson()),
+        );
+        expect(
+          result.standAlonePlans.map((p) => p.toJson()),
+          shared.standAlonePlans.map((p) => p.toJson()),
+        );
+        expect(BundleResponseParser.parse(bundles).addOns.single.id, 'hidden');
+        expect(network.requestCount, 1);
+        expect(network.requestedPath, Api.guestExistingPlansUrl);
+        expect(network.requestedMethod, HttpMethod.post);
+        expect(network.requestedData, {
+          'ChannelType': 'SelfCare',
+          'PhoneNumber': '2425550100',
+        });
+        expect(network.requestedOptions?.extra?['skipAuth'], isTrue);
+      },
+    );
+
+    test(
+      'returns no add-ons when only secondary or standalone plans exist',
+      () async {
+        final repository = GuestPurchasePlanRepository(
+          phoneNumber: '2425550100',
+          networkService: _FakeNetworkService({
+            'PrimaryPlans': [],
+            'SecondaryPlans': [_plan(type: 'S')],
+            'StandAlonePlans': [_plan(type: 'A')],
+          }),
+        );
+        final result = await repository.fetchExistingBundles();
+        expect(result.addOns, isEmpty);
+        expect(result.secondaryPlans, hasLength(1));
+        expect(result.standAlonePlans, hasLength(1));
+      },
+    );
+  });
+
   group('guest available plans', () {
     test('parses API fields into BasePlanModel', () {
       final plan = BasePlanModel.fromApiMap(_plan());
