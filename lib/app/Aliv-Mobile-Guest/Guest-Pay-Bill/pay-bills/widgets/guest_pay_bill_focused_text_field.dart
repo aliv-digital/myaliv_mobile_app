@@ -14,6 +14,7 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
     this.prefix,
     this.style,
     this.isError = false,
+    this.focusNode,
   });
 
   final String hint;
@@ -24,6 +25,7 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
   final Widget? prefix;
   final TextStyle? style;
   final bool isError;
+  final FocusNode? focusNode;
 
   @override
   State<GuestPayBillFocusedTextField> createState() =>
@@ -32,26 +34,41 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
 
 class _GuestPayBillFocusedTextFieldState
     extends State<GuestPayBillFocusedTextField> {
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChanged);
+    _hasFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant GuestPayBillFocusedTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _effectiveFocusNode.addListener(_onFocusChanged);
+      _hasFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
-    if (_hasFocus != _focusNode.hasFocus) {
+    if (_hasFocus != _effectiveFocusNode.hasFocus) {
       setState(() {
-        _hasFocus = _focusNode.hasFocus;
+        _hasFocus = _effectiveFocusNode.hasFocus;
       });
     }
   }
@@ -62,7 +79,7 @@ class _GuestPayBillFocusedTextFieldState
       isFocused: _hasFocus,
       isError: widget.isError,
       child: TextField(
-        focusNode: _focusNode,
+        focusNode: _effectiveFocusNode,
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
         onSubmitted: widget.onSubmitted,

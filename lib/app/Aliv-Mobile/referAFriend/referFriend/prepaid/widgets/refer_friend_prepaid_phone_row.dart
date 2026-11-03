@@ -10,7 +10,8 @@ import '../bloc/refer_friend_prepaid_state.dart';
 import '../theme/refer_friend_prepaid_theme.dart';
 
 class ReferFriendPrepaidPhoneRow extends StatefulWidget {
-  const ReferFriendPrepaidPhoneRow({super.key});
+  final FocusNode? focusNode;
+  const ReferFriendPrepaidPhoneRow({super.key, this.focusNode});
 
   @override
   State<ReferFriendPrepaidPhoneRow> createState() =>
@@ -21,29 +22,46 @@ class _ReferFriendPrepaidPhoneRowState
     extends State<ReferFriendPrepaidPhoneRow> {
   final LoginPhoneNumberHelper _phoneNumberHelper =
       const LoginPhoneNumberHelper();
-  final FocusNode _phoneFocusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasPhoneFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _phoneFocusNode.addListener(_handlePhoneFocusChange);
+    _hasPhoneFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_handlePhoneFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant ReferFriendPrepaidPhoneRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _handlePhoneFocusChange,
+      );
+      _effectiveFocusNode.addListener(_handlePhoneFocusChange);
+      _hasPhoneFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _phoneFocusNode.removeListener(_handlePhoneFocusChange);
-    _phoneFocusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(
+      _handlePhoneFocusChange,
+    );
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _handlePhoneFocusChange() {
-    if (_hasPhoneFocus == _phoneFocusNode.hasFocus) {
+    if (_hasPhoneFocus == _effectiveFocusNode.hasFocus) {
       return;
     }
 
     setState(() {
-      _hasPhoneFocus = _phoneFocusNode.hasFocus;
+      _hasPhoneFocus = _effectiveFocusNode.hasFocus;
     });
   }
 
@@ -100,7 +118,7 @@ class _ReferFriendPrepaidPhoneRowState
           children: [
             CustomCountryPhoneInputRow(
               labelText: "friend’s number",
-              focusNode: _phoneFocusNode,
+              focusNode: _effectiveFocusNode,
               hideUnfocusedInputBorder: !showPhoneBorderError,
               hintText: isBahamasSelected
                   ? '(242)-345-4356'

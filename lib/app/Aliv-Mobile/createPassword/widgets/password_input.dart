@@ -15,6 +15,7 @@ class PasswordInput extends StatefulWidget {
     this.textInputAction,
     this.onSubmitted,
     this.errorText,
+    this.focusNode,
   });
 
   final String hint;
@@ -24,32 +25,48 @@ class PasswordInput extends StatefulWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
   final String? errorText;
+  final FocusNode? focusNode;
 
   @override
   State<PasswordInput> createState() => _PasswordInputState();
 }
 
 class _PasswordInputState extends State<PasswordInput> {
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChanged);
+    _hasFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant PasswordInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _effectiveFocusNode.addListener(_onFocusChanged);
+      _hasFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
-    if (_hasFocus != _focusNode.hasFocus) {
+    if (_hasFocus != _effectiveFocusNode.hasFocus) {
       setState(() {
-        _hasFocus = _focusNode.hasFocus;
+        _hasFocus = _effectiveFocusNode.hasFocus;
       });
     }
   }
@@ -99,7 +116,7 @@ class _PasswordInputState extends State<PasswordInput> {
                   const SizedBox(width: CreatePasswordTheme.iconToFieldGap),
                   Expanded(
                     child: TextField(
-                      focusNode: _focusNode,
+                      focusNode: _effectiveFocusNode,
                       obscureText: widget.obscureText,
                       onChanged: widget.onChanged,
                       textInputAction: widget.textInputAction,

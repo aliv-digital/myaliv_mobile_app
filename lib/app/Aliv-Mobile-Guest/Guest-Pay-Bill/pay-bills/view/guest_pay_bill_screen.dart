@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter
 import 'package:myaliv_mobile_app/core/model/line_status.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_submit_row.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -53,8 +54,16 @@ class _GuestPayBillView extends StatefulWidget {
 }
 
 class _GuestPayBillViewState extends State<_GuestPayBillView> {
-  final FocusNode _mobileFocusNode = FocusNode();
-  final FocusNode _confirmMobileFocusNode = FocusNode();
+  final FocusNode _mobileFocusNode = FocusNode(
+    debugLabel: 'guestPayBillMobile',
+  );
+  final FocusNode _confirmMobileFocusNode = FocusNode(
+    debugLabel: 'guestPayBillConfirmMobile',
+  );
+  final FocusNode _accountNumberFocusNode = FocusNode(
+    debugLabel: 'guestPayBillAccount',
+  );
+  final FocusNode _nameFocusNode = FocusNode(debugLabel: 'guestPayBillName');
   bool _hasMobileFocus = false;
   bool _hasConfirmMobileFocus = false;
 
@@ -71,6 +80,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     _confirmMobileFocusNode.removeListener(_handleConfirmMobileFocusChange);
     _mobileFocusNode.dispose();
     _confirmMobileFocusNode.dispose();
+    _accountNumberFocusNode.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -385,6 +396,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       Text(state.accountIdentifierLabel, style: GuestPayBillTheme.labelStyle()),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       GuestPayBillFocusedTextField(
+        focusNode: _accountNumberFocusNode,
         hint: state.accountIdentifierHint,
         keyboardType: state.isAlivFibr
             ? TextInputType.text
@@ -398,6 +410,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       Text(GuestPayBillTheme.nameLabel, style: GuestPayBillTheme.labelStyle()),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       GuestPayBillInlineVerifyField(
+        focusNode: _nameFocusNode,
         hint: GuestPayBillTheme.nameHintText,
         keyboardType: TextInputType.text,
         textInputAction: TextInputAction.done,
@@ -414,7 +427,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPayBillBloc, GuestPayBillState>(
+    final page = BlocListener<GuestPayBillBloc, GuestPayBillState>(
       listenWhen: (previousState, currentState) {
         final hasErrorChanged =
             previousState.errorMessage != currentState.errorMessage;
@@ -619,6 +632,20 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
           ),
         ),
       ),
+    );
+
+    return BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
+      buildWhen: (p, c) => p.selectedService?.code != c.selectedService?.code,
+      builder: (context, state) {
+        final activeNodes = state.isAlivPostpaid
+            ? [_mobileFocusNode, _confirmMobileFocusNode]
+            : [_accountNumberFocusNode, _nameFocusNode];
+        return AppKeyboardToolbar(
+          focusNodes: activeNodes,
+          onDone: () => _onVerifyPressed(context),
+          child: page,
+        );
+      },
     );
   }
 }

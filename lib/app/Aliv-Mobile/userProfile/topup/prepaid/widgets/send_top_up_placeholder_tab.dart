@@ -22,6 +22,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'top_up_prepaid_amount_box.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
@@ -45,6 +46,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
       const LoginPhoneNumberHelper();
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _confirmPhoneFocusNode = FocusNode();
+  final FocusNode _amountFocusNode = FocusNode();
 
   String _amount = '';
   String _phoneNumber = '';
@@ -108,6 +110,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     _confirmPhoneFocusNode.removeListener(_handleConfirmPhoneFocusChange);
     _phoneFocusNode.dispose();
     _confirmPhoneFocusNode.dispose();
+    _amountFocusNode.dispose();
     super.dispose();
   }
 
@@ -148,6 +151,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     bool highlightInvalidInput = false,
     TextStyle? labelStyle,
     String? validationMessage,
+    TextInputAction? textInputAction,
+    ValueChanged<String>? onSubmitted,
   }) {
     final showInlineError = forceError;
     final phoneBorderColor = !hasFocus && forceError
@@ -168,6 +173,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
       children: [
         CustomCountryPhoneInputRow(
           focusNode: focusNode,
+          textInputAction: textInputAction,
+          onSubmitted: onSubmitted,
           hideUnfocusedInputBorder: false,
           labelText: labelText,
           labelStyle: labelStyle,
@@ -214,303 +221,287 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     );
   }
 
+  bool get _canProceed =>
+      !(_isChecking ||
+          _hasPhoneValidationError ||
+          _amountValue <= 0 ||
+          _phoneNumbersDoNotMatch ||
+          _confirmPhoneNumber.isEmpty);
+
+  Future<void> _handleProceed() async {
+    if (!_canProceed) return;
+
+    final account = context.read<AccountInfoCubit>().state.accountInfo;
+    final primaryPhone = account?.primaryPhoneNumber.trim() ?? '';
+    final activeTn = ActiveDevice.tn()?.trim() ?? '';
+    final recipientApi = _validatePhone(_phoneNumber).phoneNumberForApi;
+    bool matchesOwn(String raw) {
+      if (raw.isEmpty) return false;
+      final own = _ownPhoneNumberHelper.validateAndBuildApiUsername(
+        rawPhoneNumber: raw,
+        selectedCountry: _selectedCountry,
+      );
+      return own.isValid && own.phoneNumberForApi == recipientApi;
+    }
+
+    final isOwnNumber =
+        matchesOwn(activeTn) ||
+        matchesOwn(primaryPhone) ||
+        matchesOwn(account?.phoneNumber.trim() ?? '');
+    if (isOwnNumber) {
+      AppToast.show(
+        message: 'You cannot send a top-up to your own number.',
+        type: ToastType.error,
+      );
+      return;
+    }
+    if (_amountValue < _minSendTopUpAmount ||
+        _amountValue > _maxSendTopUpAmount) {
+      setState(() => _amountError = _amountRangeMessage);
+      return;
+    }
+    final recipientPhone =
+        _validatePhone(_phoneNumber).phoneNumberForApi ??
+        _digitsOnly(_phoneNumber);
+    final walletBalance = context.read<BalanceCubit>().state.walletBalance;
+    if (_amountValue > walletBalance) {
+      AppToast.show(
+        message: 'balance is not sufficient',
+        type: ToastType.error,
+      );
+      return;
+    }
+    final topUpRepo = context.read<TopUpPrepaidBloc>().repo;
+    final router = GoRouter.of(context);
+    final sendTopupRepo = instance<SendTopupRepository>();
+
+    setState(() => _isChecking = true);
+    try {
+      final existsResult = await sendTopupRepo.phoneNumberExists(
+        recipientPhone,
+      );
+      if (!mounted) return;
+      if (existsResult == PhoneExistsResult.invalidDevice) {
+        AppToast.show(
+          message:
+              'this number is not registered on aliv. please verify the number.',
+          type: ToastType.error,
+        );
+        return;
+      }
+      if (existsResult == PhoneExistsResult.unknown) {
+        AppToast.show(
+          message: SendTopupRepository.caseDMessage,
+          type: ToastType.error,
+        );
+        return;
+      }
+
+      final transferError = await sendTopupRepo.transferIsValid(recipientPhone);
+      if (!mounted) return;
+      if (transferError != null) {
+        AppToast.show(message: transferError, type: ToastType.error);
+        return;
+      }
+
+      final orderResult = await topUpRepo.canSubmitOrder(amount: _amountValue);
+      if (!mounted) return;
+      if (!orderResult.canProceed) {
+        AppToast.show(
+          message: CanSubmitOrderResult.pendingOrdersMessage,
+          type: ToastType.error,
+        );
+        return;
+      }
+    } on CanSubmitOrderException {
+      if (!mounted) return;
+      AppToast.show(
+        message: SendTopupRepository.caseDMessage,
+        type: ToastType.error,
+      );
+      return;
+    } finally {
+      if (mounted) setState(() => _isChecking = false);
+    }
+    if (!mounted) return;
+
+    AppSession.appRoute = 'sendTopUp';
+    final amountParam = _amountValue.toStringAsFixed(2);
+    final recipientParam = Uri.encodeQueryComponent(recipientPhone);
+    router.push(
+      '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: TopUpPrepaidTheme.pageBg,
-      body: SafeArea(
+    return Material(
+      color: TopUpPrepaidTheme.pageBg,
+      child: SafeArea(
         top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ================= TRANSFER FROM =================
-              const _SectionLabel('transfer from'),
-              const SizedBox(height: 8),
+        child: AppKeyboardToolbar(
+          focusNodes: [
+            _phoneFocusNode,
+            _confirmPhoneFocusNode,
+            _amountFocusNode,
+          ],
+          showDoneButton: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ================= TRANSFER FROM =================
+                const _SectionLabel('transfer from'),
+                const SizedBox(height: 8),
 
-              BlocBuilder<BalanceCubit, BalanceState>(
-                builder: (context, balanceState) {
-                  return _ReadOnlyField(
-                    'wallet ${BalanceCurrencyFormatterService.format(balanceState.walletBalance)}',
-                  );
-                },
-              ),
-
-              const SizedBox(height: 24),
-
-              // ================= ENTER NUMBER =================
-              // const _SectionLabel('enter number to top up'),
-              // const SizedBox(height: 8),
-              // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
-              _buildLoginStylePhoneField(
-                labelText: GuestTopUpTheme.activePrepaidLabel,
-                labelStyle: GuestTopUpTheme.activePrepaidPrompt,
-                value: _phoneNumber,
-                forceError:
-                    _hasEditedPhoneNumber &&
-                    (_phoneNumber.trim().isEmpty || _hasPhoneValidationError),
-                hasFocus: _hasPhoneFocus,
-                focusNode: _phoneFocusNode,
-                highlightInvalidInput: true,
-                validationMessage: _phoneNumber.trim().isEmpty
-                    ? 'Phone number is required.'
-                    : 'Invalid phone number. Please enter a 10-digit phone number.',
-                onChanged: (value) {
-                  setState(() {
-                    _phoneNumber = value;
-                    _hasEditedPhoneNumber = true;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              // const _SectionLabel('confirm number to top up'),
-              // const SizedBox(height: 8),
-              // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
-              _buildLoginStylePhoneField(
-                labelText: GuestTopUpTheme.confirmMobileLabel,
-                value: _confirmPhoneNumber,
-                forceError: _showPhoneMismatch,
-                hasFocus: _hasConfirmPhoneFocus,
-                focusNode: _confirmPhoneFocusNode,
-                validationMessage: _showPhoneMismatch
-                    ? "these numbers don't match. re-enter the number to continue."
-                    : null,
-                onChanged: (value) {
-                  setState(() => _confirmPhoneNumber = value);
-                },
-              ),
-              const SizedBox(height: 18),
-
-              Center(
-                child: Column(
-                  children: [
-                    const Text(
-                      'enter top-up amount',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF222222),
-                        fontSize: 12,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    TopUpPrepaidAmountBox(
-                      value: _amount,
-                      onChanged: (value) {
-                        setState(() {
-                          _amount = value;
-                          _amountError = null;
-                        });
-                      },
-                    ),
-                    if (_amountError != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        _amountError!,
-                        textAlign: TextAlign.center,
-                        style: TopUpPrepaidTheme.amountError(),
-                      ),
-                    ],
-                  ],
+                BlocBuilder<BalanceCubit, BalanceState>(
+                  builder: (context, balanceState) {
+                    return _ReadOnlyField(
+                      'wallet ${BalanceCurrencyFormatterService.format(balanceState.walletBalance)}',
+                    );
+                  },
                 ),
-              ),
 
-              const SizedBox(height: 30),
-              BlocBuilder<BalanceCubit, BalanceState>(
-                builder: (context, balanceState) {
-                  return TopUpPrepaidBalanceRow(
-                    balance: balanceState.walletBalance,
-                    enteredAmount: _amountValue,
-                    isSendTopUp: true,
-                  );
-                },
-              ),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 56),
+                // ================= ENTER NUMBER =================
+                // const _SectionLabel('enter number to top up'),
+                // const SizedBox(height: 8),
+                // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
+                _buildLoginStylePhoneField(
+                  labelText: GuestTopUpTheme.activePrepaidLabel,
+                  labelStyle: GuestTopUpTheme.activePrepaidPrompt,
+                  value: _phoneNumber,
+                  forceError:
+                      _hasEditedPhoneNumber &&
+                      (_phoneNumber.trim().isEmpty || _hasPhoneValidationError),
+                  hasFocus: _hasPhoneFocus,
+                  focusNode: _phoneFocusNode,
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => _confirmPhoneFocusNode.requestFocus(),
+                  highlightInvalidInput: true,
+                  validationMessage: _phoneNumber.trim().isEmpty
+                      ? 'Phone number is required.'
+                      : 'Invalid phone number. Please enter a 10-digit phone number.',
+                  onChanged: (value) {
+                    setState(() {
+                      _phoneNumber = value;
+                      _hasEditedPhoneNumber = true;
+                    });
+                  },
+                ),
 
-              // ================= PROCEED =================
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed:
-                      (_isChecking ||
-                          _hasPhoneValidationError ||
-                          _amountValue <= 0 ||
-                          _phoneNumbersDoNotMatch ||
-                          _confirmPhoneNumber.isEmpty)
-                      ? null
-                      : () async {
-                          final account = context
-                              .read<AccountInfoCubit>()
-                              .state
-                              .accountInfo;
-                          final primaryPhone =
-                              account?.primaryPhoneNumber.trim() ?? '';
-                          // Honour the home-screen dropdown: block
-                          // sending to the active device's TN too, not
-                          // only the account owner's primary.
-                          final activeTn = ActiveDevice.tn()?.trim() ?? '';
-                          final recipientApi = _validatePhone(
-                            _phoneNumber,
-                          ).phoneNumberForApi;
-                          bool matchesOwn(String raw) {
-                            if (raw.isEmpty) return false;
-                            final own = _ownPhoneNumberHelper
-                                .validateAndBuildApiUsername(
-                                  rawPhoneNumber: raw,
-                                  selectedCountry: _selectedCountry,
-                                );
-                            return own.isValid &&
-                                own.phoneNumberForApi == recipientApi;
-                          }
+                const SizedBox(height: 20),
 
-                          final isOwnNumber =
-                              matchesOwn(activeTn) ||
-                              matchesOwn(primaryPhone) ||
-                              matchesOwn(account?.phoneNumber.trim() ?? '');
-                          if (isOwnNumber) {
-                            AppToast.show(
-                              message:
-                                  'You cannot send a top-up to your own number.',
-                              type: ToastType.error,
-                            );
-                            return;
-                          }
-                          if (_amountValue < _minSendTopUpAmount ||
-                              _amountValue > _maxSendTopUpAmount) {
-                            setState(() => _amountError = _amountRangeMessage);
-                            return;
-                          }
-                          final recipientPhone =
-                              _validatePhone(_phoneNumber).phoneNumberForApi ??
-                              _digitsOnly(_phoneNumber);
-                          final walletBalance = context
-                              .read<BalanceCubit>()
-                              .state
-                              .walletBalance;
-                          if (_amountValue > walletBalance) {
-                            AppToast.show(
-                              message: 'balance is not sufficient',
-                              type: ToastType.error,
-                            );
-                            return;
-                          }
-                          // Capture context-derived refs before awaits.
-                          final topUpRepo = context
-                              .read<TopUpPrepaidBloc>()
-                              .repo;
-                          final router = GoRouter.of(context);
-                          final sendTopupRepo = instance<SendTopupRepository>();
+                // const _SectionLabel('confirm number to top up'),
+                // const SizedBox(height: 8),
+                // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
+                _buildLoginStylePhoneField(
+                  labelText: GuestTopUpTheme.confirmMobileLabel,
+                  value: _confirmPhoneNumber,
+                  forceError: _showPhoneMismatch,
+                  hasFocus: _hasConfirmPhoneFocus,
+                  focusNode: _confirmPhoneFocusNode,
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => _amountFocusNode.requestFocus(),
+                  validationMessage: _showPhoneMismatch
+                      ? "these numbers don't match. re-enter the number to continue."
+                      : null,
+                  onChanged: (value) {
+                    setState(() => _confirmPhoneNumber = value);
+                  },
+                ),
+                const SizedBox(height: 18),
 
-                          setState(() => _isChecking = true);
-                          try {
-                            // Gate 0: is this even an Aliv number?
-                            final existsResult = await sendTopupRepo
-                                .phoneNumberExists(recipientPhone);
-                            if (!mounted) return;
-                            if (existsResult ==
-                                PhoneExistsResult.invalidDevice) {
-                              AppToast.show(
-                                message:
-                                    'this number is not registered on aliv. please verify the number.',
-                                type: ToastType.error,
-                              );
-                              return;
-                            }
-                            if (existsResult == PhoneExistsResult.unknown) {
-                              AppToast.show(
-                                message: SendTopupRepository.caseDMessage,
-                                type: ToastType.error,
-                              );
-                              return;
-                            }
-
-                            // Gate 2: recipient transfer eligibility.
-                            final transferError = await sendTopupRepo
-                                .transferIsValid(recipientPhone);
-                            if (!mounted) return;
-                            if (transferError != null) {
-                              AppToast.show(
-                                message: transferError,
-                                type: ToastType.error,
-                              );
-                              return;
-                            }
-
-                            // Gate 3: no concurrent order in flight.
-                            final orderResult = await topUpRepo.canSubmitOrder(
-                              amount: _amountValue,
-                            );
-                            if (!mounted) return;
-                            if (!orderResult.canProceed) {
-                              AppToast.show(
-                                message:
-                                    CanSubmitOrderResult.pendingOrdersMessage,
-                                type: ToastType.error,
-                              );
-                              return;
-                            }
-                          } on CanSubmitOrderException {
-                            if (!mounted) return;
-                            AppToast.show(
-                              message: SendTopupRepository.caseDMessage,
-                              type: ToastType.error,
-                            );
-                            return;
-                          } finally {
-                            if (mounted) setState(() => _isChecking = false);
-                          }
-                          if (!mounted) return;
-
-                          AppSession.appRoute = 'sendTopUp';
-                          final amountParam = _amountValue.toStringAsFixed(2);
-                          final recipientParam = Uri.encodeQueryComponent(
-                            recipientPhone,
-                          );
-                          router.push(
-                            '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
-                          );
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (_) => const SendTopUpConfirmationScreen(),
-                          //   ),
-                          // );
+                Center(
+                  child: Column(
+                    children: [
+                      const Text(
+                        'enter top-up amount',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF222222),
+                          fontSize: 12,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      TopUpPrepaidAmountBox(
+                        value: _amount,
+                        focusNode: _amountFocusNode,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => _handleProceed(),
+                        onChanged: (value) {
+                          setState(() {
+                            _amount = value;
+                            _amountError = null;
+                          });
                         },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TopUpPrepaidTheme.purple,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
+                      ),
+                      if (_amountError != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          _amountError!,
+                          textAlign: TextAlign.center,
+                          style: TopUpPrepaidTheme.amountError(),
+                        ),
+                      ],
+                    ],
                   ),
-                  child: _isChecking
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFFF1F1F8),
+                ),
+
+                const SizedBox(height: 30),
+                BlocBuilder<BalanceCubit, BalanceState>(
+                  builder: (context, balanceState) {
+                    return TopUpPrepaidBalanceRow(
+                      balance: balanceState.walletBalance,
+                      enteredAmount: _amountValue,
+                      isSendTopUp: true,
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 56),
+
+                // ================= PROCEED =================
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: _canProceed ? _handleProceed : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TopUpPrepaidTheme.purple,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                    ),
+                    child: _isChecking
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFF1F1F8),
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            'proceed',
+                            style: TextStyle(
+                              color: Color(0xFFF1F1F8),
+                              fontSize: 15,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        )
-                      : const Text(
-                          'proceed',
-                          style: TextStyle(
-                            color: Color(0xFFF1F1F8),
-                            fontSize: 15,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

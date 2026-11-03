@@ -9,6 +9,7 @@ class GradientInputField extends StatefulWidget {
   final String? initialValue;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
 
   const GradientInputField({
     super.key,
@@ -18,6 +19,7 @@ class GradientInputField extends StatefulWidget {
     this.initialValue,
     this.textInputAction,
     this.onSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -146,6 +148,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                         child: Center(
                           child: TextField(
                             controller: _controller,
+                            focusNode: widget.focusNode,
                             // maxLines: 1,
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: false,
