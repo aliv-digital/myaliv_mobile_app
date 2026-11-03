@@ -35,9 +35,11 @@ class HomeUiConfig {
 
   bool get isPostpaid => userType == UserType.postpaid;
 
-  /// True only for a read-only child logged in directly.
-  /// Parent on own line, parent on child's line, and full-access child are all false.
-  bool get isRestricted => lineRole == LineRole.readOnly && !isViewingChildLine;
+  /// True iff the logged-in user is a read-only subscriber.
+  /// Switching lines via the phone dropdown must not change this —
+  /// restriction is a property of the user, not the line being viewed.
+  /// Parent (own or child line) and full-access are always false.
+  bool get isRestricted => lineRole == LineRole.readOnly;
 
   HomeUiConfig copyWith({
     UserType? userType,
