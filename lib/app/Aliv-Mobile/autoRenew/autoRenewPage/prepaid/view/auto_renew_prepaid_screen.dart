@@ -45,6 +45,9 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
     );
 
     autoRenewPrepaidBloc.add(const AutoRenewPrepaidStarted());
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logAutopaySetupStarted();
+    }
     instance<SavedCardsCubit>().fetchSavedCards(
       forceRefresh: true,
       userType: UserType.prepaid,

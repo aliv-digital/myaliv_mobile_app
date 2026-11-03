@@ -31,6 +31,49 @@ abstract final class AnalyticsParam {
   static const String promotionName = 'promotion_name';
   static const String linkDestination = 'link_destination';
   static const String linkUrl = 'link_url';
+
+  // ── Payment methods (card management) ─────────────────────────────────────
+  static const String cardType = 'card_type';
+  static const String fieldUpdated = 'field_updated';
+  static const String action = 'action';
+
+  // ── Auto-Pay ──────────────────────────────────────────────────────────────
+  static const String state = 'state';
+  static const String reason = 'reason';
+}
+
+/// Fixed vocabulary for `state` on `autopay_toggle`.
+abstract final class AnalyticsAutopayState {
+  static const String on = 'on';
+  static const String off = 'off';
+}
+
+/// Fixed vocabulary for `failure_reason` on `autopay_setup_failed`.
+abstract final class AnalyticsAutopaySetupFailureReason {
+  static const String networkError = 'network_error';
+  static const String validationError = 'validation_error';
+  static const String apiError = 'api_error';
+  static const String otpFailed = 'otp_failed';
+
+  /// Map a raw setup error to a fixed category. Mirrors the pattern on
+  /// [AnalyticsPurchaseFailureReason] but with a narrower vocab since
+  /// auto-pay setup can't return "declined" / "insufficient_balance".
+  static String classify(Object error) {
+    if (error is NoInternetException || error is TimeoutException) {
+      return networkError;
+    }
+    if (error is ServerException) return apiError;
+    final msg = error.toString().toLowerCase();
+    if (msg.contains('invalid') || msg.contains('validation')) {
+      return validationError;
+    }
+    if (error is NetworkException) {
+      final code = error.statusCode ?? 0;
+      if (code >= 500) return apiError;
+      if (code >= 400) return validationError;
+    }
+    return apiError;
+  }
 }
 
 /// Fixed vocabulary for `field_type` on `account_details_updated`.
@@ -68,6 +111,66 @@ abstract final class AnalyticsPaymentType {
   static const String debitCard = 'debit_card';
   static const String rewards = 'rewards';
   static const String chargeToAccount = 'charge_to_account';
+}
+
+/// Fixed vocabulary for `card_type` on card-management events.
+///
+/// Backend doesn't return brand (visa/mastercard) on the SavedCardModel, and
+/// debit vs. credit isn't distinguished (Open Q10). Default to [creditCard]
+/// unless a signal is explicitly available; use [unknown] for events like
+/// `payment_method_removed` where we don't carry the card through the
+/// delete path.
+abstract final class AnalyticsCardType {
+  static const String creditCard = 'credit_card';
+  static const String debitCard = 'debit_card';
+  static const String unknown = 'unknown';
+}
+
+/// Fixed vocabulary for `field_updated` on `payment_method_updated`.
+///
+/// Only wire this when an edit flow actually ships — currently the app has
+/// no card-edit screen, so the event is deferred.
+abstract final class AnalyticsCardField {
+  static const String expiryDate = 'expiry_date';
+  static const String billingAddress = 'billing_address';
+}
+
+/// Fixed vocabulary for `action` on `payment_method_failed`.
+abstract final class AnalyticsCardAction {
+  static const String add = 'add';
+  static const String update = 'update';
+  static const String remove = 'remove';
+}
+
+/// Fixed vocabulary for `failure_reason` on `payment_method_failed`.
+///
+/// Narrower than [AnalyticsPurchaseFailureReason] because card-management
+/// failures don't include "insufficient_wallet_balance" / "timeout" as
+/// typical outcomes — the backend either accepts or rejects.
+abstract final class AnalyticsCardFailureReason {
+  static const String declined = 'declined';
+  static const String validationError = 'validation_error';
+  static const String apiError = 'api_error';
+
+  /// Maps a raw error to the card-management failure vocab. Unknown errors
+  /// fall to [apiError].
+  static String classify(Object error) {
+    if (error is NoInternetException || error is TimeoutException) {
+      return apiError;
+    }
+    if (error is ServerException) return apiError;
+    final msg = error.toString().toLowerCase();
+    if (msg.contains('declin')) return declined;
+    if (msg.contains('invalid') || msg.contains('validation')) {
+      return validationError;
+    }
+    if (error is NetworkException) {
+      final code = error.statusCode ?? 0;
+      if (code >= 500) return apiError;
+      if (code >= 400) return validationError;
+    }
+    return apiError;
+  }
 }
 
 /// Fixed vocabulary for `failure_reason` on `purchase_failed`.
@@ -201,6 +304,12 @@ abstract final class AnalyticsUserProperty {
   /// segment any event by authenticated vs. guest without re-adding a
   /// per-event flag.
   static const String loggedIn = 'logged_in';
+
+  /// `"prepaid"` or `"postpaid"` — set after login (from
+  /// `AppUiConfigCubit.userType.label`) so every event can be segmented by
+  /// billing type without threading `plan_type` through every call site.
+  /// Addresses spec Q2 (account-type dimension on in-app events).
+  static const String accountType = 'account_type';
 }
 
 /// `item_category` values used on the GA4 `purchase` event. Lets reports

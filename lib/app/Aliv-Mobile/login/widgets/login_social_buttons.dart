@@ -3,6 +3,7 @@ import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -72,6 +73,12 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
       method: AnalyticsLoginMethod.biometric,
     );
     await analytics.setLoggedIn();
+    await analytics.setUserId(resolvedUserId);
+    if (mounted) {
+      await analytics.setAccountType(
+        context.read<AppUiConfigCubit>().state.userType.label,
+      );
+    }
   }
 
   Future<void> _authenticate(

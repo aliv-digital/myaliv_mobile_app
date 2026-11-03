@@ -54,6 +54,11 @@ Future<bool> handleAutoRenewToggle(
   );
 
   if (success) {
+    if (instance.isRegistered<AnalyticsService>()) {
+      await instance<AnalyticsService>().logAutopayToggle(
+        state: AnalyticsAutopayState.off,
+      );
+    }
     AppToast.show(
       // AREN-011: shown only after the disable call succeeds.
       message: 'auto renew has been turned off',

@@ -209,6 +209,9 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(() => analytics.setLoggedIn()).thenAnswer((_) async {});
+    when(() => analytics.setUserId(any())).thenAnswer((_) async {});
+    when(() => analytics.clearUserId()).thenAnswer((_) async {});
+    when(() => analytics.setAccountType(any())).thenAnswer((_) async {});
     when(() => balance.clearForLogout()).thenAnswer((_) async {});
     when(() => biometrics.state).thenReturn(const FingerFaceSecurityState());
     when(

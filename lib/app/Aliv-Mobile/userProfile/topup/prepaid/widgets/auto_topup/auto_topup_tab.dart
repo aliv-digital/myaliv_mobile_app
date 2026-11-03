@@ -56,6 +56,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   @override
   void initState() {
     super.initState();
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logAutopaySetupStarted();
+    }
     context.read<SavedCardsCubit>().fetchSavedCards();
     instance<DeviceLimitsCubit>().loadDeviceLimits();
   }

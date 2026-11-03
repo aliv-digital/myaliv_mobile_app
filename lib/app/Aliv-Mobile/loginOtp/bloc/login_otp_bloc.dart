@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../repository/base_login_otp_repository.dart';
@@ -183,6 +184,10 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       await _analyticsService.logOtpVerified();
       await _analyticsService.logLogin(userId: apiPhoneNumber);
       await _analyticsService.setLoggedIn();
+      await _analyticsService.setUserId(apiPhoneNumber);
+      await _analyticsService.setAccountType(
+        appUiConfigCubit.state.userType.label,
+      );
       // Recovery flow fires `password_reset_completed` from the create-
       // password success handler — not here — since OTP verification is
       // only a mid-flow step. The user IS authenticated at this point

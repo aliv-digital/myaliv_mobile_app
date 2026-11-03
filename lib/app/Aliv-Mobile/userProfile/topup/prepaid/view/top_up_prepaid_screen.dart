@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,6 +79,13 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView>
   @override
   void initState() {
     super.initState();
+
+    // The top-up screen is the de-facto "wallet" surface in the current build
+    // — the balance row is prominent. If a dedicated Wallet screen ships
+    // later, migrate `wallet_balance_viewed` there.
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logWalletBalanceViewed();
+    }
 
     _tabController = TabController(
       length: 3,

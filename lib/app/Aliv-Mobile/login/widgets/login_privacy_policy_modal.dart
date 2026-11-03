@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -9,6 +10,10 @@ Future<void> showLoginPrivacyPolicyModal(
   BuildContext context, {
   PrivacyRepository? repository,
 }) {
+  if (instance.isRegistered<AnalyticsService>()) {
+    // Standardized screen_name per spec row 36 — one label per document.
+    instance<AnalyticsService>().logScreenView(screenName: 'Privacy Policy');
+  }
   return showDialog<void>(
     context: context,
     barrierDismissible: true,

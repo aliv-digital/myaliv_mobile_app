@@ -19,6 +19,12 @@ Future<void> showTermsAndConditionsModal(
   double closeButtonSize = 24,
   bool? isPostpaid,
 }) {
+  if (instance.isRegistered<AnalyticsService>()) {
+    // Standardized screen_name per spec row 36 — one label per document.
+    instance<AnalyticsService>().logScreenView(
+      screenName: 'Terms & Conditions',
+    );
+  }
   final usePostpaidTerms = _shouldUsePostpaidTerms(context, isPostpaid);
   final audience = usePostpaidTerms
       ? TermsAndConditionsAudience.postpaid

@@ -105,9 +105,15 @@ class _AutoTopUpAuthorizationScreenState
             _isNameValid,
         verifiedResult: widget.verifiedResult,
       );
-    } catch (_) {
+    } catch (error) {
       if (mounted) {
         _showError('Failed to update settings. Please try again.');
+      }
+      if (instance.isRegistered<AnalyticsService>()) {
+        await instance<AnalyticsService>().logAutopaySetupFailed(
+          failureReason:
+              AnalyticsAutopaySetupFailureReason.classify(error),
+        );
       }
       return;
     } finally {
@@ -119,6 +125,20 @@ class _AutoTopUpAuthorizationScreenState
     if (!mounted) return;
 
     if (success == true) {
+      // Auto-topup is card-only (`AnalyticsPaymentType.creditCard`), per the
+      // backend; a dedicated enum doesn't exist here (unlike auto-renew auth).
+      if (instance.isRegistered<AnalyticsService>()) {
+        final analytics = instance<AnalyticsService>();
+        if (isNewActivation) {
+          await analytics.logAutopaySetupCompleted(
+            paymentMethod: AnalyticsPaymentType.creditCard,
+          );
+          await analytics.logAutopayToggle(
+            state: AnalyticsAutopayState.on,
+            paymentMethod: AnalyticsPaymentType.creditCard,
+          );
+        }
+      }
       AppToast.show(
         // Updates to existing settings keep their current copy.
         message: isNewActivation
@@ -133,6 +153,11 @@ class _AutoTopUpAuthorizationScreenState
       // The one-use OTP capability is now consumed (or the attempt is stale);
       // retrying requires a fresh apply from the Setup tab, so pop back there
       // with an error toast.
+      if (instance.isRegistered<AnalyticsService>()) {
+        await instance<AnalyticsService>().logAutopaySetupFailed(
+          failureReason: AnalyticsAutopaySetupFailureReason.apiError,
+        );
+      }
       _showError('Failed to update settings. Please try again.');
       final navigator = Navigator.of(context);
       if (navigator.canPop()) {

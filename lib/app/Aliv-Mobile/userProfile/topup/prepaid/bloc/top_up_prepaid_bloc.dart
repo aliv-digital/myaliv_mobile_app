@@ -115,9 +115,11 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
     );
     try {
       await repo.topUp(amount: state.amountValue);
-      await instance<AnalyticsService>().logWalletTopUp(
+      await instance<AnalyticsService>().logAddWalletFunds(
         amount: state.amountValue,
-        paymentMethod: 'direct',
+        // Spec vocab is `credit_card | debit_card` only — the backend doesn't
+        // distinguish debit from credit (Open Q10) so we default to credit_card.
+        paymentMethod: AnalyticsPaymentType.creditCard,
       );
       emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.success));
       // optional: reset amount after success

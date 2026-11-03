@@ -10,9 +10,16 @@ import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 class TopUpPaymentPrepaidBloc
     extends Bloc<TopUpPaymentPrepaidEvent, TopUpPaymentPrepaidState> {
   final TopUpPaymentPrepaidRepository repository;
+  final AnalyticsService _analyticsService;
 
-  TopUpPaymentPrepaidBloc(this.repository)
-    : super(TopUpPaymentPrepaidState.initial()) {
+  TopUpPaymentPrepaidBloc(
+    this.repository, {
+    AnalyticsService? analyticsService,
+  })  : _analyticsService = analyticsService ??
+            (instance.isRegistered<AnalyticsService>()
+                ? instance<AnalyticsService>()
+                : AnalyticsService()),
+        super(TopUpPaymentPrepaidState.initial()) {
     on<TopUpPaymentStarted>(_onStarted);
     on<PaymentMethodSelected>(_onSelected);
     on<PayWithCardPressed>(_onPayWithCard);
@@ -28,6 +35,7 @@ class TopUpPaymentPrepaidBloc
     Emitter<TopUpPaymentPrepaidState> emit,
   ) {
     final amount = event.amount ?? 0.0;
+    _analyticsService.logAddWalletFundsStarted();
     emit(
       state.copyWith(
         status: TopUpPaymentStatus.ready,
@@ -206,6 +214,21 @@ class TopUpPaymentPrepaidBloc
 
     try {
       final ok = await invoke();
+      if (!ok) {
+        // API returned ok=false (business-level reject). Classify as declined
+        // since the backend acknowledged but refused the top-up.
+        await _analyticsService.logAddWalletFundsFailed(
+          failureReason: AnalyticsPurchaseFailureReason.cardDeclined,
+          paymentMethod: AnalyticsPaymentType.creditCard,
+        );
+      } else {
+        // Spec vocab for payment_method is `credit_card | debit_card` only;
+        // the backend doesn't distinguish debit (Open Q10) → credit_card.
+        await _analyticsService.logAddWalletFunds(
+          amount: state.summary.total,
+          paymentMethod: AnalyticsPaymentType.creditCard,
+        );
+      }
       emit(
         state.copyWith(
           status: ok ? TopUpPaymentStatus.success : TopUpPaymentStatus.failure,
@@ -217,6 +240,10 @@ class TopUpPaymentPrepaidBloc
         ),
       );
     } catch (error) {
+      await _analyticsService.logAddWalletFundsFailed(
+        failureReason: AnalyticsPurchaseFailureReason.classify(error),
+        paymentMethod: AnalyticsPaymentType.creditCard,
+      );
       emit(
         state.copyWith(
           status: TopUpPaymentStatus.failure,

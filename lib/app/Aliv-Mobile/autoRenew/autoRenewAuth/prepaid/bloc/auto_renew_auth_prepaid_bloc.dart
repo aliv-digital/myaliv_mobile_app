@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/auto_renew_auth_prepaid_repository.dart';
@@ -12,13 +13,19 @@ class AutoRenewAuthPrepaidBloc
   /// The one-use OTP capability obtained upstream in the Setup screen.
   final AutoRenewAuthorizationVerifiedResult verifiedResult;
 
+  final AnalyticsService _analyticsService;
   bool _submissionInProgress = false;
   bool _closing = false;
 
   AutoRenewAuthPrepaidBloc({
     required this.repository,
     required this.verifiedResult,
-  }) : super(AutoRenewAuthPrepaidState.initial()) {
+    AnalyticsService? analyticsService,
+  })  : _analyticsService = analyticsService ??
+            (instance.isRegistered<AnalyticsService>()
+                ? instance<AnalyticsService>()
+                : AnalyticsService()),
+        super(AutoRenewAuthPrepaidState.initial()) {
     on<AutoRenewAuthPrepaidStarted>(_onStarted);
     on<AutoRenewAuthNameChanged>(_onNameChanged);
     on<AutoRenewAuthSubmitPressed>(_onSubmitPressed);
@@ -157,6 +164,15 @@ class AutoRenewAuthPrepaidBloc
       }
 
       if (success) {
+        final paymentMethodLabel =
+            _paymentMethodLabel(submission.paymentMethod);
+        await _analyticsService.logAutopaySetupCompleted(
+          paymentMethod: paymentMethodLabel,
+        );
+        await _analyticsService.logAutopayToggle(
+          state: AnalyticsAutopayState.on,
+          paymentMethod: paymentMethodLabel,
+        );
         emit(
           state.copyWith(
             submitStatus: AutoRenewAuthSubmitStatus.success,
@@ -165,6 +181,9 @@ class AutoRenewAuthPrepaidBloc
         );
       } else {
         // One-use OTP is now consumed; retry needs a fresh apply from Setup.
+        await _analyticsService.logAutopaySetupFailed(
+          failureReason: AnalyticsAutopaySetupFailureReason.apiError,
+        );
         emit(
           state.copyWith(
             submitStatus: AutoRenewAuthSubmitStatus.failure,
@@ -173,10 +192,13 @@ class AutoRenewAuthPrepaidBloc
           ),
         );
       }
-    } catch (_) {
+    } catch (error) {
       if (_closing || isClosed || emit.isDone) {
         return;
       }
+      await _analyticsService.logAutopaySetupFailed(
+        failureReason: AnalyticsAutopaySetupFailureReason.classify(error),
+      );
       emit(
         state.copyWith(
           submitStatus: AutoRenewAuthSubmitStatus.failure,
@@ -184,6 +206,20 @@ class AutoRenewAuthPrepaidBloc
           navTarget: AutoRenewAuthNavTarget.backToSetup,
         ),
       );
+    }
+  }
+
+  /// Maps the auto-renew payment enum to the GA4 fixed vocab
+  /// ([AnalyticsPaymentType]). `postpaidInvoice` becomes `charge_to_account`
+  /// because the spec vocab doesn't cover postpaid-invoice distinctly.
+  String _paymentMethodLabel(AutoRenewPaymentMethodType type) {
+    switch (type) {
+      case AutoRenewPaymentMethodType.wallet:
+        return AnalyticsPaymentType.wallet;
+      case AutoRenewPaymentMethodType.card:
+        return AnalyticsPaymentType.creditCard;
+      case AutoRenewPaymentMethodType.postpaidInvoice:
+        return AnalyticsPaymentType.chargeToAccount;
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../model/auth_response_model.dart';
@@ -237,6 +238,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             method: AnalyticsLoginMethod.password,
           );
           await _analyticsService.setLoggedIn();
+          await _analyticsService.setUserId(
+            phoneValidationResult.phoneNumberForApi!,
+          );
+          await _analyticsService.setAccountType(
+            appUiConfigCubit.state.userType.label,
+          );
 
           emit(
             state.copyWith(

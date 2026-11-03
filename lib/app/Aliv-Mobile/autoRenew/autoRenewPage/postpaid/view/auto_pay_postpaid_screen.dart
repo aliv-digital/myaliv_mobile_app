@@ -54,6 +54,9 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   @override
   void initState() {
     super.initState();
+    if (instance.isRegistered<AnalyticsService>()) {
+      instance<AnalyticsService>().logAutopaySetupStarted();
+    }
     instance<SavedCardsCubit>().fetchSavedCards(
       forceRefresh: true,
       userType: UserType.postpaid,
@@ -152,6 +155,11 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
       // Spec: clear the customer renewal-card record after the invoice flag
       // flips to false. Silent — invoice PUT owns UX feedback.
       await instance<DeviceLimitsCubit>().clearAutoRenewCardSilently();
+      if (instance.isRegistered<AnalyticsService>()) {
+        await instance<AnalyticsService>().logAutopayToggle(
+          state: AnalyticsAutopayState.off,
+        );
+      }
     }
 
     if (!mounted) return;

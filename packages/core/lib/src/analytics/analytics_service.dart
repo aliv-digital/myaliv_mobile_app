@@ -113,6 +113,7 @@ class AnalyticsService {
   Future<void> logLogout() async {
     await _log(AnalyticsEvent.logout);
     await setLoggedOut();
+    await clearUserId();
   }
 
   /// Mark the current Firebase user as authenticated.
@@ -125,6 +126,57 @@ class AnalyticsService {
   /// Mark the current Firebase user as logged out. Flips `logged_in` to
   /// `"false"` for all subsequent events in this session.
   Future<void> setLoggedOut() => _setLoggedIn(false);
+
+  /// Set the GA4 `user_id` to a SHA-256 hash of [rawUserId]. This is the
+  /// Firebase SDK's dedicated identifier — distinct from the per-event
+  /// `hashed_user_id` param — and is what powers DAU / MAU / retention
+  /// reports in GA4.
+  ///
+  /// Call once per authenticated session, immediately after [logLogin].
+  /// An empty [rawUserId] is a no-op (the SDK call would clear the id).
+  Future<void> setUserId(String rawUserId) async {
+    if (!_initialized || _analytics == null) return;
+    if (rawUserId.isEmpty) return;
+    try {
+      await _analytics!.setUserId(id: _sha256(rawUserId));
+      if (kDebugMode) {
+        debugPrint('📊 Analytics setUserId → <sha256 digest>');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to set user_id — $e');
+    }
+  }
+
+  /// Clear the GA4 `user_id`. Call on logout alongside [setLoggedOut].
+  Future<void> clearUserId() async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.setUserId(id: null);
+      if (kDebugMode) debugPrint('📊 Analytics setUserId → null');
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to clear user_id — $e');
+    }
+  }
+
+  /// Set the `account_type` user property to `"prepaid"` or `"postpaid"`.
+  /// Pass the string from `AppUiConfigCubit.userType.label`. Call after
+  /// login (and whenever the active line switches, since prepaid/postpaid
+  /// can differ per line).
+  Future<void> setAccountType(String accountType) async {
+    if (!_initialized || _analytics == null) return;
+    if (accountType.isEmpty) return;
+    try {
+      await _analytics!.setUserProperty(
+        name: AnalyticsUserProperty.accountType,
+        value: accountType,
+      );
+      if (kDebugMode) {
+        debugPrint('📊 Analytics userProperty → account_type=$accountType');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to set account_type — $e');
+    }
+  }
 
   // ── OTP funnel ────────────────────────────────────────────────────────────
   //
@@ -186,20 +238,97 @@ class AnalyticsService {
 
   // ── Wallet ────────────────────────────────────────────────────────────────
 
-  /// Log a successful prepaid wallet top-up.
+  /// Log a successful prepaid wallet top-up. GA4 event name: `add_wallet_funds`
+  /// (per Phase-1 spec; was previously called `wallet_top_up`).
   ///
   /// [amount]        – amount topped up in BSD.
-  /// [paymentMethod] – e.g. "saved_card", "new_card", "wallet".
-  Future<void> logWalletTopUp({
+  /// [paymentMethod] – one of [AnalyticsPaymentType] (`credit_card` default
+  ///                   since Q10 blocks the debit/credit split).
+  Future<void> logAddWalletFunds({
     required double amount,
     required String paymentMethod,
   }) =>
       _log(
-        AnalyticsEvent.walletTopUp,
+        AnalyticsEvent.addWalletFunds,
         params: {
           AnalyticsParam.amount: amount,
           AnalyticsParam.currency: 'BSD',
           AnalyticsParam.paymentMethod: paymentMethod,
+        },
+      );
+
+  /// Log the user entering the wallet top-up flow — before any payment is
+  /// attempted. Combined with [logAddWalletFunds] / [logAddWalletFundsFailed]
+  /// this exposes the top-up funnel in reports.
+  Future<void> logAddWalletFundsStarted() =>
+      _log(AnalyticsEvent.addWalletFundsStarted);
+
+  /// Log a failed wallet top-up. [failureReason] is one of
+  /// [AnalyticsPurchaseFailureReason] (same vocab — "card_declined" etc.).
+  Future<void> logAddWalletFundsFailed({
+    required String failureReason,
+    required String paymentMethod,
+  }) =>
+      _log(
+        AnalyticsEvent.addWalletFundsFailed,
+        params: {
+          AnalyticsParam.failureReason: failureReason,
+          AnalyticsParam.paymentMethod: paymentMethod,
+        },
+      );
+
+  /// Log the user viewing the wallet balance surface. In the current build
+  /// the "wallet balance" lives on the top-up entry screen — if product
+  /// adds a dedicated Wallet screen later, migrate the fire site.
+  Future<void> logWalletBalanceViewed() =>
+      _log(AnalyticsEvent.walletBalanceViewed);
+
+  // ── Payment methods (card management) ─────────────────────────────────────
+  //
+  // These fire from the "add / edit / remove saved card" surfaces — NOT
+  // from checkout-time payment selection (that's `logAddPaymentInfo` in
+  // the Commerce section, which includes `items[]`).
+
+  /// Log a successful "card saved to account" action. Fires GA4's standard
+  /// `add_payment_info` with only `payment_type` — the absence of `items`
+  /// disambiguates this from the checkout-time variant in reports.
+  Future<void> logPaymentMethodAdded({
+    String paymentType = AnalyticsCardType.creditCard,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logAddPaymentInfo(paymentType: paymentType);
+      if (kDebugMode) {
+        debugPrint('📊 Analytics → "add_payment_info" [card-save] $paymentType');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log card-save add_payment_info — $e');
+    }
+  }
+
+  /// Log a successful card removal.
+  Future<void> logPaymentMethodRemoved({
+    String cardType = AnalyticsCardType.unknown,
+  }) =>
+      _log(
+        AnalyticsEvent.paymentMethodRemoved,
+        params: {AnalyticsParam.cardType: cardType},
+      );
+
+  /// Log a failure during any card-management action. [action] = one of
+  /// [AnalyticsCardAction]; [failureReason] = one of
+  /// [AnalyticsCardFailureReason].
+  Future<void> logPaymentMethodFailed({
+    required String action,
+    required String failureReason,
+    String cardType = AnalyticsCardType.unknown,
+  }) =>
+      _log(
+        AnalyticsEvent.paymentMethodFailed,
+        params: {
+          AnalyticsParam.action: action,
+          AnalyticsParam.cardType: cardType,
+          AnalyticsParam.failureReason: failureReason,
         },
       );
 
@@ -519,6 +648,86 @@ class AnalyticsService {
           AnalyticsParam.linkUrl: linkUrl,
         },
       );
+
+  // ── Auto-Pay ──────────────────────────────────────────────────────────────
+  //
+  // Shared across prepaid auto-renew, prepaid auto-topup, and postpaid
+  // auto-pay. GA4 segments by the `account_type` user property; no need to
+  // thread the flow variant through every call site.
+
+  /// Log the user flipping the Auto-Pay switch ON or OFF. [state] is
+  /// [AnalyticsAutopayState.on] / [.off]. [paymentMethod] is optional —
+  /// only attach when the flow actually knows it at toggle time (OFF path
+  /// usually doesn't; ON is fired after setup completes with the method).
+  Future<void> logAutopayToggle({
+    required String state,
+    String? paymentMethod,
+    String? reason,
+  }) {
+    final params = <String, Object>{AnalyticsParam.state: state};
+    if (paymentMethod != null && paymentMethod.isNotEmpty) {
+      params[AnalyticsParam.paymentMethod] = paymentMethod;
+    }
+    if (reason != null && reason.isNotEmpty) {
+      params[AnalyticsParam.reason] = reason;
+    }
+    return _log(AnalyticsEvent.autopayToggle, params: params);
+  }
+
+  /// Log entering the Auto-Pay setup flow (screen entry).
+  Future<void> logAutopaySetupStarted() =>
+      _log(AnalyticsEvent.autopaySetupStarted);
+
+  /// Log successful completion of the multi-step Auto-Pay setup.
+  /// [paymentMethod] is one of [AnalyticsPaymentType] (`wallet`, `credit_card`,
+  /// or `charge_to_account` for postpaid-invoice).
+  Future<void> logAutopaySetupCompleted({required String paymentMethod}) =>
+      _log(
+        AnalyticsEvent.autopaySetupCompleted,
+        params: {AnalyticsParam.paymentMethod: paymentMethod},
+      );
+
+  /// Log a terminal failure during Auto-Pay setup. [failureReason] is one
+  /// of [AnalyticsAutopaySetupFailureReason] — use `.classify(error)` to
+  /// map a raw exception.
+  Future<void> logAutopaySetupFailed({required String failureReason}) =>
+      _log(
+        AnalyticsEvent.autopaySetupFailed,
+        params: {AnalyticsParam.failureReason: failureReason},
+      );
+
+  // ── Screen view ───────────────────────────────────────────────────────────
+
+  /// Fire GA4's standard `screen_view` manually. Preferred route for modals
+  /// / dialogs / sub-sections that aren't full navigation stops — those
+  /// aren't captured by GoRouter-attached observers.
+  ///
+  /// For automatic screen_view across every navigation, attach
+  /// `FirebaseAnalyticsObserver` to the router (requires each `GoRoute` to
+  /// define `name:` — see §13 in the analytics doc).
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {
+    if (!_initialized || _analytics == null) return;
+    try {
+      await _analytics!.logScreenView(
+        screenName: screenName,
+        screenClass: screenClass,
+      );
+      if (kDebugMode) {
+        debugPrint('📊 Analytics → "screen_view" $screenName');
+      }
+    } catch (e) {
+      debugPrint('⚠️ AnalyticsService: failed to log "screen_view" — $e');
+    }
+  }
+
+  /// Log the user landing on the Support/Help screen — BEFORE they pick a
+  /// channel (chat / FAQ / store locator / etc.). Measures support demand
+  /// independently of the channel breakdown.
+  Future<void> logSupportScreenViewed() =>
+      _log(AnalyticsEvent.supportScreenViewed);
 
   // ── Private ───────────────────────────────────────────────────────────────
 

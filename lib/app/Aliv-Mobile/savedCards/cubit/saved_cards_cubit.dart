@@ -177,6 +177,7 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
           removingTokens: {...state.removingTokens}..remove(token),
         ),
       );
+      await _analytics().logPaymentMethodRemoved();
 
       if (kDebugMode) {
         debugPrint('SavedCardsCubit: Removed card $token');
@@ -187,6 +188,11 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       if (kDebugMode) {
         debugPrint('SavedCardsCubit: Failed to remove card - $errorMessage');
       }
+
+      await _analytics().logPaymentMethodFailed(
+        action: AnalyticsCardAction.remove,
+        failureReason: AnalyticsCardFailureReason.classify(e),
+      );
 
       final rolledBack = List<SavedCardModel>.from(state.cards);
       final insertAt = originalIndex.clamp(0, rolledBack.length);
@@ -200,6 +206,12 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
         ),
       );
     }
+  }
+
+  AnalyticsService _analytics() {
+    return instance.isRegistered<AnalyticsService>()
+        ? instance<AnalyticsService>()
+        : AnalyticsService();
   }
 
   /// Saves a card after a 3DS payment via POST /CreditCard/savenew.
@@ -220,6 +232,7 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       );
       await fetchSavedCards(forceRefresh: true);
       _safeEmit(state.copyWith(isAddingCard: false, clearError: true));
+      await _analytics().logPaymentMethodAdded();
       return true;
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
@@ -227,6 +240,11 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       if (kDebugMode) {
         debugPrint('SavedCardsCubit: Failed to save new card - $errorMessage');
       }
+
+      await _analytics().logPaymentMethodFailed(
+        action: AnalyticsCardAction.add,
+        failureReason: AnalyticsCardFailureReason.classify(e),
+      );
 
       _safeEmit(
         state.copyWith(isAddingCard: false, errorMessage: errorMessage),

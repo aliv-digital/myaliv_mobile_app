@@ -187,4 +187,13 @@ class _ReviewInvoiceNoOpAnalyticsService extends AnalyticsService {
 
   @override
   Future<void> setLoggedIn() async {}
+
+  @override
+  Future<void> setUserId(String rawUserId) async {}
+
+  @override
+  Future<void> clearUserId() async {}
+
+  @override
+  Future<void> setAccountType(String accountType) async {}
 }

@@ -161,6 +161,9 @@ void main() {
           ),
         ).thenAnswer((_) async {});
         when(() => analytics.setLoggedIn()).thenAnswer((_) async {});
+        when(() => analytics.setUserId(any())).thenAnswer((_) async {});
+        when(() => analytics.clearUserId()).thenAnswer((_) async {});
+        when(() => analytics.setAccountType(any())).thenAnswer((_) async {});
         instance.registerSingleton<NetworkService>(network);
         instance.registerSingleton<AuthManager>(auth);
         instance.registerSingleton<AccountInfoCubit>(account);

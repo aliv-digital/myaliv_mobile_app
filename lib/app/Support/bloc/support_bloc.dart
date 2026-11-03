@@ -18,6 +18,7 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
   }
 
   void _onStarted(SupportStarted event, Emitter<SupportState> emit) {
+    instance<AnalyticsService>().logSupportScreenViewed();
     emit(
       state.copyWith(
         status: SupportStatus.ready,
@@ -63,6 +64,10 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
         break;
 
       case SupportMenuAction.faq:
+        await instance<AnalyticsService>().logOutboundClick(
+          linkDestination: 'faq',
+          linkUrl: SupportRepository.faqUri.toString(),
+        );
         _emitLaunch(
           emit,
           uri: SupportRepository.faqUri,
