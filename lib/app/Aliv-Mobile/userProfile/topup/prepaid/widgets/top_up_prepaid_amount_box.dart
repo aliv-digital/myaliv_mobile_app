@@ -8,11 +8,17 @@ import '../theme/top_up_prepaid_theme.dart';
 class TopUpPrepaidAmountBox extends StatefulWidget {
   final String value; // raw numeric text e.g. "15.00"
   final ValueChanged<String> onChanged;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   const TopUpPrepaidAmountBox({
     super.key,
     required this.value,
     required this.onChanged,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
   });
 
   @override
@@ -21,13 +27,18 @@ class TopUpPrepaidAmountBox extends StatefulWidget {
 
 class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
   late final TextEditingController _controller;
-  late final FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.value);
-    _focusNode = FocusNode();
+    if (widget.focusNode == null) {
+      _internalFocusNode = FocusNode();
+    }
   }
 
   @override
@@ -47,7 +58,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
@@ -127,7 +138,9 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                 SizedBox(
                   width: inputWidth,
                   child: TextField(
-                    focusNode: _focusNode,
+                    focusNode: _effectiveFocusNode,
+                    textInputAction: widget.textInputAction,
+                    onSubmitted: widget.onSubmitted,
                     controller: _controller,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,

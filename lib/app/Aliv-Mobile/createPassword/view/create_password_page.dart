@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
@@ -52,7 +53,7 @@ class CreatePasswordScreen extends StatelessWidget {
   }
 }
 
-class _CreatePasswordView extends StatelessWidget {
+class _CreatePasswordView extends StatefulWidget {
   const _CreatePasswordView({
     required this.title,
     required this.subtitle,
@@ -68,17 +69,34 @@ class _CreatePasswordView extends StatelessWidget {
   final CreatePasswordSuccessHandler? onSuccess;
 
   @override
-  Widget build(BuildContext context) {
-    void submit([String? _]) {
-      final bloc = context.read<CreatePasswordBloc>();
-      if (bloc.state.status == CreatePasswordStatus.submitting) return;
-      bloc.add(const SubmitCreatePassword());
-    }
+  State<_CreatePasswordView> createState() => _CreatePasswordViewState();
+}
 
-    return PopScope(
-      canPop: onBack == null,
+class _CreatePasswordViewState extends State<_CreatePasswordView> {
+  final FocusNode _passwordFocusNode = FocusNode(debugLabel: 'createPassword');
+  final FocusNode _confirmPasswordFocusNode = FocusNode(
+    debugLabel: 'createPasswordConfirm',
+  );
+
+  @override
+  void dispose() {
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _submit([String? _]) {
+    final bloc = context.read<CreatePasswordBloc>();
+    if (bloc.state.status == CreatePasswordStatus.submitting) return;
+    bloc.add(const SubmitCreatePassword());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final page = PopScope(
+      canPop: widget.onBack == null,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) onBack?.call();
+        if (!didPop) widget.onBack?.call();
       },
       child: StripedScaffold(
         resizeToAvoidBottomInset: true,
@@ -92,7 +110,7 @@ class _CreatePasswordView extends StatelessWidget {
                   message: 'Password reset successful!',
                   type: ToastType.success,
                 );
-                final handler = onSuccess;
+                final handler = widget.onSuccess;
                 if (handler != null) {
                   await handler(context, state.password.trim());
                 } else if (context.mounted) {
@@ -113,9 +131,9 @@ class _CreatePasswordView extends StatelessWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: CreatePasswordHeader(
-                    title: title,
-                    subtitle: subtitle,
-                    onBack: onBack,
+                    title: widget.title,
+                    subtitle: widget.subtitle,
+                    onBack: widget.onBack,
                   ),
                 ),
                 SliverPadding(
@@ -132,6 +150,7 @@ class _CreatePasswordView extends StatelessWidget {
                               p.passwordError != c.passwordError,
                           builder: (context, state) {
                             return PasswordInput(
+                              focusNode: _passwordFocusNode,
                               hint: 'enter new password',
                               errorText: state.passwordError,
                               obscureText: state.obscurePassword,
@@ -153,11 +172,12 @@ class _CreatePasswordView extends StatelessWidget {
                               p.confirmPasswordError != c.confirmPasswordError,
                           builder: (context, state) {
                             return PasswordInput(
+                              focusNode: _confirmPasswordFocusNode,
                               hint: 're-enter password',
                               errorText: state.confirmPasswordError,
                               obscureText: state.obscureConfirm,
                               textInputAction: TextInputAction.done,
-                              onSubmitted: submit,
+                              onSubmitted: _submit,
                               onChanged: (v) => context
                                   .read<CreatePasswordBloc>()
                                   .add(ConfirmPasswordChanged(v)),
@@ -179,11 +199,11 @@ class _CreatePasswordView extends StatelessWidget {
                           buildWhen: (p, c) => p.status != c.status,
                           builder: (context, state) {
                             return DefaultButton(
-                              label: buttonLabel,
+                              label: widget.buttonLabel,
                               isLoading:
                                   state.status ==
                                   CreatePasswordStatus.submitting,
-                              onPressed: submit,
+                              onPressed: _submit,
                             );
                           },
                         ),
@@ -197,6 +217,12 @@ class _CreatePasswordView extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    return AppKeyboardToolbar(
+      focusNodes: [_passwordFocusNode, _confirmPasswordFocusNode],
+      onDone: _submit,
+      child: page,
     );
   }
 }

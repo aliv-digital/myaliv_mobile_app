@@ -111,6 +111,14 @@ class AutoRenewAuthPrepaidRepositoryImpl
     // Call appropriate API based on payment method
     switch (paymentMethod) {
       case AutoRenewPaymentMethodType.wallet:
+        // Spec: wallet enable requires POST CreditCard/auto-renew with
+        // {"Token":""} + agreement text to record consent server-side,
+        // before the device/subscription PUT=true. Fail-fast.
+        final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
+          token: '',
+          refreshAfter: false,
+        );
+        if (!cardSuccess) return false;
         return deviceLimitsCubit.enableAutoRenewWallet(deviceId);
       case AutoRenewPaymentMethodType.card:
         if (cardToken == null || cardToken.isEmpty) return false;

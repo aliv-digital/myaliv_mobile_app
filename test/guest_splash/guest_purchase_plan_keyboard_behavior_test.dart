@@ -236,6 +236,55 @@ void main() {
 
     expect(buttonHarness.routeExtras.single, doneExtra);
   });
+
+  testWidgets(
+    'AppKeyboardToolbar shows Next on first field and Done on confirm field',
+    (tester) async {
+      final harness = await _pumpBottomSheet(tester);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+      addTearDown(() {
+        tester.view.resetViewInsets();
+      });
+
+      final firstField = _phoneField(0);
+      final confirmField = _phoneField(1);
+
+      // Focus first field
+      await tester.tap(firstField);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Next'), findsOneWidget);
+      expect(find.text('Done'), findsNothing);
+
+      // Tap Next on toolbar
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(firstField).focusNode!.hasFocus, isFalse);
+      expect(
+        tester.widget<TextField>(confirmField).focusNode!.hasFocus,
+        isTrue,
+      );
+      expect(find.text('Done'), findsOneWidget);
+      expect(find.text('Next'), findsNothing);
+
+      // Enter valid matching numbers and tap Done toolbar button
+      await tester.enterText(firstField, '2425551234');
+      await tester.enterText(confirmField, '2425551234');
+      await tester.pump();
+
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(harness.routeExtras, <Object?>[
+        const GuestPurchasePlanRouteArgs(
+          phoneNumber: '(242)-555-1234',
+          paymentOption: PaymentOption.prepay,
+        ),
+      ]);
+      expect(find.text('guest purchase plan destination'), findsOneWidget);
+    },
+  );
 }
 
 Finder _phoneField(int index) {

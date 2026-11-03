@@ -901,7 +901,9 @@ void main() {
         await h.finish(tester);
         switch (mode) {
           case AutoRenewPaymentMethodType.wallet:
-            expect(h.cardTokens, isEmpty);
+            // Spec: wallet enable now POSTs empty-token card record before
+            // the device PUT, mirroring the Setup page's wallet sequence.
+            expect(h.cardTokens, ['']);
             expect(h.walletIds, [123]);
           case AutoRenewPaymentMethodType.card:
             expect(h.cardTokens, ['test-saved-card']);

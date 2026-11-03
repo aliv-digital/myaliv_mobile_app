@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/common/verification/action_verification_co
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
@@ -198,12 +199,43 @@ class _ChangePasswordPrepaidScreenState
   );
 }
 
-class _ChangePasswordPrepaidView extends StatelessWidget {
+class _ChangePasswordPrepaidView extends StatefulWidget {
   const _ChangePasswordPrepaidView();
 
   @override
+  State<_ChangePasswordPrepaidView> createState() =>
+      _ChangePasswordPrepaidViewState();
+}
+
+class _ChangePasswordPrepaidViewState
+    extends State<_ChangePasswordPrepaidView> {
+  final FocusNode _newPasswordFocusNode = FocusNode(
+    debugLabel: 'changePasswordNew',
+  );
+  final FocusNode _confirmPasswordFocusNode = FocusNode(
+    debugLabel: 'changePasswordConfirm',
+  );
+
+  @override
+  void dispose() {
+    _newPasswordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final bloc = context.read<ChangePasswordPrepaidBloc>();
+    final state = bloc.state;
+    final isLoading =
+        state.status == ChangePasswordPrepaidStatus.verifying ||
+        state.status == ChangePasswordPrepaidStatus.submitting;
+    if (isLoading) return;
+    bloc.add(const ChangePasswordPrepaidSubmitPressed());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return StripedScaffold(
+    final page = StripedScaffold(
       backgroundColor: ChangePasswordPrepaidTheme.bg,
 
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
@@ -265,6 +297,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                 p.newPasswordError != c.newPasswordError,
                             builder: (context, state) {
                               return ChangePasswordPrepaidPasswordField(
+                                focusNode: _newPasswordFocusNode,
                                 hint: 'new password',
                                 value: state.newPassword,
                                 obscure: state.obscureNew,
@@ -292,6 +325,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                     c.confirmPasswordError,
                             builder: (context, state) {
                               return ChangePasswordPrepaidPasswordField(
+                                focusNode: _confirmPasswordFocusNode,
                                 hint: 'confirm new password',
                                 value: state.confirmPassword,
                                 obscure: state.obscureConfirm,
@@ -333,13 +367,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                       label: 'change password',
                                       enabled: !isLoading,
                                       isLoading: isLoading,
-                                      onTap: () {
-                                        context
-                                            .read<ChangePasswordPrepaidBloc>()
-                                            .add(
-                                              const ChangePasswordPrepaidSubmitPressed(),
-                                            );
-                                      },
+                                      onTap: _submit,
                                     );
                                   },
                                 ),
@@ -355,6 +383,12 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    return AppKeyboardToolbar(
+      focusNodes: [_newPasswordFocusNode, _confirmPasswordFocusNode],
+      onDone: _submit,
+      child: page,
     );
   }
 }
