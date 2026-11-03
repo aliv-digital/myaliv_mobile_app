@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -54,6 +55,60 @@ class AuthCompletionService {
       throw Exception('Account information is missing');
     }
 
+    final primaryDeviceId = await _hydratePostAuth(
+      accountInfo: accountInfo,
+      accountInfoCubit: accountInfoCubit,
+      appUiConfigCubit: appUiConfigCubit,
+    );
+
+    if (kDebugMode) {
+      debugPrint(
+        '✅ AuthCompletionService: login completed for account ${accountInfo.idAcc} '
+        '(primary device $primaryDeviceId)',
+      );
+    }
+  }
+
+  /// Cold-start counterpart to [complete]: re-runs the device+role step
+  /// against the already-restored session so [AppUiConfigCubit] starts
+  /// with the correct [LineRole] instead of the default `parent`.
+  ///
+  /// Skips silently if no valid session is in memory or the hydrated
+  /// [AccountInfoCubit] has no account. Fail-safe on API errors —
+  /// callers continue into the app with the default `LineRole.parent`.
+  Future<void> resume({required AppUiConfigCubit appUiConfigCubit}) async {
+    final session = instance<AuthManager>().currentSession;
+    if (session == null || session.refreshExpired) return;
+
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final accountInfo = accountInfoCubit.state.accountInfo;
+    if (accountInfo == null) return;
+
+    try {
+      await _hydratePostAuth(
+        accountInfo: accountInfo,
+        accountInfoCubit: accountInfoCubit,
+        appUiConfigCubit: appUiConfigCubit,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('⚠️ AuthCompletionService.resume failed: $e');
+      }
+    }
+  }
+
+  /// Shared tail of [complete] and [resume]: load devices, pin the
+  /// primary DeviceID into [LocalStorage], fetch the role, and push the
+  /// resulting [HomeUiConfig] into [AppUiConfigCubit].
+  ///
+  /// Returns the primary device id for callers that want to log it.
+  /// Throws if devices can't be loaded — [complete] propagates, [resume]
+  /// swallows.
+  Future<int> _hydratePostAuth({
+    required AccountInfoModel accountInfo,
+    required AccountInfoCubit accountInfoCubit,
+    required AppUiConfigCubit appUiConfigCubit,
+  }) async {
     // Load devices so we know the real DeviceID (not the account's id_acc)
     // for URL building. Force-refresh: if the previous user's devices are
     // cached, we don't want to build URLs against them.
@@ -96,11 +151,6 @@ class AuthCompletionService {
       ),
     );
 
-    if (kDebugMode) {
-      debugPrint(
-        '✅ AuthCompletionService: login completed for account ${accountInfo.idAcc} '
-        '(primary device ${primaryDevice.deviceId})',
-      );
-    }
+    return primaryDevice.deviceId;
   }
 }

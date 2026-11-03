@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
@@ -52,8 +53,10 @@ void main() async {
   // Load biometric status so the GoRouter redirect can read it synchronously
   await instance<FingerFaceSecurityCubit>().loadBiometricStatus();
 
-  // Seed AppUiConfigCubit (singleton registered in DI) from the hydrated
-  // AccountInfoCubit so cold start doesn't briefly show the wrong tabs.
+  // Seed AppUiConfigCubit from the hydrated AccountInfoCubit so cold
+  // start doesn't briefly show the wrong tabs or parent UI for a
+  // read-only child. resume() loads devices + role against the restored
+  // session; no-ops if no session is in memory.
   final accountState = instance<AccountInfoCubit>().state;
   if (accountState.hasAccount) {
     instance<AppUiConfigCubit>().setConfig(
@@ -65,6 +68,9 @@ void main() async {
         isFuturePlan: false,
         isCurrentPlan: false,
       ),
+    );
+    await const AuthCompletionService().resume(
+      appUiConfigCubit: instance<AppUiConfigCubit>(),
     );
   }
 

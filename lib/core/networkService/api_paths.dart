@@ -35,7 +35,7 @@ class Api {
       '$baseUrl/v1/MyAliv/Info/rewards'; // GET - fetch all rewards
 
   static String availableSugs(int deviceId) =>
-      '$baseUrl/v1/MyAliv/device/$deviceId/available-sugs';
+      '$baseUrl/v1/MyAliv/device/$deviceId/sugs';
 
   // Auto-renew endpoints
   /// Auto-renew from wallet: PUT /device/{deviceAccountId}/auto-renew?autoRenew={true|false}
