@@ -10,11 +10,13 @@ import '../../theme/top_up_prepaid_number_postpaid_theme.dart';
 class TopUpPrepaidNumberPostPaidNumberSection extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
+  final FocusNode? focusNode;
 
   const TopUpPrepaidNumberPostPaidNumberSection({
     super.key,
     required this.value,
     required this.onChanged,
+    this.focusNode,
   });
 
   @override
@@ -26,25 +28,44 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
     extends State<TopUpPrepaidNumberPostPaidNumberSection> {
   final LoginPhoneNumberHelper _phoneNumberHelper =
       const LoginPhoneNumberHelper();
-  final FocusNode _phoneFocusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasPhoneFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _phoneFocusNode.addListener(_handlePhoneFocusChange);
+    _hasPhoneFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_handlePhoneFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(
+    covariant TopUpPrepaidNumberPostPaidNumberSection oldWidget,
+  ) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _handlePhoneFocusChange,
+      );
+      _effectiveFocusNode.addListener(_handlePhoneFocusChange);
+      _hasPhoneFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _phoneFocusNode.removeListener(_handlePhoneFocusChange);
-    _phoneFocusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(
+      _handlePhoneFocusChange,
+    );
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _handlePhoneFocusChange() {
-    if (_hasPhoneFocus == _phoneFocusNode.hasFocus) return;
-    setState(() => _hasPhoneFocus = _phoneFocusNode.hasFocus);
+    if (_hasPhoneFocus == _effectiveFocusNode.hasFocus) return;
+    setState(() => _hasPhoneFocus = _effectiveFocusNode.hasFocus);
   }
 
   @override
@@ -74,7 +95,8 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
         ),
         const SizedBox(height: 8),
         CustomCountryPhoneInputRow(
-          focusNode: _phoneFocusNode,
+          focusNode: _effectiveFocusNode,
+          textInputAction: TextInputAction.next,
           hideUnfocusedInputBorder:
               !_hasPhoneFocus && !showLivePhoneValidationError,
           hintText: 'eg: (242)-899-9999',

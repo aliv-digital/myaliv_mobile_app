@@ -18,6 +18,7 @@ import '../repository/auth_repository.dart';
 import '../theme/login_theme.dart';
 import '../widgets/login_bottom_texts.dart';
 import '../widgets/login_header.dart';
+import '../widgets/login_keyboard_done_toolbar.dart';
 import '../widgets/login_keyboard_next_toolbar.dart';
 import '../widgets/login_password_field.dart';
 import '../widgets/login_phone_row.dart';
@@ -343,7 +344,11 @@ class _LoginViewState extends State<_LoginView> {
     return LoginKeyboardNextToolbar(
       phoneFocusNode: _phoneFocusNode,
       onNext: _focusPassword,
-      child: page,
+      child: LoginKeyboardDoneToolbar(
+        passwordFocusNode: _passwordFocusNode,
+        onDone: _submitLogin,
+        child: page,
+      ),
     );
   }
 }

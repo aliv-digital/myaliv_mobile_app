@@ -12,6 +12,10 @@ class ReferFriendPrepaidLabeledField extends StatefulWidget {
   final String? errorText;
   final bool showUnfocusedBorder;
 
+  final FocusNode? focusNode;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
   const ReferFriendPrepaidLabeledField({
     super.key,
     required this.label,
@@ -23,6 +27,9 @@ class ReferFriendPrepaidLabeledField extends StatefulWidget {
     this.highlightInputAsError = false,
     this.errorText,
     this.showUnfocusedBorder = false,
+    this.focusNode,
+    this.textInputAction,
+    this.onSubmitted,
   });
 
   @override
@@ -33,14 +40,17 @@ class ReferFriendPrepaidLabeledField extends StatefulWidget {
 class _ReferFriendPrepaidLabeledFieldState
     extends State<ReferFriendPrepaidLabeledField> {
   late final TextEditingController _controller;
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.value);
-    _focusNode.addListener(_onFocusChanged);
+    _hasFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_onFocusChanged);
   }
 
   @override
@@ -52,20 +62,27 @@ class _ReferFriendPrepaidLabeledFieldState
         offset: widget.value.length,
       );
     }
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _effectiveFocusNode.addListener(_onFocusChanged);
+      _hasFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
-    if (_hasFocus != _focusNode.hasFocus) {
+    if (_hasFocus != _effectiveFocusNode.hasFocus) {
       setState(() {
-        _hasFocus = _focusNode.hasFocus;
+        _hasFocus = _effectiveFocusNode.hasFocus;
       });
     }
   }
@@ -119,7 +136,9 @@ class _ReferFriendPrepaidLabeledFieldState
               ),
               child: TextField(
                 controller: _controller,
-                focusNode: _focusNode,
+                focusNode: _effectiveFocusNode,
+                textInputAction: widget.textInputAction,
+                onSubmitted: widget.onSubmitted,
                 keyboardType: widget.keyboardType,
                 onChanged: widget.onChanged,
                 decoration: InputDecoration(

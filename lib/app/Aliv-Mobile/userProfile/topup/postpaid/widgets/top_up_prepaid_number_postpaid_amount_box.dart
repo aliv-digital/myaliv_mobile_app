@@ -10,11 +10,13 @@ import '../theme/top_up_prepaid_number_postpaid_theme.dart';
 class TopUpPrepaidNumberPostPaidAmountBox extends StatefulWidget {
   final String value; // numeric string like "0.00"
   final ValueChanged<String> onChanged;
+  final FocusNode? focusNode;
 
   const TopUpPrepaidNumberPostPaidAmountBox({
     super.key,
     required this.value,
     required this.onChanged,
+    this.focusNode,
   });
 
   @override
@@ -141,6 +143,8 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
                     width: fieldWidth,
                     child: TextField(
                       controller: _controller,
+                      focusNode: widget.focusNode,
+                      textInputAction: TextInputAction.done,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),

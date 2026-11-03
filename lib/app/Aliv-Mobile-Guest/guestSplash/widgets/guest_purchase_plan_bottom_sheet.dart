@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_sele
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -330,203 +331,207 @@ class _SheetBodyState extends State<_SheetBody> {
         }
 
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _Header(
-                title: 'guest purchase a plan',
-                onBack: () => Navigator.of(context).pop(),
-              ),
-              const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
-              const _Label('enter mobile number'),
-              const SizedBox(
-                height: GuestSplashTheme.purchasePlanLabelToFieldGap,
-              ),
-              // Previous local wrapper kept for quick fallback:
-              // PhoneRow(
-              //   country: state.purchaseCountry,
-              //   hintText: 'eg: 242-899-9999',
-              //   onTapCountryPicker: () => _pickCountry(context),
-              //   onChanged: (v) {context.read<GuestSplashBloc>().add(
-              //     GuestSplashPurchasePlanPhoneChanged(v)
-              //   );
-              //   },
-              //   enableCountryPicker: true,
-              //   showCountryArrow: true,
-              // ),
-              CustomCountryPhoneInputRow(
-                controller: _phoneController,
-                focusNode: _phoneFocusNode,
-                hintText: 'eg: (242)-899-9999',
-                flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
-                dialCode: state.purchaseCountry?.phoneCode ?? '1',
-                countryIsoCode: state.purchaseCountry?.countryCode,
-                textInputAction: TextInputAction.next,
-                onChanged: (v) {
-                  if (_showEmptyPhoneError) {
-                    setState(() => _showEmptyPhoneError = false);
-                  }
-                  context.read<GuestSplashBloc>().add(
-                    GuestSplashPurchasePlanPhoneChanged(v),
-                  );
-                },
-                enableCountryPicker: false,
-                showCountryArrow: false,
-                fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
-                countryPickerWidth:
-                    GuestSplashTheme.purchasePlanCountryPickerWidth,
-                countryToPhoneGap:
-                    GuestSplashTheme.purchasePlanCountryPickerToInputGap,
-                borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
-                borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
-                countryPickerPadding: const EdgeInsets.only(
-                  left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
-                  right: GuestSplashTheme
-                      .purchasePlanCountryPickerRightPaddingWithArrow,
+          child: AppKeyboardToolbar(
+            focusNodes: [_phoneFocusNode, _confirmPhoneFocusNode],
+            onDone: continueAction,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Header(
+                  title: 'guest purchase a plan',
+                  onBack: () => Navigator.of(context).pop(),
                 ),
-                showCountryPickerBorder: true,
-                countryPickerBorderColor:
-                    GuestSplashTheme.purchasePlanFieldBorderColor,
-                countryPickerBorderWidth:
-                    GuestSplashTheme.purchasePlanFieldBorderWidth,
-                phoneInputPadding: const EdgeInsets.symmetric(
-                  horizontal:
-                      GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
+                const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
+                const _Label('enter mobile number'),
+                const SizedBox(
+                  height: GuestSplashTheme.purchasePlanLabelToFieldGap,
                 ),
-                countryFlagToDialGap:
-                    GuestSplashTheme.purchasePlanCountryFlagToDialGap,
-                countryDialToArrowGap:
-                    GuestSplashTheme.purchasePlanCountryDialToArrowGap,
-                countryArrowIconSize:
-                    GuestSplashTheme.purchasePlanCountryArrowIconSize,
-                countryArrowColor:
-                    GuestSplashTheme.purchasePlanCountryArrowIconColor,
-                backgroundColor:
-                    GuestSplashTheme.purchasePlanFieldBackgroundColor,
-                unfocusedBorderColor: phoneBorderColor,
-                inputFormatters: phoneFormatters,
-                dialCodeStyle: GuestSplashTheme.dialCode,
-                phoneInputStyle: phoneInputStyle,
-                phoneHintStyle: GuestSplashTheme.phoneHint,
-                flagStyle: GuestSplashTheme.flagEmoji,
-              ),
-              if (showPhoneError) ...[
-                const SizedBox(height: 6),
-                Text(
-                  _showEmptyPhoneError
-                      ? GuestSplashTheme.emptyPhoneMessage
-                      : 'invalid Format',
-                  style: GuestSplashTheme.errorText,
-                ),
-              ],
-              const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
-              const _Label('confirm mobile number'),
-              const SizedBox(
-                height: GuestSplashTheme.purchasePlanLabelToFieldGap,
-              ),
-              // Previous local wrapper kept for quick fallback:
-              // PhoneRow(
-              //   country: state.purchaseCountry,
-              //   hintText: 'eg: 242-899-9999',
-              //   onChanged: (v) {
-              //     context.read<GuestSplashBloc>().add(
-              //       GuestSplashPurchasePlanConfirmPhoneChanged(v)
-              //       );
-              //   },
-              //   enableCountryPicker: false,
-              //   showCountryArrow: false,
-              // ),
-              CustomCountryPhoneInputRow(
-                controller: _confirmPhoneController,
-                focusNode: _confirmPhoneFocusNode,
-                hintText: 'eg: (242)-899-9999',
-                flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
-                dialCode: state.purchaseCountry?.phoneCode ?? '1',
-                countryIsoCode: state.purchaseCountry?.countryCode,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => continueAction(),
-                onChanged: (v) {
-                  context.read<GuestSplashBloc>().add(
-                    GuestSplashPurchasePlanConfirmPhoneChanged(v),
-                  );
-                },
-                enableCountryPicker: false,
-                showCountryArrow: false,
-                fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
-                countryPickerWidth:
-                    GuestSplashTheme.purchasePlanCountryPickerWidth,
-                countryToPhoneGap:
-                    GuestSplashTheme.purchasePlanCountryPickerToInputGap,
-                borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
-                borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
-                countryPickerPadding: const EdgeInsets.only(
-                  left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
-                  right: GuestSplashTheme
-                      .purchasePlanCountryPickerRightPaddingWithoutArrow,
-                ),
-                showCountryPickerBorder: true,
-                countryPickerBorderColor:
-                    GuestSplashTheme.purchasePlanFieldBorderColor,
-                countryPickerBorderWidth:
-                    GuestSplashTheme.purchasePlanFieldBorderWidth,
-                phoneInputPadding: const EdgeInsets.symmetric(
-                  horizontal:
-                      GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
-                ),
-                countryFlagToDialGap:
-                    GuestSplashTheme.purchasePlanCountryFlagToDialGap,
-                countryDialToArrowGap:
-                    GuestSplashTheme.purchasePlanCountryDialToArrowGap,
-                countryArrowIconSize:
-                    GuestSplashTheme.purchasePlanCountryArrowIconSize,
-                countryArrowColor:
-                    GuestSplashTheme.purchasePlanCountryArrowIconColor,
-                backgroundColor:
-                    GuestSplashTheme.purchasePlanFieldBackgroundColor,
-                unfocusedBorderColor: confirmBorderColor,
-                inputFormatters: phoneFormatters,
-                dialCodeStyle: GuestSplashTheme.dialCode,
-                phoneInputStyle: confirmInputStyle,
-                phoneHintStyle: GuestSplashTheme.phoneHint,
-                flagStyle: GuestSplashTheme.flagEmoji,
-              ),
-              if (showConfirmError) ...[
-                const SizedBox(height: 6),
-                const Text(
-                  GuestSplashTheme.phoneMismatchMessage,
-                  style: GuestSplashTheme.errorText,
-                ),
-              ],
-              const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
-              if (state.purchaseStatus ==
-                      GuestSplashPurchasePlanStatus.failure &&
-                  (state.purchaseErrorMessage?.isNotEmpty ?? false))
-                Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: GuestSplashTheme.purchasePlanErrorBottomPadding,
+                // Previous local wrapper kept for quick fallback:
+                // PhoneRow(
+                //   country: state.purchaseCountry,
+                //   hintText: 'eg: 242-899-9999',
+                //   onTapCountryPicker: () => _pickCountry(context),
+                //   onChanged: (v) {context.read<GuestSplashBloc>().add(
+                //     GuestSplashPurchasePlanPhoneChanged(v)
+                //   );
+                //   },
+                //   enableCountryPicker: true,
+                //   showCountryArrow: true,
+                // ),
+                CustomCountryPhoneInputRow(
+                  controller: _phoneController,
+                  focusNode: _phoneFocusNode,
+                  hintText: 'eg: (242)-899-9999',
+                  flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
+                  dialCode: state.purchaseCountry?.phoneCode ?? '1',
+                  countryIsoCode: state.purchaseCountry?.countryCode,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (v) {
+                    if (_showEmptyPhoneError) {
+                      setState(() => _showEmptyPhoneError = false);
+                    }
+                    context.read<GuestSplashBloc>().add(
+                      GuestSplashPurchasePlanPhoneChanged(v),
+                    );
+                  },
+                  enableCountryPicker: false,
+                  showCountryArrow: false,
+                  fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
+                  countryPickerWidth:
+                      GuestSplashTheme.purchasePlanCountryPickerWidth,
+                  countryToPhoneGap:
+                      GuestSplashTheme.purchasePlanCountryPickerToInputGap,
+                  borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
+                  borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
+                  countryPickerPadding: const EdgeInsets.only(
+                    left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
+                    right: GuestSplashTheme
+                        .purchasePlanCountryPickerRightPaddingWithArrow,
                   ),
-                  child: Text(
-                    state.purchaseErrorMessage!,
+                  showCountryPickerBorder: true,
+                  countryPickerBorderColor:
+                      GuestSplashTheme.purchasePlanFieldBorderColor,
+                  countryPickerBorderWidth:
+                      GuestSplashTheme.purchasePlanFieldBorderWidth,
+                  phoneInputPadding: const EdgeInsets.symmetric(
+                    horizontal: GuestSplashTheme
+                        .purchasePlanPhoneInputHorizontalPadding,
+                  ),
+                  countryFlagToDialGap:
+                      GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+                  countryDialToArrowGap:
+                      GuestSplashTheme.purchasePlanCountryDialToArrowGap,
+                  countryArrowIconSize:
+                      GuestSplashTheme.purchasePlanCountryArrowIconSize,
+                  countryArrowColor:
+                      GuestSplashTheme.purchasePlanCountryArrowIconColor,
+                  backgroundColor:
+                      GuestSplashTheme.purchasePlanFieldBackgroundColor,
+                  unfocusedBorderColor: phoneBorderColor,
+                  inputFormatters: phoneFormatters,
+                  dialCodeStyle: GuestSplashTheme.dialCode,
+                  phoneInputStyle: phoneInputStyle,
+                  phoneHintStyle: GuestSplashTheme.phoneHint,
+                  flagStyle: GuestSplashTheme.flagEmoji,
+                ),
+                if (showPhoneError) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    _showEmptyPhoneError
+                        ? GuestSplashTheme.emptyPhoneMessage
+                        : 'invalid Format',
                     style: GuestSplashTheme.errorText,
                   ),
+                ],
+                const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
+                const _Label('confirm mobile number'),
+                const SizedBox(
+                  height: GuestSplashTheme.purchasePlanLabelToFieldGap,
                 ),
-              DefaultButton(
-                label: 'continue',
-                isLoading: _isVerifying,
-                height: GuestSplashTheme.purchasePlanContinueButtonHeight,
-                backgroundColor:
-                    GuestSplashTheme.purchasePlanContinueButtonColor,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(
-                    GuestSplashTheme.purchasePlanContinueButtonRadius,
+                // Previous local wrapper kept for quick fallback:
+                // PhoneRow(
+                //   country: state.purchaseCountry,
+                //   hintText: 'eg: 242-899-9999',
+                //   onChanged: (v) {
+                //     context.read<GuestSplashBloc>().add(
+                //       GuestSplashPurchasePlanConfirmPhoneChanged(v)
+                //       );
+                //   },
+                //   enableCountryPicker: false,
+                //   showCountryArrow: false,
+                // ),
+                CustomCountryPhoneInputRow(
+                  controller: _confirmPhoneController,
+                  focusNode: _confirmPhoneFocusNode,
+                  hintText: 'eg: (242)-899-9999',
+                  flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
+                  dialCode: state.purchaseCountry?.phoneCode ?? '1',
+                  countryIsoCode: state.purchaseCountry?.countryCode,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => continueAction(),
+                  onChanged: (v) {
+                    context.read<GuestSplashBloc>().add(
+                      GuestSplashPurchasePlanConfirmPhoneChanged(v),
+                    );
+                  },
+                  enableCountryPicker: false,
+                  showCountryArrow: false,
+                  fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
+                  countryPickerWidth:
+                      GuestSplashTheme.purchasePlanCountryPickerWidth,
+                  countryToPhoneGap:
+                      GuestSplashTheme.purchasePlanCountryPickerToInputGap,
+                  borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
+                  borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
+                  countryPickerPadding: const EdgeInsets.only(
+                    left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
+                    right: GuestSplashTheme
+                        .purchasePlanCountryPickerRightPaddingWithoutArrow,
                   ),
+                  showCountryPickerBorder: true,
+                  countryPickerBorderColor:
+                      GuestSplashTheme.purchasePlanFieldBorderColor,
+                  countryPickerBorderWidth:
+                      GuestSplashTheme.purchasePlanFieldBorderWidth,
+                  phoneInputPadding: const EdgeInsets.symmetric(
+                    horizontal: GuestSplashTheme
+                        .purchasePlanPhoneInputHorizontalPadding,
+                  ),
+                  countryFlagToDialGap:
+                      GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+                  countryDialToArrowGap:
+                      GuestSplashTheme.purchasePlanCountryDialToArrowGap,
+                  countryArrowIconSize:
+                      GuestSplashTheme.purchasePlanCountryArrowIconSize,
+                  countryArrowColor:
+                      GuestSplashTheme.purchasePlanCountryArrowIconColor,
+                  backgroundColor:
+                      GuestSplashTheme.purchasePlanFieldBackgroundColor,
+                  unfocusedBorderColor: confirmBorderColor,
+                  inputFormatters: phoneFormatters,
+                  dialCodeStyle: GuestSplashTheme.dialCode,
+                  phoneInputStyle: confirmInputStyle,
+                  phoneHintStyle: GuestSplashTheme.phoneHint,
+                  flagStyle: GuestSplashTheme.flagEmoji,
                 ),
-                textStyle: GuestSplashTheme.continueButtonText,
-                onPressed: continueAction,
-              ),
-              // SizedBox(height: 24,)
-            ],
+                if (showConfirmError) ...[
+                  const SizedBox(height: 6),
+                  const Text(
+                    GuestSplashTheme.phoneMismatchMessage,
+                    style: GuestSplashTheme.errorText,
+                  ),
+                ],
+                const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
+                if (state.purchaseStatus ==
+                        GuestSplashPurchasePlanStatus.failure &&
+                    (state.purchaseErrorMessage?.isNotEmpty ?? false))
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: GuestSplashTheme.purchasePlanErrorBottomPadding,
+                    ),
+                    child: Text(
+                      state.purchaseErrorMessage!,
+                      style: GuestSplashTheme.errorText,
+                    ),
+                  ),
+                DefaultButton(
+                  label: 'continue',
+                  isLoading: _isVerifying,
+                  height: GuestSplashTheme.purchasePlanContinueButtonHeight,
+                  backgroundColor:
+                      GuestSplashTheme.purchasePlanContinueButtonColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      GuestSplashTheme.purchasePlanContinueButtonRadius,
+                    ),
+                  ),
+                  textStyle: GuestSplashTheme.continueButtonText,
+                  onPressed: continueAction,
+                ),
+                // SizedBox(height: 24,)
+              ],
+            ),
           ),
         );
       },

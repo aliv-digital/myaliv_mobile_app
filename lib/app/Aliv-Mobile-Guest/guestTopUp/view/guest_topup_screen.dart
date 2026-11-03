@@ -16,6 +16,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -47,6 +48,11 @@ class _GuestTopUpView extends StatefulWidget {
 }
 
 class _GuestTopUpViewState extends State<_GuestTopUpView> {
+  final FocusNode _phoneFocusNode = FocusNode(debugLabel: 'guestTopUpPhone');
+  final FocusNode _confirmPhoneFocusNode = FocusNode(
+    debugLabel: 'guestTopUpConfirmPhone',
+  );
+  final FocusNode _amountFocusNode = FocusNode(debugLabel: 'guestTopUpAmount');
   bool _isChecking = false;
   // Set only by a Next/Done attempt with an empty first number; cleared as
   // soon as the user edits that field.
@@ -186,6 +192,14 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     }
   }
 
+  @override
+  void dispose() {
+    _phoneFocusNode.dispose();
+    _confirmPhoneFocusNode.dispose();
+    _amountFocusNode.dispose();
+    super.dispose();
+  }
+
   Widget _buildPhoneField({
     required String labelText,
     required String value,
@@ -195,6 +209,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     TextStyle? labelStyle,
     bool showCountryArrow = false,
     TextInputAction? textInputAction,
+    FocusNode? focusNode,
   }) {
     final Color borderColor = showError
         ? GuestTopUpTheme.errorRed
@@ -222,6 +237,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
               : null,
           hideUnfocusedInputBorder: !showError,
           unfocusedBorderColor: borderColor,
+          focusNode: focusNode,
           phoneInputStyle: inputStyle,
           onChanged: onChanged,
           textInputAction: textInputAction,
@@ -244,7 +260,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       _handleNextPressed(currentState);
     }
 
-    return Scaffold(
+    final page = Scaffold(
       backgroundColor: GuestTopUpTheme.screenBackgroundColor,
       body: SafeArea(
         top: false,
@@ -288,6 +304,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                                 _showEmptyPhoneError ||
                                 _isPhoneInvalid(state.phoneNumber);
                             return _buildPhoneField(
+                              focusNode: _phoneFocusNode,
                               labelText: GuestTopUpTheme.activePrepaidLabel,
                               labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                               value: state.phoneNumber,
@@ -329,6 +346,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               state.confirmPhoneNumber,
                             );
                             return _buildPhoneField(
+                              focusNode: _confirmPhoneFocusNode,
                               labelText: GuestTopUpTheme.confirmMobileLabel,
                               value: state.confirmPhoneNumber,
                               showError: showError,
@@ -351,6 +369,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                         child: Column(
                           children: [
                             GradientInputField(
+                              focusNode: _amountFocusNode,
                               label: GuestTopUpTheme.amountLabel,
                               hint: GuestTopUpTheme.amountHintText,
                               textInputAction: TextInputAction.done,
@@ -407,6 +426,12 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           ),
         ),
       ),
+    );
+
+    return AppKeyboardToolbar(
+      focusNodes: [_phoneFocusNode, _confirmPhoneFocusNode, _amountFocusNode],
+      onDone: nextAction,
+      child: page,
     );
   }
 }

@@ -175,5 +175,67 @@ void main() {
         expect(find.byType(CustomCountryPhoneInputRow), findsNWidgets(2));
       });
     }
+
+    testWidgets(
+      'AppKeyboardToolbar shows Next on phone fields and hides toolbar on amount field',
+      (tester) async {
+        tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+        addTearDown(() => tester.view.resetViewInsets());
+
+        await tester.pumpWidget(buildTestWidget());
+        await tester.pumpAndSettle();
+
+        final phoneFields = find.byType(CustomCountryPhoneInputRow);
+        final firstPhoneField = find.descendant(
+          of: phoneFields.at(0),
+          matching: find.byType(TextField),
+        );
+        final confirmPhoneField = find.descendant(
+          of: phoneFields.at(1),
+          matching: find.byType(TextField),
+        );
+        final amountField = find.descendant(
+          of: find.byType(TopUpPrepaidAmountBox),
+          matching: find.byType(TextField),
+        );
+
+        // Focus first field
+        await tester.tap(firstPhoneField);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Next'), findsOneWidget);
+        expect(find.text('Done'), findsNothing);
+
+        // Tap Next -> focuses confirm phone field
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester.widget<TextField>(firstPhoneField).focusNode!.hasFocus,
+          isFalse,
+        );
+        expect(
+          tester.widget<TextField>(confirmPhoneField).focusNode!.hasFocus,
+          isTrue,
+        );
+        expect(find.text('Next'), findsOneWidget);
+        expect(find.text('Done'), findsNothing);
+
+        // Tap Next -> focuses amount field
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester.widget<TextField>(confirmPhoneField).focusNode!.hasFocus,
+          isFalse,
+        );
+        expect(
+          tester.widget<TextField>(amountField).focusNode!.hasFocus,
+          isTrue,
+        );
+        expect(find.text('Done'), findsNothing);
+        expect(find.text('Next'), findsNothing);
+      },
+    );
   });
 }

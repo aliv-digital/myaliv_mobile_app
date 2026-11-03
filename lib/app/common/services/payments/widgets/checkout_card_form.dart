@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
@@ -31,6 +32,11 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
   final _expiry = TextEditingController();
   final _cvv = TextEditingController();
 
+  final _holderFocus = FocusNode(debugLabel: 'cardHolder');
+  final _numberFocus = FocusNode(debugLabel: 'cardNumber');
+  final _expiryFocus = FocusNode(debugLabel: 'cardExpiry');
+  final _cvvFocus = FocusNode(debugLabel: 'cardCvv');
+
   NewCardDetails? _details;
 
   @override
@@ -46,6 +52,10 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
     for (final c in [_holder, _number, _expiry, _cvv]) {
       c.dispose();
     }
+    _holderFocus.dispose();
+    _numberFocus.dispose();
+    _expiryFocus.dispose();
+    _cvvFocus.dispose();
     super.dispose();
   }
 
@@ -72,92 +82,114 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const _Label('card holder name'),
-        _field(_holder, hint: 'name on card', keyboard: TextInputType.name),
-        const SizedBox(height: 16),
-        const _Label('card number'),
-        _field(
-          _number,
-          hint: '0000 0000 0000 0000',
-          keyboard: TextInputType.number,
-          prefix: const _VisaPrefix(),
-          formatters: [
-            CardNumberFormatter(
-              maxDigits: widget.useSavedCardNumberRules ? 16 : 19,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const _Label('expiry (mm/yy)'),
-                  _field(
-                    _expiry,
-                    hint: 'MM/YY',
-                    keyboard: TextInputType.number,
-                    formatters: [ExpiryFormatter()],
-                  ),
-                ],
+    return AppKeyboardToolbar(
+      focusNodes: [_holderFocus, _numberFocus, _expiryFocus, _cvvFocus],
+      onDone: () {
+        if (_details != null) {
+          widget.onSubmit(_details!);
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const _Label('card holder name'),
+          _field(
+            _holder,
+            focusNode: _holderFocus,
+            textInputAction: TextInputAction.next,
+            hint: 'name on card',
+            keyboard: TextInputType.name,
+          ),
+          const SizedBox(height: 16),
+          const _Label('card number'),
+          _field(
+            _number,
+            focusNode: _numberFocus,
+            textInputAction: TextInputAction.next,
+            hint: '0000 0000 0000 0000',
+            keyboard: TextInputType.number,
+            prefix: const _VisaPrefix(),
+            formatters: [
+              CardNumberFormatter(
+                maxDigits: widget.useSavedCardNumberRules ? 16 : 19,
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const _Label('cvv'),
-                  _field(
-                    _cvv,
-                    hint: '123',
-                    keyboard: TextInputType.number,
-                    obscure: true,
-                    formatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(4),
-                    ],
-                  ),
-                ],
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const _Label('expiry (mm/yy)'),
+                    _field(
+                      _expiry,
+                      focusNode: _expiryFocus,
+                      textInputAction: TextInputAction.next,
+                      hint: 'MM/YY',
+                      keyboard: TextInputType.number,
+                      formatters: [ExpiryFormatter()],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: _details == null
-                ? null
-                : () => widget.onSubmit(_details!),
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              shadowColor: Colors.transparent,
-              backgroundColor: const Color(0xFF645D9C),
-              disabledBackgroundColor: const Color(0x4D645D9C),
-              foregroundColor: const Color(0xFFF1F1F8),
-              disabledForegroundColor: Colors.white,
-              shape: const StadiumBorder(),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-            ),
-            child: Text(
-              widget.submitLabel,
-              style: _CheckoutCardFormStyles.button,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const _Label('cvv'),
+                    _field(
+                      _cvv,
+                      focusNode: _cvvFocus,
+                      textInputAction: TextInputAction.done,
+                      hint: '123',
+                      keyboard: TextInputType.number,
+                      obscure: true,
+                      formatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(4),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: _details == null
+                  ? null
+                  : () => widget.onSubmit(_details!),
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                backgroundColor: const Color(0xFF645D9C),
+                disabledBackgroundColor: const Color(0x4D645D9C),
+                foregroundColor: const Color(0xFFF1F1F8),
+                disabledForegroundColor: Colors.white,
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+              ),
+              child: Text(
+                widget.submitLabel,
+                style: _CheckoutCardFormStyles.button,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _field(
     TextEditingController controller, {
+    FocusNode? focusNode,
+    TextInputAction? textInputAction,
     required String hint,
     required TextInputType keyboard,
     bool obscure = false,
@@ -166,6 +198,8 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
   }) {
     return TextField(
       controller: controller,
+      focusNode: focusNode,
+      textInputAction: textInputAction,
       keyboardType: keyboard,
       obscureText: obscure,
       inputFormatters: formatters,

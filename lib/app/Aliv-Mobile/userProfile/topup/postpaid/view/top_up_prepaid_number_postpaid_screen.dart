@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -37,8 +38,42 @@ class TopUpPrepaidNumberPostPaid extends StatelessWidget {
   }
 }
 
-class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
+class _TopUpPrepaidNumberPostPaidView extends StatefulWidget {
   const _TopUpPrepaidNumberPostPaidView();
+
+  @override
+  State<_TopUpPrepaidNumberPostPaidView> createState() =>
+      _TopUpPrepaidNumberPostPaidViewState();
+}
+
+class _TopUpPrepaidNumberPostPaidViewState
+    extends State<_TopUpPrepaidNumberPostPaidView> {
+  final FocusNode _numberFocusNode = FocusNode(
+    debugLabel: 'topUpPostpaidNumber',
+  );
+  final FocusNode _confirmNumberFocusNode = FocusNode(
+    debugLabel: 'topUpPostpaidConfirmNumber',
+  );
+  final FocusNode _amountFocusNode = FocusNode(
+    debugLabel: 'topUpPostpaidAmount',
+  );
+
+  @override
+  void dispose() {
+    _numberFocusNode.dispose();
+    _confirmNumberFocusNode.dispose();
+    _amountFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _apply() {
+    final bloc = context.read<TopUpPrepaidNumberPostPaidBloc>();
+    if (bloc.state.canApply &&
+        bloc.state.applyStatus !=
+            TopUpPrepaidNumberPostPaidApplyStatus.loading) {
+      bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +82,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
       debugPrint("file name : top_up_prepaid_number_postpaid_screen.dart");
       debugPrint("location : Aliv-Mobile/userProfile/topup/postpaid/view");
     }
-    return BlocListener<
-      TopUpPrepaidNumberPostPaidBloc,
-      TopUpPrepaidNumberPostPaidState
-    >(
+    final page = BlocListener<TopUpPrepaidNumberPostPaidBloc, TopUpPrepaidNumberPostPaidState>(
       listenWhen: (p, c) => p.applyStatus != c.applyStatus,
       listener: (context, state) {
         if (state.applyStatus ==
@@ -130,6 +162,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TopUpPrepaidNumberPostPaidNumberSection(
+                                  focusNode: _numberFocusNode,
                                   value: state.number,
                                   onChanged: (v) => bloc.add(
                                     TopUpPrepaidNumberPostPaidNumberChanged(v),
@@ -137,6 +170,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 TopUpPrepaidNumberPostPaidConfirmNumberSection(
+                                  focusNode: _confirmNumberFocusNode,
                                   value: state.confirmNumber,
                                   hasMismatchError:
                                       state.hasConfirmMismatchError,
@@ -148,6 +182,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 18),
                                 TopUpPrepaidNumberPostPaidAmountSection(
+                                  focusNode: _amountFocusNode,
                                   value: state.amountText,
                                   onChanged: (v) => bloc.add(
                                     TopUpPrepaidNumberPostPaidAmountChanged(v),
@@ -184,6 +219,12 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
               ),
         ),
       ),
+    );
+
+    return AppKeyboardToolbar(
+      focusNodes: [_numberFocusNode, _confirmNumberFocusNode, _amountFocusNode],
+      onDone: _apply,
+      child: page,
     );
   }
 }

@@ -11,6 +11,7 @@ class ChangePasswordPrepaidPasswordField extends StatefulWidget {
   final String? errorText;
   final ValueChanged<String> onChanged;
   final VoidCallback onToggle;
+  final FocusNode? focusNode;
 
   const ChangePasswordPrepaidPasswordField({
     super.key,
@@ -20,6 +21,7 @@ class ChangePasswordPrepaidPasswordField extends StatefulWidget {
     required this.onChanged,
     required this.onToggle,
     this.errorText,
+    this.focusNode,
   });
 
   @override
@@ -29,26 +31,41 @@ class ChangePasswordPrepaidPasswordField extends StatefulWidget {
 
 class _ChangePasswordPrepaidPasswordFieldState
     extends State<ChangePasswordPrepaidPasswordField> {
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChanged);
+    _isFocused = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant ChangePasswordPrepaidPasswordField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _effectiveFocusNode.addListener(_onFocusChanged);
+      _isFocused = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
-    if (_isFocused != _focusNode.hasFocus) {
+    if (_isFocused != _effectiveFocusNode.hasFocus) {
       setState(() {
-        _isFocused = _focusNode.hasFocus;
+        _isFocused = _effectiveFocusNode.hasFocus;
       });
     }
   }
@@ -91,7 +108,7 @@ class _ChangePasswordPrepaidPasswordFieldState
                 const SizedBox(width: 5),
                 Expanded(
                   child: TextField(
-                    focusNode: _focusNode,
+                    focusNode: _effectiveFocusNode,
                     obscureText: widget.obscure,
                     onChanged: widget.onChanged,
                     decoration: InputDecoration(

@@ -14,6 +14,7 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
   final VoidCallback onSubmit;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
 
   const GuestPayBillInlineVerifyField({
     super.key,
@@ -25,6 +26,7 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
     required this.onSubmit,
     this.textInputAction,
     this.onSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -34,26 +36,41 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
 
 class _GuestPayBillInlineVerifyFieldState
     extends State<GuestPayBillInlineVerifyField> {
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChanged);
+    _hasFocus = _effectiveFocusNode.hasFocus;
+    _effectiveFocusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant GuestPayBillInlineVerifyField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _effectiveFocusNode.addListener(_onFocusChanged);
+      _hasFocus = _effectiveFocusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    (widget.focusNode ?? _internalFocusNode)?.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
-    if (_hasFocus != _focusNode.hasFocus) {
+    if (_hasFocus != _effectiveFocusNode.hasFocus) {
       setState(() {
-        _hasFocus = _focusNode.hasFocus;
+        _hasFocus = _effectiveFocusNode.hasFocus;
       });
     }
   }
@@ -83,7 +100,7 @@ class _GuestPayBillInlineVerifyFieldState
           children: [
             Expanded(
               child: TextField(
-                focusNode: _focusNode,
+                focusNode: _effectiveFocusNode,
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
                 onSubmitted: _onFieldSubmitted,
