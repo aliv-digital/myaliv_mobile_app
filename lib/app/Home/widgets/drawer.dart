@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
@@ -56,35 +56,23 @@ class AppMenuDrawer extends StatelessWidget {
                     child: BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
                       bloc: instance<DeviceLimitsCubit>(),
                       builder: (context, state) {
-                        final activeId = uiConfig.activeDeviceId;
-                        DeviceLimitsModel? activeDevice;
-                        if (activeId != null) {
-                          for (final d in state.allDeviceLimits) {
-                            if (d.deviceId == activeId) {
-                              activeDevice = d;
-                              break;
-                            }
-                          }
-                        }
-                        activeDevice ??= state.activeDeviceLimits;
+                        // Always show the primary (account-owner) device in
+                        // the drawer header, regardless of which line is
+                        // selected in the home-screen dropdown.
+                        final primaryDevice = state.deviceLimits;
 
-                        final fullName = () {
-                          final f = activeDevice?.fName;
-                          final l = activeDevice?.lName;
-                          final activeName = (f != null || l != null)
-                              ? '${f ?? ''} ${l ?? ''}'.trim()
-                              : null;
-                          if (activeName != null && activeName.isNotEmpty) {
-                            return activeName;
-                          }
-                          return resolveActiveDeviceDisplayName(devices: state);
-                        }();
+                        // Use the Account API name (fName/lName from
+                        // /MyAliv/Account), not the device-level name.
+                        final accountName =
+                            instance<AccountInfoCubit>().state.fullName;
+                        final fullName =
+                            accountName ??
+                            resolveUserDisplayName(devices: state);
 
+                        // Phone number reflects the currently selected
+                        // device from the home-screen dropdown.
                         final rawPhone =
-                            activeDevice?.tn ??
-                            ActiveDevice.tn() ??
-                            state.deviceLimits?.tn ??
-                            '';
+                            ActiveDevice.tn() ?? primaryDevice?.tn ?? '';
                         final phone = _formatPhone(rawPhone);
 
                         return Column(
