@@ -36,7 +36,9 @@ class MakePaymentConfirmationPostPaidBloc
     final deviceLimitsState = instance<DeviceLimitsCubit>().state;
     final balanceState = instance<BalanceCubit>().state;
 
-    final customerName = resolveUserDisplayName(devices: deviceLimitsState);
+    final customerName = resolveActiveDeviceDisplayName(
+      devices: deviceLimitsState,
+    );
     // Honour the home-screen dropdown: when the user has switched to a
     // child line, show the child's TN; fall back to primary, then route.
     final activeTn = ActiveDevice.tn()?.trim();

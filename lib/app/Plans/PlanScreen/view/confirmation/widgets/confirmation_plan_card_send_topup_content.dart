@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/utils/confirmation_formatters.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
   final DateTime? date;
@@ -20,12 +21,15 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeTn = ActiveDevice.tn();
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     final senderPhone = formatConfirmationPhone(
-      accountInfo?.primaryPhoneNumber ??
-          accountInfo?.altPhoneNumber ??
-          accountInfo?.phoneNumber ??
-          '',
+      (activeTn != null && activeTn.isNotEmpty)
+          ? activeTn
+          : (accountInfo?.primaryPhoneNumber ??
+                accountInfo?.altPhoneNumber ??
+                accountInfo?.phoneNumber ??
+                ''),
     );
     final recipient = formatConfirmationPhone(recipientPhone);
     final hasBeginDate = showBeginOn == true && date != null;

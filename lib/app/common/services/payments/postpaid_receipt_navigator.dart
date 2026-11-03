@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Postpaid payment success → receipt navigation. Resolves the account's
@@ -39,9 +40,12 @@ class PostpaidReceiptNavigator {
     );
   }
 
-  /// Prefer the account's primary phone; fall back to `phoneNumber`, then
+  /// Prefer the active line's TN (home-screen dropdown-selected child line);
+  /// fall back to the account's primary phone, then `phoneNumber`, then
   /// null so the receipt repo can apply its own defaults.
   static String? _accountPrimaryPhone() {
+    final activeTn = ActiveDevice.tn();
+    if (activeTn != null && activeTn.isNotEmpty) return activeTn;
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
     if (primary.isNotEmpty) return primary;

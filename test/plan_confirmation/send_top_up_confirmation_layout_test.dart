@@ -6,11 +6,14 @@ import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets/confirmation_bottom_bar.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets/confirmation_plan_card_send_topup_content.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 class _MockAccountInfoCubit extends Mock implements AccountInfoCubit {}
 
@@ -85,6 +88,49 @@ void main() {
 
         expect(phoneRect.top, greaterThanOrEqualTo(titleRect.bottom));
         expect(phoneRect.top - titleRect.bottom, lessThan(4.0));
+      },
+    );
+
+    testWidgets(
+      'renders secondary phone number as sender when child device is active',
+      (tester) async {
+        final secondaryDevice = DeviceLimitsModel.fromJson({
+          'DeviceID': 200,
+          'TN': '2428997821',
+          'FName': 'Secondary',
+          'LName': 'Child',
+          'ParentAccountID': 100,
+        });
+        when(() => deviceLimitsCubit.state).thenReturn(
+          DeviceLimitsState(
+            status: DeviceLimitsStatus.loaded,
+            allDeviceLimits: [secondaryDevice],
+          ),
+        );
+        final uiConfigCubit = AppUiConfigCubit(
+          initialConfig: const HomeUiConfig(
+            userType: UserType.postpaid,
+            hasActivePlan: true,
+            isFuturePlan: false,
+            activeDeviceId: 200,
+            isViewingChildLine: true,
+          ),
+        );
+        instance.registerSingleton<AppUiConfigCubit>(uiConfigCubit);
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: ConfirmationPlanCardSendTopUpContent(
+                topUpAmount: 15.0,
+                recipientPhone: '2428999999',
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('(242)-899-7821'), findsOneWidget);
+        expect(find.text('(242)-801-1616'), findsNothing);
       },
     );
 
