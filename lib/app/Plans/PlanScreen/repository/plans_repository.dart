@@ -7,6 +7,8 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundl
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_api_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_parser_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_cache_service.dart';
+import 'services/authenticated_plan_filter_service.dart';
+import 'services/authenticated_add_on_filter_service.dart';
 
 /// Result class for add-ons fetch
 class AddOnsResult {
@@ -37,13 +39,21 @@ class PlansRepository {
     PlanApiService? apiService,
     PlanParserService? parserService,
     PlanCacheService? cacheService,
+    AuthenticatedPlanFilterService? planFilterService,
+    AuthenticatedAddOnFilterService? addOnFilterService,
   }) : _apiService = apiService ?? PlanApiService(),
        _parserService = parserService ?? PlanParserService(),
-       _cacheService = cacheService ?? PlanCacheService();
+       _cacheService = cacheService ?? PlanCacheService(),
+       _planFilterService =
+           planFilterService ?? const AuthenticatedPlanFilterService(),
+       _addOnFilterService =
+           addOnFilterService ?? const AuthenticatedAddOnFilterService();
 
   final PlanApiService _apiService;
   final PlanParserService _parserService;
   final PlanCacheService _cacheService;
+  final AuthenticatedPlanFilterService _planFilterService;
+  final AuthenticatedAddOnFilterService _addOnFilterService;
 
   /// Fetch and categorize all plans
   ///
@@ -56,7 +66,7 @@ class PlansRepository {
     if (!forceRefresh &&
         _cacheService.hasFreshCategorizedPlans(ttl: cacheTtl)) {
       final cached = _cacheService.getCategorizedPlans();
-      if (cached != null) return cached;
+      if (cached != null) return _planFilterService.filterCatalogue(cached);
     }
 
     // Fetch from API
@@ -71,7 +81,7 @@ class PlansRepository {
     // Cache the result
     _cacheService.setCategorizedPlans(result);
 
-    return result;
+    return _planFilterService.filterCatalogue(result);
   }
 
   /// Get plans for a specific category
@@ -118,12 +128,13 @@ class PlansRepository {
 
   /// Check if category has cached data
   bool hasCachedDataForCategory(PlanCategory category) {
-    return _cacheService.hasCategoryData(category);
+    return (getCachedResult()?.getCategoryCount(category) ?? 0) > 0;
   }
 
   /// Get cached result without fetching
   PlanCategorizationResult? getCachedResult() {
-    return _cacheService.getCategorizedPlans();
+    final cached = _cacheService.getCategorizedPlans();
+    return cached == null ? null : _planFilterService.filterCatalogue(cached);
   }
 
   /// Fetch add-ons data (primary plans + available bolt-ons)
@@ -151,7 +162,12 @@ class PlansRepository {
         );
       }
 
-      return result;
+      return AddOnsResult(
+        addOns: _addOnFilterService.filter(result.primaryPlans),
+        primaryPlans: result.primaryPlans,
+        secondaryPlans: result.secondaryPlans,
+        standAlonePlans: result.standAlonePlans,
+      );
     } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ PlansRepository: Error fetching add-ons - $e');

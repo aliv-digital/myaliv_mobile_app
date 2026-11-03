@@ -116,6 +116,14 @@ void main() {
       'PlanType': newType,
       'PlanAmount': 70,
       'VATAmount': 7,
+      'AvailableBoltOns': [
+        {
+          'PlanID': 'allowed',
+          'PlanName': 'liberty data1',
+          'PlanType': 'S',
+          'PlanAmount': 5,
+        },
+      ],
     });
     when(() => plans.state).thenReturn(
       PlansState(
@@ -259,7 +267,12 @@ void main() {
       );
       await tester.tap(find.text('activate now'));
       await tester.pumpAndSettle();
-      expect(addOns!.purchaseContext, PlanPurchaseContext.regular);
+      if (['no current plan', 'future only', 'expired'].contains(scenario)) {
+        expect(addOns, isNull);
+        expect(confirmation!.purchaseContext, PlanPurchaseContext.regular);
+      } else {
+        expect(addOns!.purchaseContext, PlanPurchaseContext.regular);
+      }
       await tester.pumpWidget(const SizedBox.shrink());
     });
   }

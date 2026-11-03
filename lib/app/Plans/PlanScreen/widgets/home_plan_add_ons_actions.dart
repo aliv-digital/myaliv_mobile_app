@@ -16,6 +16,8 @@ class HomePlanAddOnsActions {
   const HomePlanAddOnsActions._();
 
   static void openConfirmation(BuildContext context, PlansState state) {
+    if (state.addOnsPrimaryPlan == null) return;
+
     final selected = state.addOns
         .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
         .toList(growable: false);
@@ -42,7 +44,7 @@ class HomePlanAddOnsActions {
               ? accountInfo.phoneNumber
               : accountInfo.primaryPhoneNumber);
 
-    final activePlan = state.earliestAddOnsPrimaryPlan;
+    final activePlan = state.addOnsPrimaryPlan;
 
     final args = HomePlanConfirmationRouteArgs(
       phoneNumber: phoneNumber,

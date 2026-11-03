@@ -17,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/home_plan_add_ons_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
@@ -81,20 +82,27 @@ void main() {
     );
 
     when(() => plansCubit.state).thenReturn(
-      const PlansState(
+      PlansState(
         status: PlansStatus.success,
+        addOnsApiPrimaryPlans: [
+          BasePlanModel.fromApiMap({
+            'PlanID': 'primary',
+            'PlanName': 'liberty70',
+            'PlanType': 'P',
+          }),
+        ],
         selectedTab: HomePlanTab.addOns,
-        addOns: [
+        addOns: const [
           HomePlanAddOnModel(
             id: 'addon_1',
-            title: '1GB Add-on',
+            title: 'liberty data1',
             label: 'data balance',
             value: '1gb',
             price: 5.0,
             vatAmount: 0.5,
           ),
         ],
-        selectedAddOnIds: {'addon_1'},
+        selectedAddOnIds: const {'addon_1'},
       ),
     );
     when(() => plansCubit.isClosed).thenReturn(false);

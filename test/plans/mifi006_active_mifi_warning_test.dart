@@ -97,6 +97,20 @@ void main() {
                   showHomePlanPurchaseBottomSheet(
                     context: context,
                     selectedTab: tab,
+                    selectedApiPlan: tab == HomePlanTab.monthly
+                        ? BasePlanModel.fromApiMap({
+                            'PlanID': 'liberty70',
+                            'PlanName': 'liberty70',
+                            'PlanType': 'P',
+                            'AvailableBoltOns': [
+                              {
+                                'PlanID': 'allowed',
+                                'PlanName': 'liberty data1',
+                                'PlanType': 'S',
+                              },
+                            ],
+                          })
+                        : null,
                     plan: const HomePlanModel(
                       id: 'mifi90',
                       title: 'mifi90',

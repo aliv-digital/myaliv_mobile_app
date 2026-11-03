@@ -1,9 +1,16 @@
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/logic/add_on_eligibility.dart';
+import '../../PlanScreen/repository/services/authenticated_add_on_filter_service.dart';
 
 import '../../PlanScreen/models/base_plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
 
 class PlanPurchasePlanAddOnsRepository {
+  PlanPurchasePlanAddOnsRepository({
+    AuthenticatedAddOnFilterService? addOnFilterService,
+  }) : _addOnFilterService =
+           addOnFilterService ?? const AuthenticatedAddOnFilterService();
+
+  final AuthenticatedAddOnFilterService _addOnFilterService;
+
   // Future: replace these with API calls
   Future<PlanPurchaseActivePlanSummary> fetchActivePlan() async {
     await Future.delayed(const Duration(milliseconds: 250));
@@ -58,77 +65,19 @@ class PlanPurchasePlanAddOnsRepository {
   List<PlanPurchaseAddOnItem> mapAvailableBoltOnsToAddOnItems(
     BasePlanModel? primaryPlan,
   ) {
-    if (primaryPlan == null ||
-        !isAddOnEligiblePrimaryName(primaryPlan.planName)) {
-      return const <PlanPurchaseAddOnItem>[];
-    }
-
-    return primaryPlan.availableBoltOns
-        .where((addOnPlan) => isAllowedBoltOnName(addOnPlan.planName))
+    return _addOnFilterService
+        .filterAvailableAddOns(primaryPlan?.availableBoltOns ?? const [])
         .map(
-          (addOnPlan) => PlanPurchaseAddOnItem(
-            id: addOnPlan.planId,
-            title: addOnPlan.planName,
-            subtitleLabel: _buildAddOnLabel(addOnPlan),
-            subtitleValue: _buildAddOnValue(addOnPlan),
-            price: addOnPlan.planAmount,
-            vatAmount: addOnPlan.vatAmount,
-            planTypeCode: addOnPlan.planType,
+          (addOn) => PlanPurchaseAddOnItem(
+            id: addOn.id,
+            title: addOn.title,
+            subtitleLabel: addOn.label,
+            subtitleValue: addOn.value,
+            price: addOn.price,
+            vatAmount: addOn.vatAmount,
+            planTypeCode: addOn.planTypeCode,
           ),
         )
         .toList(growable: false);
-  }
-
-  String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket = addOnPlan.planBuckets.isEmpty
-        ? null
-        : addOnPlan.planBuckets.first;
-
-    if (firstBucket == null) {
-      return 'balance';
-    }
-
-    final normalizedBucketName = firstBucket.name.trim().toLowerCase();
-    if (normalizedBucketName.isEmpty) {
-      return 'balance';
-    }
-
-    switch (normalizedBucketName) {
-      case 'data':
-        return 'data balance';
-      case 'minutes':
-        return 'minutes balance';
-      case 'texts':
-        return 'text balance';
-      default:
-        return '$normalizedBucketName balance';
-    }
-  }
-
-  String _buildAddOnValue(BasePlanModel addOnPlan) {
-    final firstBucket = addOnPlan.planBuckets.isEmpty
-        ? null
-        : addOnPlan.planBuckets.first;
-
-    if (firstBucket == null) {
-      return '';
-    }
-
-    final amountText = _formatWholeOrDecimal(firstBucket.amount);
-    final unitText = firstBucket.unit.trim().toLowerCase();
-
-    if (unitText.isEmpty) {
-      return amountText;
-    }
-
-    return '$amountText$unitText';
-  }
-
-  String _formatWholeOrDecimal(double value) {
-    if (value == value.truncateToDouble()) {
-      return value.toInt().toString();
-    }
-
-    return value.toStringAsFixed(2);
   }
 }

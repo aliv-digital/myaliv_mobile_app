@@ -22,6 +22,7 @@ import '../models/plan_model.dart';
 import '../models/plan_purchase_context.dart';
 import '../repository/enums/plan_group.dart';
 import '../repository/plan_types.dart';
+import '../repository/services/authenticated_add_on_filter_service.dart';
 import 'roam_bottom_sheet.dart';
 import 'wallet_payment_activate_bottom_sheet.dart';
 import 'wallet_payment_activate_or_future_bottom_sheet.dart';
@@ -43,7 +44,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
-    activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
+    activePrimaryPlan: plansState.addOnsPrimaryPlan,
     purchaseContext:
         (selectedTab == HomePlanTab.daily ||
                 selectedTab == HomePlanTab.weekly ||
@@ -56,6 +57,28 @@ Future<void> showHomePlanPurchaseBottomSheet({
         ? PlanPurchaseContext.prepaidImmediatePrimaryReplacement
         : PlanPurchaseContext.regular,
   );
+
+  void continueImmediatePurchase() {
+    final showAddOns = const AuthenticatedAddOnFilterService()
+        .canOfferDuringPurchase(
+          hasActivePrimaryPlan: plansState.hasActivePrimaryPlan,
+          selectedPlan: selectedApiPlan,
+        );
+    if (showAddOns) {
+      context.push(AppRoutes.homePurchasePlanAddOns, extra: selectedPlanExtra);
+      return;
+    }
+    context.push(
+      AppRoutes.homePlanConfirmationScreen,
+      extra: _futurePlanConfirmationRouteArgs(
+        selectedApiPlan: selectedApiPlan,
+        fallbackPlan: plan,
+        forceNow: true,
+        futurePlanStartDate: '',
+        purchaseContext: selectedPlanExtra.purchaseContext,
+      ),
+    );
+  }
 
   return showModalBottomSheet<void>(
     context: context,
@@ -195,10 +218,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
               );
               return;
             }
-            context.push(
-              AppRoutes.homePurchasePlanAddOns,
-              extra: selectedPlanExtra,
-            );
+            continueImmediatePurchase();
           },
           /* Previous inline future-plan workflow retained for reference.
           onFuturePlanPressed: () {
@@ -281,10 +301,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
             );
             return;
           }
-          context.push(
-            AppRoutes.homePurchasePlanAddOns,
-            extra: selectedPlanExtra,
-          );
+          continueImmediatePurchase();
         },
       );
     },
@@ -410,6 +427,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required String futurePlanStartDate,
   String altContactNumber = '',
   bool marketingOptIn = false,
+  PlanPurchaseContext purchaseContext = PlanPurchaseContext.regular,
 }) {
   final accountState = instance<AccountInfoCubit>().state;
 
@@ -429,6 +447,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     forceNow: forceNow,
     altContactNumber: altContactNumber,
     marketingOptIn: marketingOptIn,
+    purchaseContext: purchaseContext,
   );
 }
 

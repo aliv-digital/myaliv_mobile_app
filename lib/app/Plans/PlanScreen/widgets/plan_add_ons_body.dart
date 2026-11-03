@@ -47,8 +47,7 @@ class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
         return previous.selectedTabStatus != current.selectedTabStatus ||
-            previous.earliestAddOnsPrimaryPlan !=
-                current.earliestAddOnsPrimaryPlan ||
+            previous.addOnsPrimaryPlan != current.addOnsPrimaryPlan ||
             previous.addOns != current.addOns ||
             previous.selectedAddOnIds != current.selectedAddOnIds ||
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt ||
@@ -72,7 +71,7 @@ class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
           return const AddOnShimmerList();
         }
 
-        if (state.earliestAddOnsPrimaryPlan == null) {
+        if (state.addOnsPrimaryPlan == null) {
           return AddOnsNoPrimaryPlanState(
             onPurchasePlan:
                 widget.onNoPrimaryPlanPurchase ??
