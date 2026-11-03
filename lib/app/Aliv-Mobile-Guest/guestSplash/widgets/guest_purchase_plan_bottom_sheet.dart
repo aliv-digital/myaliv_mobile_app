@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import '../../guestPurchasePlan/models/guest_purchase_plan_route_args.dart';
 import '../theme/guest_splash_theme.dart';
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
@@ -302,24 +303,25 @@ class _SheetBodyState extends State<_SheetBody> {
           try {
             final subscriber = await repo.verifySubscriber(phone);
             if (!context.mounted) return;
-            if (!subscriber.isActivePrepaid) {
+            if (!subscriber.canPurchasePlan) {
               AppToast.show(
-                message: GuestSplashTheme.invalidActivePrepaidErrorMessage,
+                message: GuestSplashTheme.invalidActiveMobileErrorMessage,
                 type: ToastType.error,
               );
               return;
             }
             context.push(
               AppRoutes.guestPurchasePlan,
-              extra: {
-                'phoneNumber':
+              extra: GuestPurchasePlanRouteArgs(
+                phoneNumber:
                     LoginPhoneNumberHelper.formatBahamasNumberForDisplay(phone),
-              },
+                paymentOption: subscriber.planPaymentOption!,
+              ),
             );
           } catch (_) {
             if (!context.mounted) return;
             AppToast.show(
-              message: GuestSplashTheme.invalidActivePrepaidErrorMessage,
+              message: GuestSplashTheme.invalidActiveMobileErrorMessage,
               type: ToastType.error,
             );
           } finally {

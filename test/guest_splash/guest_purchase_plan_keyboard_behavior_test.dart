@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/guest_purchase_plan_route_args.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,7 +82,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(harness.routeExtras, <Object?>[
-      <String, String>{'phoneNumber': '(242)-555-1234'},
+      const GuestPurchasePlanRouteArgs(
+        phoneNumber: '(242)-555-1234',
+        paymentOption: PaymentOption.prepay,
+      ),
     ]);
     expect(find.text('guest purchase plan destination'), findsOneWidget);
   });
@@ -181,7 +186,10 @@ void main() {
 
       expect(find.text('The plan was purchased successfully.'), findsNothing);
       expect(harness.routeExtras, <Object?>[
-        <String, String>{'phoneNumber': '(242)-555-1234'},
+        const GuestPurchasePlanRouteArgs(
+          phoneNumber: '(242)-555-1234',
+          paymentOption: PaymentOption.prepay,
+        ),
       ]);
     });
   });

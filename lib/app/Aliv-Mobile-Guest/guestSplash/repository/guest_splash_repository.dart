@@ -3,12 +3,20 @@ import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/core/networkService/app_settings_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 
 class GuestSubscriberInfo {
   final String? accountStatus;
   final String? paymentOption;
 
   const GuestSubscriberInfo({this.accountStatus, this.paymentOption});
+
+  PaymentOption? get planPaymentOption => PaymentOption.parse(paymentOption);
+
+  bool get canPurchasePlan =>
+      (accountStatus?.trim().toUpperCase() == 'AC' ||
+          accountStatus?.trim().toLowerCase() == 'active') &&
+      planPaymentOption != null;
 
   bool get isActivePrepaid =>
       (accountStatus?.trim().toUpperCase() == 'AC' ||

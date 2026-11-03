@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/repository/guest_purchase_plan_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_parser_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_visibility_filter.dart';
@@ -51,6 +52,7 @@ Map<String, dynamic> _plan({
   String type = 'P',
   String frequency = 'M',
   String group = '',
+  String paymentOption = 'PrePay',
 }) {
   return <String, dynamic>{
     'PlanID': id,
@@ -60,7 +62,7 @@ Map<String, dynamic> _plan({
     'VATAmount': '3.00',
     'PlanType': type,
     'Frequency': frequency,
-    'PaymentOption': 'PrePay',
+    'PaymentOption': paymentOption,
     'PlanGroup': group,
     'PlanBuckets': <Map<String, dynamic>>[
       <String, dynamic>{
@@ -76,6 +78,146 @@ Map<String, dynamic> _plan({
 }
 
 void main() {
+  group('postpaid guest roaming', () {
+    for (final payment in ['PostPay', 'PostPaid', 'post-pay']) {
+      test(
+        '$payment maps postpaid models and filters standalone travel plans',
+        () async {
+          final raw = [
+            for (final (name, amount, vat) in [
+              ('travel50', 45.45, 4.55),
+              ('travel30', 27.27, 2.73),
+              ('travel20', 18.18, 1.82),
+            ])
+              {
+                ..._plan(
+                  id: name,
+                  name: '$name ${name == 'travel50' ? 14 : 7}-day',
+                  type: 'A',
+                  frequency: name == 'travel50' ? 'B' : 'W',
+                  group: 'Roaming',
+                  paymentOption: payment,
+                ),
+                'PlanAmount': amount,
+                'VATAmount': vat,
+              },
+            _plan(
+              id: 'unlisted',
+              name: 'travel500',
+              type: 'A',
+              group: 'Roaming',
+              paymentOption: payment,
+            ),
+            _plan(
+              id: 'special',
+              name: 'travel30',
+              type: 'S',
+              group: 'Roaming',
+              paymentOption: payment,
+            ),
+            _plan(id: 'prepaid', name: 'roam50', type: 'A', group: 'Roaming'),
+            _plan(id: 'monthly', name: 'liberty70', paymentOption: payment),
+            _plan(
+              id: 'easy',
+              name: 'roameasy carib',
+              type: 'A',
+              group: 'roameasy',
+              paymentOption: payment,
+            ),
+          ];
+          final network = _FakeNetworkService(raw);
+          final repository = GuestPurchasePlanRepository(
+            phoneNumber: '2425550100',
+            paymentOption: PaymentOption.postpay,
+            networkService: network,
+          );
+          final result = await repository.fetchPlans(tab: PlanTab.roaming);
+          expect(result.map((plan) => plan.id), [
+            'travel50',
+            'travel30',
+            'travel20',
+          ]);
+          expect(result.map((plan) => plan.basePrice), [45.45, 27.27, 18.18]);
+          expect(result.map((plan) => plan.vatAmount), [4.55, 2.73, 1.82]);
+          expect(result.map((plan) => plan.price), [50, 30, 20]);
+          final selected = repository.findBasePlanById('travel50')!;
+          expect(selected.planName, 'travel50 14-day');
+          expect(selected.paymentOption, payment);
+          expect(selected.frequency, 'B');
+          expect(selected.planBuckets.single.amount, 14);
+          expect(selected.planBuckets.single.suppress, isFalse);
+          final empty = await repository.fetchEmptyPlanTabs();
+          expect(empty, isNot(contains(PlanTab.roaming)));
+          for (final tab in PlanTab.values.where(
+            (tab) => tab != PlanTab.roaming,
+          )) {
+            expect(await repository.fetchPlans(tab: tab), isEmpty);
+            if (tab != PlanTab.addOns) {
+              expect(empty, contains(tab));
+            }
+          }
+          expect(network.requestCount, 1);
+          final shared = await PlanParserService().parseAndCategorize(raw);
+          expect(
+            shared.postpaidRoamingPlans.any((plan) => plan.planId == 'special'),
+            isTrue,
+          );
+          final prepaidRepository = GuestPurchasePlanRepository(
+            phoneNumber: '2425550200',
+            paymentOption: PaymentOption.prepay,
+            networkService: network,
+          );
+          expect(
+            (await prepaidRepository.fetchPlans(
+              tab: PlanTab.roaming,
+            )).single.id,
+            'prepaid',
+          );
+          expect(network.requestCount, 2);
+        },
+      );
+    }
+
+    test(
+      'legacy caller can consume a postpaid-only catalog using wire metadata',
+      () async {
+        final repository = GuestPurchasePlanRepository(
+          phoneNumber: '2425550100',
+          networkService: _FakeNetworkService([
+            _plan(
+              id: 'postpaid',
+              name: 'TRAVEL 20',
+              type: 'A',
+              group: 'Roaming',
+              paymentOption: 'PostPay',
+            ),
+          ]),
+        );
+        expect(
+          (await repository.fetchPlans(tab: PlanTab.roaming)).single.id,
+          'postpaid',
+        );
+      },
+    );
+
+    test('unmatched postpaid catalog leaves roaming empty', () async {
+      final repository = GuestPurchasePlanRepository(
+        phoneNumber: '2425550100',
+        paymentOption: PaymentOption.postpay,
+        networkService: _FakeNetworkService([
+          _plan(
+            name: 'travel500',
+            type: 'A',
+            group: 'Roaming',
+            paymentOption: 'PostPay',
+          ),
+        ]),
+      );
+      expect(await repository.fetchPlans(tab: PlanTab.roaming), isEmpty);
+      expect(await repository.fetchEmptyPlanTabs(), contains(PlanTab.roaming));
+    });
+  });
+
   group('guest existing-plan add-ons filter', () {
     test(
       'accepts reordered names without changing plan data or shared parsing',
@@ -278,9 +420,9 @@ void main() {
           {
             ..._plan(
               id: name,
-              name: name,
+              name: '$name ${name == 'roam50' ? 14 : 7}-day',
               type: 'A',
-              frequency: 'W',
+              frequency: name == 'roam50' ? 'B' : 'W',
               group: 'Roaming',
             ),
             'PlanAmount': int.parse(name.substring(4)),
@@ -307,6 +449,16 @@ void main() {
       );
       final result = await repository.fetchPlans(tab: PlanTab.roaming);
       expect(result.map((plan) => plan.id), ['roam50', 'roam30', 'roam20']);
+      expect(result.map((plan) => plan.title), [
+        'roam50 14-day',
+        'roam30 7-day',
+        'roam20 7-day',
+      ]);
+      expect(result.map((plan) => plan.subtitle), [
+        '14 days',
+        '7 days',
+        '7 days',
+      ]);
       expect(result.map((plan) => plan.basePrice), [50, 30, 20]);
       expect(result.map((plan) => plan.vatAmount), [3, 3, 3]);
       expect(

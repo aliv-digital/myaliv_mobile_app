@@ -4,6 +4,8 @@ import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_group.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/bundle_response_parser.dart';
@@ -30,12 +32,14 @@ enum PlanTab {
 class GuestPurchasePlanRepository {
   GuestPurchasePlanRepository({
     required String phoneNumber,
+    PaymentOption? paymentOption,
     NetworkService? networkService,
     PlanParserService? parserService,
     GuestPlanPresentationMapper? presentationMapper,
     GuestAddOnFilterService? addOnFilterService,
     GuestPrimaryPlanFilterService? primaryPlanFilterService,
   }) : _phoneNumber = _normalizePhoneNumber(phoneNumber),
+       _paymentOption = paymentOption,
        _networkService = networkService ?? instance<NetworkService>(),
        _parserService = parserService ?? PlanParserService(),
        _presentationMapper =
@@ -56,6 +60,7 @@ class GuestPurchasePlanRepository {
   }
 
   final String _phoneNumber;
+  final PaymentOption? _paymentOption;
   final NetworkService _networkService;
   final PlanParserService _parserService;
   final GuestPlanPresentationMapper _presentationMapper;
@@ -74,7 +79,7 @@ class GuestPurchasePlanRepository {
       PlanTab.daily => catalogue.dailyPlans,
       PlanTab.weekly => catalogue.weeklyPlans,
       PlanTab.monthly => catalogue.monthlyPlans,
-      PlanTab.roaming => catalogue.roamingPlans,
+      PlanTab.roaming => _roamingPlans(catalogue),
       PlanTab.roameasy => catalogue.roamEasyPlans,
       PlanTab.mifi => catalogue.mifiPlans,
       PlanTab.libertyGlobal => catalogue.libertyGlobalPlans,
@@ -86,6 +91,19 @@ class GuestPurchasePlanRepository {
       isRoamEasy: tab == PlanTab.roameasy,
     );
   }
+
+  List<BasePlanModel> _roamingPlans(PlanCategorizationResult catalogue) => [
+    ...catalogue.roamingPlans,
+    // Adapt the shared postpaid model only at the guest boundary. Its wire
+    // values (including PaymentOption, prices, VAT and buckets) are preserved.
+    ...catalogue.postpaidRoamingPlans
+        .where(
+          (plan) =>
+              plan.planType.trim().toUpperCase() == 'A' &&
+              PlanGroup.parse(plan.planGroup) == PlanGroup.roaming,
+        )
+        .map((plan) => BasePlanModel.fromApiMap(plan.toJson())),
+  ];
 
   List<BasePlanModel> _visiblePlans(
     List<BasePlanModel> plans, {
@@ -104,7 +122,11 @@ class GuestPurchasePlanRepository {
     };
     return category == null
         ? visible
-        : _primaryPlanFilterService.filter(visible, category: category);
+        : _primaryPlanFilterService.filter(
+            visible,
+            category: category,
+            paymentOption: _paymentOption,
+          );
   }
 
   /// Returns the set of plan tabs whose catalogue slice is empty after the
@@ -128,7 +150,7 @@ class GuestPurchasePlanRepository {
     if (isEmpty(catalogue.monthlyPlans, PlanTab.monthly)) {
       empty.add(PlanTab.monthly);
     }
-    if (isEmpty(catalogue.roamingPlans, PlanTab.roaming)) {
+    if (isEmpty(_roamingPlans(catalogue), PlanTab.roaming)) {
       empty.add(PlanTab.roaming);
     }
     if (isEmpty(catalogue.roamEasyPlans, PlanTab.roameasy)) {
@@ -158,7 +180,7 @@ class GuestPurchasePlanRepository {
       catalogue.dailyPlans,
       catalogue.weeklyPlans,
       catalogue.monthlyPlans,
-      catalogue.roamingPlans,
+      _roamingPlans(catalogue),
       catalogue.roamEasyPlans,
       catalogue.mifiPlans,
       catalogue.libertyGlobalPlans,

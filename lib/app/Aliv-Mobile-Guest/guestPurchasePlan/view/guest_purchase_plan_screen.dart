@@ -17,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_group.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -42,25 +43,40 @@ import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 import '../widgets/weekly_plan_card.dart';
 
 class GuestPurchasePlanScreen extends StatelessWidget {
-  const GuestPurchasePlanScreen({super.key, this.phoneNumber = ''});
+  const GuestPurchasePlanScreen({
+    super.key,
+    this.phoneNumber = '',
+    this.paymentOption,
+  });
 
   final String phoneNumber;
+  final PaymentOption? paymentOption;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => GuestPurchasePlanBloc(
-        GuestPurchasePlanRepository(phoneNumber: phoneNumber),
+        GuestPurchasePlanRepository(
+          phoneNumber: phoneNumber,
+          paymentOption: paymentOption,
+        ),
+        initialTab: paymentOption == PaymentOption.postpay
+            ? PlanTab.roaming
+            : PlanTab.monthly,
       )..add(GuestPurchasePlanStarted()),
-      child: _GuestPurchasePlanView(phoneNumber: phoneNumber),
+      child: _GuestPurchasePlanView(
+        phoneNumber: phoneNumber,
+        paymentOption: paymentOption,
+      ),
     );
   }
 }
 
 class _GuestPurchasePlanView extends StatelessWidget {
-  const _GuestPurchasePlanView({this.phoneNumber = ''});
+  const _GuestPurchasePlanView({this.phoneNumber = '', this.paymentOption});
 
   final String phoneNumber;
+  final PaymentOption? paymentOption;
 
   static const double _addOnsTabHorizontalPadding = 25;
 
@@ -86,6 +102,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
   /// bottom protects against ever returning an empty list, since the
   /// auto-switch fallback relies on `tabs.first`.
   List<PlanTab> _visibleTabs(GuestPurchasePlanState state) {
+    if (paymentOption == PaymentOption.postpay) {
+      return const [PlanTab.roaming];
+    }
     final visible = <PlanTab>[];
     for (final tab in _allTabs) {
       if (tab == PlanTab.addOns) {

@@ -19,6 +19,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirm
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/payment_option.dart';
 
 const _noActivePlan =
     'the account owner has no active plan, so their new plan will start immediately.';
@@ -134,7 +135,11 @@ void main() {
     await instance.reset();
   });
 
-  Future<void> pumpScreen(WidgetTester tester, {double width = 390}) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    double width = 390,
+    PaymentOption? paymentOption,
+  }) async {
     tester.view.physicalSize = Size(width, 1400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -160,8 +165,10 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, _) =>
-              const GuestPurchasePlanScreen(phoneNumber: '242-555-1234'),
+          builder: (_, _) => GuestPurchasePlanScreen(
+            phoneNumber: '242-555-1234',
+            paymentOption: paymentOption,
+          ),
         ),
         stub(AppRoutes.guestPurchasePlanAddOns),
         stub(AppRoutes.guestPurchasePlanConfirmation),
@@ -201,6 +208,101 @@ void main() {
   }
 
   for (final width in [320.0, 430.0]) {
+    testWidgets(
+      'postpaid guest shows only roaming and allowed travel plans at $width',
+      (tester) async {
+        plans.addAll([
+          for (final (id, name) in [
+            ('travel50', 'travel50 14-day'),
+            ('travel30', 'travel30 7-day'),
+            ('travel20', 'travel20 7-day'),
+            ('travel500', 'travel500'),
+            ('travel20 bundle', 'travel20 bundle'),
+          ])
+            {
+              ..._plan(
+                id: id,
+                name: name,
+                type: 'A',
+                frequency: id == 'travel50' ? 'B' : 'W',
+                group: 'Roaming',
+              ),
+              'PaymentOption': 'PostPay',
+            },
+        ]);
+        final now = DateTime.now();
+        existingPlans['PrimaryPlans'] = [
+          {
+            ..._plan(
+              id: 'active',
+              name: 'freedom45',
+              type: 'P',
+              frequency: 'W',
+            ),
+            'StartDate': now
+                .subtract(const Duration(days: 1))
+                .toIso8601String(),
+            'EndDate': now.add(const Duration(days: 5)).toIso8601String(),
+            'AvailableBoltOns': [
+              _plan(
+                id: 'addon',
+                name: 'freedom data1',
+                type: 'S',
+                frequency: 'W',
+              ),
+            ],
+          },
+        ];
+        await pumpScreen(
+          tester,
+          width: width,
+          paymentOption: PaymentOption.postpay,
+        );
+        expect(find.text('roaming'), findsOneWidget);
+        for (final label in [
+          'daily',
+          'weekly',
+          'monthly',
+          'roameasy',
+          'mifi',
+          'liberty global',
+          'add-ons',
+        ]) {
+          expect(find.text(label), findsNothing);
+        }
+        for (final name in ['travel50', 'travel30', 'travel20']) {
+          expect(find.text(name), findsOneWidget);
+        }
+        expect(
+          tester
+              .widgetList<RoamingPlanCard>(find.byType(RoamingPlanCard))
+              .map((card) => card.plan.title),
+          containsAll(['travel50 14-day', 'travel30 7-day', 'travel20 7-day']),
+        );
+        for (final name in [
+          'travel500',
+          'travel20 bundle',
+          'roam20',
+          'liberty70',
+        ]) {
+          expect(find.text(name), findsNothing);
+        }
+        await purchaseNow(tester, 'travel20');
+        expect(find.byType(RoamBottomSheet), findsOneWidget);
+        await tester.tap(find.text('activate now'));
+        await tester.pumpAndSettle();
+        expect(visited, [AppRoutes.roamingPlanConfirmation]);
+        final args = roamingExtras.single! as Map<String, Object?>;
+        expect(args['planId'], 'travel20');
+        expect(args['planName'], 'travel20 7-day');
+        expect(args['phoneNumber'], '242-555-1234');
+        expect(args['planBasePrice'], 30);
+        expect(args['planVatAmount'], 3);
+        expect(args['forceNow'], isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets(
       'guest liberty global shows only the four listed destinations at $width',
       (tester) async {
@@ -284,9 +386,9 @@ void main() {
       plans.removeWhere((plan) => plan['PlanGroup'] == 'Roaming');
       plans.addAll([
         for (final name in [
-          'roam50',
-          'roam30',
-          'roam20',
+          'roam50 14-day',
+          'roam30 7-day',
+          'roam20 7-day',
           'roam500',
           'roam20 bundle',
         ])
@@ -294,7 +396,7 @@ void main() {
             id: name,
             name: name,
             type: 'A',
-            frequency: 'W',
+            frequency: name == 'roam50 14-day' ? 'B' : 'W',
             group: 'Roaming',
           ),
       ]);
@@ -303,6 +405,12 @@ void main() {
       for (final name in ['roam50', 'roam30', 'roam20']) {
         expect(find.text(name), findsOneWidget);
       }
+      expect(
+        tester
+            .widgetList<RoamingPlanCard>(find.byType(RoamingPlanCard))
+            .map((card) => card.plan.title),
+        containsAll(['roam50 14-day', 'roam30 7-day', 'roam20 7-day']),
+      );
       expect(find.text('roam500'), findsNothing);
       expect(find.text('roam20 bundle'), findsNothing);
       expect(tester.takeException(), isNull);
@@ -388,6 +496,36 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('postpaid empty result never falls back to prepaid tabs', (
+    tester,
+  ) async {
+    plans.add({
+      ..._plan(
+        id: 'unlisted',
+        name: 'travel500',
+        type: 'A',
+        frequency: 'W',
+        group: 'Roaming',
+      ),
+      'PaymentOption': 'PostPay',
+    });
+    await pumpScreen(tester, paymentOption: PaymentOption.postpay);
+    expect(find.text('roaming'), findsOneWidget);
+    for (final label in [
+      'daily',
+      'weekly',
+      'monthly',
+      'roameasy',
+      'mifi',
+      'liberty global',
+      'add-ons',
+    ]) {
+      expect(find.text(label), findsNothing);
+    }
+    expect(find.text('travel500'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'a primary tab disappears when all of its plans are filtered out',
