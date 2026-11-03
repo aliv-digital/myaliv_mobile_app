@@ -99,12 +99,19 @@ class DeviceLimitsRepository {
     );
   }
 
-  /// Enable auto-renew from credit card
+  /// POST /CreditCard/auto-renew with the given token and agreement text.
   ///
-  /// [token] - Saved card token to charge on renewal
-  /// Returns true if auto-renew was enabled successfully
-  Future<bool> enableAutoRenewCard({required String token}) async {
-    return _apiService.enableAutoRenewCard(token: token);
+  /// [token] - Saved card token (empty string clears the renewal card record)
+  /// [agreementText] - Consent text; defaults to the standard enable-flow
+  /// string. Disable flows pass an empty string.
+  Future<bool> enableAutoRenewCard({
+    required String token,
+    String agreementText = 'I agree to automatic renewal',
+  }) async {
+    return _apiService.enableAutoRenewCard(
+      token: token,
+      agreementText: agreementText,
+    );
   }
 
   /// Update balance threshold settings for auto top-up

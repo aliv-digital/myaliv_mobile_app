@@ -154,6 +154,21 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
 
   // ============ Auto-Renew Methods ============
 
+  /// `POST /CreditCard/auto-renew` with empty token (and the default agreement
+  /// text — backend rejects empty AgreementText with 400), clearing the
+  /// customer's renewal-card record server-side. Silent: never throws, no
+  /// state emits — the device/invoice call owns UX feedback.
+  ///
+  /// Called by prepaid-disable and postpaid-disable flows to keep the renewal
+  /// card record in sync with the device-level / invoice-level toggle.
+  Future<void> clearAutoRenewCardSilently() async {
+    try {
+      await _repository.enableAutoRenewCard(token: '');
+    } catch (_) {
+      // Intentionally silent.
+    }
+  }
+
   /// Fires `PUT /device/subscription/{subId}/auto-renew` alongside the device-
   /// level call. Silent: no state emits, no toasts — the device call owns UX.
   /// `subId` is the active plan's `MTSubscriptionID` resolved from
@@ -240,6 +255,8 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
   Future<bool> disableAutoRenew(int deviceAccountId) async {
     if (state.isTogglingAutoRenew) return false;
 
+    // Spec order: card → subscription → device.
+    await clearAutoRenewCardSilently();
     _fireSubscriptionAutoRenewSilently(enable: false);
 
     emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
