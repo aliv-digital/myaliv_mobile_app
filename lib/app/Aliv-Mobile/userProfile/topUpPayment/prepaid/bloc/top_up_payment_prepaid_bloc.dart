@@ -12,14 +12,13 @@ class TopUpPaymentPrepaidBloc
   final TopUpPaymentPrepaidRepository repository;
   final AnalyticsService _analyticsService;
 
-  TopUpPaymentPrepaidBloc(
-    this.repository, {
-    AnalyticsService? analyticsService,
-  })  : _analyticsService = analyticsService ??
-            (instance.isRegistered<AnalyticsService>()
-                ? instance<AnalyticsService>()
-                : AnalyticsService()),
-        super(TopUpPaymentPrepaidState.initial()) {
+  TopUpPaymentPrepaidBloc(this.repository, {AnalyticsService? analyticsService})
+    : _analyticsService =
+          analyticsService ??
+          (instance.isRegistered<AnalyticsService>()
+              ? instance<AnalyticsService>()
+              : AnalyticsService()),
+      super(TopUpPaymentPrepaidState.initial()) {
     on<TopUpPaymentStarted>(_onStarted);
     on<PaymentMethodSelected>(_onSelected);
     on<PayWithCardPressed>(_onPayWithCard);

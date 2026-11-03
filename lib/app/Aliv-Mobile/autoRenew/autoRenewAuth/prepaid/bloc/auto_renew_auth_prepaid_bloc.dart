@@ -21,11 +21,12 @@ class AutoRenewAuthPrepaidBloc
     required this.repository,
     required this.verifiedResult,
     AnalyticsService? analyticsService,
-  })  : _analyticsService = analyticsService ??
-            (instance.isRegistered<AnalyticsService>()
-                ? instance<AnalyticsService>()
-                : AnalyticsService()),
-        super(AutoRenewAuthPrepaidState.initial()) {
+  }) : _analyticsService =
+           analyticsService ??
+           (instance.isRegistered<AnalyticsService>()
+               ? instance<AnalyticsService>()
+               : AnalyticsService()),
+       super(AutoRenewAuthPrepaidState.initial()) {
     on<AutoRenewAuthPrepaidStarted>(_onStarted);
     on<AutoRenewAuthNameChanged>(_onNameChanged);
     on<AutoRenewAuthSubmitPressed>(_onSubmitPressed);
@@ -164,8 +165,9 @@ class AutoRenewAuthPrepaidBloc
       }
 
       if (success) {
-        final paymentMethodLabel =
-            _paymentMethodLabel(submission.paymentMethod);
+        final paymentMethodLabel = _paymentMethodLabel(
+          submission.paymentMethod,
+        );
         await _analyticsService.logAutopaySetupCompleted(
           paymentMethod: paymentMethodLabel,
         );

@@ -107,4 +107,3 @@ class _LoginKeyboardDoneToolbarState extends State<LoginKeyboardDoneToolbar> {
     );
   }
 }
-

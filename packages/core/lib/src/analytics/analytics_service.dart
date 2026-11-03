@@ -299,10 +299,12 @@ class AnalyticsService {
     try {
       await _analytics!.logAddPaymentInfo(paymentType: paymentType);
       if (kDebugMode) {
-        debugPrint('📊 Analytics → "add_payment_info" [card-save] $paymentType');
+        debugPrint(
+            '📊 Analytics → "add_payment_info" [card-save] $paymentType');
       }
     } catch (e) {
-      debugPrint('⚠️ AnalyticsService: failed to log card-save add_payment_info — $e');
+      debugPrint(
+          '⚠️ AnalyticsService: failed to log card-save add_payment_info — $e');
     }
   }
 
@@ -690,8 +692,7 @@ class AnalyticsService {
   /// Log a terminal failure during Auto-Pay setup. [failureReason] is one
   /// of [AnalyticsAutopaySetupFailureReason] — use `.classify(error)` to
   /// map a raw exception.
-  Future<void> logAutopaySetupFailed({required String failureReason}) =>
-      _log(
+  Future<void> logAutopaySetupFailed({required String failureReason}) => _log(
         AnalyticsEvent.autopaySetupFailed,
         params: {AnalyticsParam.failureReason: failureReason},
       );

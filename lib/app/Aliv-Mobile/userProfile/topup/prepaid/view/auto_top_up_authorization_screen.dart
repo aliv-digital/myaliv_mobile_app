@@ -111,8 +111,7 @@ class _AutoTopUpAuthorizationScreenState
       }
       if (instance.isRegistered<AnalyticsService>()) {
         await instance<AnalyticsService>().logAutopaySetupFailed(
-          failureReason:
-              AnalyticsAutopaySetupFailureReason.classify(error),
+          failureReason: AnalyticsAutopaySetupFailureReason.classify(error),
         );
       }
       return;
