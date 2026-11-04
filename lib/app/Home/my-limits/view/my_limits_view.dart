@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_state.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/limit_row.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_states.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -43,6 +44,18 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
     }
   }
 
+  bool _isRestricted(BuildContext context) {
+    try {
+      return context.watch<AppUiConfigCubit>().state.isRestricted;
+    } catch (_) {
+      try {
+        return instance<AppUiConfigCubit>().state.isRestricted;
+      } catch (_) {
+        return false;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -65,6 +78,8 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
   }
 
   Widget _buildContent(ConsumptionLimitState state) {
+    final isRestricted = _isRestricted(context);
+
     return RefreshIndicator(
       color: MyLimitsTab.purple,
       onRefresh: _refreshLimits,
@@ -91,8 +106,10 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
               ],
             ),
           ),
-          const SizedBox(height: 32),
-          _buildUpdateButton(),
+          if (!isRestricted) ...[
+            const SizedBox(height: 32),
+            _buildUpdateButton(),
+          ],
         ],
       ),
     );

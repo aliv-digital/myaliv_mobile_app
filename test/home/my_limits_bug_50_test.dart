@@ -1,8 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -10,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/models/consumption_limit_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/limit_row.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_view.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 class _MockConsumptionLimitCubit extends MockCubit<ConsumptionLimitState>
     implements ConsumptionLimitCubit {}
@@ -118,6 +121,58 @@ void main() {
               widget.child is RefreshIndicator,
         );
         expect(outerWhiteContainerFinder, findsNothing);
+      },
+    );
+
+    testWidgets(
+      'hides update credit limit button when postpaid user is read-only (isRestricted)',
+      (tester) async {
+        final appUiConfigCubit = AppUiConfigCubit(
+          initialConfig: const HomeUiConfig(
+            userType: UserType.postpaid,
+            hasActivePlan: true,
+            isFuturePlan: false,
+            lineRole: LineRole.readOnly,
+          ),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: BlocProvider.value(
+              value: appUiConfigCubit,
+              child: const Scaffold(body: MyLimitsTab()),
+            ),
+          ),
+        );
+
+        expect(find.text('local text'), findsOneWidget);
+        expect(find.text('update credit limit'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'shows update credit limit button when postpaid user is full access',
+      (tester) async {
+        final appUiConfigCubit = AppUiConfigCubit(
+          initialConfig: const HomeUiConfig(
+            userType: UserType.postpaid,
+            hasActivePlan: true,
+            isFuturePlan: false,
+            lineRole: LineRole.fullAccess,
+          ),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: BlocProvider.value(
+              value: appUiConfigCubit,
+              child: const Scaffold(body: MyLimitsTab()),
+            ),
+          ),
+        );
+
+        expect(find.text('local text'), findsOneWidget);
+        expect(find.text('update credit limit'), findsOneWidget);
       },
     );
   });

@@ -1,10 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/home_quick_actions.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+
+class MockAppUiConfigCubit extends Mock implements AppUiConfigCubit {}
 
 void main() {
   group('Bug 39 - Quick Actions Postpaid and Prepaid Design Tests', () {
@@ -16,6 +21,7 @@ void main() {
         'assets/icons/At.svg',
         'assets/icons/aliv_quick.svg',
         'assets/icons/headphone.svg',
+        'assets/icons/UsersThree.svg',
       ];
 
       for (final asset in assets) {
@@ -114,25 +120,84 @@ void main() {
       expect(find.text('update\ncredit limit'), findsNothing);
     });
 
-    testWidgets('Restricted role hides buy plans and credit limits', (
-      tester,
-    ) async {
-      const config = HomeUiConfig(
-        userType: UserType.postpaid,
-        hasActivePlan: true,
-        isFuturePlan: false,
-        lineRole: LineRole.readOnly,
-      );
+    testWidgets(
+      'Restricted readOnly role renders exact 5 tiles matching design',
+      (tester) async {
+        const config = HomeUiConfig(
+          userType: UserType.postpaid,
+          hasActivePlan: true,
+          isFuturePlan: false,
+          lineRole: LineRole.readOnly,
+        );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: HomeQuickActions(config: config)),
-        ),
-      );
+        final mockCubit = MockAppUiConfigCubit();
 
-      expect(find.text('buy\nplans'), findsNothing);
-      expect(find.text('update\ncredit limit'), findsNothing);
-      expect(find.text('add\ncredit card'), findsOneWidget);
-    });
+        await tester.pumpWidget(
+          BlocProvider<AppUiConfigCubit>.value(
+            value: mockCubit,
+            child: const MaterialApp(
+              home: Scaffold(body: HomeQuickActions(config: config)),
+            ),
+          ),
+        );
+
+        final tiles = tester
+            .widgetList<ActionTile>(find.byType(ActionTile))
+            .toList();
+
+        expect(tiles.length, 5);
+
+        // Row 1: future plans, update email, refer a friend
+        expect(tiles[0].label, 'future\nplans');
+        expect(tiles[0].iconPath, 'assets/icons/ListStarQuick.svg');
+
+        expect(tiles[1].label, 'update\nemail');
+        expect(tiles[1].iconPath, 'assets/icons/At.svg');
+
+        expect(tiles[2].label, 'refer a friend');
+        expect(tiles[2].iconPath, 'assets/icons/UsersThree.svg');
+
+        // Row 2: ALIV deals, help & support
+        expect(tiles[3].label, 'ALIV deals');
+        expect(tiles[3].iconPath, 'assets/icons/aliv_quick.svg');
+
+        expect(tiles[4].label, 'help & support');
+        expect(tiles[4].iconPath, 'assets/icons/headphone.svg');
+
+        // Restricted must NOT show buy plans, update credit limit, or add credit card
+        expect(find.text('buy\nplans'), findsNothing);
+        expect(find.text('update\ncredit limit'), findsNothing);
+        expect(find.text('add\ncredit card'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'Restricted prepaid role also renders exact 5 tiles matching design',
+      (tester) async {
+        const config = HomeUiConfig(
+          userType: UserType.prepaid,
+          hasActivePlan: true,
+          isFuturePlan: false,
+          lineRole: LineRole.readOnly,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(body: HomeQuickActions(config: config)),
+          ),
+        );
+
+        final tiles = tester
+            .widgetList<ActionTile>(find.byType(ActionTile))
+            .toList();
+
+        expect(tiles.length, 5);
+        expect(tiles[0].label, 'future\nplans');
+        expect(tiles[1].label, 'update\nemail');
+        expect(tiles[2].label, 'refer a friend');
+        expect(tiles[3].label, 'ALIV deals');
+        expect(tiles[4].label, 'help & support');
+      },
+    );
   });
 }

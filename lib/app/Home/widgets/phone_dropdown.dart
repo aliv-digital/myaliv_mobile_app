@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -35,8 +36,9 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     final activeId = config.activeDeviceId;
     if (activeId != null) {
       final matches = devices.where((d) => d.deviceId == activeId);
-      if (matches.isNotEmpty)
+      if (matches.isNotEmpty) {
         return PhoneDropdownHelper.stripTnSuffix(matches.first.tn);
+      }
     }
     return PhoneDropdownHelper.getPrimaryPhone(
       instance<AccountInfoCubit>().state.accountInfo,
@@ -73,16 +75,46 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
   ) async {
     final config = context.read<AppUiConfigCubit>().state;
     if (value == _resolveSelected(config, devices)) return;
+
+    // Yield so DropdownButton2 can finish closing its popup route before the dialog opens.
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) return;
+
     if (!await _confirmSwitch() || !mounted) return;
 
     final target = devices.firstWhere(
       (d) => PhoneDropdownHelper.stripTnSuffix(d.tn) == value,
       orElse: () => devices.first,
     );
-    if (target.parentAccountId == 0) {
+
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final primaryPhone = PhoneDropdownHelper.getPrimaryPhone(
+      accountInfo,
+      devices,
+    );
+    final isPrimary =
+        (value == primaryPhone) ||
+        (devices.isNotEmpty && target.deviceId == devices.first.deviceId);
+
+    if (isPrimary) {
       context.read<AppUiConfigCubit>().resetToOwnDevice();
     } else {
-      context.read<AppUiConfigCubit>().switchToDevice(target.deviceId);
+      int? roleId;
+      if (instance.isRegistered<RoleApiClient>()) {
+        try {
+          roleId = await instance<RoleApiClient>().fetchRoleId(target.deviceId);
+        } catch (_) {
+          roleId = null;
+        }
+      }
+      final LineRole childRole = (roleId == 4)
+          ? LineRole.fullAccess
+          : LineRole.readOnly;
+      if (!mounted) return;
+      context.read<AppUiConfigCubit>().switchToDevice(
+        target.deviceId,
+        lineRole: childRole,
+      );
     }
     if (instance.isRegistered<AnalyticsService>()) {
       instance<AnalyticsService>().logAccountLineSwitched();
@@ -90,7 +122,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     _reloadData(target.deviceId);
   }
 
-  void _reloadData(int deviceId) {
+  void _reloadData(int deviceId) async {
     final uiConfig = context.read<AppUiConfigCubit>().state;
     instance<BalanceCubit>().loadBalances(
       deviceAccountId: deviceId,

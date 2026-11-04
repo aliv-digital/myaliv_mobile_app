@@ -75,11 +75,20 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
 
   void setLineRole(LineRole role) => emit(state.copyWith(lineRole: role));
 
-  void switchToDevice(int deviceId) =>
-      emit(state.copyWith(activeDeviceId: deviceId, isViewingChildLine: true));
+  void switchToDevice(int deviceId, {LineRole? lineRole}) => emit(
+    state.copyWith(
+      activeDeviceId: deviceId,
+      isViewingChildLine: true,
+      lineRole: lineRole,
+    ),
+  );
 
   void resetToOwnDevice() => emit(
-    state.copyWith(isViewingChildLine: false, clearActiveDeviceId: true),
+    state.copyWith(
+      isViewingChildLine: false,
+      clearActiveDeviceId: true,
+      lineRole: state.primaryLineRole,
+    ),
   );
 
   /// Reset to the default/anonymous config. Called on hard logout so the
