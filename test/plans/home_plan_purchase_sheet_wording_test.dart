@@ -111,7 +111,6 @@ void main() {
       expect(find.text('future plan'), findsNothing);
       expect(tester.takeException(), isNull);
     });
-
   }
 
   testWidgets('standalone without any primary still uses no-active-plan copy', (
@@ -315,5 +314,4 @@ void main() {
     );
     expect(const PlansState().hasActivePrimaryPlan, isFalse);
   });
-
 }

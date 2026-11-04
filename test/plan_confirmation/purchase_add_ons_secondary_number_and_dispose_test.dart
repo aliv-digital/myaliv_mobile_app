@@ -169,7 +169,6 @@ void main() {
           verify(() => plansCubit.clearSelectedAddOns()).called(1);
         },
       );
-
     },
   );
 }
