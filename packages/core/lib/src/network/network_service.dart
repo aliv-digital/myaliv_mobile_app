@@ -104,7 +104,12 @@ class NetworkService {
     }
   }
 
-  /// Make HTTP request with automatic error handling
+  static const int _maxRetryAttempts = 3;
+
+  /// Make HTTP request with automatic error handling.
+  ///
+  /// Automatically retries up to [_maxRetryAttempts] times on timeout with
+  /// exponential backoff (1 s, 2 s). All other errors are thrown immediately.
   Future<Response<T>> request<T>(
     String path, {
     required HttpMethod method,
@@ -127,77 +132,116 @@ class NetworkService {
     final token =
         cancelToken ?? (requestId != null ? _getCancelToken(requestId) : null);
 
-    try {
-      Response<T> response;
+    // Only retry idempotent methods — POST/PUT/PATCH may mutate server state
+    // before the timeout fires, so retrying them risks double-submission.
+    final canRetry = method == HttpMethod.get;
+    final maxAttempts = canRetry ? _maxRetryAttempts : 1;
 
-      switch (method) {
-        case HttpMethod.get:
-          response = await _dio.get<T>(
-            path,
-            data: data,
-            queryParameters: queryParameters,
-            options: options,
-            cancelToken: token,
-            onReceiveProgress: onReceiveProgress,
-          );
-          break;
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        final response = await _dispatchRequest<T>(
+          path,
+          method: method,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: token,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
 
-        case HttpMethod.post:
-          response = await _dio.post<T>(
-            path,
-            data: data,
-            queryParameters: queryParameters,
-            options: options,
-            cancelToken: token,
-            onSendProgress: onSendProgress,
-            onReceiveProgress: onReceiveProgress,
-          );
-          break;
+        if (requestId != null) _cancelTokens.remove(requestId);
+        return response;
+      } on DioException catch (e) {
+        final isTimeout = e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout;
 
-        case HttpMethod.put:
-          response = await _dio.put<T>(
-            path,
-            data: data,
-            queryParameters: queryParameters,
-            options: options,
-            cancelToken: token,
-            onSendProgress: onSendProgress,
-            onReceiveProgress: onReceiveProgress,
-          );
-          break;
+        if (isTimeout && attempt < maxAttempts) {
+          final delay = Duration(seconds: 1 << (attempt - 1));
+          if (kDebugMode) {
+            debugPrint(
+              '⏳ NetworkService: Timeout on attempt $attempt/$maxAttempts'
+              ' [$method] $path — retrying in ${delay.inSeconds}s…',
+            );
+          }
+          await Future.delayed(delay);
+          continue;
+        }
 
-        case HttpMethod.delete:
-          response = await _dio.delete<T>(
-            path,
-            data: data,
-            queryParameters: queryParameters,
-            options: options,
-            cancelToken: token,
-          );
-          break;
-
-        case HttpMethod.patch:
-          response = await _dio.patch<T>(
-            path,
-            data: data,
-            queryParameters: queryParameters,
-            options: options,
-            cancelToken: token,
-            onSendProgress: onSendProgress,
-            onReceiveProgress: onReceiveProgress,
-          );
-          break;
+        if (requestId != null) _cancelTokens.remove(requestId);
+        throw _handleDioException(e);
+      } catch (e) {
+        if (requestId != null) _cancelTokens.remove(requestId);
+        throw NetworkException('Unexpected error: $e');
       }
+    }
 
-      if (requestId != null) {
-        _cancelTokens.remove(requestId);
-      }
+    throw StateError('unreachable');
+  }
 
-      return response;
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    } catch (e) {
-      throw NetworkException('Unexpected error: $e');
+  Future<Response<T>> _dispatchRequest<T>(
+    String path, {
+    required HttpMethod method,
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    switch (method) {
+      case HttpMethod.get:
+        return _dio.get<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress,
+        );
+
+      case HttpMethod.post:
+        return _dio.post<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
+
+      case HttpMethod.put:
+        return _dio.put<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
+
+      case HttpMethod.delete:
+        return _dio.delete<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+        );
+
+      case HttpMethod.patch:
+        return _dio.patch<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
     }
   }
 

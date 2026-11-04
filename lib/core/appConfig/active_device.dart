@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown_helper.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 /// App-wide active device resolver.
@@ -46,7 +45,11 @@ class ActiveDevice {
       final List<DeviceLimitsModel> devices = cubit.state.allDeviceLimits;
       for (final d in devices) {
         if (d.deviceId == activeId) {
-          return PhoneDropdownHelper.stripTnSuffix(d.tn);
+          // Strip UUID suffix only — no *dc* label; callers use this for
+          // API URLs and receipt display, not for the dropdown label.
+          final raw = d.tn;
+          final i = raw.indexOf('_');
+          return i == -1 ? raw : raw.substring(0, i);
         }
       }
       return null;

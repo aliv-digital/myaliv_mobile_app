@@ -3,14 +3,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Format phone number as (XXX)-XXX-XXXX
 String _formatPhone(String phone) {
-  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  const dcSuffix = '*dc*';
+  final hasDc = phone.endsWith(dcSuffix);
+  final base = hasDc ? phone.substring(0, phone.length - dcSuffix.length) : phone;
+  final digits = base.replaceAll(RegExp(r'\D'), '');
+  final String formatted;
   if (digits.length == 10) {
-    return '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
+    formatted = '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
+  } else if (digits.length == 11 && digits.startsWith('1')) {
+    formatted = '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
+  } else {
+    formatted = base;
   }
-  if (digits.length == 11 && digits.startsWith('1')) {
-    return '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
-  }
-  return phone;
+  return hasDc ? '$formatted $dcSuffix' : formatted;
 }
 
 class _PhoneRoleBadge extends StatelessWidget {
