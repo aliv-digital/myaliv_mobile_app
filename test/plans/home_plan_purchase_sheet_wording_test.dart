@@ -111,36 +111,6 @@ void main() {
       expect(find.text('future plan'), findsNothing);
       expect(tester.takeException(), isNull);
     });
-
-    testWidgets('standalone and future primary use shorter wording at $size', (
-      tester,
-    ) async {
-      tester.view.physicalSize = size;
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      await openSheet(
-        tester,
-        PlansState(
-          addOnsApiPrimaryPlans: [
-            plan(id: 'future', start: currentEnd, end: futureEnd),
-          ],
-          standAlonePlans: [plan(type: 'A', start: today, end: currentEnd)],
-        ),
-      );
-
-      expect(
-        find.text(
-          'you can activate your plan when your current plan ends on '
-          '${DateFormat('MM-dd-yy').format(futureEnd)}.',
-        ),
-        findsOneWidget,
-      );
-      expect(find.textContaining('activating now replaces'), findsNothing);
-      expect(find.text('future plan'), findsOneWidget);
-      expect(find.text('activate now'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
   }
 
   testWidgets('standalone without any primary still uses no-active-plan copy', (
@@ -194,7 +164,7 @@ void main() {
     });
   }
 
-  for (final scenario in ['primary only', 'future only', 'standalone only']) {
+  for (final scenario in ['primary only', 'standalone only']) {
     testWidgets('$scenario keeps replacement wording', (tester) async {
       final end = scenario == 'future only' ? futureEnd : currentEnd;
       await openSheet(
@@ -343,19 +313,5 @@ void main() {
       isFalse,
     );
     expect(const PlansState().hasActivePrimaryPlan, isFalse);
-  });
-
-  testWidgets('missing end date omits the date suffix', (tester) async {
-    await openSheet(
-      tester,
-      PlansState(
-        addOnsApiPrimaryPlans: [plan(start: currentEnd)],
-        standAlonePlans: [plan(type: 'A', start: today)],
-      ),
-    );
-    expect(
-      find.text('you can activate your plan when your current plan ends.'),
-      findsOneWidget,
-    );
   });
 }

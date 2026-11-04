@@ -135,7 +135,14 @@ void main() {
     await _submitField(tester, _phoneField(1));
     await tester.pump();
 
-    expect(find.text('Please enter required details first.'), findsOneWidget);
+    expect(
+      find.text(GuestPayBillTheme.emptyMobileErrorMessage),
+      findsOneWidget,
+    );
+    expect(
+      find.text(GuestPayBillTheme.emptyConfirmMobileErrorMessage),
+      findsOneWidget,
+    );
     verifyNever(
       () => networkService.request<dynamic>(
         Api.guestBalanceUrl,

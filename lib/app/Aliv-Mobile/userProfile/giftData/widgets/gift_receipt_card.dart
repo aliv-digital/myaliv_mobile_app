@@ -60,10 +60,10 @@ class GiftReceiptCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppConstants.defaultFontFamily,
-                      fontSize: 15,
+                      fontSize: 17,
                       fontWeight: FontWeight.w400,
                       color: GiftDataTheme.textMuted,
-                      height: 1.4,
+                      height: 1.2,
                     ),
                   ),
                 ),
@@ -78,7 +78,6 @@ class GiftReceiptCard extends StatelessWidget {
                 ),
                 _DetailRow(label: 'date', value: data.dateText),
                 _DetailRow(label: 'time', value: data.timeText),
-                _DetailRow(label: 'total data', value: data.totalDataLabel),
                 _DetailRow(
                   label: 'remaining data',
                   value: data.remainingDataLabel,
@@ -192,10 +191,10 @@ class _DetailRow extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontFamily: AppConstants.defaultFontFamily,
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w400,
                 color: GiftDataTheme.textMuted,
-                height: 1.4,
+                height: 1.2,
               ),
             ),
           ),
@@ -203,7 +202,7 @@ class _DetailRow extends StatelessWidget {
             value,
             style: TextStyle(
               fontFamily: AppConstants.defaultFontFamily,
-              fontSize: valueBold ? 16 : 15,
+              fontSize: valueBold ? 17 : 16,
               fontWeight: valueBold ? FontWeight.w800 : FontWeight.w500,
               color: GiftDataTheme.textPrimary,
               height: 1.4,

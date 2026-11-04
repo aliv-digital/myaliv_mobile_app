@@ -73,6 +73,19 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
     );
   }
 
+  /// Device role cache populated once at login for every device on the account.
+  /// Keyed by deviceId, value is the raw RoleId from /Account/{id}/role.
+  /// Not part of emitted state — supporting data only.
+  final Map<int, int?> _deviceRoles = {};
+
+  void cacheDeviceRoles(Map<int, int?> roles) {
+    _deviceRoles
+      ..clear()
+      ..addAll(roles);
+  }
+
+  int? getCachedRole(int deviceId) => _deviceRoles[deviceId];
+
   void setLineRole(LineRole role) => emit(state.copyWith(lineRole: role));
 
   void switchToDevice(int deviceId, {LineRole? lineRole}) => emit(
@@ -94,7 +107,10 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
   /// Reset to the default/anonymous config. Called on hard logout so the
   /// next user doesn't inherit the previous session's dropdown selection
   /// or user type.
-  void reset() => emit(_defaultConfig);
+  void reset() {
+    _deviceRoles.clear();
+    emit(_defaultConfig);
+  }
 
   /// Clears one-time navigation intent after the target screen uses it.
   void clearNavigationIntent() {

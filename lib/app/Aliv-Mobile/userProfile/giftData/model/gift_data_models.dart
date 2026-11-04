@@ -25,6 +25,22 @@ class GiftAmountOption extends Equatable {
   List<Object?> get props => [planId, dataSharePlanId, amountGb, label];
 }
 
+/// Result of recipient eligibility check via guestBalanceUrl.
+class RecipientVerificationResult extends Equatable {
+  const RecipientVerificationResult({this.accountStatus, this.paymentOption});
+
+  final String? accountStatus;
+  final String? paymentOption;
+
+  bool get isPrepaid => paymentOption?.toLowerCase() == 'prepay';
+  bool get isPostpaid => paymentOption?.toLowerCase() == 'postpay';
+  bool get isActive => accountStatus?.toUpperCase() == 'AC';
+  bool get isValidPrepaid => isPrepaid && isActive;
+
+  @override
+  List<Object?> get props => [accountStatus, paymentOption];
+}
+
 /// Receipt payload for the success screen.
 class GiftDataReceiptData extends Equatable {
   const GiftDataReceiptData({

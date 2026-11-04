@@ -27,6 +27,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/Otp/prepaid/bloc/f
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/Otp/prepaid/widgets/forgetOtp_code_fields.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/widgets/enter_password_prepaid_password_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/repository/gift_data_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gift_data_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/view/gift_data_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_amount_box.dart';
@@ -271,29 +272,90 @@ void main() {
         },
       );
 
-      testWidgets('Gift Data: Next focuses confirmation on $platform $size', (
-        tester,
-      ) async {
-        final account = _Account();
-        final repo = _GiftRepository();
-        when(() => account.state).thenReturn(
-          const AccountInfoState(
-            accountInfo: AccountInfoModel(primaryPhoneNumber: '2425550100'),
-          ),
-        );
-        instance.registerSingleton<AccountInfoCubit>(account);
-        instance.registerSingleton<GiftDataRepository>(repo);
-        addTearDown(account.close);
-        await open(
-          tester,
-          const GiftDataScreen(),
-          platform,
-          size,
-          isPage: true,
-        );
-        await traverse(tester, 2, size);
-        verifyZeroInteractions(repo);
-      });
+      testWidgets(
+        'Gift Data: validation keeps Next/Done working on $platform $size',
+        (tester) async {
+          final account = _Account();
+          final repo = _GiftRepository();
+          when(() => account.state).thenReturn(
+            const AccountInfoState(
+              accountInfo: AccountInfoModel(primaryPhoneNumber: '2425550100'),
+            ),
+          );
+          instance.registerSingleton<AccountInfoCubit>(account);
+          instance.registerSingleton<GiftDataRepository>(repo);
+          addTearDown(account.close);
+          await open(
+            tester,
+            const GiftDataScreen(),
+            platform,
+            size,
+            isPage: true,
+          );
+          await traverse(tester, 2, size);
+
+          final inputs = find.byType(TextField);
+          await tester.showKeyboard(inputs.first);
+          await tester.enterText(inputs.first, '899');
+          await tester.pumpAndSettle();
+          expect(
+            find.text(GiftDataTheme.invalidFormatErrorMessage),
+            findsOneWidget,
+          );
+          await tester.tap(find.widgetWithText(TextButton, 'Next'));
+          await tester.pumpAndSettle();
+          expect(
+            tester.widget<TextField>(inputs.last).focusNode!.hasFocus,
+            isTrue,
+          );
+
+          await tester.enterText(inputs.last, '2425550101');
+          await tester.pumpAndSettle();
+          expect(
+            find.text(GiftDataTheme.phoneMismatchErrorMessage),
+            findsOneWidget,
+          );
+          final recipient = tester
+              .widget<TextField>(inputs.first)
+              .controller!
+              .text;
+          final confirmation = tester
+              .widget<TextField>(inputs.last)
+              .controller!
+              .text;
+          await tester.tap(find.widgetWithText(TextButton, 'Done'));
+          await tester.pumpAndSettle();
+          expect(
+            tester.widget<TextField>(inputs.last).focusNode!.hasFocus,
+            isFalse,
+          );
+          expect(
+            tester.widget<TextField>(inputs.first).controller!.text,
+            recipient,
+          );
+          expect(
+            tester.widget<TextField>(inputs.last).controller!.text,
+            confirmation,
+          );
+
+          // Native keyboard actions use the same nodes as the toolbar.
+          await tester.showKeyboard(inputs.first);
+          await tester.testTextInput.receiveAction(TextInputAction.next);
+          await tester.pumpAndSettle();
+          expect(
+            tester.widget<TextField>(inputs.last).focusNode!.hasFocus,
+            isTrue,
+          );
+          await tester.testTextInput.receiveAction(TextInputAction.done);
+          await tester.pumpAndSettle();
+          expect(
+            tester.widget<TextField>(inputs.last).focusNode!.hasFocus,
+            isFalse,
+          );
+          expect(find.text('Done'), findsNothing);
+          verifyZeroInteractions(repo);
+        },
+      );
     }
   }
 
