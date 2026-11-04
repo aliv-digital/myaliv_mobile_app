@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
+
 import '../theme/edit_email_prepaid_theme.dart';
 
 class EditEmailPrepaidEmailInput extends StatefulWidget {
@@ -64,40 +66,54 @@ class _EditEmailPrepaidEmailInputState
                 EditEmailPrepaidTheme.inputBorderWidth)
             .clamp(0.0, EditEmailPrepaidTheme.editEmailInputRadius);
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: _hasFocus
-            ? EditEmailPrepaidTheme.focusedInputBorderGradient
-            : null,
-        borderRadius: BorderRadius.circular(
-          EditEmailPrepaidTheme.editEmailInputRadius,
-        ),
-      ),
-      padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(innerRadius),
-        child: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: EditEmailPrepaidTheme.inputBg,
-            borderRadius: BorderRadius.circular(
-              EditEmailPrepaidTheme.editEmailInputRadius,
-            ),
+    return AppKeyboardToolbar(
+      focusNodes: [_focusNode],
+      backgroundColor: EditEmailPrepaidTheme.bg,
+      buttonColor: EditEmailPrepaidTheme.brand,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: _hasFocus
+              ? EditEmailPrepaidTheme.focusedInputBorderGradient
+              : null,
+          borderRadius: BorderRadius.circular(
+            EditEmailPrepaidTheme.editEmailInputRadius,
           ),
-          padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-          alignment: Alignment.center,
-          child: TextField(
-            focusNode: _focusNode,
-            controller: _c,
-            enabled: widget.enabled,
-            keyboardType: TextInputType.emailAddress,
-            style: EditEmailPrepaidTheme.fieldValue,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isCollapsed: true,
-              hintText: '',
+        ),
+        padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(innerRadius),
+          child: Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: EditEmailPrepaidTheme.inputBg,
+              borderRadius: BorderRadius.circular(
+                EditEmailPrepaidTheme.editEmailInputRadius,
+              ),
             ),
-            onChanged: widget.onChanged,
+            padding: const EdgeInsets.only(
+              left: 8,
+              right: 8,
+              top: 8,
+              bottom: 8,
+            ),
+            alignment: Alignment.center,
+            child: TextField(
+              focusNode: _focusNode,
+              controller: _c,
+              enabled: widget.enabled,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
+              // Leave room for the 48-pixel toolbar when scrolling into view.
+              scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+              style: EditEmailPrepaidTheme.fieldValue,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isCollapsed: true,
+                hintText: '',
+              ),
+              onChanged: widget.onChanged,
+              onSubmitted: (_) => _focusNode.unfocus(),
+            ),
           ),
         ),
       ),

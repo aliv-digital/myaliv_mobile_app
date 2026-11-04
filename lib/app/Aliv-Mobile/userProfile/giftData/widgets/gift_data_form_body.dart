@@ -22,12 +22,16 @@ class GiftDataFormBody extends StatelessWidget {
     required this.recipientController,
     required this.confirmRecipientController,
     required this.onContinue,
+    this.recipientFocusNode,
+    this.confirmRecipientFocusNode,
   });
 
   final GiftDataState state;
   final TextEditingController recipientController;
   final TextEditingController confirmRecipientController;
   final VoidCallback onContinue;
+  final FocusNode? recipientFocusNode;
+  final FocusNode? confirmRecipientFocusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +70,9 @@ class GiftDataFormBody extends StatelessWidget {
           const SizedBox(height: GiftDataTheme.labelToInputGap),
           RecipientPhoneField(
             controller: recipientController,
+            focusNode: recipientFocusNode,
+            textInputAction: TextInputAction.next,
+            onSubmitted: (_) => confirmRecipientFocusNode?.requestFocus(),
             onChanged: (v) => context.read<GiftDataCubit>().recipientChanged(v),
           ),
           const SizedBox(height: GiftDataTheme.sectionGap),
@@ -76,6 +83,8 @@ class GiftDataFormBody extends StatelessWidget {
           const SizedBox(height: GiftDataTheme.labelToInputGap),
           RecipientPhoneField(
             controller: confirmRecipientController,
+            focusNode: confirmRecipientFocusNode,
+            onSubmitted: (_) => confirmRecipientFocusNode?.unfocus(),
             enableCountryPicker: false,
             onChanged: (v) =>
                 context.read<GiftDataCubit>().confirmRecipientChanged(v),

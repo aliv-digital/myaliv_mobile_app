@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
@@ -360,6 +361,7 @@ class _CustomCountryPhoneInputSubmitRowState
                 children: [
                   Expanded(
                     child: TextField(
+                      scrollPadding: AppKeyboardToolbar.inputScrollPadding,
                       focusNode: _effectiveFocusNode,
                       controller: widget.controller,
                       autofocus: widget.autofocus,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import '../../../../login/widgets/focused_input_border_wrapper.dart';
 import '../theme/rev_prepaid_theme.dart';
 
@@ -8,8 +9,15 @@ class RevTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final TextInputType? keyboardType;
 
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
   const RevTextField({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     required this.value,
     required this.hintText,
     required this.onChanged,
@@ -22,7 +30,8 @@ class RevTextField extends StatefulWidget {
 
 class _RevTextFieldState extends State<RevTextField> {
   late final TextEditingController _controller;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _internalFocusNode = FocusNode();
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
   bool _hasFocus = false;
 
   @override
@@ -35,6 +44,13 @@ class _RevTextFieldState extends State<RevTextField> {
   @override
   void didUpdateWidget(covariant RevTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode).removeListener(
+        _onFocusChanged,
+      );
+      _focusNode.addListener(_onFocusChanged);
+      _hasFocus = _focusNode.hasFocus;
+    }
 
     // keep field in sync with bloc state (prefill/reset)
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
@@ -48,7 +64,7 @@ class _RevTextFieldState extends State<RevTextField> {
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    _internalFocusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -83,6 +99,9 @@ class _RevTextFieldState extends State<RevTextField> {
           child: TextField(
             controller: _controller,
             focusNode: _focusNode,
+            textInputAction: widget.textInputAction,
+            onSubmitted: widget.onSubmitted,
+            scrollPadding: AppKeyboardToolbar.inputScrollPadding,
             onChanged: widget.onChanged,
             keyboardType: widget.keyboardType,
             style: RevPrepaidTheme.input,

@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,7 @@ class UpgradeCreditLimitScreen extends StatefulWidget {
 }
 
 class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
+  final _focusNodes = List.generate(5, (_) => FocusNode());
   bool _agreed = true;
   bool _verificationPending = false;
   bool _showValidationErrors = false;
@@ -59,6 +61,9 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
 
   @override
   void dispose() {
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
     _verification.cancel();
     _submission.close();
     _localTextController.dispose();
@@ -190,36 +195,39 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: BlocProvider.value(
-        value: instance<DeviceLimitsCubit>(),
-        child: BlocListener<DeviceLimitsCubit, DeviceLimitsState>(
-          listener: (context, state) {
-            if (state.isLoaded) {
-              _populateControllers(state);
-            }
-            if (state.hasError && state.errorMessage != null) {
-              AppToast.show(
-                message: state.errorMessage!,
-                type: ToastType.error,
-              );
-            }
-          },
-          child: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-              children: [
-                _buildBalanceHeader(),
-                const SizedBox(height: 28),
-                _buildLimitFields(),
-                const SizedBox(height: 16),
-                _buildTermsAgreement(),
-                const SizedBox(height: 30),
-                _buildProceedButton(),
-                const SizedBox(height: 30),
-              ],
+    return AppKeyboardToolbar(
+      focusNodes: _focusNodes,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: BlocProvider.value(
+          value: instance<DeviceLimitsCubit>(),
+          child: BlocListener<DeviceLimitsCubit, DeviceLimitsState>(
+            listener: (context, state) {
+              if (state.isLoaded) {
+                _populateControllers(state);
+              }
+              if (state.hasError && state.errorMessage != null) {
+                AppToast.show(
+                  message: state.errorMessage!,
+                  type: ToastType.error,
+                );
+              }
+            },
+            child: SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                children: [
+                  _buildBalanceHeader(),
+                  const SizedBox(height: 28),
+                  _buildLimitFields(),
+                  const SizedBox(height: 16),
+                  _buildTermsAgreement(),
+                  const SizedBox(height: 30),
+                  _buildProceedButton(),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -326,26 +334,41 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
         LimitFieldWithController(
           label: 'local text',
           controller: _localTextController,
+          focusNode: _focusNodes[0],
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => _focusNodes[1].requestFocus(),
           validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: 'local data',
           controller: _localDataController,
+          focusNode: _focusNodes[1],
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => _focusNodes[2].requestFocus(),
           validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: 'local talk mins',
           controller: _localVoiceController,
+          focusNode: _focusNodes[2],
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => _focusNodes[3].requestFocus(),
           validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: "int'l roaming",
           controller: _intlRoamingController,
+          focusNode: _focusNodes[3],
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => _focusNodes[4].requestFocus(),
           validateValue: _showValidationErrors,
         ),
         LimitFieldWithController(
           label: "int'l talk mins",
           controller: _intlTalkController,
+          focusNode: _focusNodes[4],
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _focusNodes[4].unfocus(),
           validateValue: _showValidationErrors,
         ),
       ],

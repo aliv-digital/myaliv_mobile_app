@@ -12,11 +12,17 @@ class RecipientPhoneField extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     this.enableCountryPicker = true,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
   });
 
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final bool enableCountryPicker;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +32,9 @@ class RecipientPhoneField extends StatelessWidget {
       dialCode: '1',
       countryIsoCode: 'BS',
       controller: controller,
+      focusNode: focusNode,
+      textInputAction: textInputAction,
+      onSubmitted: onSubmitted,
       enableCountryPicker: enableCountryPicker,
       showCountryArrow: false,
       keyboardType: TextInputType.phone,

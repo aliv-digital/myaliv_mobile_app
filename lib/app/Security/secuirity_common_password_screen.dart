@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +25,15 @@ class CommonEnterPasswordPage extends StatefulWidget {
 
 class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _keyboardFocusNode = FocusNode();
   bool _obscure = true;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _keyboardFocusNode.dispose();
+    super.dispose();
+  }
 
   void _handleContinue() {
     // if (_controller.text.isEmpty) return;
@@ -51,266 +60,274 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StripedScaffold(
-      /// 🔥 APP BAR
-      appBar: AppBar(
-        backgroundColor: ColorManager.primaryPurple,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: ColorManager.primaryPurple,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24.0),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+    return AppKeyboardToolbar(
+      focusNodes: [_keyboardFocusNode],
+      child: StripedScaffold(
+        /// 🔥 APP BAR
+        appBar: AppBar(
+          backgroundColor: ColorManager.primaryPurple,
+          elevation: 0,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: ColorManager.primaryPurple,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          centerTitle: false,
+          toolbarHeight: 64,
+          title: Text(
+            widget.appBarTitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'CircularPro',
+            ),
           ),
         ),
-        centerTitle: false,
-        toolbarHeight: 64,
-        title: Text(
-          widget.appBarTitle,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            fontFamily: 'CircularPro',
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(48, 24, 48, 24),
-            child: Column(
-              children: [
-                const SizedBox(height: 70),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(48, 24, 48, 24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 70),
 
-                /// Title
-                const Text(
-                  "password required",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF010101),
-                    fontFamily: 'CircularPro',
-                  ),
-                ),
-
-                // const SizedBox(height: 12),
-
-                /// Subtitle
-                const SizedBox(
-                  width: 308,
-                  child: Text(
-                    "for security reasons, please enter your password to continue.",
-                    textAlign: TextAlign.center,
+                  /// Title
+                  const Text(
+                    "password required",
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      height: 1.47,
-                      color: Color(0xFF58677D),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF010101),
                       fontFamily: 'CircularPro',
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 28),
+                  // const SizedBox(height: 12),
 
-                /// Password Field
-                Container(
-                  // width: 296,
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFDFDFDF)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      // const Icon(Icons.lock_out?line, size: 18),
-                      SvgPicture.asset('assets/icons/LockKey.svg'),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          obscureText: _obscure,
-                          decoration: const InputDecoration(
-                            hintText: "enter your password",
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF667085),
-                              fontFamily: 'CircularPro',
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() => _obscure = !_obscure);
-                        },
-                        child: _obscure
-                            ? SvgPicture.asset('assets/icons/eye.svg')
-                            : Icon(
-                                _obscure
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                size: 18,
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// Terms Text
-                Column(
-                  children: [
-                    const Text(
-                      "By pressing ‘Continue’ button you agree",
+                  /// Subtitle
+                  const SizedBox(
+                    width: 308,
+                    child: Text(
+                      "for security reasons, please enter your password to continue.",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        height: 1.47,
                         color: Color(0xFF58677D),
                         fontFamily: 'CircularPro',
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  /// Password Field
+                  Container(
+                    // width: 296,
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFFDFDFDF)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        // const Icon(Icons.lock_out?line, size: 18),
+                        SvgPicture.asset('assets/icons/LockKey.svg'),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            focusNode: _keyboardFocusNode,
+                            textInputAction: TextInputAction.done,
+                            scrollPadding:
+                                AppKeyboardToolbar.inputScrollPadding,
+                            onSubmitted: (_) => _keyboardFocusNode.unfocus(),
+                            controller: _controller,
+                            obscureText: _obscure,
+                            decoration: const InputDecoration(
+                              hintText: "enter your password",
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF667085),
+                                fontFamily: 'CircularPro',
+                              ),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() => _obscure = !_obscure);
+                          },
+                          child: _obscure
+                              ? SvgPicture.asset('assets/icons/eye.svg')
+                              : Icon(
+                                  _obscure
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  size: 18,
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  /// Terms Text
+                  Column(
+                    children: [
+                      const Text(
+                        "By pressing ‘Continue’ button you agree",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF58677D),
+                          fontFamily: 'CircularPro',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "to the ",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF58677D),
+                              fontFamily: 'CircularPro',
+                            ),
+                          ),
+                          Text(
+                            "Terms & Conditions",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xFF645D9C),
+                              color: Color(0xFF645D9C),
+                              fontFamily: 'CircularPro',
+                            ),
+                          ),
+                          Text(
+                            " & ",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF58677D),
+                              fontFamily: 'CircularPro',
+                            ),
+                          ),
+                          Text(
+                            "Privacy Policy",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xFF645D9C),
+                              color: Color(0xFF645D9C),
+                              fontFamily: 'CircularPro',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  /// Continue Button
+                  GestureDetector(
+                    onTap: _handleContinue,
+                    child: Container(
+                      // width: 296,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF645D9C),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        "Continue",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'CircularPro',
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 80),
+
+                  /// Or Continue With
+                  // const Text(
+                  //   "Or Continue with",
+                  //   style: TextStyle(
+                  //     fontSize: 13,
+                  //     color: Color(0xFF8A8A8F),
+                  //     fontFamily: 'CircularPro',
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 47,
+                    ), // match layout width
+                    child: Row(
                       children: const [
-                        Text(
-                          "to the ",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF58677D),
-                            fontFamily: 'CircularPro',
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Color(0xFF8A8A8F),
                           ),
                         ),
+                        SizedBox(width: 12),
                         Text(
-                          "Terms & Conditions",
+                          "Or Continue with",
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xFF645D9C),
-                            color: Color(0xFF645D9C),
                             fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w400,
+                            height: 1.38,
+                            letterSpacing: -0.08,
+                            color: Color(0xFF8A8A8F),
                           ),
                         ),
-                        Text(
-                          " & ",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF58677D),
-                            fontFamily: 'CircularPro',
-                          ),
-                        ),
-                        Text(
-                          "Privacy Policy",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xFF645D9C),
-                            color: Color(0xFF645D9C),
-                            fontFamily: 'CircularPro',
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Color(0xFF8A8A8F),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
 
-                const SizedBox(height: 30),
+                  const SizedBox(height: 24),
 
-                /// Continue Button
-                GestureDetector(
-                  onTap: _handleContinue,
-                  child: Container(
-                    // width: 296,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF645D9C),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      "Continue",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'CircularPro',
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: Row(
+                      children: [
+                        Expanded(child: _biometricButton("Face ID")),
+                        const SizedBox(width: 16),
+                        Expanded(child: _biometricButton("Fingerprint")),
+                      ],
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 80),
-
-                /// Or Continue With
-                // const Text(
-                //   "Or Continue with",
-                //   style: TextStyle(
-                //     fontSize: 13,
-                //     color: Color(0xFF8A8A8F),
-                //     fontFamily: 'CircularPro',
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 47,
-                  ), // match layout width
-                  child: Row(
-                    children: const [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color(0xFF8A8A8F),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        "Or Continue with",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w400,
-                          height: 1.38,
-                          letterSpacing: -0.08,
-                          color: Color(0xFF8A8A8F),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color(0xFF8A8A8F),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: Row(
-                    children: [
-                      Expanded(child: _biometricButton("Face ID")),
-                      const SizedBox(width: 16),
-                      Expanded(child: _biometricButton("Fingerprint")),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 80),
-              ],
+                  const SizedBox(height: 80),
+                ],
+              ),
             ),
           ),
         ),
