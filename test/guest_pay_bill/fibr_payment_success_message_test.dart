@@ -127,6 +127,10 @@ void main() {
           },
         ),
         GoRoute(
+          path: AppRoutes.logIn,
+          builder: (_, _) => const Scaffold(body: Text('existing login')),
+        ),
+        GoRoute(
           path: AppRoutes.welcome,
           builder: (_, _) => const Scaffold(body: Text('welcome')),
         ),
@@ -262,10 +266,10 @@ void main() {
       expect(receipt!.amount, (submitted!['CardPayment'] as Map)['Amount']);
       expect(receipts, 1);
       expect(tester.takeException(), isNull);
-      await tester.ensureVisible(find.text('back to home page'));
-      await tester.tap(find.text('back to home page'));
+      await tester.ensureVisible(find.text('back to login page'));
+      await tester.tap(find.text('back to login page'));
       await tester.pumpAndSettle();
-      expect(find.text('existing guest home'), findsOneWidget);
+      expect(find.text('existing login'), findsOneWidget);
     });
   }
 
