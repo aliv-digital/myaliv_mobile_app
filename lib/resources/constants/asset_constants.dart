@@ -96,4 +96,7 @@ class AssetConstant {
   static const paymentFailedBg =
       "assets/icons/payment_failure_icon_background.svg";
   static const payementFailedSvg = "assets/icons/payment_failure_icon.svg";
+
+  static const giftAmountSVG = "assets/icons/gift_amout.svg";
+  static const userGiftSVG = "assets/icons/user_gift.svg";
 }

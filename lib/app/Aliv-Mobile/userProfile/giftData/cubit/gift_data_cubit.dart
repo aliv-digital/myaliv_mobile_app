@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gift_data_theme.dart';
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -113,7 +114,8 @@ class GiftDataCubit extends Cubit<GiftDataState> {
           s.amountOptions.isNotEmpty ||
           s.amountOptionsFor != null ||
           s.isCheckingRecipient ||
-          s.recipientErrorMessage != null;
+          s.recipientErrorMessage != null ||
+          s.recipientErrorReason != null;
       if (!hasStaleData) return;
       _recipientCheckGen++;
       emit(
@@ -123,6 +125,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
           isCheckingRecipient: false,
           clearSelectedAmount: true,
           clearRecipientErrorMessage: true,
+          clearRecipientErrorReason: true,
         ),
       );
       return;
@@ -143,6 +146,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
         isCheckingRecipient: true,
         clearSelectedAmount: true,
         clearRecipientErrorMessage: true,
+        clearRecipientErrorReason: true,
       ),
     );
 
@@ -159,8 +163,52 @@ class GiftDataCubit extends Cubit<GiftDataState> {
   Future<void> _checkRecipient(String digits) async {
     final gen = _recipientCheckGen;
     try {
+      RecipientVerificationResult? verifyResult;
+      try {
+        verifyResult = await _repository.verifyRecipient(digits);
+      } catch (_) {
+        verifyResult = null;
+      }
+
+      if (gen != _recipientCheckGen) return;
+
+      if (verifyResult != null &&
+          verifyResult.paymentOption != null &&
+          !verifyResult.isValidPrepaid) {
+        emit(
+          state.copyWith(
+            amountOptions: const <GiftAmountOption>[],
+            amountOptionsFor: digits,
+            isCheckingRecipient: false,
+            clearSelectedAmount: true,
+            recipientErrorMessage:
+                GiftDataTheme.invalidActivePrepaidErrorMessage,
+            clearRecipientErrorReason: true,
+          ),
+        );
+        return;
+      }
+
       final result = await _repository.fetchSendDataShareOptions(digits);
       if (gen != _recipientCheckGen) return;
+
+      if (!result.isSenderEligible || result.options.isEmpty) {
+        final reason = result.reason.trim();
+        emit(
+          state.copyWith(
+            amountOptions: const <GiftAmountOption>[],
+            amountOptionsFor: digits,
+            isCheckingRecipient: false,
+            clearSelectedAmount: true,
+            clearRecipientErrorMessage: true,
+            recipientErrorReason: reason.isNotEmpty
+                ? reason
+                : 'RecipientNotEligible',
+          ),
+        );
+        return;
+      }
+
       emit(
         state.copyWith(
           amountOptions: result.options,
@@ -170,6 +218,7 @@ class GiftDataCubit extends Cubit<GiftDataState> {
           // so the user re-picks from the new recipient's options.
           clearSelectedAmount: true,
           clearRecipientErrorMessage: true,
+          clearRecipientErrorReason: true,
         ),
       );
     } catch (e) {

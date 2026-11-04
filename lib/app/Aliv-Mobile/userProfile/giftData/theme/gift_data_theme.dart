@@ -97,8 +97,8 @@ class GiftDataTheme {
   // Info banner body copy.
   static const TextStyle bannerText = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.5,
   );
@@ -115,7 +115,7 @@ class GiftDataTheme {
   // Confirmation sheet row label ("gift amount", "recipient" ...).
   static const TextStyle sheetRowLabel = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FontWeight.w500,
     color: textPrimary,
     height: 1.43,
@@ -123,7 +123,7 @@ class GiftDataTheme {
 
   static const TextStyle sheetRowValue = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.43,
@@ -131,9 +131,32 @@ class GiftDataTheme {
 
   static const TextStyle sheetTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.5,
   );
+
+  // Error colors & copy
+  static const Color errorRed = Color(0xFFFF3B30);
+  static const String invalidFormatErrorMessage = 'invalid Format';
+  static const String phoneMismatchErrorMessage = 'phone numbers do not match';
+  static const String invalidActivePrepaidErrorMessage =
+      'the number entered is not an active prepaid number.to try again\n'
+      'please enter a active prepaid number.';
+
+  // Inline error message text style.
+  static const TextStyle inlineError = TextStyle(
+    color: errorRed,
+    fontSize: 12,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w500,
+  );
+
+  // Red error banner tokens (matches media_1793820799345_fadb6152.png)
+  static const Color errorBannerRed = Color(0xFFDD3038);
+  static const String errorBannerDefaultMessage =
+      'Please confirm the phone numbers match';
+  static const String recipientNotEligibleDefaultTitle =
+      'Error: RecipientNotEligible';
 }
