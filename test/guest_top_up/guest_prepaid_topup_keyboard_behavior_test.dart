@@ -564,6 +564,59 @@ void main() {
     expect(changedValue, '20.5');
     expect(tester.widget<TextField>(field).controller!.text, r'$20.5');
   });
+  testWidgets(
+    'incomplete Bahamas number (242)-899-8 shows invalid Format inline',
+    (tester) async {
+      await _pumpScreen(tester);
+      await tester.enterText(_phoneField(0), '2428998');
+      await tester.pump();
+
+      expect(find.text('invalid Format'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'empty confirm phone on proceed shows enter confirm mobile number inline',
+    (tester) async {
+      await _pumpScreen(tester);
+      await tester.enterText(_phoneField(0), '2425551234');
+      await tester.pump();
+
+      await tester.ensureVisible(_proceedButton());
+      await tester.tap(_proceedButton());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(GuestTopUpTheme.emptyConfirmPhoneMessage),
+        findsOneWidget,
+      );
+      expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'typing in confirm phone clears emptyConfirmPhoneMessage and shows mismatch when different',
+    (tester) async {
+      await _pumpScreen(tester);
+      await tester.enterText(_phoneField(0), '2425551234');
+      await tester.pump();
+
+      await tester.ensureVisible(_proceedButton());
+      await tester.tap(_proceedButton());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(GuestTopUpTheme.emptyConfirmPhoneMessage),
+        findsOneWidget,
+      );
+
+      await tester.enterText(_phoneField(1), '2425559999');
+      await tester.pump();
+
+      expect(find.text(GuestTopUpTheme.emptyConfirmPhoneMessage), findsNothing);
+      expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsOneWidget);
+    },
+  );
 }
 
 void _verifyNoLookup(NetworkService networkService) {

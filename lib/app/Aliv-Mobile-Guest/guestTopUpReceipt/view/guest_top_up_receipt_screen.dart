@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -105,21 +106,31 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                           final data = state.data;
                           if (data == null) return const SizedBox.shrink();
 
+                          void onBack() {
+                            if (AppSession.appRoute == 'sendTopUp' ||
+                                AppSession.isTopUp == true ||
+                                AppSession.appRoute == 'prepaidPlanPurchase') {
+                              context.go(AppRoutes.home);
+                              AppSession.resetAppRoute();
+                              if (AppSession.isTopUp == true) {
+                                AppSession.resetFlagForTopUp();
+                              }
+                            } else {
+                              context.go(AppRoutes.logIn);
+                            }
+                          }
+
                           if (isPaymentFailed) {
                             return ReceiptFailureCard(
                               data: data,
-                              onBackHome: () {
-                                context.go(AppRoutes.guestSplash);
-                              },
+                              onBackHome: onBack,
                               pageBackground: ReceiptTheme.screenBackground,
                             );
                           }
 
                           return ReceiptSuccessCard(
                             data: data,
-                            onBackHome: () {
-                              context.go(AppRoutes.guestSplash);
-                            },
+                            onBackHome: onBack,
                             pageBackground: ReceiptTheme.circleBackground,
                           );
                         },
