@@ -5,13 +5,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 String _formatPhone(String phone) {
   const dcSuffix = '*dc*';
   final hasDc = phone.endsWith(dcSuffix);
-  final base = hasDc ? phone.substring(0, phone.length - dcSuffix.length) : phone;
+  final base = hasDc
+      ? phone.substring(0, phone.length - dcSuffix.length)
+      : phone;
   final digits = base.replaceAll(RegExp(r'\D'), '');
   final String formatted;
   if (digits.length == 10) {
-    formatted = '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
+    formatted =
+        '(${digits.substring(0, 3)})-${digits.substring(3, 6)}-${digits.substring(6)}';
   } else if (digits.length == 11 && digits.startsWith('1')) {
-    formatted = '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
+    formatted =
+        '(${digits.substring(1, 4)})-${digits.substring(4, 7)}-${digits.substring(7)}';
   } else {
     formatted = base;
   }

@@ -118,7 +118,9 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     } else {
       // Role was fetched for the primary device at startup and cached.
       // Child devices have no cached entry — default to fullAccess.
-      final roleId = instance<AppUiConfigCubit>().getCachedRole(target.deviceId);
+      final roleId = instance<AppUiConfigCubit>().getCachedRole(
+        target.deviceId,
+      );
       final LineRole childRole = (roleId == null || roleId == 4)
           ? LineRole.fullAccess
           : LineRole.readOnly;
@@ -151,9 +153,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       barrierColor: Colors.black54,
       builder: (_) => const PopScope(
         canPop: false,
-        child: Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        child: Center(child: CircularProgressIndicator(color: Colors.white)),
       ),
     );
   }

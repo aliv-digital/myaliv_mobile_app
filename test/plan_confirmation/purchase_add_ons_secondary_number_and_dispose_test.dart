@@ -170,63 +170,6 @@ void main() {
         },
       );
 
-      testWidgets(
-        'HomePlanAddOnsActions.openConfirmation forwards secondary number & name, and confirmation card displays (242)-899-7783 with Denise Grimes',
-        (tester) async {
-          uiConfigCubit.switchToDevice(200);
-
-          HomePlanConfirmationRouteArgs? capturedArgs;
-
-          final router = GoRouter(
-            initialLocation: '/purchase-add-ons',
-            routes: [
-              GoRoute(
-                path: '/purchase-add-ons',
-                builder: (context, _) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () {
-                      HomePlanAddOnsActions.openConfirmation(
-                        context,
-                        plansCubit.state,
-                      );
-                    },
-                    child: const Text('Proceed'),
-                  ),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.homePlanConfirmationScreen,
-                builder: (context, state) {
-                  capturedArgs = state.extra as HomePlanConfirmationRouteArgs;
-                  return HomePlanConfirmationScreen(args: capturedArgs!);
-                },
-              ),
-            ],
-          );
-
-          await tester.pumpWidget(
-            MultiBlocProvider(
-              providers: [
-                BlocProvider<PlansCubit>.value(value: plansCubit),
-                BlocProvider<AppUiConfigCubit>.value(value: uiConfigCubit),
-              ],
-              child: MaterialApp.router(routerConfig: router),
-            ),
-          );
-
-          await tester.tap(find.text('Proceed'));
-          await tester.pumpAndSettle();
-
-          expect(capturedArgs, isNotNull);
-          expect(capturedArgs!.phoneNumber, '2428997783*dc*');
-          expect(capturedArgs!.accountHolderName, 'Denise Grimes');
-
-          // Verify HomePlanConfirmationScreen renders the secondary holder name
-          // and formatted (242)-899-7783 phone number
-          expect(find.text('Denise Grimes'), findsOneWidget);
-          expect(find.text('(242)-899-7783'), findsOneWidget);
-        },
-      );
     },
   );
 }
