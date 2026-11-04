@@ -99,9 +99,9 @@ void main() {
         allDeviceLimits: [primaryDevice, secondaryDevice],
       ),
     );
-    when(() => balanceCubit.state).thenReturn(
-      const BalanceState(status: BalanceStatus.initial),
-    );
+    when(
+      () => balanceCubit.state,
+    ).thenReturn(const BalanceState(status: BalanceStatus.initial));
     when(() => plansCubit.state).thenReturn(const PlansState());
     when(() => bucketCubit.state).thenReturn(
       const BucketUsageSummaryState(status: BucketUsageSummaryStatus.initial),
