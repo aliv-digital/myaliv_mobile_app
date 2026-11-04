@@ -145,11 +145,15 @@ class PlansState extends Equatable {
   /// The plan shown on the active-plan card.
   ///
   /// Returns [optimisticActivePlan] immediately after a successful purchase
-  /// (before the real /bundles API reflects the change), then falls back to
-  /// the first entry returned by the live /bundles response.
+  /// (before the real /bundles API reflects the change), then returns the
+  /// genuinely-active primary plan (startDate ≤ today, endDate > now).
+  /// Returns null when only future plans exist so the card correctly shows
+  /// "no active plan" instead of a misleading upcoming plan.
   BasePlanModel? get earliestAddOnsPrimaryPlan =>
       optimisticActivePlan ??
-      (addOnsApiPrimaryPlans.isEmpty ? null : addOnsApiPrimaryPlans.first);
+      const AuthenticatedAddOnFilterService().activePrimaryPlan(
+        addOnsApiPrimaryPlans,
+      );
 
   /// Active primary used only for purchasing add-ons. Historical and future
   /// plans remain available to Home, usage and scheduling.

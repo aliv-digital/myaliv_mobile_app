@@ -127,9 +127,13 @@ class AuthCompletionService {
       accountID: primaryDevice.deviceId.toString(),
     );
 
+    // Fetch role once per session for the primary device only.
+    // Child device roles are not fetched — dropdown switches read from
+    // the cache and default to fullAccess when no entry is found.
     final roleId = await instance<RoleApiClient>().fetchRoleId(
       primaryDevice.deviceId,
     );
+    appUiConfigCubit.cacheDeviceRoles({primaryDevice.deviceId: roleId});
     debugPrint('role id: $roleId');
 
     final LineRole lineRole;

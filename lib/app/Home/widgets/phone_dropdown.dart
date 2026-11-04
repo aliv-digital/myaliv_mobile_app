@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -26,8 +25,26 @@ class PhoneDropdown extends StatefulWidget {
 }
 
 class _PhoneDropdownState extends State<PhoneDropdown> {
-  // Selected TN is derived from AppUiConfigCubit.activeDeviceId — a top-level
-  // provider that survives bottom-tab navigation, so no local state is needed.
+  // Stable notifier — DropdownButton2 subscribes to this once and receives
+  // updates whenever the selection changes. Creating a new ValueNotifier on
+  // every build() leaves DropdownButton2 subscribed to a stale instance,
+  // causing the visible selection to lag behind the actual state.
+  // Null initial value intentionally skips DropdownButton2's uniqueness
+  // assertion on the first frame (assertion passes when value is null).
+  // addPostFrameCallback sets the real value after the first build.
+  final ValueNotifier<String?> _selectedNotifier = ValueNotifier<String?>(null);
+
+  // Incremented on every confirmed switch. Each _reloadData call captures
+  // its generation at start and exits early whenever it no longer matches,
+  // so only the latest switch ever dismisses the overlay.
+  int _switchGeneration = 0;
+  bool _overlayShowing = false;
+
+  @override
+  void dispose() {
+    _selectedNotifier.dispose();
+    super.dispose();
+  }
 
   String _resolveSelected(
     HomeUiConfig config,
@@ -99,15 +116,12 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     if (isPrimary) {
       context.read<AppUiConfigCubit>().resetToOwnDevice();
     } else {
-      int? roleId;
-      if (instance.isRegistered<RoleApiClient>()) {
-        try {
-          roleId = await instance<RoleApiClient>().fetchRoleId(target.deviceId);
-        } catch (_) {
-          roleId = null;
-        }
-      }
-      final LineRole childRole = (roleId == 4)
+      // Role was fetched for the primary device at startup and cached.
+      // Child devices have no cached entry — default to fullAccess.
+      final roleId = instance<AppUiConfigCubit>().getCachedRole(
+        target.deviceId,
+      );
+      final LineRole childRole = (roleId == null || roleId == 4)
           ? LineRole.fullAccess
           : LineRole.readOnly;
       if (!mounted) return;
@@ -119,20 +133,54 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     if (instance.isRegistered<AnalyticsService>()) {
       instance<AnalyticsService>().logAccountLineSwitched();
     }
-    _reloadData(target.deviceId);
+
+    final gen = ++_switchGeneration;
+    if (!_overlayShowing) {
+      _overlayShowing = true;
+      _showSwitchingOverlay();
+    }
+    await _reloadData(target.deviceId, gen);
+    if (mounted && gen == _switchGeneration) {
+      _overlayShowing = false;
+      Navigator.of(context, rootNavigator: true).pop();
+    }
   }
 
-  void _reloadData(int deviceId) async {
-    final uiConfig = context.read<AppUiConfigCubit>().state;
-    instance<BalanceCubit>().loadBalances(
-      deviceAccountId: deviceId,
-      forceRefresh: true,
+  void _showSwitchingOverlay() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+      ),
     );
-    instance<PlansCubit>().loadInitialPlans(
+  }
+
+  Future<void> _reloadData(int deviceId, int gen) async {
+    final uiConfig = context.read<AppUiConfigCubit>().state;
+    final plansCubit = instance<PlansCubit>();
+
+    // Trigger plans refresh. May set _pendingForceRefresh and return early if
+    // a fetch is already in-flight — _waitForPlansSettled handles that case.
+    plansCubit.loadInitialPlans(
       userType: uiConfig.userType,
       forceRefresh: true,
     );
-    final plansState = instance<PlansCubit>().state;
+
+    await Future.wait([
+      instance<BalanceCubit>().loadBalances(
+        deviceAccountId: deviceId,
+        forceRefresh: true,
+      ),
+      _waitForPlansSettled(plansCubit),
+    ]);
+
+    if (gen != _switchGeneration) return;
+
+    final plansState = plansCubit.state;
+    // Fire-and-forget — bucket-usage and limits do not block the overlay.
     instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
       deviceAccountId: deviceId,
       activePlans: plansState.activePlansForBucketUsage,
@@ -144,6 +192,31 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
         deviceAccountId: deviceId,
         forceRefresh: true,
       );
+    }
+  }
+
+  // Waits until PlansCubit is no longer in a loading/refreshing state.
+  // Loops so it also catches the _pendingForceRefresh second fetch that starts
+  // immediately after the in-flight fetch completes: each iteration yields one
+  // microtask after settling, then re-checks whether a new fetch has begun.
+  // Falls through after 15 s total so the overlay never gets stuck.
+  Future<void> _waitForPlansSettled(PlansCubit cubit) async {
+    // Yield one microtask so loadInitialPlans can emit its loading state.
+    await Future<void>.delayed(Duration.zero);
+    final deadline = DateTime.now().add(const Duration(seconds: 15));
+    while (cubit.state.isLoading || cubit.state.isRefreshing) {
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining <= Duration.zero) break;
+      try {
+        await cubit.stream
+            .firstWhere((s) => !s.isLoading && !s.isRefreshing)
+            .timeout(remaining);
+      } catch (_) {
+        break;
+      }
+      // Yield one microtask — _pendingForceRefresh may start a new fetch
+      // synchronously inside the cubit right after the previous one settles.
+      await Future<void>.delayed(Duration.zero);
     }
   }
 
@@ -171,6 +244,15 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
               final s = _resolveSelected(config, devices);
               return visibleNumbers.contains(s) ? s : primaryPhone;
             }();
+            // Defer notifier update to after the frame — updating a
+            // ValueNotifier synchronously inside build() notifies
+            // DropdownButton2 mid-frame and corrupts its item-index
+            // tracking, causing every other item to become unresponsive.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && _selectedNotifier.value != effectiveSelected) {
+                _selectedNotifier.value = effectiveSelected;
+              }
+            });
             final isEnabled = visibleNumbers.length > 1;
 
             return Container(
@@ -184,7 +266,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                 ignoring: !isEnabled,
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton2<String>(
-                    valueListenable: ValueNotifier<String>(effectiveSelected),
+                    valueListenable: _selectedNotifier,
                     isExpanded: true,
                     menuItemStyleData: MenuItemStyleData(
                       padding: const EdgeInsets.symmetric(horizontal: 16),

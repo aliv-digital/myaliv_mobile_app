@@ -410,6 +410,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
     }
 
     if (_isFetching) {
+      if (forceRefresh) _pendingForceRefresh = true;
       if (kDebugMode) {
         debugPrint('⚠️ loadInitialPlans: Already fetching, skipping');
       }

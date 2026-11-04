@@ -59,18 +59,25 @@ class PhoneDropdownHelper {
   }
 
   /// Numbers the dropdown should render.
-  ///   isPrimary → full deduplicated list
-  ///   !isPrimary, device available → [deviceTn] only
-  ///   no device → full list (graceful fallback)
+  ///
+  /// Always built from [devices] (allDeviceLimits) so that every item in the
+  /// returned list has an exact match when [_onSelected] does its device
+  /// lookup. Using accountInfo.tNs here caused a mismatch: tNs comes from
+  /// /Account while the lookup scans /Account/devices — different APIs can
+  /// return different TNs or ordering, sending every other tap to primary.
   static List<String> getVisibleNumbers(
     AccountInfoModel? accountInfo,
     List<DeviceLimitsModel> devices,
   ) {
+    if (devices.isEmpty) return getPhoneNumbers(accountInfo);
+    if (isPrimary(accountInfo, devices)) {
+      return devices
+          .map((d) => stripTnSuffix(d.tn.trim()))
+          .where((tn) => tn.isNotEmpty)
+          .toList();
+    }
     final deviceTn = getFirstDeviceTn(devices);
-    if (deviceTn.isEmpty) return getPhoneNumbers(accountInfo);
-    return isPrimary(accountInfo, devices)
-        ? getPhoneNumbers(accountInfo)
-        : [deviceTn];
+    return deviceTn.isEmpty ? getPhoneNumbers(accountInfo) : [deviceTn];
   }
 
   /// The number to auto-select and mark with the primary badge.

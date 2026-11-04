@@ -63,6 +63,7 @@ class _WhyAlivView extends StatelessWidget {
       backgroundColor: WhyAlivTheme.backgroundColor,
       body: SafeArea(
         top: false,
+        bottom: false,
         child: BlocListener<WhyAlivBloc, WhyAlivState>(
           listenWhen: (prev, curr) =>
               prev.status != curr.status &&
