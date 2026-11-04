@@ -160,19 +160,28 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
 
   Future<void> _reloadData(int deviceId, int gen) async {
     final uiConfig = context.read<AppUiConfigCubit>().state;
+    final plansCubit = instance<PlansCubit>();
+
+    // Trigger plans refresh. May set _pendingForceRefresh and return early if
+    // a fetch is already in-flight — _waitForPlansSettled handles that case.
+    plansCubit.loadInitialPlans(
+      userType: uiConfig.userType,
+      forceRefresh: true,
+    );
+
     await Future.wait([
       instance<BalanceCubit>().loadBalances(
         deviceAccountId: deviceId,
         forceRefresh: true,
       ),
-      instance<PlansCubit>().loadInitialPlans(
-        userType: uiConfig.userType,
-        forceRefresh: true,
-      ),
+      _waitForPlansSettled(plansCubit),
     ]);
+
     if (gen != _switchGeneration) return;
-    final plansState = instance<PlansCubit>().state;
-    await instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
+
+    final plansState = plansCubit.state;
+    // Fire-and-forget — bucket-usage and limits do not block the overlay.
+    instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
       deviceAccountId: deviceId,
       activePlans: plansState.activePlansForBucketUsage,
       standAlonePlans: plansState.standAlonePlansForBucketUsage,
@@ -183,6 +192,31 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
         deviceAccountId: deviceId,
         forceRefresh: true,
       );
+    }
+  }
+
+  // Waits until PlansCubit is no longer in a loading/refreshing state.
+  // Loops so it also catches the _pendingForceRefresh second fetch that starts
+  // immediately after the in-flight fetch completes: each iteration yields one
+  // microtask after settling, then re-checks whether a new fetch has begun.
+  // Falls through after 15 s total so the overlay never gets stuck.
+  Future<void> _waitForPlansSettled(PlansCubit cubit) async {
+    // Yield one microtask so loadInitialPlans can emit its loading state.
+    await Future<void>.delayed(Duration.zero);
+    final deadline = DateTime.now().add(const Duration(seconds: 15));
+    while (cubit.state.isLoading || cubit.state.isRefreshing) {
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining <= Duration.zero) break;
+      try {
+        await cubit.stream
+            .firstWhere((s) => !s.isLoading && !s.isRefreshing)
+            .timeout(remaining);
+      } catch (_) {
+        break;
+      }
+      // Yield one microtask — _pendingForceRefresh may start a new fetch
+      // synchronously inside the cubit right after the previous one settles.
+      await Future<void>.delayed(Duration.zero);
     }
   }
 
