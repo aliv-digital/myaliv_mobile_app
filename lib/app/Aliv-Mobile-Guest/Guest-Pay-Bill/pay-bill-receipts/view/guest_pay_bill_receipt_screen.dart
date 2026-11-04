@@ -108,11 +108,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
             AppSession.resetAppRoute();
             context.go(AppRoutes.home);
           } else {
-            // BILL-018: a guest returns to the guest home, rebuilt on top of
-            // welcome exactly as it was first opened, so its back arrow works.
-            GoRouter.of(context)
-              ..go(AppRoutes.welcome)
-              ..push(AppRoutes.guestSplash);
+            context.go(AppRoutes.logIn);
           }
         }
       },
@@ -142,10 +138,16 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                       final data = state.data;
                       if (data == null) return const SizedBox.shrink();
 
+                      final bool isPostpaid =
+                          AppSession.appRoute == 'postpaidPayment';
+                      final String buttonText = isPostpaid
+                          ? 'back to home page'
+                          : 'back to login page';
+
                       if (isPaymentFailed) {
                         return ReceiptFailureCard(
                           data: _toDefaultReceiptData(data, orderId),
-                          buttonText: 'back to home page',
+                          buttonText: buttonText,
                           onBackHome: () {
                             _onBackHomePressed(context);
                           },
@@ -163,8 +165,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                             ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
                                   'has been successfully processed for account ${data.phoneNumber}'
                             : 'It will take a few moments for the payment to appear on the account.',
-                        // BILL-018: always "home" for bill payments.
-                        backButtonText: 'back to home page',
+                        backButtonText: buttonText,
                         onBackHome: () {
                           _onBackHomePressed(context);
                         },

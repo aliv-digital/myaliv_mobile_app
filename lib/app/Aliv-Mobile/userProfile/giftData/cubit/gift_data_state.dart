@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/data_share_status.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/gift_data_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gift_data_theme.dart';
 
 enum GiftDataStatus {
   initial,
@@ -26,6 +27,7 @@ class GiftDataState extends Equatable {
     required this.amountOptionsFor,
     required this.isCheckingRecipient,
     required this.recipientErrorMessage,
+    this.recipientErrorReason,
   });
 
   final GiftDataStatus status;
@@ -54,10 +56,15 @@ class GiftDataState extends Equatable {
   /// True while `can-send-data-share` is in flight for the recipient.
   final bool isCheckingRecipient;
 
-  /// Human-readable message returned by `can-send-data-share` when the
-  /// recipient check fails (e.g. "Invalid Device"). Rendered inline in red
-  /// below the confirm field. Null when there's no error to show.
+  /// Human-readable message returned by `verifyRecipient` when the
+  /// recipient check fails (e.g. postpaid/inactive prepaid).
+  /// Rendered inline under the recipient number field.
   final String? recipientErrorMessage;
+
+  /// Server reason returned when `can-send-data-share` fails for recipient
+  /// (e.g. `NoDataSharesActive`, `RecipientNotEligible`). Drives the red
+  /// error banner in `GiftDataFormBody`.
+  final String? recipientErrorReason;
 
   factory GiftDataState.initial() => const GiftDataState(
     status: GiftDataStatus.initial,
@@ -72,6 +79,7 @@ class GiftDataState extends Equatable {
     amountOptionsFor: null,
     isCheckingRecipient: false,
     recipientErrorMessage: null,
+    recipientErrorReason: null,
   );
 
   /// True when the info banner has enough data to render.
@@ -120,9 +128,27 @@ class GiftDataState extends Equatable {
     return amountOptions.map((o) => o.amountGb).reduce((a, b) => a > b ? a : b);
   }
 
+  /// True when an ineligibility error banner should be shown.
+  bool get hasRecipientErrorBanner =>
+      recipientErrorReason != null && recipientErrorReason!.isNotEmpty;
+
+  String get recipientErrorBannerTitle {
+    final r = recipientErrorReason?.trim() ?? '';
+    if (r.isEmpty ||
+        r.toLowerCase() == 'nodatasharesactive' ||
+        r.toLowerCase() == 'recipientnoteligible') {
+      return GiftDataTheme.recipientNotEligibleDefaultTitle;
+    }
+    return 'Error: $r';
+  }
+
+  String get recipientErrorBannerMessage =>
+      GiftDataTheme.errorBannerDefaultMessage;
+
   // Form is valid when: both numbers match + non-empty, an amount is picked,
   // and the picked amount does not exceed the sender's current `AvailableToShow`.
   bool get isFormValid {
+    if (hasRecipientErrorBanner) return false;
     final numbersMatch =
         recipient.isNotEmpty &&
         confirmRecipient.isNotEmpty &&
@@ -156,6 +182,8 @@ class GiftDataState extends Equatable {
     bool? isCheckingRecipient,
     String? recipientErrorMessage,
     bool clearRecipientErrorMessage = false,
+    String? recipientErrorReason,
+    bool clearRecipientErrorReason = false,
   }) {
     return GiftDataState(
       status: status ?? this.status,
@@ -178,6 +206,9 @@ class GiftDataState extends Equatable {
       recipientErrorMessage: clearRecipientErrorMessage
           ? null
           : (recipientErrorMessage ?? this.recipientErrorMessage),
+      recipientErrorReason: clearRecipientErrorReason
+          ? null
+          : (recipientErrorReason ?? this.recipientErrorReason),
     );
   }
 
@@ -195,5 +226,6 @@ class GiftDataState extends Equatable {
     amountOptionsFor,
     isCheckingRecipient,
     recipientErrorMessage,
+    recipientErrorReason,
   ];
 }

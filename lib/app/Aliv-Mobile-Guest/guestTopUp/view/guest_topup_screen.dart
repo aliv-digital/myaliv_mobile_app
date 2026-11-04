@@ -57,6 +57,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   // Set only by a Next/Done attempt with an empty first number; cleared as
   // soon as the user edits that field.
   bool _showEmptyPhoneError = false;
+  // Set only by a Next/Done attempt with an empty confirm number; cleared as
+  // soon as the user edits the confirm field.
+  bool _showEmptyConfirmPhoneError = false;
   // GST-004: product-approved Guest Top-up range (USD, inclusive). Local to
   // this flow so logged-in Top-up limits are unaffected.
   static const double _minGuestTopUpAmount = 5;
@@ -71,7 +74,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   );
 
   final CountryInfo _selectedCountry = _defaultCountry;
-  final LoginPhoneNumberHelper _phoneHelper = const LoginPhoneNumberHelper();
+  final LoginPhoneNumberHelper _phoneHelper = const LoginPhoneNumberHelper(
+    requireBahamasAreaCode: true,
+  );
 
   LoginCountrySelection get _loginCountry => LoginCountrySelection(
     isoCode: _selectedCountry.isoCode ?? 'BS',
@@ -91,7 +96,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   String _digitsOnly(String value) => value.replaceAll(RegExp(r'[^0-9]'), '');
 
   bool _isMismatch(String phone, String confirm) {
-    if (confirm.isEmpty) return false;
+    if (_digitsOnly(confirm).isEmpty) return false;
     return _digitsOnly(phone) != _digitsOnly(confirm);
   }
 
@@ -110,7 +115,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       state.phoneNumber,
       state.confirmPhoneNumber,
     );
-    final bool confirmEmpty = state.confirmPhoneNumber.isEmpty;
+    final bool confirmEmpty = _digitsOnly(state.confirmPhoneNumber).isEmpty;
 
     if (state.phoneNumber.isEmpty) {
       setState(() => _showEmptyPhoneError = true);
@@ -125,7 +130,12 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       return;
     }
 
-    if (confirmEmpty || mismatch) {
+    if (confirmEmpty) {
+      setState(() => _showEmptyConfirmPhoneError = true);
+      return;
+    }
+
+    if (mismatch) {
       AppToast.show(
         message: GuestTopUpTheme.phoneMismatchMessage,
         type: ToastType.error,
@@ -341,21 +351,41 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               previous.confirmPhoneNumber !=
                                   current.confirmPhoneNumber,
                           builder: (context, state) {
-                            final bool showError = _isMismatch(
-                              state.phoneNumber,
+                            final bool confirmEmpty = _digitsOnly(
                               state.confirmPhoneNumber,
-                            );
+                            ).isEmpty;
+                            final bool showEmptyError =
+                                _showEmptyConfirmPhoneError && confirmEmpty;
+                            final bool showMismatchError =
+                                !confirmEmpty &&
+                                _isMismatch(
+                                  state.phoneNumber,
+                                  state.confirmPhoneNumber,
+                                );
+                            final bool showError =
+                                showEmptyError || showMismatchError;
+                            final String? errorText = showEmptyError
+                                ? GuestTopUpTheme.emptyConfirmPhoneMessage
+                                : (showMismatchError
+                                      ? GuestTopUpTheme.phoneMismatchMessage
+                                      : null);
                             return _buildPhoneField(
                               focusNode: _confirmPhoneFocusNode,
                               labelText: GuestTopUpTheme.confirmMobileLabel,
                               value: state.confirmPhoneNumber,
                               showError: showError,
-                              errorText: GuestTopUpTheme.phoneMismatchMessage,
+                              errorText: errorText,
                               textInputAction: TextInputAction.next,
-                              onChanged: (value) =>
-                                  context.read<GuestTopUpBloc>().add(
-                                    GuestActivePrepaidNumberConfirmEvent(value),
-                                  ),
+                              onChanged: (value) {
+                                if (_showEmptyConfirmPhoneError) {
+                                  setState(
+                                    () => _showEmptyConfirmPhoneError = false,
+                                  );
+                                }
+                                context.read<GuestTopUpBloc>().add(
+                                  GuestActivePrepaidNumberConfirmEvent(value),
+                                );
+                              },
                             );
                           },
                         ),

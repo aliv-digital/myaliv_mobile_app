@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/model/gift_data_models.dart';
+import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +23,34 @@ class GiftDataApiClient {
     : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
+
+  Future<RecipientVerificationResult> verifyRecipient(
+    String phoneNumber,
+  ) async {
+    final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    final rawPhone = digits.length == 7 ? '242$digits' : digits;
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.guestBalanceUrl,
+        method: HttpMethod.post,
+        data: <String, dynamic>{
+          'ChannelType': 'SelfCare',
+          'PhoneNumber': rawPhone,
+        },
+        options: Options(extra: {'skipAuth': true}),
+      );
+      final data = response.data;
+      if (data is! Map) return const RecipientVerificationResult();
+      final statusRaw = data['AccountStatus'] ?? data['accountStatus'];
+      final paymentRaw = data['PaymentOption'] ?? data['paymentOption'];
+      return RecipientVerificationResult(
+        accountStatus: statusRaw is String ? statusRaw.trim() : null,
+        paymentOption: paymentRaw is String ? paymentRaw.trim() : null,
+      );
+    } catch (_) {
+      return const RecipientVerificationResult();
+    }
+  }
 
   Future<CanSendDataShareResponse> fetchCanSendDataShare(
     String senderMsisdn,

@@ -33,7 +33,13 @@ class ReceiptFailureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String resolvedButtonText = buttonText ?? 'back to home page';
+    final String resolvedButtonText =
+        buttonText ??
+        ((AppSession.appRoute == 'sendTopUp' ||
+                AppSession.isTopUp == true ||
+                AppSession.appRoute == 'prepaidPlanPurchase')
+            ? 'back to home page'
+            : 'back to login page');
 
     return CustomPaint(
       foregroundPainter: const _TicketBorderPainter(

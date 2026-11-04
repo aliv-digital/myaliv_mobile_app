@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/giftData/theme/gift_data_theme.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -125,8 +124,8 @@ class _ConfirmGiftBottomSheetScaffoldState
                 ],
               ),
               const SizedBox(height: 16),
-              _SheetRow(
-                icon: IconsaxPlusLinear.gift,
+              _SheetRowSVG(
+                icon: AssetConstant.giftAmountSVG,
                 label: 'gift amount',
                 value: widget.amountLabel,
               ),
@@ -145,8 +144,8 @@ class _ConfirmGiftBottomSheetScaffoldState
                 value: widget.availableLabel,
               ),
               const _SheetDivider(),
-              _SheetRow(
-                icon: IconsaxPlusLinear.user,
+              _SheetRowSVG(
+                icon: AssetConstant.userGiftSVG,
                 label: 'recipient',
                 value: widget.recipient,
               ),
@@ -219,6 +218,39 @@ class _SheetRow extends StatelessWidget {
             child:
                 leading ??
                 Icon(_icon, size: 20, color: GiftDataTheme.primaryPurple),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Text(label, style: GiftDataTheme.sheetRowLabel)),
+          Text(value, style: GiftDataTheme.sheetRowValue),
+        ],
+      ),
+    );
+  }
+}
+
+class _SheetRowSVG extends StatelessWidget {
+  const _SheetRowSVG({
+    required String icon,
+    required this.label,
+    required this.value,
+  }) : leading = null,
+       _icon = icon;
+
+  final String? _icon;
+  final Widget? leading;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: leading ?? SvgPicture.asset(_icon!),
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: GiftDataTheme.sheetRowLabel)),

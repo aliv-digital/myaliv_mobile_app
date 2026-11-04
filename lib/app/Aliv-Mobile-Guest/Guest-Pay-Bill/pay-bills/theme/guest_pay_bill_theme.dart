@@ -24,6 +24,9 @@ class GuestPayBillTheme {
 
   // Used by: inline validation error under phone fields.
   // BILL-003 / BILL-004 inline copy.
+  static const String emptyMobileErrorMessage = 'enter mobile number';
+  static const String emptyConfirmMobileErrorMessage =
+      'enter confirm mobile number';
   static const String invalidPhoneErrorMessage = 'invalid Format';
   static const String mobileMismatchErrorMessage =
       "these numbers don't match. re-enter the number to continue.";

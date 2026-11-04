@@ -5,7 +5,7 @@ class ReceiptBackButton extends StatelessWidget {
   const ReceiptBackButton({
     super.key,
     required this.onTap,
-    this.text = 'back to home page',
+    this.text = 'back to login page',
   });
 
   final VoidCallback onTap;

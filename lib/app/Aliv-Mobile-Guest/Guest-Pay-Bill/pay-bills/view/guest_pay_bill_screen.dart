@@ -66,6 +66,10 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
   final FocusNode _nameFocusNode = FocusNode(debugLabel: 'guestPayBillName');
   bool _hasMobileFocus = false;
   bool _hasConfirmMobileFocus = false;
+  bool _showEmptyMobileError = false;
+  bool _showEmptyConfirmMobileError = false;
+
+  String _digitsOnly(String value) => value.replaceAll(RegExp(r'[^0-9]'), '');
 
   @override
   void initState() {
@@ -167,16 +171,28 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
   */
 
   void _onServiceChanged(BuildContext context, BillService? service) {
+    if (_showEmptyMobileError || _showEmptyConfirmMobileError) {
+      setState(() {
+        _showEmptyMobileError = false;
+        _showEmptyConfirmMobileError = false;
+      });
+    }
     final bloc = _bloc(context);
     bloc.add(GuestPayBillServiceChanged(service));
   }
 
   void _onMobileChanged(BuildContext context, String value) {
+    if (_showEmptyMobileError) {
+      setState(() => _showEmptyMobileError = false);
+    }
     final bloc = _bloc(context);
     bloc.add(GuestPayBillMobileChanged(value));
   }
 
   void _onConfirmMobileChanged(BuildContext context, String value) {
+    if (_showEmptyConfirmMobileError) {
+      setState(() => _showEmptyConfirmMobileError = false);
+    }
     final bloc = _bloc(context);
     bloc.add(GuestPayBillConfirmMobileChanged(value));
   }
@@ -249,26 +265,31 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         GuestPayBillTheme.countryPickerToInputGap +
         16; // picker width + gap + submit-row input container + input padding
 
-    // Login-style visual feedback for the mobile phone field:
-    // red border when unfocused with an invalid value, and red input
-    // text as the user types an invalid value.
+    final bool mobileEmpty = _digitsOnly(state.mobileNumber).isEmpty;
+    final bool showMobileEmpty = _showEmptyMobileError && mobileEmpty;
+    final bool mobileHasError = showMobileEmpty || state.showMobileInvalidError;
     final bool showMobileBorderError =
-        !_hasMobileFocus && state.showMobileInvalidError;
+        showMobileEmpty || (!_hasMobileFocus && state.showMobileInvalidError);
     final Color mobileBorderColor = showMobileBorderError
         ? GuestPayBillTheme.errorText
         : GuestPayBillTheme.unfocusedInputBorderColor;
-    final TextStyle mobileInputStyle = state.showMobileInvalidError
+    final TextStyle mobileInputStyle = mobileHasError
         ? GuestPayBillTheme.inputTextStyle.copyWith(
             color: GuestPayBillTheme.errorText,
           )
         : GuestPayBillTheme.inputTextStyle;
 
-    // Same treatment for the confirm field, including mismatch state.
+    final bool confirmEmpty = _digitsOnly(state.confirmMobileNumber).isEmpty;
+    final bool showConfirmEmpty = _showEmptyConfirmMobileError && confirmEmpty;
     final bool confirmHasError =
+        showConfirmEmpty ||
         state.showConfirmMobileInvalidError ||
         state.showConfirmMobileMismatchError;
     final bool showConfirmBorderError =
-        !_hasConfirmMobileFocus && confirmHasError;
+        showConfirmEmpty ||
+        (!_hasConfirmMobileFocus &&
+            (state.showConfirmMobileInvalidError ||
+                state.showConfirmMobileMismatchError));
     final Color confirmBorderColor = showConfirmBorderError
         ? GuestPayBillTheme.errorText
         : GuestPayBillTheme.unfocusedInputBorderColor;
@@ -277,7 +298,30 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
             color: GuestPayBillTheme.errorText,
           )
         : GuestPayBillTheme.inputTextStyle;
+
     void verifyAction() {
+      if (state.verifyStatus == GuestPayBillVerifyStatus.loading) return;
+
+      final bool isMobileEmpty = _digitsOnly(state.mobileNumber).isEmpty;
+      final bool isConfirmEmpty = _digitsOnly(
+        state.confirmMobileNumber,
+      ).isEmpty;
+
+      if (isMobileEmpty || isConfirmEmpty) {
+        setState(() {
+          if (isMobileEmpty) _showEmptyMobileError = true;
+          if (isConfirmEmpty) _showEmptyConfirmMobileError = true;
+        });
+        return;
+      }
+
+      if (!state.isMobileNumberValid ||
+          !state.isConfirmMobileNumberValid ||
+          _digitsOnly(state.mobileNumber) !=
+              _digitsOnly(state.confirmMobileNumber)) {
+        return;
+      }
+
       _onVerifyPressed(context);
     }
 
@@ -315,12 +359,14 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
         flagStyle: const TextStyle(fontSize: 18, fontFamily: 'CircularPro'),
       ),
-      if (state.showMobileInvalidError) ...[
+      if (mobileHasError) ...[
         const SizedBox(height: 6),
         Padding(
           padding: EdgeInsets.only(left: mobileErrorLeftPadding),
-          child: const Text(
-            GuestPayBillTheme.invalidPhoneErrorMessage,
+          child: Text(
+            showMobileEmpty
+                ? GuestPayBillTheme.emptyMobileErrorMessage
+                : GuestPayBillTheme.invalidPhoneErrorMessage,
             style: GuestPayBillTheme.inlineErrorTextStyle,
           ),
         ),
@@ -359,7 +405,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         phoneInputStyle: confirmInputStyle,
         phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
-        submitEnabled: state.canVerify,
+        submitEnabled: true,
         submitLoading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
         onChanged: (value) {
           _onConfirmMobileChanged(context, value);
@@ -367,16 +413,16 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         onSubmit: verifyAction,
         onSubmitted: (_) => verifyAction(),
       ),
-      if (state.showConfirmMobileInvalidError ||
-          state.showConfirmMobileMismatchError) ...[
+      if (confirmHasError) ...[
         const SizedBox(height: 6),
         Padding(
           padding: EdgeInsets.only(left: confirmErrorLeftPadding),
           child: Text(
-            // BILL-004: the confirm number's own format error comes first.
-            state.showConfirmMobileInvalidError
-                ? GuestPayBillTheme.invalidPhoneErrorMessage
-                : GuestPayBillTheme.mobileMismatchErrorMessage,
+            showConfirmEmpty
+                ? GuestPayBillTheme.emptyConfirmMobileErrorMessage
+                : (state.showConfirmMobileInvalidError
+                      ? GuestPayBillTheme.invalidPhoneErrorMessage
+                      : GuestPayBillTheme.mobileMismatchErrorMessage),
             style: GuestPayBillTheme.inlineErrorTextStyle,
           ),
         ),

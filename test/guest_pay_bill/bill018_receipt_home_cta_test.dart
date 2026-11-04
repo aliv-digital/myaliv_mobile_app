@@ -13,7 +13,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 const _title = 'Payment Success!';
 const _body =
     'It will take a few moments for the payment to appear on the account.';
-const _cta = 'back to home page';
+const _cta = 'back to login page';
 
 const _args = GuestPayBillReceiptArgs(
   serviceName: 'ALIV Postpaid',
@@ -85,25 +85,21 @@ void main() {
     expect(find.text(_title), findsOneWidget);
     expect(find.text(_body), findsOneWidget);
     expect(find.text(_cta), findsOneWidget);
-    expect(find.text('back to login page'), findsNothing);
+    expect(find.text('back to home page'), findsNothing);
   });
 
-  testWidgets('BILL-018 CTA returns a guest to the guest home', (tester) async {
+  testWidgets('BILL-018 CTA returns a guest to login', (tester) async {
     await pumpReceipt(tester);
     await tester.ensureVisible(find.text(_cta));
     await tester.tap(find.text(_cta));
     await tester.pumpAndSettle();
-    expect(find.text('guest home'), findsOneWidget);
-    expect(find.text('login'), findsNothing);
+    expect(find.text('login'), findsOneWidget);
+    expect(find.text('guest home'), findsNothing);
     expect(find.text('home'), findsNothing);
-    // The guest home's own back still lands on welcome, as before.
-    await tester.tap(find.text('guest home'));
-    await tester.pumpAndSettle();
-    expect(find.text('welcome'), findsOneWidget);
   });
 
   testWidgets(
-    'payment failed receipt shows failure card and returns to guest home',
+    'payment failed receipt shows failure card and returns to login',
     (tester) async {
       const failedArgs = GuestPayBillReceiptArgs(
         serviceName: 'ALIV Postpaid',
@@ -129,13 +125,9 @@ void main() {
       await tester.ensureVisible(find.text(_cta));
       await tester.tap(find.text(_cta));
       await tester.pumpAndSettle();
-      expect(find.text('guest home'), findsOneWidget);
-      expect(find.text('login'), findsNothing);
+      expect(find.text('login'), findsOneWidget);
+      expect(find.text('guest home'), findsNothing);
       expect(find.text('home'), findsNothing);
-
-      await tester.tap(find.text('guest home'));
-      await tester.pumpAndSettle();
-      expect(find.text('welcome'), findsOneWidget);
     },
   );
 
@@ -144,9 +136,9 @@ void main() {
   ) async {
     AppSession.appRoute = 'postpaidPayment';
     await pumpReceipt(tester);
-    expect(find.text(_cta), findsOneWidget);
-    await tester.ensureVisible(find.text(_cta));
-    await tester.tap(find.text(_cta));
+    expect(find.text('back to home page'), findsOneWidget);
+    await tester.ensureVisible(find.text('back to home page'));
+    await tester.tap(find.text('back to home page'));
     await tester.pumpAndSettle();
     expect(find.text('home'), findsOneWidget);
     expect(AppSession.appRoute, isNot('postpaidPayment'));

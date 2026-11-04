@@ -31,6 +31,11 @@ class GiftDataRepository {
 
   /// Fetches the available gift plans + total giftable budget for a sender.
   /// Backed by GET /device/can-send-data-share/{senderMsisdn}.
+  /// Verifies recipient account status and payment option.
+  Future<RecipientVerificationResult> verifyRecipient(String phoneNumber) {
+    return _apiClient.verifyRecipient(phoneNumber);
+  }
+
   Future<GiftDataSendOptions> fetchSendDataShareOptions(
     String senderMsisdn,
   ) async {

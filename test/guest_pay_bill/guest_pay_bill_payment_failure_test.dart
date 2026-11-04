@@ -90,6 +90,10 @@ void main() {
           },
         ),
         GoRoute(
+          path: AppRoutes.logIn,
+          builder: (_, _) => const Scaffold(body: Text('login')),
+        ),
+        GoRoute(
           path: AppRoutes.welcome,
           builder: (_, _) => const Scaffold(body: Text('welcome')),
         ),
@@ -149,13 +153,13 @@ void main() {
         find.text('There was a problem processing\nyour order.'),
         findsOneWidget,
       );
-      expect(find.text('back to home page'), findsOneWidget);
+      expect(find.text('back to login page'), findsOneWidget);
 
-      await tester.ensureVisible(find.text('back to home page'));
-      await tester.tap(find.text('back to home page'));
+      await tester.ensureVisible(find.text('back to login page'));
+      await tester.tap(find.text('back to login page'));
       await tester.pumpAndSettle();
 
-      expect(find.text('guest home'), findsOneWidget);
+      expect(find.text('login'), findsOneWidget);
     },
   );
 
@@ -175,7 +179,7 @@ void main() {
       expect(find.byType(GuestPayBillReceiptScreen), findsOneWidget);
       expect(find.byType(ReceiptFailureCard), findsOneWidget);
       expect(find.text('Payment Failed'), findsOneWidget);
-      expect(find.text('back to home page'), findsOneWidget);
+      expect(find.text('back to login page'), findsOneWidget);
     });
   }
 
@@ -191,12 +195,12 @@ void main() {
     expect(find.byType(DefaultReceiptSuccessCard), findsOneWidget);
     expect(find.byType(ReceiptFailureCard), findsNothing);
     expect(find.text('Payment Success!'), findsOneWidget);
-    expect(find.text('back to home page'), findsOneWidget);
+    expect(find.text('back to login page'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('back to home page'));
-    await tester.tap(find.text('back to home page'));
+    await tester.ensureVisible(find.text('back to login page'));
+    await tester.tap(find.text('back to login page'));
     await tester.pumpAndSettle();
 
-    expect(find.text('guest home'), findsOneWidget);
+    expect(find.text('login'), findsOneWidget);
   });
 }
