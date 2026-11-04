@@ -195,30 +195,8 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     }
   }
 
-  // Waits until PlansCubit is no longer in a loading/refreshing state.
-  // Loops so it also catches the _pendingForceRefresh second fetch that starts
-  // immediately after the in-flight fetch completes: each iteration yields one
-  // microtask after settling, then re-checks whether a new fetch has begun.
-  // Falls through after 15 s total so the overlay never gets stuck.
-  Future<void> _waitForPlansSettled(PlansCubit cubit) async {
-    // Yield one microtask so loadInitialPlans can emit its loading state.
-    await Future<void>.delayed(Duration.zero);
-    final deadline = DateTime.now().add(const Duration(seconds: 15));
-    while (cubit.state.isLoading || cubit.state.isRefreshing) {
-      final remaining = deadline.difference(DateTime.now());
-      if (remaining <= Duration.zero) break;
-      try {
-        await cubit.stream
-            .firstWhere((s) => !s.isLoading && !s.isRefreshing)
-            .timeout(remaining);
-      } catch (_) {
-        break;
-      }
-      // Yield one microtask — _pendingForceRefresh may start a new fetch
-      // synchronously inside the cubit right after the previous one settles.
-      await Future<void>.delayed(Duration.zero);
-    }
-  }
+  Future<void> _waitForPlansSettled(PlansCubit cubit) =>
+      cubit.waitUntilSettled();
 
   @override
   Widget build(BuildContext context) {

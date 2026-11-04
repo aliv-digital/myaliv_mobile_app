@@ -127,29 +127,29 @@ class _HomeScreenState extends State<HomeScreen> {
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
       await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
 
-      // /bundles + /available-plans build URLs from the DeviceID resolved by
-      // ActiveDevice (dropdown-selected child, else primary) — fire the plans
-      // refresh now so its APIs actually go on the wire on cold restart.
-      // Fire-and-forget: PlansCubit updates BucketUsageSummaryCubit through
-      // the BlocListener in build().
-      instance<PlansCubit>().loadInitialPlans(
-        userType: userType,
-        forceRefresh: true,
-      );
-
       // Balance / BucketUsage / ConsumptionLimit cubits take an explicit
       // deviceAccountId for cache keying — resolve through ActiveDevice.
       final deviceId = ActiveDevice.id();
 
+      // Fire plans refresh. /bundles + /available-plans use the DeviceID
+      // resolved by ActiveDevice (dropdown-selected child, else primary).
+      final plansCubit = instance<PlansCubit>();
+      plansCubit.loadInitialPlans(userType: userType, forceRefresh: true);
+
       if (deviceId != null && deviceId > 0) {
-        await instance<BalanceCubit>().loadBalances(
-          deviceAccountId: deviceId,
-          forceRefresh: true,
-        );
+        // Run balance and plans in parallel; both must settle before
+        // BucketUsageSummary is called so it receives fresh plan data.
+        await Future.wait([
+          instance<BalanceCubit>().loadBalances(
+            deviceAccountId: deviceId,
+            forceRefresh: true,
+          ),
+          plansCubit.waitUntilSettled(),
+        ]);
 
         // Bucket usage and consumption limits both use DeviceID from
         // /Account/devices so the URLs match /device/{DeviceID}/...
-        final plansState = instance<PlansCubit>().state;
+        final plansState = plansCubit.state;
         instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
           deviceAccountId: deviceId,
           activePlans: plansState.activePlansForBucketUsage,

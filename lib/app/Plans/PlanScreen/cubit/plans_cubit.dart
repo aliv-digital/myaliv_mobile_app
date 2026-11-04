@@ -398,6 +398,30 @@ class PlansCubit extends HydratedCubit<PlansState> {
     }
   }
 
+  /// Waits until this cubit is no longer in a loading/refreshing state.
+  ///
+  /// Loops so it also catches the _pendingForceRefresh second fetch that starts
+  /// synchronously in the finally block right after the in-flight fetch settles.
+  /// Falls through after [timeout] so callers never hang indefinitely.
+  Future<void> waitUntilSettled({
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    await Future<void>.delayed(Duration.zero);
+    final deadline = DateTime.now().add(timeout);
+    while (state.isLoading || state.isRefreshing) {
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining <= Duration.zero) break;
+      try {
+        await stream
+            .firstWhere((s) => !s.isLoading && !s.isRefreshing)
+            .timeout(remaining);
+      } catch (_) {
+        break;
+      }
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
