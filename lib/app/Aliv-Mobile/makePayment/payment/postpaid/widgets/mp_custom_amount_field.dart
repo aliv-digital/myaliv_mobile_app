@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 
 import '../theme/make_payment_postpaid_theme.dart';
 
@@ -63,59 +64,69 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
     final borderWidth = MakePaymentPostPaidTheme.customAmountBorderWidth;
     final innerRadius = (radius - borderWidth).clamp(0.0, radius).toDouble();
 
-    return AnimatedBuilder(
-      animation: _focusNode,
-      builder: (context, _) {
-        final isFocused = _focusNode.hasFocus;
+    return AppKeyboardToolbar(
+      focusNodes: [_focusNode],
+      child: AnimatedBuilder(
+        animation: _focusNode,
+        builder: (context, _) {
+          final isFocused = _focusNode.hasFocus;
 
-        return Container(
-          height: 44,
-          decoration: BoxDecoration(
-            gradient: isFocused
-                ? MakePaymentPostPaidTheme.focusedInputBorderGradient
-                : null,
-            color: isFocused ? null : MakePaymentPostPaidTheme.customAmountBg,
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          padding: EdgeInsets.all(isFocused ? borderWidth : 0),
-          child: Container(
-            padding: MakePaymentPostPaidTheme.paymentDueAmountFieldPadding,
+          return Container(
+            height: 44,
             decoration: BoxDecoration(
-              color: MakePaymentPostPaidTheme.customAmountBg,
-              borderRadius: BorderRadius.circular(
-                isFocused ? innerRadius : radius,
-              ),
+              gradient: isFocused
+                  ? MakePaymentPostPaidTheme.focusedInputBorderGradient
+                  : null,
+              color: isFocused ? null : MakePaymentPostPaidTheme.customAmountBg,
+              borderRadius: BorderRadius.circular(radius),
             ),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(r'$', style: MakePaymentPostPaidTheme.currencySymbolText),
-                const SizedBox(
-                  width: MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
+            padding: EdgeInsets.all(isFocused ? borderWidth : 0),
+            child: Container(
+              padding: MakePaymentPostPaidTheme.paymentDueAmountFieldPadding,
+              decoration: BoxDecoration(
+                color: MakePaymentPostPaidTheme.customAmountBg,
+                borderRadius: BorderRadius.circular(
+                  isFocused ? innerRadius : radius,
                 ),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    onChanged: widget.onChanged,
-                    keyboardType: TextInputType.number,
-                    style: MakePaymentPostPaidTheme.customAmountText,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                      hintText: '0.00',
-                      hintStyle: MakePaymentPostPaidTheme.customAmountHint,
+              ),
+              alignment: Alignment.centerLeft,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    r'$',
+                    style: MakePaymentPostPaidTheme.currencySymbolText,
+                  ),
+                  const SizedBox(
+                    width:
+                        MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      textInputAction: TextInputAction.done,
+                      scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                      onSubmitted: (_) => _focusNode.unfocus(),
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      onChanged: widget.onChanged,
+                      keyboardType: TextInputType.number,
+                      style: MakePaymentPostPaidTheme.customAmountText,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        hintText: '0.00',
+                        hintStyle: MakePaymentPostPaidTheme.customAmountHint,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

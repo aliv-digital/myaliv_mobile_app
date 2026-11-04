@@ -345,7 +345,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
             _confirmPhoneFocusNode,
             _amountFocusNode,
           ],
-          showDoneButton: false,
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
             child: Column(

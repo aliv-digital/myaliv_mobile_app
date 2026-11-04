@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/theme/app_theme.dart';
 
 /// CustomPaymentBreakDownCard
@@ -334,6 +335,7 @@ class _CustomPromoInputRow extends StatefulWidget {
 }
 
 class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
+  final FocusNode _focusNode = FocusNode();
   late final TextEditingController _controller;
 
   @override
@@ -356,6 +358,7 @@ class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -367,64 +370,71 @@ class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
     final actionStyle =
         config.actionStyle ?? AppTheme.paymentBreakdownPromoAction;
 
-    return Container(
-      height: config.height,
-      padding: config.padding,
-      decoration: BoxDecoration(
-        color: config.backgroundColor,
-        borderRadius: config.borderRadius,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              enabled: canInteract,
-              onChanged: config.onChanged,
-              style: config.textStyle ?? AppTheme.paymentBreakdownPromoText,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                hintText: config.hintText,
-                hintStyle:
-                    config.hintStyle ?? AppTheme.paymentBreakdownPromoHint,
+    return AppKeyboardToolbar(
+      focusNodes: [_focusNode],
+      child: Container(
+        height: config.height,
+        padding: config.padding,
+        decoration: BoxDecoration(
+          color: config.backgroundColor,
+          borderRadius: config.borderRadius,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                focusNode: _focusNode,
+                textInputAction: TextInputAction.done,
+                scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                onSubmitted: (_) => _focusNode.unfocus(),
+                controller: _controller,
+                enabled: canInteract,
+                onChanged: config.onChanged,
+                style: config.textStyle ?? AppTheme.paymentBreakdownPromoText,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintText: config.hintText,
+                  hintStyle:
+                      config.hintStyle ?? AppTheme.paymentBreakdownPromoHint,
+                ),
               ),
             ),
-          ),
-          SizedBox(width: config.actionGap),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: canInteract ? config.onActionTap : null,
-            child: Opacity(
-              opacity: config.enabled || config.isActionLoading
-                  ? 1
-                  : AppTheme.paymentBreakdownPromoDisabledOpacity,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 10,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: 36),
-                  child: Center(
-                    child: config.isActionLoading
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                actionStyle.color ?? Colors.white,
+            SizedBox(width: config.actionGap),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: canInteract ? config.onActionTap : null,
+              child: Opacity(
+                opacity: config.enabled || config.isActionLoading
+                    ? 1
+                    : AppTheme.paymentBreakdownPromoDisabledOpacity,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 10,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 36),
+                    child: Center(
+                      child: config.isActionLoading
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  actionStyle.color ?? Colors.white,
+                                ),
                               ),
-                            ),
-                          )
-                        : Text(config.actionText, style: actionStyle),
+                            )
+                          : Text(config.actionText, style: actionStyle),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

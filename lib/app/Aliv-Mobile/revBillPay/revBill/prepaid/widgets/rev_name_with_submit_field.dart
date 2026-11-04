@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import '../../../../login/widgets/focused_input_border_wrapper.dart';
 import '../theme/rev_prepaid_theme.dart';
 
@@ -11,8 +12,15 @@ class RevNameWithSubmitField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onSubmit;
 
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
   const RevNameWithSubmitField({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     required this.value,
     required this.hintText,
     required this.canSubmit,
@@ -27,7 +35,8 @@ class RevNameWithSubmitField extends StatefulWidget {
 
 class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
   late final TextEditingController _controller;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _internalFocusNode = FocusNode();
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
   bool _hasFocus = false;
 
   @override
@@ -40,6 +49,13 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
   @override
   void didUpdateWidget(covariant RevNameWithSubmitField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode).removeListener(
+        _onFocusChanged,
+      );
+      _focusNode.addListener(_onFocusChanged);
+      _hasFocus = _focusNode.hasFocus;
+    }
 
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
@@ -52,7 +68,7 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    _internalFocusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -96,6 +112,9 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
+                textInputAction: widget.textInputAction,
+                onSubmitted: widget.onSubmitted,
+                scrollPadding: AppKeyboardToolbar.inputScrollPadding,
                 onChanged: widget.onChanged,
                 style: RevPrepaidTheme.input,
                 decoration: InputDecoration(

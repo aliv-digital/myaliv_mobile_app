@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/focused_input_border_wrapper.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/theme/rev_prepaid_theme.dart';
@@ -11,8 +12,15 @@ class LimitAmountInputField extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
 
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
   const LimitAmountInputField({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     required this.value,
     required this.onChanged,
   });
@@ -23,7 +31,8 @@ class LimitAmountInputField extends StatefulWidget {
 
 class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
   late final TextEditingController _controller;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _internalFocusNode = FocusNode();
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
   bool _hasFocus = false;
 
   @override
@@ -36,6 +45,13 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
   @override
   void didUpdateWidget(covariant LimitAmountInputField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode).removeListener(
+        _onFocusChanged,
+      );
+      _focusNode.addListener(_onFocusChanged);
+      _hasFocus = _focusNode.hasFocus;
+    }
 
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
@@ -48,7 +64,7 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    _internalFocusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -94,6 +110,9 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
                 child: TextField(
                   controller: _controller,
                   focusNode: _focusNode,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: widget.onSubmitted,
+                  scrollPadding: AppKeyboardToolbar.inputScrollPadding,
                   onChanged: widget.onChanged,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -118,11 +137,17 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
 /// Limit field with label and controller
 class LimitFieldWithController extends StatefulWidget {
   final String label;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
   final TextEditingController controller;
   final bool validateValue;
 
   const LimitFieldWithController({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     required this.label,
     required this.controller,
     this.validateValue = false,
@@ -158,6 +183,9 @@ class _LimitFieldWithControllerState extends State<LimitFieldWithController> {
           ),
           const SizedBox(height: 10),
           LimitAmountInputField(
+            focusNode: widget.focusNode,
+            textInputAction: widget.textInputAction,
+            onSubmitted: widget.onSubmitted,
             value: widget.controller.text,
             onChanged: (value) {
               widget.controller.text = value;

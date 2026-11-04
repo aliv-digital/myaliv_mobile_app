@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
@@ -105,7 +106,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                 TopUpPrepaidTheme.amountFieldBorderWidth)
             .clamp(0.0, TopUpPrepaidTheme.amountFieldRadius);
 
-    return Container(
+    final field = Container(
       width: TopUpPrepaidTheme.amountFieldWidth,
       height: TopUpPrepaidTheme.amountFieldHeight,
       decoration: BoxDecoration(
@@ -140,6 +141,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                   child: TextField(
                     focusNode: _effectiveFocusNode,
                     textInputAction: widget.textInputAction,
+                    scrollPadding: AppKeyboardToolbar.inputScrollPadding,
                     onSubmitted: widget.onSubmitted,
                     controller: _controller,
                     keyboardType: const TextInputType.numberWithOptions(
@@ -185,5 +187,9 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
         ),
       ),
     );
+    if (widget.focusNode != null) {
+      return field;
+    }
+    return AppKeyboardToolbar(focusNodes: [_effectiveFocusNode], child: field);
   }
 }

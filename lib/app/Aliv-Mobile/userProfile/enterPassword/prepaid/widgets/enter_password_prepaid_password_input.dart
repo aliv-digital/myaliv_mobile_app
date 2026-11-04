@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../login/widgets/focused_input_border_wrapper.dart';
@@ -51,69 +52,75 @@ class _EnterPasswordPrepaidPasswordInputState
 
   @override
   Widget build(BuildContext context) {
-    return FocusedInputBorderWrapper(
-      isFocused: _hasPasswordFocus,
-      unfocusedBorderColor: EnterPasswordPrepaidTheme.inputBorder,
-      radius: 6,
-      borderWidth: 1,
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          color: Colors.white,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              AssetConstant.lockPassSVG,
-              width: 20,
-              height: 20,
-              colorFilter: const ColorFilter.mode(
-                Color(0xFF6B7280),
-                BlendMode.srcIn,
+    return AppKeyboardToolbar(
+      focusNodes: [_passwordFocusNode],
+      child: FocusedInputBorderWrapper(
+        isFocused: _hasPasswordFocus,
+        unfocusedBorderColor: EnterPasswordPrepaidTheme.inputBorder,
+        radius: 6,
+        borderWidth: 1,
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AssetConstant.lockPassSVG,
+                width: 20,
+                height: 20,
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFF6B7280),
+                  BlendMode.srcIn,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextField(
-                focusNode: _passwordFocusNode,
-                obscureText: widget.obscure,
-                onChanged: widget.onChanged,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  hintText: 'enter your password',
-                  hintStyle: TextStyle(
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  textInputAction: TextInputAction.done,
+                  scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                  onSubmitted: (_) => _passwordFocusNode.unfocus(),
+                  focusNode: _passwordFocusNode,
+                  obscureText: widget.obscure,
+                  onChanged: widget.onChanged,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    hintText: 'enter your password',
+                    hintStyle: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
+                      color: Color(0xFF707070),
+                    ),
+                  ),
+                  style: const TextStyle(
                     fontFamily: 'CircularPro',
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     height: 1.43,
-                    color: Color(0xFF707070),
+                    color: Colors.black,
                   ),
                 ),
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.43,
-                  color: Colors.black,
+              ),
+              const SizedBox(width: 11),
+              InkWell(
+                onTap: widget.onToggle,
+                borderRadius: BorderRadius.circular(999),
+                child: SvgPicture.asset(
+                  widget.obscure
+                      ? AssetConstant.hideIconSVG
+                      : AssetConstant.viewIconSVG,
+                  width: 20,
+                  height: 20,
                 ),
               ),
-            ),
-            const SizedBox(width: 11),
-            InkWell(
-              onTap: widget.onToggle,
-              borderRadius: BorderRadius.circular(999),
-              child: SvgPicture.asset(
-                widget.obscure
-                    ? AssetConstant.hideIconSVG
-                    : AssetConstant.viewIconSVG,
-                width: 20,
-                height: 20,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

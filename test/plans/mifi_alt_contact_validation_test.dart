@@ -171,6 +171,25 @@ void main() {
     expect(confirmation, isNull);
   }
 
+  testWidgets('Done dismisses the alternate number without submitting', (
+    tester,
+  ) async {
+    givenMifiLine();
+    await pumpScreen(tester);
+    addTearDown(tester.view.resetViewInsets);
+    await enterPhone(tester, '2425550100');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+    await tester.pumpAndSettle();
+    final value = tester.widget<TextField>(phoneInput()).controller!.text;
+    expect(find.widgetWithText(TextButton, 'Done'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Done'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(phoneInput()).focusNode!.hasFocus, isFalse);
+    expect(tester.widget<TextField>(phoneInput()).controller!.text, value);
+    expect(find.text('Done'), findsNothing);
+    expectNotSubmitted();
+  });
+
   testWidgets('initial screen shows no validation message', (tester) async {
     givenMifiLine();
     await pumpScreen(tester);

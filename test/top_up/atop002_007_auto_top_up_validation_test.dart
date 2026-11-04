@@ -204,6 +204,34 @@ void main() {
       (w) => w is TextField && w.decoration?.hintText == hint,
     );
 
+    testWidgets(
+      'toolbar moves threshold to custom amount and Done only dismisses',
+      (tester) async {
+        await pumpTab(tester);
+        addTearDown(tester.view.resetViewInsets);
+        final threshold = field('enter threshold amount');
+        final amount = field('enter a custom amount');
+        await tester.enterText(threshold, '25');
+        tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(TextButton, 'Next'), findsOneWidget);
+        await tester.tap(find.widgetWithText(TextButton, 'Next'));
+        await tester.pumpAndSettle();
+        expect(tester.widget<TextField>(amount).focusNode!.hasFocus, isTrue);
+        await tester.enterText(amount, '15');
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(TextButton, 'Done'), findsOneWidget);
+        await tester.tap(find.widgetWithText(TextButton, 'Done'));
+        await tester.pumpAndSettle();
+        expect(tester.widget<TextField>(amount).focusNode!.hasFocus, isFalse);
+        expect(tester.widget<TextField>(threshold).controller!.text, '25');
+        expect(tester.widget<TextField>(amount).controller!.text, '15');
+        expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+        expect(find.text('Done'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     Future<void> enter(WidgetTester tester, String hint, String value) async {
       await tester.enterText(field(hint), value);
       await tester.pumpAndSettle();

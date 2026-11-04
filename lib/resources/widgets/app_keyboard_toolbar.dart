@@ -20,6 +20,16 @@ class AppKeyboardToolbar extends StatefulWidget {
     required this.child,
   });
 
+  static const double height = 48;
+
+  /// Keeps a focused input clear of the toolbar and the usual scroll margin.
+  static const EdgeInsets inputScrollPadding = EdgeInsets.fromLTRB(
+    20,
+    20,
+    20,
+    height + 20,
+  );
+
   /// The list of [FocusNode]s in logical traversal order.
   final List<FocusNode> focusNodes;
 
@@ -173,7 +183,7 @@ class _AppKeyboardToolbarState extends State<AppKeyboardToolbar>
               color: widget.backgroundColor,
               elevation: 2,
               child: SizedBox(
-                height: 48,
+                height: AppKeyboardToolbar.height,
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
