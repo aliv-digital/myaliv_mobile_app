@@ -63,6 +63,9 @@ class AutoTopupCardSection extends StatelessWidget {
 
 /// Balance threshold section for auto top-up.
 class AutoTopupThresholdSection extends StatelessWidget {
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
 
@@ -75,6 +78,9 @@ class AutoTopupThresholdSection extends StatelessWidget {
 
   const AutoTopupThresholdSection({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     this.controller,
     this.onChanged,
     this.minThreshold = 0,
@@ -88,6 +94,9 @@ class AutoTopupThresholdSection extends StatelessWidget {
       children: [
         const AutoTopupSectionLabel('when balance falls below'),
         TopUpFormInputField(
+          focusNode: focusNode,
+          textInputAction: textInputAction,
+          onSubmitted: onSubmitted,
           hint: 'enter threshold amount',
           isAmountType: true,
           controller: controller,
@@ -153,6 +162,9 @@ class AutoTopupAmountSection extends StatelessWidget {
 /// Custom amount input section for auto top-up.
 class AutoTopupCustomAmountSection extends StatelessWidget {
   /// Controller for the custom amount input field.
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
   final TextEditingController? controller;
 
   /// Callback when the custom amount value changes.
@@ -160,6 +172,9 @@ class AutoTopupCustomAmountSection extends StatelessWidget {
 
   const AutoTopupCustomAmountSection({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     this.controller,
     this.onChanged,
   });
@@ -171,6 +186,9 @@ class AutoTopupCustomAmountSection extends StatelessWidget {
       children: [
         const AutoTopupSectionLabel('custom amount'),
         TopUpFormInputField(
+          focusNode: focusNode,
+          textInputAction: textInputAction,
+          onSubmitted: onSubmitted,
           hint: 'enter a custom amount',
           isAmountType: true,
           controller: controller,

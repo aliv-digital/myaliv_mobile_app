@@ -131,6 +131,65 @@ void main() {
       await instance.reset();
     });
 
+    for (final size in [const Size(320, 640), const Size(443, 958)]) {
+      testWidgets('Done dismisses the email keyboard at $size', (tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetViewInsets);
+
+        await tester.pumpWidget(
+          const MaterialApp(home: EditEmailPrepaidScreen()),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Done'), findsNothing);
+
+        final input = find.byType(TextField);
+        await tester.enterText(input, 'new@example.com');
+        await tester.pumpAndSettle();
+        // Focus alone must not show a toolbar without a software keyboard.
+        expect(find.text('Done'), findsNothing);
+
+        tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+        await tester.pumpAndSettle();
+        final done = find.widgetWithText(TextButton, 'Done');
+        expect(done, findsOneWidget);
+        expect(
+          tester.getRect(done).bottom,
+          lessThanOrEqualTo(size.height - 280),
+        );
+        expect(
+          tester.getRect(input).bottom,
+          lessThanOrEqualTo(size.height - 280 - 48),
+        );
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(done);
+        await tester.pumpAndSettle();
+        final field = tester.widget<TextField>(input);
+        expect(field.focusNode!.hasFocus, isFalse);
+        expect(field.controller!.text, 'new@example.com');
+        expect(find.text('Done'), findsNothing);
+        verifyZeroInteractions(network);
+
+        // The native keyboard action dismisses focus without saving as well.
+        tester.view.viewInsets = FakeViewPadding.zero;
+        await tester.pumpAndSettle();
+        await tester.showKeyboard(input);
+        tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+        await tester.pumpAndSettle();
+        expect(find.text('Done'), findsOneWidget);
+        expect(field.textInputAction, TextInputAction.done);
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+        expect(field.focusNode!.hasFocus, isFalse);
+        expect(field.controller!.text, 'new@example.com');
+        expect(find.text('Done'), findsNothing);
+        verifyZeroInteractions(network);
+      });
+    }
+
     testWidgets(
       'renders phone number as (242)-899-8866 in read-only info field',
       (tester) async {

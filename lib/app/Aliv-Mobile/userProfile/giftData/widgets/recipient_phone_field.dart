@@ -17,7 +17,7 @@ class RecipientPhoneField extends StatelessWidget {
     this.showError = false,
     this.errorText,
     this.focusNode,
-    this.textInputAction,
+    this.textInputAction = TextInputAction.done,
     this.onSubmitted,
   });
 
@@ -27,7 +27,7 @@ class RecipientPhoneField extends StatelessWidget {
   final bool showError;
   final String? errorText;
   final FocusNode? focusNode;
-  final TextInputAction? textInputAction;
+  final TextInputAction textInputAction;
   final ValueChanged<String>? onSubmitted;
 
   static const LinearGradient _defaultFocusedGradient = LinearGradient(

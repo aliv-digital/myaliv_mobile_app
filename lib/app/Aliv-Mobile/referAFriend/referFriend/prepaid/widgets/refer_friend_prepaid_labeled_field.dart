@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import '../theme/refer_friend_prepaid_theme.dart';
 
 class ReferFriendPrepaidLabeledField extends StatefulWidget {
@@ -104,7 +105,7 @@ class _ReferFriendPrepaidLabeledFieldState
           )
         : ReferFriendPrepaidTheme.fieldInput;
 
-    return Column(
+    final field = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.label, style: ReferFriendPrepaidTheme.label),
@@ -137,7 +138,8 @@ class _ReferFriendPrepaidLabeledFieldState
               child: TextField(
                 controller: _controller,
                 focusNode: _effectiveFocusNode,
-                textInputAction: widget.textInputAction,
+                textInputAction: widget.textInputAction ?? TextInputAction.done,
+                scrollPadding: AppKeyboardToolbar.inputScrollPadding,
                 onSubmitted: widget.onSubmitted,
                 keyboardType: widget.keyboardType,
                 onChanged: widget.onChanged,
@@ -157,5 +159,10 @@ class _ReferFriendPrepaidLabeledFieldState
         ],
       ],
     );
+    // The refer form owns traversal; the standalone redeem input owns Done.
+    if (widget.focusNode != null) {
+      return field;
+    }
+    return AppKeyboardToolbar(focusNodes: [_effectiveFocusNode], child: field);
   }
 }

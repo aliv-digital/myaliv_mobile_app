@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 
 /// Reusable input with gradient border on focus.
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 class CustomInputField extends StatefulWidget {
   const CustomInputField({
     super.key,
+    this.focusNode,
     required this.value,
     required this.onChanged,
     this.hintText,
@@ -49,6 +51,7 @@ class CustomInputField extends StatefulWidget {
     this.suffix,
   });
 
+  final FocusNode? focusNode;
   final String value;
   final ValueChanged<String> onChanged;
 
@@ -90,7 +93,8 @@ class CustomInputField extends StatefulWidget {
 
 class _CustomInputFieldState extends State<CustomInputField> {
   late final TextEditingController _controller;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _internalFocusNode = FocusNode();
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
   bool _hasFocus = false;
 
   @override
@@ -103,6 +107,13 @@ class _CustomInputFieldState extends State<CustomInputField> {
   @override
   void didUpdateWidget(covariant CustomInputField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _internalFocusNode).removeListener(
+        _onFocusChanged,
+      );
+      _focusNode.addListener(_onFocusChanged);
+      _hasFocus = _focusNode.hasFocus;
+    }
     // Keep controller text synced with external state updates.
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
@@ -115,7 +126,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    _internalFocusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -138,6 +149,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
       child: TextField(
         controller: _controller,
         focusNode: _focusNode,
+        scrollPadding: AppKeyboardToolbar.inputScrollPadding,
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
         inputFormatters: widget.inputFormatters,

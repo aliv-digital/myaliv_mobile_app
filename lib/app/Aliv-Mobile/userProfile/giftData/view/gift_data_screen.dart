@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -40,10 +41,14 @@ class _GiftDataView extends StatefulWidget {
 
 class _GiftDataViewState extends State<_GiftDataView> {
   final _recipientController = TextEditingController();
+  final _recipientFocusNode = FocusNode();
+  final _confirmRecipientFocusNode = FocusNode();
   final _confirmRecipientController = TextEditingController();
 
   @override
   void dispose() {
+    _recipientFocusNode.dispose();
+    _confirmRecipientFocusNode.dispose();
     _recipientController.dispose();
     _confirmRecipientController.dispose();
     super.dispose();
@@ -89,56 +94,62 @@ class _GiftDataViewState extends State<_GiftDataView> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<GiftDataCubit, GiftDataState>(
-          listenWhen: (p, c) => !p.isRecipientComplete && c.isRecipientComplete,
-          listener: (ctx, _) => FocusScope.of(ctx).unfocus(),
-        ),
-        BlocListener<GiftDataCubit, GiftDataState>(
-          listenWhen: (p, c) =>
-              p.recipientErrorMessage != c.recipientErrorMessage &&
-              c.recipientErrorMessage != null,
-          listener: (_, s) => AppToast.show(
-            message: s.recipientErrorMessage!,
-            type: ToastType.error,
+    return AppKeyboardToolbar(
+      focusNodes: [_recipientFocusNode, _confirmRecipientFocusNode],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<GiftDataCubit, GiftDataState>(
+            listenWhen: (p, c) =>
+                !p.isRecipientComplete && c.isRecipientComplete,
+            listener: (ctx, _) => FocusScope.of(ctx).unfocus(),
           ),
-        ),
-        BlocListener<GiftDataCubit, GiftDataState>(
-          listenWhen: (p, c) =>
-              p.status != c.status && c.status == GiftDataStatus.success,
-          listener: _onSubmitSuccess,
-        ),
-      ],
-      child: Scaffold(
-        backgroundColor: GiftDataTheme.pageBg,
-        body: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              DefaultAppBar(title: 'gift data', showBackArrow: true),
-              Expanded(
-                child: BlocBuilder<GiftDataCubit, GiftDataState>(
-                  builder: (ctx, state) => switch (state.status) {
-                    GiftDataStatus.initial || GiftDataStatus.loading =>
-                      const Center(child: CircularProgressIndicator()),
-                    GiftDataStatus.failure => GiftDataErrorView(
-                      message: state.errorMessage ?? 'something went wrong',
-                      onRetry: () => ctx.read<GiftDataCubit>().load(),
-                    ),
-                    GiftDataStatus.ineligible => GiftDataIneligibleView(
-                      reason: state.ineligibleReason,
-                    ),
-                    _ => GiftDataFormBody(
-                      state: state,
-                      recipientController: _recipientController,
-                      confirmRecipientController: _confirmRecipientController,
-                      onContinue: _handleContinue,
-                    ),
-                  },
+          BlocListener<GiftDataCubit, GiftDataState>(
+            listenWhen: (p, c) =>
+                p.recipientErrorMessage != c.recipientErrorMessage &&
+                c.recipientErrorMessage != null,
+            listener: (_, s) => AppToast.show(
+              message: s.recipientErrorMessage!,
+              type: ToastType.error,
+            ),
+          ),
+          BlocListener<GiftDataCubit, GiftDataState>(
+            listenWhen: (p, c) =>
+                p.status != c.status && c.status == GiftDataStatus.success,
+            listener: _onSubmitSuccess,
+          ),
+        ],
+        child: Scaffold(
+          backgroundColor: GiftDataTheme.pageBg,
+          body: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                DefaultAppBar(title: 'gift data', showBackArrow: true),
+                Expanded(
+                  child: BlocBuilder<GiftDataCubit, GiftDataState>(
+                    builder: (ctx, state) => switch (state.status) {
+                      GiftDataStatus.initial || GiftDataStatus.loading =>
+                        const Center(child: CircularProgressIndicator()),
+                      GiftDataStatus.failure => GiftDataErrorView(
+                        message: state.errorMessage ?? 'something went wrong',
+                        onRetry: () => ctx.read<GiftDataCubit>().load(),
+                      ),
+                      GiftDataStatus.ineligible => GiftDataIneligibleView(
+                        reason: state.ineligibleReason,
+                      ),
+                      _ => GiftDataFormBody(
+                        state: state,
+                        recipientController: _recipientController,
+                        recipientFocusNode: _recipientFocusNode,
+                        confirmRecipientFocusNode: _confirmRecipientFocusNode,
+                        confirmRecipientController: _confirmRecipientController,
+                        onContinue: _handleContinue,
+                      ),
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

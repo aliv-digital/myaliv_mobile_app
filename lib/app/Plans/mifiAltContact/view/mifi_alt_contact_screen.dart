@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -151,25 +152,29 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
 
   @override
   Widget build(BuildContext context) {
-    return MifiAltValidationListener(
-      onValidationSuccess: _onValidationSuccess,
-      child: MifiAltContactScaffold(
-        marketingOptIn: _marketingOptIn,
-        canContinue: _canContinue,
-        onMarketingChanged: (value) => setState(() => _marketingOptIn = value),
-        onContinuePressed: _onContinuePressed,
-        phoneFieldBuilder: ({required bool readOnly}) => MifiAltPhoneField(
-          controller: _phoneController,
-          focusNode: _phoneFocusNode,
-          country: _selectedCountry,
-          rawPhone: _rawPhone,
-          hasFocus: _hasPhoneFocus,
-          readOnly: readOnly,
-          errorText: _visiblePhoneError,
-          onChanged: (value) => setState(() {
-            _rawPhone = value;
-            _submitError = null;
-          }),
+    return AppKeyboardToolbar(
+      focusNodes: [_phoneFocusNode],
+      child: MifiAltValidationListener(
+        onValidationSuccess: _onValidationSuccess,
+        child: MifiAltContactScaffold(
+          marketingOptIn: _marketingOptIn,
+          canContinue: _canContinue,
+          onMarketingChanged: (value) =>
+              setState(() => _marketingOptIn = value),
+          onContinuePressed: _onContinuePressed,
+          phoneFieldBuilder: ({required bool readOnly}) => MifiAltPhoneField(
+            controller: _phoneController,
+            focusNode: _phoneFocusNode,
+            country: _selectedCountry,
+            rawPhone: _rawPhone,
+            hasFocus: _hasPhoneFocus,
+            readOnly: readOnly,
+            errorText: _visiblePhoneError,
+            onChanged: (value) => setState(() {
+              _rawPhone = value;
+              _submitError = null;
+            }),
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import '../theme/auto_renew_auth_prepaid_theme.dart';
 
 class AuthNameInput extends StatefulWidget {
@@ -54,39 +55,46 @@ class _AuthNameInputState extends State<AuthNameInput> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _focusNode,
-      builder: (BuildContext context, Widget? child) {
-        final bool isFocused = _focusNode.hasFocus;
-        final double activeBorderWidth = isFocused
-            ? AutoRenewAuthPrepaidTheme.nameInputBorderWidth
-            : 0.0;
-        final double innerRadius =
-            (AutoRenewAuthPrepaidTheme.nameInputBorderRadius -
-                    activeBorderWidth)
-                .clamp(0.0, AutoRenewAuthPrepaidTheme.nameInputBorderRadius);
+    return AppKeyboardToolbar(
+      focusNodes: [_focusNode],
+      child: AnimatedBuilder(
+        animation: _focusNode,
+        builder: (BuildContext context, Widget? child) {
+          final bool isFocused = _focusNode.hasFocus;
+          final double activeBorderWidth = isFocused
+              ? AutoRenewAuthPrepaidTheme.nameInputBorderWidth
+              : 0.0;
+          final double innerRadius =
+              (AutoRenewAuthPrepaidTheme.nameInputBorderRadius -
+                      activeBorderWidth)
+                  .clamp(0.0, AutoRenewAuthPrepaidTheme.nameInputBorderRadius);
 
-        return Container(
-          decoration: BoxDecoration(
-            gradient: isFocused
-                ? AutoRenewAuthPrepaidTheme.focusedNameInputBorderGradient
-                : null,
-            borderRadius: AutoRenewAuthPrepaidTheme.nameInputBorderRadiusShape,
-          ),
-          padding: EdgeInsets.all(activeBorderWidth),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(innerRadius),
-            child: TextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              style: AutoRenewAuthPrepaidTheme.nameInputValueTextStyle(),
-              decoration: AutoRenewAuthPrepaidTheme.nameInputDecoration(
-                hintText: widget.hintText,
+          return Container(
+            decoration: BoxDecoration(
+              gradient: isFocused
+                  ? AutoRenewAuthPrepaidTheme.focusedNameInputBorderGradient
+                  : null,
+              borderRadius:
+                  AutoRenewAuthPrepaidTheme.nameInputBorderRadiusShape,
+            ),
+            padding: EdgeInsets.all(activeBorderWidth),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(innerRadius),
+              child: TextField(
+                textInputAction: TextInputAction.done,
+                scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                onSubmitted: (_) => _focusNode.unfocus(),
+                controller: _controller,
+                focusNode: _focusNode,
+                style: AutoRenewAuthPrepaidTheme.nameInputValueTextStyle(),
+                decoration: AutoRenewAuthPrepaidTheme.nameInputDecoration(
+                  hintText: widget.hintText,
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

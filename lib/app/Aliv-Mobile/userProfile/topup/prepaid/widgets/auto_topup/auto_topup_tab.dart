@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
@@ -28,6 +29,8 @@ class AutoTopupTab extends StatefulWidget {
 }
 
 class _AutoTopupTabState extends State<AutoTopupTab> {
+  final _thresholdFocusNode = FocusNode();
+  final _customAmountFocusNode = FocusNode();
   bool _anyTimeEnabled = true;
   int? _selectedAmount;
   SavedCardModel? _selectedCard;
@@ -66,6 +69,8 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   @override
   void dispose() {
     _verification?.cancel();
+    _thresholdFocusNode.dispose();
+    _customAmountFocusNode.dispose();
     _thresholdController.dispose();
     _customAmountController.dispose();
     super.dispose();
@@ -94,26 +99,29 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   @override
   Widget build(BuildContext context) {
     final cubit = instance<DeviceLimitsCubit>();
-    return BlocListener<SavedCardsCubit, SavedCardsState>(
-      listener: (_, state) {
-        if (state.hasCards) _matchCard(state, cubit.state.autoTopUpCardToken);
-      },
-      child: StreamBuilder<DeviceLimitsState>(
-        stream: cubit.stream,
-        initialData: cubit.state,
-        builder: (_, snap) {
-          final deviceState = snap.data ?? cubit.state;
-          if (deviceState.isLoaded && !_initialValuesSet) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() => _initFromDeviceLimits(deviceState));
-              _matchCard(
-                context.read<SavedCardsCubit>().state,
-                deviceState.autoTopUpCardToken,
-              );
-            });
-          }
-          return _buildBody();
+    return AppKeyboardToolbar(
+      focusNodes: [_thresholdFocusNode, _customAmountFocusNode],
+      child: BlocListener<SavedCardsCubit, SavedCardsState>(
+        listener: (_, state) {
+          if (state.hasCards) _matchCard(state, cubit.state.autoTopUpCardToken);
         },
+        child: StreamBuilder<DeviceLimitsState>(
+          stream: cubit.stream,
+          initialData: cubit.state,
+          builder: (_, snap) {
+            final deviceState = snap.data ?? cubit.state;
+            if (deviceState.isLoaded && !_initialValuesSet) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() => _initFromDeviceLimits(deviceState));
+                _matchCard(
+                  context.read<SavedCardsCubit>().state,
+                  deviceState.autoTopUpCardToken,
+                );
+              });
+            }
+            return _buildBody();
+          },
+        ),
       ),
     );
   }
@@ -163,6 +171,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AutoTopupThresholdSection(
+            focusNode: _thresholdFocusNode,
+            textInputAction: TextInputAction.next,
+            onSubmitted: (_) => _customAmountFocusNode.requestFocus(),
             controller: _thresholdController,
             onChanged: (_) => setState(() => _thresholdError = null),
             minThreshold: _minThreshold,
@@ -182,6 +193,8 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
           const AutoTopupOrDivider(),
           const SizedBox(height: 16),
           AutoTopupCustomAmountSection(
+            focusNode: _customAmountFocusNode,
+            onSubmitted: (_) => _customAmountFocusNode.unfocus(),
             controller: _customAmountController,
             onChanged: (v) => setState(() {
               if (v.isNotEmpty) _selectedAmount = null;

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 
 import '../../topup/prepaid/theme/top_up_prepaid_theme.dart';
-import 'keyboard_overlay.dart';
 
 class TopUpFormInputField extends StatefulWidget {
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
   final String hint;
   final TextEditingController? controller;
   final bool? isAmountType;
@@ -13,6 +16,9 @@ class TopUpFormInputField extends StatefulWidget {
 
   const TopUpFormInputField({
     super.key,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
     required this.hint,
     this.controller,
     this.isAmountType,
@@ -26,6 +32,14 @@ class TopUpFormInputField extends StatefulWidget {
 
 class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
   bool _hasFocus = false;
+  final _internalFocusNode = FocusNode();
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
+
+  @override
+  void dispose() {
+    _internalFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,18 +48,12 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
                 TopUpPrepaidTheme.formInputBorderWidth)
             .clamp(0.0, TopUpPrepaidTheme.formInputRadius);
 
-    return Focus(
+    final field = Focus(
       onFocusChange: (hasFocus) {
         if (_hasFocus != hasFocus) {
           setState(() {
             _hasFocus = hasFocus;
           });
-        }
-
-        if (hasFocus) {
-          KeyboardDoneOverlay.show(context);
-        } else {
-          KeyboardDoneOverlay.hide();
         }
       },
       child: Container(
@@ -72,6 +80,10 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
             ),
             alignment: Alignment.centerLeft,
             child: TextField(
+              focusNode: _focusNode,
+              textInputAction: widget.textInputAction,
+              onSubmitted: widget.onSubmitted,
+              scrollPadding: AppKeyboardToolbar.inputScrollPadding,
               controller: widget.controller,
               onChanged: widget.onChanged,
               keyboardType: widget.isAmountType == true
@@ -114,5 +126,9 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
         ),
       ),
     );
+    if (widget.focusNode != null) {
+      return field;
+    }
+    return AppKeyboardToolbar(focusNodes: [_focusNode], child: field);
   }
 }

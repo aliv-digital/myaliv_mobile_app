@@ -25,20 +25,32 @@ class GiftDataFormBody extends StatefulWidget {
     required this.recipientController,
     required this.confirmRecipientController,
     required this.onContinue,
+    this.recipientFocusNode,
+    this.confirmRecipientFocusNode,
   });
 
   final GiftDataState state;
   final TextEditingController recipientController;
   final TextEditingController confirmRecipientController;
   final VoidCallback onContinue;
+  final FocusNode? recipientFocusNode;
+  final FocusNode? confirmRecipientFocusNode;
 
   @override
   State<GiftDataFormBody> createState() => _GiftDataFormBodyState();
 }
 
 class _GiftDataFormBodyState extends State<GiftDataFormBody> {
-  final FocusNode _recipientFocusNode = FocusNode(debugLabel: 'recipientFocus');
-  final FocusNode _confirmFocusNode = FocusNode(debugLabel: 'confirmFocus');
+  FocusNode? _ownedRecipientFocusNode;
+  FocusNode? _ownedConfirmFocusNode;
+
+  // Share the screen's nodes with its keyboard toolbar; standalone forms own theirs.
+  FocusNode get _recipientFocusNode =>
+      widget.recipientFocusNode ??
+      (_ownedRecipientFocusNode ??= FocusNode(debugLabel: 'recipientFocus'));
+  FocusNode get _confirmFocusNode =>
+      widget.confirmRecipientFocusNode ??
+      (_ownedConfirmFocusNode ??= FocusNode(debugLabel: 'confirmFocus'));
 
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper(
     requireBahamasAreaCode: true,
@@ -52,8 +64,8 @@ class _GiftDataFormBodyState extends State<GiftDataFormBody> {
 
   @override
   void dispose() {
-    _recipientFocusNode.dispose();
-    _confirmFocusNode.dispose();
+    _ownedRecipientFocusNode?.dispose();
+    _ownedConfirmFocusNode?.dispose();
     super.dispose();
   }
 
@@ -131,6 +143,7 @@ class _GiftDataFormBodyState extends State<GiftDataFormBody> {
             controller: widget.recipientController,
             focusNode: _recipientFocusNode,
             textInputAction: TextInputAction.next,
+            onSubmitted: (_) => _confirmFocusNode.requestFocus(),
             showError: showRecipientError,
             errorText: recipientErrorText,
             onChanged: (v) => context.read<GiftDataCubit>().recipientChanged(v),
@@ -145,6 +158,7 @@ class _GiftDataFormBodyState extends State<GiftDataFormBody> {
             controller: widget.confirmRecipientController,
             focusNode: _confirmFocusNode,
             textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _confirmFocusNode.unfocus(),
             enableCountryPicker: false,
             showError: showConfirmError,
             errorText: confirmErrorText,

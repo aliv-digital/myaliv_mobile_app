@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
@@ -35,6 +36,7 @@ class AutoTopUpAuthorizationScreen extends StatefulWidget {
 class _AutoTopUpAuthorizationScreenState
     extends State<AutoTopUpAuthorizationScreen> {
   final _nameController = TextEditingController();
+  final FocusNode _keyboardFocusNode = FocusNode();
   bool _isSubmitting = false;
   late final AutoTopUpSubmission _submission;
 
@@ -54,6 +56,7 @@ class _AutoTopUpAuthorizationScreenState
   void dispose() {
     _submission.close();
     _nameController.dispose();
+    _keyboardFocusNode.dispose();
     super.dispose();
   }
 
@@ -171,178 +174,185 @@ class _AutoTopUpAuthorizationScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: TopUpPrepaidTheme.purple,
-        centerTitle: false,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: TopUpPrepaidTheme.purple,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24.0),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+    return AppKeyboardToolbar(
+      focusNodes: [_keyboardFocusNode],
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: TopUpPrepaidTheme.purple,
+          centerTitle: false,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: TopUpPrepaidTheme.purple,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          title: const Text(
+            'auto top-up authorization form',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
-        title: const Text(
-          'auto top-up authorization form',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 17,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'by providing my credit card ending *${widget.cardLastDigits} as payment method, '
-                'I authorize aliv and/or its agents to store my payment method '
-                'information and to automatically charge plan renewal costs of '
-                'qualifying plans for all subscriber lines on my account. '
-                'i am certifying i am the payment method owner or have '
-                'authorization to use the payment method information provided '
-                'for the automatic charging of plan renewal costs.',
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  height: 1.43,
-                  color: Color(0xFF707070),
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'electronic communication consent',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  height: 1.25,
-                  color: Color(0xFF707070),
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'by entering my pin, full name matching the name displayed and '
-                'clicking agree, i am providing my electronic signature as '
-                'evidence that i understand the terms i am to which i am agreeing. '
-                'In addition, i understand this automatic payment authorization '
-                'will remain in effect until canceled by me via the myaliv app. '
-                'The complete aliv automatic payment policy will be sent to your '
-                'account email address.',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  height: 1.43,
-                  color: Color(0xFF707070),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                _expectedName,
-                style: const TextStyle(
-                  color: Color(0xFF707070),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w700,
-                  height: 1.43,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'name',
-                style: TextStyle(
-                  color: Color(0xFF1C1C1C),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w700,
-                  height: 1.43,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: TopUpPrepaidTheme.formInputHeight,
-                padding: TopUpPrepaidTheme.formInputHorizontalPadding,
-                decoration: BoxDecoration(
-                  color: TopUpPrepaidTheme.lightBg,
-                  borderRadius: BorderRadius.circular(
-                    TopUpPrepaidTheme.formInputRadius,
-                  ),
-                ),
-                alignment: Alignment.centerLeft,
-                child: TextField(
-                  controller: _nameController,
-                  keyboardType: TextInputType.name,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'by providing my credit card ending *${widget.cardLastDigits} as payment method, '
+                  'I authorize aliv and/or its agents to store my payment method '
+                  'information and to automatically charge plan renewal costs of '
+                  'qualifying plans for all subscriber lines on my account. '
+                  'i am certifying i am the payment method owner or have '
+                  'authorization to use the payment method information provided '
+                  'for the automatic charging of plan renewal costs.',
                   style: const TextStyle(
                     fontFamily: 'CircularPro',
                     fontSize: 14,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                    height: 1.43,
+                    color: Color(0xFF707070),
                   ),
-                  decoration: InputDecoration(
-                    isCollapsed: true,
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                    hint: const FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'type your name exactly as it appears on your account',
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 13,
-                          color: Color(0xFF707070),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'electronic communication consent',
+                  style: TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                    color: Color(0xFF707070),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'by entering my pin, full name matching the name displayed and '
+                  'clicking agree, i am providing my electronic signature as '
+                  'evidence that i understand the terms i am to which i am agreeing. '
+                  'In addition, i understand this automatic payment authorization '
+                  'will remain in effect until canceled by me via the myaliv app. '
+                  'The complete aliv automatic payment policy will be sent to your '
+                  'account email address.',
+                  style: TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    height: 1.43,
+                    color: Color(0xFF707070),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  _expectedName,
+                  style: const TextStyle(
+                    color: Color(0xFF707070),
+                    fontSize: 14,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                    height: 1.43,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'name',
+                  style: TextStyle(
+                    color: Color(0xFF1C1C1C),
+                    fontSize: 14,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                    height: 1.43,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: TopUpPrepaidTheme.formInputHeight,
+                  padding: TopUpPrepaidTheme.formInputHorizontalPadding,
+                  decoration: BoxDecoration(
+                    color: TopUpPrepaidTheme.lightBg,
+                    borderRadius: BorderRadius.circular(
+                      TopUpPrepaidTheme.formInputRadius,
+                    ),
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: TextField(
+                    focusNode: _keyboardFocusNode,
+                    textInputAction: TextInputAction.done,
+                    scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                    onSubmitted: (_) => _keyboardFocusNode.unfocus(),
+                    controller: _nameController,
+                    keyboardType: TextInputType.name,
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      hint: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'type your name exactly as it appears on your account',
+                          style: TextStyle(
+                            fontFamily: 'CircularPro',
+                            fontSize: 13,
+                            color: Color(0xFF707070),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isSubmitting ? null : _onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TopUpPrepaidTheme.purple,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _onSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TopUpPrepaidTheme.purple,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
                     ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'submit',
+                            style: TextStyle(
+                              fontFamily: 'CircularPro',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'submit',
-                          style: TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/otp_prepaid_bloc.dart';
@@ -63,22 +64,26 @@ class _OtpAutoRenewPrepaidCodeFieldsState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
-      listenWhen: (p, c) =>
-          p.status != c.status && c.status == OtpAutoRenewPrepaidStatus.failure,
-      listener: (context, state) {
-        // চাইলে error হলে সব clear করতে পারো
-        // for (final c in _controllers) c.clear();
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(OtpAutoRenewPrepaidTheme.otpLength, (index) {
-          return _OtpBox(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            onChanged: (v) => _onChanged(index, v),
-          );
-        }),
+    return AppKeyboardToolbar(
+      focusNodes: _focusNodes,
+      child: BlocListener<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
+        listenWhen: (p, c) =>
+            p.status != c.status &&
+            c.status == OtpAutoRenewPrepaidStatus.failure,
+        listener: (context, state) {
+          // চাইলে error হলে সব clear করতে পারো
+          // for (final c in _controllers) c.clear();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(OtpAutoRenewPrepaidTheme.otpLength, (index) {
+            return _OtpBox(
+              controller: _controllers[index],
+              focusNode: _focusNodes[index],
+              onChanged: (v) => _onChanged(index, v),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -134,6 +139,9 @@ class _OtpBox extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   focusNode: focusNode,
+                  textInputAction: TextInputAction.done,
+                  scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                  onSubmitted: (_) => focusNode.unfocus(),
                   textAlign: TextAlign.center,
                   textAlignVertical: TextAlignVertical.center,
                   keyboardType: TextInputType.number,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../theme/login_otp_theme.dart';
@@ -106,51 +107,56 @@ class OtpCodeFieldsState extends State<OtpCodeFields> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginOtpBloc, LoginOtpState>(
-      listenWhen: (previous, current) =>
-          previous.code != current.code && current.code.isEmpty,
-      listener: (context, state) => clearCode(),
-      builder: (context, state) {
-        final hasFieldError = state.codeFieldError;
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final gap = widget.gap ?? _minGap;
-            final maxWidth = constraints.maxWidth.isFinite
-                ? constraints.maxWidth
-                : LoginOtpSizes.otpBoxSize * _otpLength +
-                      gap * (_otpLength - 1);
-            final totalGaps = gap * (_otpLength - 1);
-            final rawBox = (maxWidth - totalGaps) / _otpLength;
-            final boxSize = widget.gap == null
-                ? rawBox.clamp(_minBoxSize, LoginOtpSizes.otpBoxSize).toDouble()
-                : rawBox.clamp(0.0, maxWidth).toDouble();
+    return AppKeyboardToolbar(
+      focusNodes: _focusNodes,
+      child: BlocConsumer<LoginOtpBloc, LoginOtpState>(
+        listenWhen: (previous, current) =>
+            previous.code != current.code && current.code.isEmpty,
+        listener: (context, state) => clearCode(),
+        builder: (context, state) {
+          final hasFieldError = state.codeFieldError;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final gap = widget.gap ?? _minGap;
+              final maxWidth = constraints.maxWidth.isFinite
+                  ? constraints.maxWidth
+                  : LoginOtpSizes.otpBoxSize * _otpLength +
+                        gap * (_otpLength - 1);
+              final totalGaps = gap * (_otpLength - 1);
+              final rawBox = (maxWidth - totalGaps) / _otpLength;
+              final boxSize = widget.gap == null
+                  ? rawBox
+                        .clamp(_minBoxSize, LoginOtpSizes.otpBoxSize)
+                        .toDouble()
+                  : rawBox.clamp(0.0, maxWidth).toDouble();
 
-            return AutofillGroup(
-              child: Row(
-                mainAxisAlignment: widget.gap == null
-                    ? MainAxisAlignment.spaceEvenly
-                    : MainAxisAlignment.spaceBetween,
-                children: List.generate(_otpLength, (index) {
-                  return _OtpBox(
-                    size: boxSize,
-                    height: widget.boxHeight ?? boxSize,
-                    controller: _controllers[index],
-                    focusNode: _focusNodes[index],
-                    showError: hasFieldError,
-                    // Only the first cell advertises one-time-code autofill.
-                    // Platform pastes the full SMS OTP into it, and the
-                    // multi-digit branch of _onChanged fans it out.
-                    autofillHints: index == 0
-                        ? const [AutofillHints.oneTimeCode]
-                        : const [],
-                    onChanged: (v) => _onChanged(index, v),
-                  );
-                }),
-              ),
-            );
-          },
-        );
-      },
+              return AutofillGroup(
+                child: Row(
+                  mainAxisAlignment: widget.gap == null
+                      ? MainAxisAlignment.spaceEvenly
+                      : MainAxisAlignment.spaceBetween,
+                  children: List.generate(_otpLength, (index) {
+                    return _OtpBox(
+                      size: boxSize,
+                      height: widget.boxHeight ?? boxSize,
+                      controller: _controllers[index],
+                      focusNode: _focusNodes[index],
+                      showError: hasFieldError,
+                      // Only the first cell advertises one-time-code autofill.
+                      // Platform pastes the full SMS OTP into it, and the
+                      // multi-digit branch of _onChanged fans it out.
+                      autofillHints: index == 0
+                          ? const [AutofillHints.oneTimeCode]
+                          : const [],
+                      onChanged: (v) => _onChanged(index, v),
+                    );
+                  }),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -219,6 +225,9 @@ class _OtpBox extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     focusNode: focusNode,
+                    textInputAction: TextInputAction.done,
+                    scrollPadding: AppKeyboardToolbar.inputScrollPadding,
+                    onSubmitted: (_) => focusNode.unfocus(),
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     // maxLength intentionally omitted so a pasted 6-digit

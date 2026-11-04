@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
@@ -31,172 +32,200 @@ class RevPrepaidScreen extends StatelessWidget {
   }
 }
 
-class _RevPrepaidView extends StatelessWidget {
+class _RevPrepaidView extends StatefulWidget {
   const _RevPrepaidView();
+  @override
+  State<_RevPrepaidView> createState() => _RevPrepaidViewState();
+}
+
+class _RevPrepaidViewState extends State<_RevPrepaidView> {
+  final _focusNodes = List.generate(3, (_) => FocusNode());
+  @override
+  void dispose() {
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RevPrepaidBloc, RevPrepaidState>(
-      listenWhen: (p, c) => p.navTarget != c.navTarget,
-      listener: (context, state) {
-        if (state.navTarget != RevNavTarget.none) {
-          // navigation hook kept (pattern)
-          context.read<RevPrepaidBloc>().add(const RevNavigationConsumed());
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          backgroundColor: RevPrepaidTheme.bg,
-          body: SafeArea(
-            top: false,
-            child: CustomScrollView(
-              slivers: [
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: RevAppBarSliver(
-                    height:
-                        RevPrepaidTheme.appBarHeight +
-                        MediaQuery.paddingOf(context).top,
-                    child: DefaultAppBar(
-                      title: state.title,
-                      height: RevPrepaidTheme.appBarHeight,
-                      backgroundColor: RevPrepaidTheme.appBarBg,
-                      showBackArrow: true,
-                      centerTitle: false,
+    return AppKeyboardToolbar(
+      focusNodes: _focusNodes,
+      child: BlocConsumer<RevPrepaidBloc, RevPrepaidState>(
+        listenWhen: (p, c) => p.navTarget != c.navTarget,
+        listener: (context, state) {
+          if (state.navTarget != RevNavTarget.none) {
+            // navigation hook kept (pattern)
+            context.read<RevPrepaidBloc>().add(const RevNavigationConsumed());
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: RevPrepaidTheme.bg,
+            body: SafeArea(
+              top: false,
+              child: CustomScrollView(
+                slivers: [
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: RevAppBarSliver(
+                      height:
+                          RevPrepaidTheme.appBarHeight +
+                          MediaQuery.paddingOf(context).top,
+                      child: DefaultAppBar(
+                        title: state.title,
+                        height: RevPrepaidTheme.appBarHeight,
+                        backgroundColor: RevPrepaidTheme.appBarBg,
+                        showBackArrow: true,
+                        centerTitle: false,
+                      ),
                     ),
                   ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    RevPrepaidTheme.contentHorizontalPadding,
-                    RevPrepaidTheme.contentTopPadding,
-                    RevPrepaidTheme.contentHorizontalPadding,
-                    RevPrepaidTheme.contentBottomPadding,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RevLabeledSection(
-                          label: 'service',
-                          child: RevReadonlyField(text: state.service),
-                        ),
-                        const SizedBox(
-                          height: RevPrepaidTheme.sectionVerticalGap,
-                        ),
-                        RevLabeledSection(
-                          label: 'Account Number',
-                          child: RevTextField(
-                            value: state.accountNumber,
-                            hintText: 'enter number',
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) => context
-                                .read<RevPrepaidBloc>()
-                                .add(RevAccountNumberChanged(v)),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(
+                      RevPrepaidTheme.contentHorizontalPadding,
+                      RevPrepaidTheme.contentTopPadding,
+                      RevPrepaidTheme.contentHorizontalPadding,
+                      RevPrepaidTheme.contentBottomPadding,
+                    ),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RevLabeledSection(
+                            label: 'service',
+                            child: RevReadonlyField(text: state.service),
                           ),
-                        ),
-
-                        const SizedBox(
-                          height: RevPrepaidTheme.sectionVerticalGap,
-                        ),
-
-                        RevLabeledSection(
-                          label: 'Name',
-                          child: RevNameWithSubmitField(
-                            value: state.name,
-                            hintText: 'enter name',
-                            canSubmit: state.canSubmit,
-                            submitting: state.submitting,
-                            onChanged: (v) => context
-                                .read<RevPrepaidBloc>()
-                                .add(RevNameChanged(v)),
-                            onSubmit: () => context.read<RevPrepaidBloc>().add(
-                              const RevSubmitPressed(),
+                          const SizedBox(
+                            height: RevPrepaidTheme.sectionVerticalGap,
+                          ),
+                          RevLabeledSection(
+                            label: 'Account Number',
+                            child: RevTextField(
+                              focusNode: _focusNodes[0],
+                              textInputAction: TextInputAction.next,
+                              onSubmitted: (_) => _focusNodes[1].requestFocus(),
+                              value: state.accountNumber,
+                              hintText: 'enter number',
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) => context
+                                  .read<RevPrepaidBloc>()
+                                  .add(RevAccountNumberChanged(v)),
                             ),
                           ),
-                        ),
 
-                        const SizedBox(
-                          height: RevPrepaidTheme.sectionVerticalGap,
-                        ),
-
-                        RevLabeledSection(
-                          label: 'Account Status',
-                          child: RevReadonlyField(
-                            text: state.accountStatusText,
+                          const SizedBox(
+                            height: RevPrepaidTheme.sectionVerticalGap,
                           ),
-                        ),
 
-                        const SizedBox(
-                          height: RevPrepaidTheme.sectionVerticalGap,
-                        ),
-
-                        Text('amount due', style: RevPrepaidTheme.fieldTitle),
-                        const SizedBox(height: RevPrepaidTheme.labelToFieldGap),
-                        Text(
-                          state.accountBalanceText,
-                          style: TextStyle(
-                            fontFamily: RevPrepaidTheme.fontFamily,
-                            fontSize: 14,
-                            height: 1.2,
-                            fontWeight: FontWeight.w500,
-                            color: HexColor.fromHex('#344054'),
-                          ),
-                        ), //style: RevPrepaidTheme.value),
-                        const SizedBox(
-                          height: RevPrepaidTheme.sectionVerticalGap,
-                        ),
-                        RevLabeledSection(
-                          label: 'enter a custom amount',
-                          child: CustomInputField(
-                            value: state.amountInputText,
-                            height: RevPrepaidTheme.inputFieldHeight,
-                            textAlign: TextAlign.start,
-                            textAlignVertical: TextAlignVertical.center,
-                            keyboardType: TextInputType.number,
-                            backgroundColor: RevPrepaidTheme.fieldBg,
-                            unfocusedBorderColor:
-                                RevPrepaidTheme.inputFieldBorderColor,
-                            radius: 8,
-                            borderWidth: RevPrepaidTheme.inputFieldBorderWidth,
-                            style: RevPrepaidTheme.input,
-                            hintText: r'$ 0.00',
-                            hintStyle: RevPrepaidTheme.hintText,
-                            contentPadding: const EdgeInsets.fromLTRB(
-                              14,
-                              10,
-                              14,
-                              12,
+                          RevLabeledSection(
+                            label: 'Name',
+                            child: RevNameWithSubmitField(
+                              focusNode: _focusNodes[1],
+                              textInputAction: TextInputAction.next,
+                              onSubmitted: (_) => _focusNodes[2].requestFocus(),
+                              value: state.name,
+                              hintText: 'enter name',
+                              canSubmit: state.canSubmit,
+                              submitting: state.submitting,
+                              onChanged: (v) => context
+                                  .read<RevPrepaidBloc>()
+                                  .add(RevNameChanged(v)),
+                              onSubmit: () => context
+                                  .read<RevPrepaidBloc>()
+                                  .add(const RevSubmitPressed()),
                             ),
-                            onChanged: (v) {
-                              //context.read<RevPrepaidBloc>().add(RevAmountChanged(v));
+                          ),
+
+                          const SizedBox(
+                            height: RevPrepaidTheme.sectionVerticalGap,
+                          ),
+
+                          RevLabeledSection(
+                            label: 'Account Status',
+                            child: RevReadonlyField(
+                              text: state.accountStatusText,
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: RevPrepaidTheme.sectionVerticalGap,
+                          ),
+
+                          Text('amount due', style: RevPrepaidTheme.fieldTitle),
+                          const SizedBox(
+                            height: RevPrepaidTheme.labelToFieldGap,
+                          ),
+                          Text(
+                            state.accountBalanceText,
+                            style: TextStyle(
+                              fontFamily: RevPrepaidTheme.fontFamily,
+                              fontSize: 14,
+                              height: 1.2,
+                              fontWeight: FontWeight.w500,
+                              color: HexColor.fromHex('#344054'),
+                            ),
+                          ), //style: RevPrepaidTheme.value),
+                          const SizedBox(
+                            height: RevPrepaidTheme.sectionVerticalGap,
+                          ),
+                          RevLabeledSection(
+                            label: 'enter a custom amount',
+                            child: CustomInputField(
+                              focusNode: _focusNodes[2],
+                              textInputAction: TextInputAction.done,
+                              onSubmitted: (_) => _focusNodes[2].unfocus(),
+                              value: state.amountInputText,
+                              height: RevPrepaidTheme.inputFieldHeight,
+                              textAlign: TextAlign.start,
+                              textAlignVertical: TextAlignVertical.center,
+                              keyboardType: TextInputType.number,
+                              backgroundColor: RevPrepaidTheme.fieldBg,
+                              unfocusedBorderColor:
+                                  RevPrepaidTheme.inputFieldBorderColor,
+                              radius: 8,
+                              borderWidth:
+                                  RevPrepaidTheme.inputFieldBorderWidth,
+                              style: RevPrepaidTheme.input,
+                              hintText: r'$ 0.00',
+                              hintStyle: RevPrepaidTheme.hintText,
+                              contentPadding: const EdgeInsets.fromLTRB(
+                                14,
+                                10,
+                                14,
+                                12,
+                              ),
+                              onChanged: (v) {
+                                //context.read<RevPrepaidBloc>().add(RevAmountChanged(v));
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            height: RevPrepaidTheme.proceedButtonTopGap,
+                          ),
+                          RevPrimaryButton(
+                            text: 'proceed',
+                            enabled: state.canProceed,
+                            onTap: () {
+                              context.read<RevPrepaidBloc>().add(
+                                const RevProceedPressed(),
+                              );
+                              context.push(
+                                AppRoutes.revConfirmationPrepaidScreen,
+                              );
                             },
                           ),
-                        ),
-                        const SizedBox(
-                          height: RevPrepaidTheme.proceedButtonTopGap,
-                        ),
-                        RevPrimaryButton(
-                          text: 'proceed',
-                          enabled: state.canProceed,
-                          onTap: () {
-                            context.read<RevPrepaidBloc>().add(
-                              const RevProceedPressed(),
-                            );
-                            context.push(
-                              AppRoutes.revConfirmationPrepaidScreen,
-                            );
-                          },
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
