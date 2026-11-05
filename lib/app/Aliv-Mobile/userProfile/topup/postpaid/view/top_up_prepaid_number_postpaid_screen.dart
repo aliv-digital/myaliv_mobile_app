@@ -164,6 +164,8 @@ class _TopUpPrepaidNumberPostPaidViewState
                                 TopUpPrepaidNumberPostPaidNumberSection(
                                   focusNode: _numberFocusNode,
                                   value: state.number,
+                                  onSubmitted: (_) =>
+                                      _confirmNumberFocusNode.requestFocus(),
                                   onChanged: (v) => bloc.add(
                                     TopUpPrepaidNumberPostPaidNumberChanged(v),
                                   ),
@@ -174,6 +176,9 @@ class _TopUpPrepaidNumberPostPaidViewState
                                   value: state.confirmNumber,
                                   hasMismatchError:
                                       state.hasConfirmMismatchError,
+                                  hasFormatError: state.hasConfirmFormatError,
+                                  onSubmitted: (_) =>
+                                      _amountFocusNode.requestFocus(),
                                   onChanged: (v) => bloc.add(
                                     TopUpPrepaidNumberPostPaidConfirmNumberChanged(
                                       v,
