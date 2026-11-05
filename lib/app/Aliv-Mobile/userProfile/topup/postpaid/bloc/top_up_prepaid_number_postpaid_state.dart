@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 
 enum TopUpPrepaidNumberPostPaidLoadStatus { initial, loading, ready, failure }
 
@@ -82,14 +83,57 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
       numberValidation.phoneNumberForApi ==
           confirmNumberValidation.phoneNumberForApi;
 
-  /// Mirrors the guest "purchase a plan" bottom sheet: mismatch surfaces as
-  /// soon as the confirm field is non-empty and its digits differ from the
-  /// main number's digits — independent of either field's own validity.
+  bool get hasConfirmFormatError {
+    if (confirmNumber.isEmpty) return false;
+    return _phoneNumberHelper.hasLiveValidationError(
+      rawPhoneNumber: confirmNumber,
+      selectedCountry: _selectedCountry,
+    );
+  }
+
   bool get hasConfirmMismatchError {
     if (confirmNumber.isEmpty) return false;
+    // Don't show mismatch if the main recipient number itself is not yet valid
+    if (!numberValidation.isValid) return false;
+
+    // When both numbers are valid, mismatch occurs when their normalized API formats differ.
+    if (confirmNumberValidation.isValid) {
+      return numberValidation.phoneNumberForApi !=
+          confirmNumberValidation.phoneNumberForApi;
+    }
+
     final digitsOnly = RegExp(r'[^0-9]');
-    return number.replaceAll(digitsOnly, '') !=
-        confirmNumber.replaceAll(digitsOnly, '');
+    final numDigits = number.replaceAll(digitsOnly, '');
+    final confirmDigits = confirmNumber.replaceAll(digitsOnly, '');
+    if (confirmDigits.isEmpty) return false;
+
+    final normNum = numDigits.length == 7 ? '242$numDigits' : numDigits;
+    final normConfirm =
+        confirmDigits.length == 7 ? '242$confirmDigits' : confirmDigits;
+
+    if (numDigits.length >= 7 && confirmDigits.length >= 7) {
+      return normNum != normConfirm;
+    }
+
+    return !normNum.startsWith(confirmDigits) &&
+        !numDigits.startsWith(confirmDigits);
+  }
+
+  bool isOwnNumber(AccountInfoModel? account, String? activeTn) {
+    final recipientApi = numberForApi;
+    if (recipientApi == null) return false;
+    bool matches(String? raw) {
+      if (raw == null || raw.trim().isEmpty) return false;
+      final res = _phoneNumberHelper.validateAndBuildApiUsername(
+        rawPhoneNumber: raw,
+        selectedCountry: _selectedCountry,
+      );
+      return res.isValid && res.phoneNumberForApi == recipientApi;
+    }
+
+    return matches(account?.primaryPhoneNumber) ||
+        matches(account?.phoneNumber) ||
+        matches(activeTn);
   }
 
   bool get canApply =>
