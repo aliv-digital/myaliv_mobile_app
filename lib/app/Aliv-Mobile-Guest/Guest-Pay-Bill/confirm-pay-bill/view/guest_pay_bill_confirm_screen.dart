@@ -214,7 +214,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
           if (isAlivFibr) {
             GoRouter.of(context).push(
               AppRoutes.guestPayBillReceipt,
-              extra: _buildReceiptArgs(state),
+              extra: _buildReceiptArgs(state, orderId: state.lastOrderId),
             );
           }
         }
