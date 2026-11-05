@@ -245,7 +245,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     }
 
     final isOwnNumber =
-        matchesOwn(activeTn) || matchesOwn(account?.phoneNumber.trim() ?? '');
+        matchesOwn(activeTn) ||
+        matchesOwn(account?.phoneNumber.trim() ?? '') ||
+        matchesOwn(account?.primaryPhoneNumber.trim() ?? '');
     if (isOwnNumber) {
       AppToast.show(
         message: 'You cannot send a top-up to your own number.',
