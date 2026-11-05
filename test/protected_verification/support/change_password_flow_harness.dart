@@ -217,11 +217,24 @@ class ChangePasswordFlowHarness {
           path: AppRoutes.home,
           builder: (_, _) => const Scaffold(body: Text('home destination')),
         ),
+        GoRoute(
+          path: AppRoutes.profilePrepaidScreen,
+          builder: (_, _) =>
+              const Scaffold(body: Text('profile prepaid destination')),
+        ),
+        GoRoute(
+          path: AppRoutes.profilePostpaidScreen,
+          builder: (_, _) =>
+              const Scaffold(body: Text('profile postpaid destination')),
+        ),
       ],
     );
     await tester.pumpWidget(
-      BlocProvider.value(
-        value: config,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: config),
+          BlocProvider.value(value: account),
+        ],
         child: MaterialApp.router(routerConfig: router),
       ),
     );
@@ -279,9 +292,8 @@ class ChangePasswordFlowHarness {
     await tester.ensureVisible(find.text('change password').last);
     await tester.tap(find.text('change password').last);
     await tester.pump();
-    if (pendingUpdate == null || pendingUpdate!.isCompleted) {
-      await tester.pumpAndSettle();
-    }
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
   }
 
   void changeAccount(int id) {

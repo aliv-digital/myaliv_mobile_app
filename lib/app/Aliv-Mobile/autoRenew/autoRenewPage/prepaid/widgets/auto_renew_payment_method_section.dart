@@ -19,6 +19,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
   final VoidCallback? onNoAutoRenewSelected;
   final VoidCallback? onPayWithCardSelected;
   final bool payWithCardSelected;
+  final ScrollController? scrollController;
 
   const AutoRenewPaymentMethodSection({
     super.key,
@@ -34,6 +35,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     this.onNoAutoRenewSelected,
     this.onPayWithCardSelected,
     this.payWithCardSelected = false,
+    this.scrollController,
   }) : assert(
          !showWalletRow ||
              (walletBalanceText != null && onPayFromWallet != null),
@@ -71,6 +73,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
             selectedToken: payWithCardSelected ? null : selectedCard?.token,
             onCardSelected: onCardSelected,
             autoSelectFirst: false,
+            scrollController: scrollController,
           ),
           if (showPayWithCardRow) ...[
             const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),

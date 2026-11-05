@@ -13,4 +13,7 @@ class TopUpPaymentRadioMetrics {
   static const double logoBoxWidth = 46;
   static const double logoBoxHeight = 32;
   static const Color unselectedRadioFill = Color(0xFFE0E0E0);
+  static const double savedCardsScrollbarThickness = 4;
+  static const double savedCardsScrollbarPadding = 8;
+  static const double savedCardsScrollbarThumbHeight = 48;
 }

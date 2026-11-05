@@ -12,7 +12,7 @@ const double autoTopUpMinCustomAmount = 5;
 const double autoTopUpMaxCustomAmount = 100;
 
 final String autoTopUpThresholdRangeMessage =
-    'amount must be above '
+    'Amount must be above '
     '${BalanceCurrencyFormatterService.format(autoTopUpThresholdLowerBound)} '
     'and below '
     '${BalanceCurrencyFormatterService.format(autoTopUpThresholdUpperBound)}';

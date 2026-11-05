@@ -476,6 +476,10 @@ class AppRouter {
         builder: (context, state) => const ChangePasswordPrepaidScreen(),
       ),
       GoRoute(
+        path: AppRoutes.changePasswordPostpaidScreen,
+        builder: (context, state) => const ChangePasswordPrepaidScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.enterPassWordPrepaidScreen,
         builder: (context, state) => const EnterPasswordPrepaidScreen(),
       ),

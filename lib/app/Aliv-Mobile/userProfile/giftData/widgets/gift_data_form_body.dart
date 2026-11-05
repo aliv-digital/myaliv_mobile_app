@@ -184,6 +184,7 @@ class _GiftDataFormBodyState extends State<GiftDataFormBody> {
           ],
           if (s.isRecipientComplete &&
               !s.isCheckingRecipient &&
+              !s.hasRecipientErrorBanner &&
               s.maxGiftableGb != null) ...[
             const SizedBox(height: GiftDataTheme.sectionGap),
             InfoBanner(

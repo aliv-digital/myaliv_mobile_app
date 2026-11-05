@@ -99,14 +99,15 @@ class _BrandLogo extends StatelessWidget {
       height: _logoBoxHeight,
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border.all(color: const Color(0xFFE5E7EB)),
         borderRadius: BorderRadius.circular(_logoBoxRadius),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 6,
-            offset: Offset(0, 1),
-          ),
-        ],
+        // boxShadow: const [
+        //   BoxShadow(
+        //     color: Color(0x14000000),
+        //     blurRadius: 6,
+        //     offset: Offset(0, 1),
+        //   ),
+        // ],
       ),
       alignment: Alignment.center,
       child: Padding(
@@ -126,10 +127,9 @@ class _BrandLogo extends StatelessWidget {
           fit: BoxFit.contain,
         );
       case CardBrand.unknown:
-        return const Icon(
-          Icons.credit_card,
-          size: 22,
-          color: Color(0xFF707070),
+        return SvgPicture.asset(
+          AssetConstant.cardUpdatedSVG,
+          fit: BoxFit.contain,
         );
     }
   }

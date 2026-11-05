@@ -64,7 +64,7 @@ void main() {
 
   group('Bug 29: ConfirmationPlanCardSendTopUpContent Layout', () {
     testWidgets(
-      'renders top-up title and sender phone without an explicit 4px spacer',
+      'renders sender user name and sender phone without an explicit 4px spacer',
       (tester) async {
         await tester.pumpWidget(
           const MaterialApp(
@@ -77,7 +77,7 @@ void main() {
           ),
         );
 
-        final titleFinder = find.text('top-up');
+        final titleFinder = find.text('Sender User');
         final senderPhoneFinder = find.text('(242)-801-1616');
 
         expect(titleFinder, findsOneWidget);
@@ -131,6 +131,8 @@ void main() {
 
         expect(find.text('(242)-899-7821'), findsOneWidget);
         expect(find.text('(242)-801-1616'), findsNothing);
+        expect(find.text('Secondary Child'), findsOneWidget);
+        expect(find.text('Sender User'), findsNothing);
       },
     );
 

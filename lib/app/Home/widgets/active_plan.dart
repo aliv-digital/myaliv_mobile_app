@@ -396,7 +396,7 @@ class DisableAutoRenewBottomSheet extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text(
-                  'ok',
+                  'Yes',
                   style: TextStyle(
                     color: Color(0xFFF1F1F8),
                     fontSize: 15,
@@ -406,32 +406,32 @@ class DisableAutoRenewBottomSheet extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            // const SizedBox(height: 12),
             // AREN-010: explicit cancel dismisses only (pops without `true`).
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                    side: const BorderSide(color: Color(0xFF645D9C)),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'cancel',
-                  style: TextStyle(
-                    color: Color(0xFF645D9C),
-                    fontSize: 15,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 50,
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.white,
+            //       elevation: 0,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(100),
+            //         side: const BorderSide(color: Color(0xFF645D9C)),
+            //       ),
+            //     ),
+            //     onPressed: () => Navigator.pop(context),
+            //     child: const Text(
+            //       'cancel',
+            //       style: TextStyle(
+            //         color: Color(0xFF645D9C),
+            //         fontSize: 15,
+            //         fontFamily: 'CircularPro',
+            //         fontWeight: FontWeight.w700,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

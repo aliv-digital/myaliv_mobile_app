@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/common/verification/action_verification_co
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
@@ -252,7 +253,15 @@ class _ChangePasswordPrepaidViewState
                 message: 'Your password has been changed successfully.',
                 type: ToastType.success,
               );
-              context.go(AppRoutes.home);
+              final isPostpaid =
+                  context.read<AppUiConfigCubit>().state.isPostpaid ||
+                  (instance.isRegistered<AccountInfoCubit>() &&
+                      instance<AccountInfoCubit>().state.isPostpaid);
+              context.go(
+                isPostpaid
+                    ? AppRoutes.profilePostpaidScreen
+                    : AppRoutes.profilePrepaidScreen,
+              );
             }
 
             if (state.status == ChangePasswordPrepaidStatus.failure &&
