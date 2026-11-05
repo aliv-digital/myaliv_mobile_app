@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 
 import '../../theme/top_up_prepaid_number_postpaid_theme.dart';
@@ -27,6 +28,9 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
 
 class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
     extends State<TopUpPrepaidNumberPostPaidConfirmNumberSection> {
+  static const _phoneNumberHelper = LoginPhoneNumberHelper(
+    requireBahamasAreaCode: true,
+  );
   FocusNode? _internalFocusNode;
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_internalFocusNode ??= FocusNode());
@@ -70,14 +74,15 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
   @override
   Widget build(BuildContext context) {
     const selectedCountry = LoginCountrySelection.defaultBahamas;
-    // Confirm field only ever surfaces the mismatch message — matches the
-    // guest "purchase a plan" bottom sheet, which never shows "invalid
-    // phone number" under the confirm field.
-    final showMismatchError = widget.hasMismatchError;
-    final phoneBorderColor = !_hasPhoneFocus && showMismatchError
+    final showFormatError = _phoneNumberHelper.hasLiveValidationError(
+      rawPhoneNumber: widget.value,
+      selectedCountry: selectedCountry,
+    );
+    final showPhoneError = showFormatError || widget.hasMismatchError;
+    final phoneBorderColor = !_hasPhoneFocus && showPhoneError
         ? AuthModuleColors.errorRed
         : Colors.transparent;
-    final phoneInputStyle = showMismatchError
+    final phoneInputStyle = showPhoneError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
           )
@@ -95,7 +100,7 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
         CustomCountryPhoneInputRow(
           focusNode: _effectiveFocusNode,
           textInputAction: TextInputAction.next,
-          hideUnfocusedInputBorder: !_hasPhoneFocus && !showMismatchError,
+          hideUnfocusedInputBorder: !_hasPhoneFocus && !showPhoneError,
           hintText: 'eg: (242)-899-9999',
           flagEmoji: selectedCountry.flagEmoji,
           dialCode: selectedCountry.dialCode,
@@ -125,12 +130,12 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
           phoneInputStyle: phoneInputStyle,
           phoneHintStyle: AuthModuleTextStyles.fieldHint,
         ),
-        if (showMismatchError) ...[
+        if (showPhoneError) ...[
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
-            child: const Text(
-              'phone numbers do not match',
+            child: Text(
+              showFormatError ? 'invalid format' : 'phone numbers do not match',
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),
