@@ -10,6 +10,8 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
   final bool hasMismatchError;
+  final bool hasFormatError;
+  final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
 
   const TopUpPrepaidNumberPostPaidConfirmNumberSection({
@@ -17,6 +19,8 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.hasMismatchError = false,
+    this.hasFormatError = false,
+    this.onSubmitted,
     this.focusNode,
   });
 
@@ -70,14 +74,14 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
   @override
   Widget build(BuildContext context) {
     const selectedCountry = LoginCountrySelection.defaultBahamas;
-    // Confirm field only ever surfaces the mismatch message — matches the
-    // guest "purchase a plan" bottom sheet, which never shows "invalid
-    // phone number" under the confirm field.
-    final showMismatchError = widget.hasMismatchError;
-    final phoneBorderColor = !_hasPhoneFocus && showMismatchError
+    final String? errorMessage = widget.hasFormatError
+        ? 'invalid Format'
+        : (widget.hasMismatchError ? 'phone numbers do not match' : null);
+    final showError = errorMessage != null;
+    final phoneBorderColor = !_hasPhoneFocus && showError
         ? AuthModuleColors.errorRed
         : Colors.transparent;
-    final phoneInputStyle = showMismatchError
+    final phoneInputStyle = showError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
           )
@@ -95,7 +99,8 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
         CustomCountryPhoneInputRow(
           focusNode: _effectiveFocusNode,
           textInputAction: TextInputAction.next,
-          hideUnfocusedInputBorder: !_hasPhoneFocus && !showMismatchError,
+          onSubmitted: widget.onSubmitted,
+          hideUnfocusedInputBorder: !_hasPhoneFocus && !showError,
           hintText: 'eg: (242)-899-9999',
           flagEmoji: selectedCountry.flagEmoji,
           dialCode: selectedCountry.dialCode,
@@ -125,12 +130,12 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
           phoneInputStyle: phoneInputStyle,
           phoneHintStyle: AuthModuleTextStyles.fieldHint,
         ),
-        if (showMismatchError) ...[
+        if (showError) ...[
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
-            child: const Text(
-              'phone numbers do not match',
+            child: Text(
+              errorMessage!,
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

@@ -85,10 +85,30 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
 
   bool get hasConfirmFormatError {
     if (confirmNumber.isEmpty) return false;
-    return _phoneNumberHelper.hasLiveValidationError(
+    final hasFormatError = _phoneNumberHelper.hasLiveValidationError(
       rawPhoneNumber: confirmNumber,
       selectedCountry: _selectedCountry,
     );
+    if (!hasFormatError) return false;
+
+    // Suppress format error while typing if the entered confirm digits
+    // match the prefix of the recipient number.
+    if (numberValidation.isValid) {
+      final digitsOnly = RegExp(r'[^0-9]');
+      final numDigits = number.replaceAll(digitsOnly, '');
+      final confirmDigits = confirmNumber.replaceAll(digitsOnly, '');
+      final normNum = numDigits.length == 7 ? '242$numDigits' : numDigits;
+      final normConfirm =
+          confirmDigits.length == 7 ? '242$confirmDigits' : confirmDigits;
+
+      if (normNum.startsWith(confirmDigits) ||
+          numDigits.startsWith(confirmDigits) ||
+          normNum.startsWith(normConfirm)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   bool get hasConfirmMismatchError {
