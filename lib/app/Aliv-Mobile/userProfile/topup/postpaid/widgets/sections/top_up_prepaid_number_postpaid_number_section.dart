@@ -27,7 +27,7 @@ class TopUpPrepaidNumberPostPaidNumberSection extends StatefulWidget {
 class _TopUpPrepaidNumberPostPaidNumberSectionState
     extends State<TopUpPrepaidNumberPostPaidNumberSection> {
   final LoginPhoneNumberHelper _phoneNumberHelper =
-      const LoginPhoneNumberHelper();
+      const LoginPhoneNumberHelper(requireBahamasAreaCode: true);
   FocusNode? _internalFocusNode;
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_internalFocusNode ??= FocusNode());
@@ -133,7 +133,7 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
             child: const Text(
-              'invalid Format',
+              'invalid format',
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

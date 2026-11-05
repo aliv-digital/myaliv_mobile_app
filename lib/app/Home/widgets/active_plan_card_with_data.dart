@@ -111,8 +111,15 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                         !state.isInitial &&
                         state.earliestAddOnsPrimaryPlan != null &&
                         !state.hasFuturePlans)
-                      _PlanExpiryWarning(
-                        plan: state.earliestAddOnsPrimaryPlan!,
+                      BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+                        bloc: instance<DeviceLimitsCubit>(),
+                        buildWhen: (previous, current) =>
+                            previous.autoRenew != current.autoRenew,
+                        builder: (context, limitsState) => limitsState.autoRenew
+                            ? const SizedBox.shrink()
+                            : _PlanExpiryWarning(
+                                plan: state.earliestAddOnsPrimaryPlan!,
+                              ),
                       ),
                     card,
                   ],
