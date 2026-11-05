@@ -252,7 +252,7 @@ class _ChangePasswordPrepaidViewState
                 message: 'Your password has been changed successfully.',
                 type: ToastType.success,
               );
-              context.go(AppRoutes.home);
+              context.go(AppRoutes.profilePrepaidScreen);
             }
 
             if (state.status == ChangePasswordPrepaidStatus.failure &&
