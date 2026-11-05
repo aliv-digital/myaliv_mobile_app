@@ -9,7 +9,7 @@ enum TopUpPrepaidNumberPostPaidApplyStatus { idle, loading, success, failure }
 
 class TopUpPrepaidNumberPostPaidState extends Equatable {
   static const LoginPhoneNumberHelper _phoneNumberHelper =
-      LoginPhoneNumberHelper();
+      LoginPhoneNumberHelper(requireBahamasAreaCode: true);
   static const LoginCountrySelection _selectedCountry =
       LoginCountrySelection.defaultBahamas;
 

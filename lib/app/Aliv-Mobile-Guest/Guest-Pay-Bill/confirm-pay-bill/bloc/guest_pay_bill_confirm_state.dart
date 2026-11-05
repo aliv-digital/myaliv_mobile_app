@@ -14,6 +14,7 @@ class GuestPayBillConfirmState extends Equatable {
 
   final double vat;
   final String? errorMessage;
+  final String? lastOrderId;
 
   const GuestPayBillConfirmState({
     required this.args,
@@ -22,6 +23,7 @@ class GuestPayBillConfirmState extends Equatable {
     required this.isTermsChecked,
     required this.vat,
     required this.errorMessage,
+    this.lastOrderId,
   });
 
   factory GuestPayBillConfirmState.initial({
@@ -34,6 +36,7 @@ class GuestPayBillConfirmState extends Equatable {
       isTermsChecked: false,
       vat: 0.0,
       errorMessage: null,
+      lastOrderId: null,
     );
   }
 
@@ -46,6 +49,7 @@ class GuestPayBillConfirmState extends Equatable {
     bool? isTermsChecked,
     double? vat,
     String? errorMessage,
+    String? lastOrderId,
   }) {
     return GuestPayBillConfirmState(
       args: args,
@@ -54,6 +58,7 @@ class GuestPayBillConfirmState extends Equatable {
       isTermsChecked: isTermsChecked ?? this.isTermsChecked,
       vat: vat ?? this.vat,
       errorMessage: errorMessage,
+      lastOrderId: lastOrderId ?? this.lastOrderId,
     );
   }
 
@@ -65,5 +70,6 @@ class GuestPayBillConfirmState extends Equatable {
     isTermsChecked,
     vat,
     errorMessage,
+    lastOrderId,
   ];
 }

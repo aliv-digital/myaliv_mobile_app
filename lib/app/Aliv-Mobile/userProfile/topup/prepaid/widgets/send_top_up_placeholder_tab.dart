@@ -16,15 +16,15 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
+import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
-import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
-import 'top_up_prepaid_amount_box.dart';
 import '../theme/top_up_prepaid_theme.dart';
+import 'top_up_prepaid_amount_box.dart';
 
 class SendTopUpPlaceholderTab extends StatefulWidget {
   final String title;
@@ -40,6 +40,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   // Recipient numbers must be typed in full, starting with 242.
   final LoginPhoneNumberHelper _phoneNumberHelper =
       const LoginPhoneNumberHelper(requireBahamasAreaCode: true);
+
   // The account's own number can arrive without 242, so it stays lenient for
   // the own-number check.
   final LoginPhoneNumberHelper _ownPhoneNumberHelper =
@@ -232,7 +233,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     if (!_canProceed) return;
 
     final account = context.read<AccountInfoCubit>().state.accountInfo;
-    final primaryPhone = account?.primaryPhoneNumber.trim() ?? '';
     final activeTn = ActiveDevice.tn()?.trim() ?? '';
     final recipientApi = _validatePhone(_phoneNumber).phoneNumberForApi;
     bool matchesOwn(String raw) {
@@ -246,8 +246,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
 
     final isOwnNumber =
         matchesOwn(activeTn) ||
-        matchesOwn(primaryPhone) ||
-        matchesOwn(account?.phoneNumber.trim() ?? '');
+        matchesOwn(account?.phoneNumber.trim() ?? '') ||
+        matchesOwn(account?.primaryPhoneNumber.trim() ?? '');
     if (isOwnNumber) {
       AppToast.show(
         message: 'You cannot send a top-up to your own number.',
@@ -514,6 +514,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
 
 class _SectionLabel extends StatelessWidget {
   final String text;
+
   const _SectionLabel(this.text);
 
   @override
@@ -535,6 +536,7 @@ class _SectionLabel extends StatelessWidget {
 
 class _ReadOnlyField extends StatelessWidget {
   final String value;
+
   const _ReadOnlyField(this.value);
 
   @override
