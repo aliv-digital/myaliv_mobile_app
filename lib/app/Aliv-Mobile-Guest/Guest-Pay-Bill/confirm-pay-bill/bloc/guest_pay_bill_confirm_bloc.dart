@@ -127,7 +127,12 @@ class GuestPayBillConfirmBloc
         amount: state.total,
         paymentMethod: 'card',
       );
-      emit(state.copyWith(payStatus: GuestPayBillConfirmPayStatus.success));
+      emit(
+        state.copyWith(
+          payStatus: GuestPayBillConfirmPayStatus.success,
+          lastOrderId: orderId.toString(),
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
