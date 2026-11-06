@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/utils/confirmation_formatters.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
   final DateTime? date;
@@ -21,6 +22,7 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final senderName = resolveActiveDeviceDisplayName();
     final activeTn = ActiveDevice.tn();
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     final senderPhone = formatConfirmationPhone(
@@ -45,9 +47,9 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'top-up',
-                style: TextStyle(
+              Text(
+                senderName,
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 18,
                   fontFamily: 'CircularPro',

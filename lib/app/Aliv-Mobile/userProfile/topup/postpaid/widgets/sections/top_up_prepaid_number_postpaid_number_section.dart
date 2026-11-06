@@ -10,12 +10,14 @@ import '../../theme/top_up_prepaid_number_postpaid_theme.dart';
 class TopUpPrepaidNumberPostPaidNumberSection extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
 
   const TopUpPrepaidNumberPostPaidNumberSection({
     super.key,
     required this.value,
     required this.onChanged,
+    this.onSubmitted,
     this.focusNode,
   });
 
@@ -97,6 +99,7 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
         CustomCountryPhoneInputRow(
           focusNode: _effectiveFocusNode,
           textInputAction: TextInputAction.next,
+          onSubmitted: widget.onSubmitted,
           hideUnfocusedInputBorder:
               !_hasPhoneFocus && !showLivePhoneValidationError,
           hintText: 'eg: (242)-899-9999',

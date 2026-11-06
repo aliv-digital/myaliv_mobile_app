@@ -46,6 +46,9 @@ class AutoRenewPrepaidTheme {
   static const double dashedDashLength = 6.0;
   static const double dashedGapLength = 5.0;
   static const double buttonElevation = 0.0;
+  static const double savedCardsScrollbarThickness = 4.0;
+  static const double savedCardsScrollbarPadding = 8.0;
+  static const double savedCardsScrollbarThumbHeight = 48.0;
 
   // Spacing
   static const EdgeInsets bodyPadding = EdgeInsets.fromLTRB(24, 32, 24, 18);

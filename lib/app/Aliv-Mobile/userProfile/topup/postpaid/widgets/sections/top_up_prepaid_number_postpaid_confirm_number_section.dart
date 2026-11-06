@@ -11,6 +11,8 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
   final bool hasMismatchError;
+  final bool hasFormatError;
+  final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
 
   const TopUpPrepaidNumberPostPaidConfirmNumberSection({
@@ -18,6 +20,8 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.hasMismatchError = false,
+    this.hasFormatError = false,
+    this.onSubmitted,
     this.focusNode,
   });
 
@@ -74,15 +78,14 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
   @override
   Widget build(BuildContext context) {
     const selectedCountry = LoginCountrySelection.defaultBahamas;
-    final showFormatError = _phoneNumberHelper.hasLiveValidationError(
-      rawPhoneNumber: widget.value,
-      selectedCountry: selectedCountry,
-    );
-    final showPhoneError = showFormatError || widget.hasMismatchError;
-    final phoneBorderColor = !_hasPhoneFocus && showPhoneError
+    final String? errorMessage = widget.hasFormatError
+        ? 'invalid Format'
+        : (widget.hasMismatchError ? 'phone numbers do not match' : null);
+    final showError = errorMessage != null;
+    final phoneBorderColor = !_hasPhoneFocus && showError
         ? AuthModuleColors.errorRed
         : Colors.transparent;
-    final phoneInputStyle = showPhoneError
+    final phoneInputStyle = showError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
           )
@@ -100,7 +103,8 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
         CustomCountryPhoneInputRow(
           focusNode: _effectiveFocusNode,
           textInputAction: TextInputAction.next,
-          hideUnfocusedInputBorder: !_hasPhoneFocus && !showPhoneError,
+          onSubmitted: widget.onSubmitted,
+          hideUnfocusedInputBorder: !_hasPhoneFocus && !showError,
           hintText: 'eg: (242)-899-9999',
           flagEmoji: selectedCountry.flagEmoji,
           dialCode: selectedCountry.dialCode,
@@ -130,12 +134,12 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
           phoneInputStyle: phoneInputStyle,
           phoneHintStyle: AuthModuleTextStyles.fieldHint,
         ),
-        if (showPhoneError) ...[
+        if (showError) ...[
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
             child: Text(
-              showFormatError ? 'invalid format' : 'phone numbers do not match',
+              errorMessage!,
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

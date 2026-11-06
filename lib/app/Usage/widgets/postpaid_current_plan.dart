@@ -45,7 +45,7 @@ class PostpaidCurrentPlan extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
             decoration: BoxDecoration(
               image: const DecorationImage(
-                image: AssetImage('assets/icons/sm.png'),
+                image: AssetImage('assets/icons/sm-new.png'),
                 fit: BoxFit.fill,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -191,7 +191,7 @@ class _DateBlock extends StatelessWidget {
           title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 10,
+            fontSize: 14,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
@@ -203,7 +203,7 @@ class _DateBlock extends StatelessWidget {
             color: Colors.white,
             fontSize: 15,
             fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w900,
             letterSpacing: 2.25,
           ),
         ),
@@ -213,7 +213,7 @@ class _DateBlock extends StatelessWidget {
             subtitle,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 11,
+              fontSize: 14,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),

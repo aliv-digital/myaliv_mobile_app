@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/logic/top_up_limit_gate.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
+import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import '../repository/top_up_prepaid_number_postpaid_repository.dart';
 import 'top_up_prepaid_number_postpaid_event.dart';
@@ -109,6 +110,20 @@ class TopUpPrepaidNumberPostPaidBloc
     Emitter<TopUpPrepaidNumberPostPaidState> emit,
   ) async {
     if (!state.canApply) return;
+
+    if (state.isOwnNumber(
+      _accountInfoCubit.state.accountInfo,
+      ActiveDevice.tn(),
+    )) {
+      emit(
+        state.copyWith(
+          applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.failure,
+          errorMessage: 'You cannot send a top-up to your own number.',
+          clearAmountInlineError: true,
+        ),
+      );
+      return;
+    }
 
     // Preflight: A/B/C/D limit gate (same semantics as the prepaid My Number
     // tab). TOP-002 min + Case B → inline under the amount box; Case A/C/D →

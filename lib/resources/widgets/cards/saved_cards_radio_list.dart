@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
@@ -6,7 +8,7 @@ import 'package:myaliv_mobile_app/resources/widgets/cards/payment_method_icon.da
 
 enum CardBrand { visa, mastercard, unknown }
 
-class SavedCardsRadioList extends StatelessWidget {
+class SavedCardsRadioList extends StatefulWidget {
   final List<SavedCardModel> cards;
   final String? selectedToken;
   final ValueChanged<SavedCardModel> onCardSelected;
@@ -15,6 +17,13 @@ class SavedCardsRadioList extends StatelessWidget {
   final double itemSpacing;
   final int? maxVisibleItems;
   final double tileHeight;
+  final ScrollController? scrollController;
+  final bool showScrollbar;
+  final bool thumbVisibility;
+  final double scrollbarThickness;
+  final double scrollbarPadding;
+  final double thumbHeight;
+  final Color? thumbColor;
 
   // Optional visual overrides forwarded to each [SavedCardRadioTile] so callers
   // can match sibling tiles on the same screen.
@@ -35,6 +44,13 @@ class SavedCardsRadioList extends StatelessWidget {
     this.itemSpacing = 12,
     this.maxVisibleItems,
     this.tileHeight = 64,
+    this.scrollController,
+    this.showScrollbar = true,
+    this.thumbVisibility = true,
+    this.scrollbarThickness = 4,
+    this.scrollbarPadding = 8,
+    this.thumbHeight = 20,
+    this.thumbColor,
     this.tileRadius,
     this.radioSize,
     this.logoBoxWidth,
@@ -44,50 +60,107 @@ class SavedCardsRadioList extends StatelessWidget {
   });
 
   @override
+  State<SavedCardsRadioList> createState() => _SavedCardsRadioListState();
+}
+
+class _SavedCardsRadioListState extends State<SavedCardsRadioList> {
+  ScrollController? _internalController;
+
+  ScrollController get _effectiveController {
+    if (widget.scrollController != null) {
+      return widget.scrollController!;
+    }
+    return _internalController ??= ScrollController();
+  }
+
+  @override
+  void didUpdateWidget(SavedCardsRadioList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.scrollController != null && _internalController != null) {
+      _internalController!.dispose();
+      _internalController = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cap = maxVisibleItems;
-    if (cap != null && cards.length > cap) {
-      final boundedHeight = cap * tileHeight + (cap - 1) * itemSpacing;
-      return SizedBox(
-        height: boundedHeight,
-        child: ListView.separated(
-          padding: EdgeInsets.zero,
-          physics: const ClampingScrollPhysics(),
-          itemCount: cards.length,
-          separatorBuilder: (_, _) => SizedBox(height: itemSpacing),
-          itemBuilder: (_, i) => SavedCardRadioTile(
-            card: cards[i],
-            isSelected: cards[i].token == selectedToken,
-            brand: brandResolver?.call(cards[i]) ?? CardBrand.unknown,
-            expiry: expiryResolver?.call(cards[i]),
-            onTap: () => onCardSelected(cards[i]),
-            tileRadius: tileRadius,
-            radioSize: radioSize,
-            logoBoxWidth: logoBoxWidth,
-            logoBoxHeight: logoBoxHeight,
-            logoImageAsset: logoImageAsset,
-            unselectedRadioFill: unselectedRadioFill,
-          ),
+    final cap = widget.maxVisibleItems;
+    if (cap != null && widget.cards.length > cap) {
+      final boundedHeight =
+          cap * widget.tileHeight + (cap - 1) * widget.itemSpacing;
+      final controller = _effectiveController;
+      final list = ListView.separated(
+        controller: controller,
+        primary: false,
+        padding: widget.scrollbarPadding > 0
+            ? EdgeInsetsDirectional.only(end: widget.scrollbarPadding)
+            : EdgeInsets.zero,
+        physics: const ClampingScrollPhysics(),
+        itemCount: widget.cards.length,
+        separatorBuilder: (_, _) => SizedBox(height: widget.itemSpacing),
+        itemBuilder: (_, i) => SavedCardRadioTile(
+          card: widget.cards[i],
+          isSelected: widget.cards[i].token == widget.selectedToken,
+          brand:
+              widget.brandResolver?.call(widget.cards[i]) ?? CardBrand.unknown,
+          expiry: widget.expiryResolver?.call(widget.cards[i]),
+          onTap: () => widget.onCardSelected(widget.cards[i]),
+          tileRadius: widget.tileRadius,
+          radioSize: widget.radioSize,
+          logoBoxWidth: widget.logoBoxWidth,
+          logoBoxHeight: widget.logoBoxHeight,
+          logoImageAsset: widget.logoImageAsset,
+          unselectedRadioFill: widget.unselectedRadioFill,
         ),
       );
+
+      final child = widget.showScrollbar && widget.thumbVisibility
+          ? Stack(
+              children: [
+                Positioned.fill(child: list),
+                PositionedDirectional(
+                  top: 0,
+                  bottom: 0,
+                  end: 0,
+                  child: SavedCardsScrollbarThumb(
+                    controller: controller,
+                    thickness: widget.scrollbarThickness,
+                    thumbHeight: widget.thumbHeight,
+                    thumbColor: widget.thumbColor,
+                    trackHeight: boundedHeight,
+                  ),
+                ),
+              ],
+            )
+          : list;
+
+      return SizedBox(height: boundedHeight, child: child);
     }
 
     return Column(
       children: [
-        for (var i = 0; i < cards.length; i++) ...[
-          if (i > 0) SizedBox(height: itemSpacing),
+        for (var i = 0; i < widget.cards.length; i++) ...[
+          if (i > 0) SizedBox(height: widget.itemSpacing),
           SavedCardRadioTile(
-            card: cards[i],
-            isSelected: cards[i].token == selectedToken,
-            brand: brandResolver?.call(cards[i]) ?? CardBrand.unknown,
-            expiry: expiryResolver?.call(cards[i]),
-            onTap: () => onCardSelected(cards[i]),
-            tileRadius: tileRadius,
-            radioSize: radioSize,
-            logoBoxWidth: logoBoxWidth,
-            logoBoxHeight: logoBoxHeight,
-            logoImageAsset: logoImageAsset,
-            unselectedRadioFill: unselectedRadioFill,
+            card: widget.cards[i],
+            isSelected: widget.cards[i].token == widget.selectedToken,
+            brand:
+                widget.brandResolver?.call(widget.cards[i]) ??
+                CardBrand.unknown,
+            expiry: widget.expiryResolver?.call(widget.cards[i]),
+            onTap: () => widget.onCardSelected(widget.cards[i]),
+            tileRadius: widget.tileRadius,
+            radioSize: widget.radioSize,
+            logoBoxWidth: widget.logoBoxWidth,
+            logoBoxHeight: widget.logoBoxHeight,
+            logoImageAsset: widget.logoImageAsset,
+            unselectedRadioFill: widget.unselectedRadioFill,
           ),
         ],
       ],
@@ -268,5 +341,99 @@ class SavedCardRadioTile extends StatelessWidget {
       case CardBrand.unknown:
         return 'card';
     }
+  }
+}
+
+class SavedCardsScrollbarThumb extends StatelessWidget {
+  final ScrollController controller;
+  final double thickness;
+  final double thumbHeight;
+  final Color? thumbColor;
+  final double trackHeight;
+
+  const SavedCardsScrollbarThumb({
+    super.key,
+    required this.controller,
+    required this.thickness,
+    required this.thumbHeight,
+    this.thumbColor,
+    required this.trackHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color =
+        thumbColor ??
+        Theme.of(context).scrollbarTheme.thumbColor?.resolve({}) ??
+        const Color(0xFF645D9C);
+
+    final double effectiveThumbHeight = thumbHeight.clamp(16.0, trackHeight);
+    final double travel = (trackHeight - effectiveThumbHeight).clamp(
+      0.0,
+      trackHeight,
+    );
+
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final double maxScroll =
+            controller.hasClients && controller.position.hasContentDimensions
+            ? controller.position.maxScrollExtent
+            : 0.0;
+
+        final double offset = controller.hasClients ? controller.offset : 0.0;
+
+        final double progress = maxScroll > 0
+            ? (offset / maxScroll).clamp(0.0, 1.0)
+            : 0.0;
+
+        final double top = progress * travel;
+
+        return SizedBox(
+          width: thickness,
+          height: trackHeight,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: top,
+                right: 0,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragUpdate: (details) {
+                    if (!controller.hasClients ||
+                        maxScroll <= 0 ||
+                        travel <= 0) {
+                      return;
+                    }
+                    final double deltaProgress = details.delta.dy / travel;
+                    final double targetOffset =
+                        (controller.offset + deltaProgress * maxScroll).clamp(
+                          0.0,
+                          maxScroll,
+                        );
+                    controller.jumpTo(targetOffset);
+                  },
+                  child: Container(
+                    width: math.max(thickness, 16.0),
+                    height: effectiveThumbHeight,
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      key: const ValueKey('saved_cards_scrollbar_thumb'),
+                      width: thickness,
+                      height: effectiveThumbHeight,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(thickness / 2),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

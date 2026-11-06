@@ -5,16 +5,20 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_s
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart';
 
+import '../theme/auto_renew_prepaid_theme.dart';
+
 class AutoRenewSavedCardsList extends StatelessWidget {
   final String? selectedToken;
   final ValueChanged<SavedCardModel?> onCardSelected;
   final bool autoSelectFirst;
+  final ScrollController? scrollController;
 
   const AutoRenewSavedCardsList({
     super.key,
     required this.selectedToken,
     required this.onCardSelected,
     this.autoSelectFirst = true,
+    this.scrollController,
   });
 
   @override
@@ -32,6 +36,13 @@ class AutoRenewSavedCardsList extends StatelessWidget {
           onCardSelected: onCardSelected,
           maxVisibleItems: 4,
           tileHeight: 64,
+          scrollController: scrollController,
+          showScrollbar: true,
+          thumbVisibility: true,
+          scrollbarThickness:
+              AutoRenewPrepaidTheme.savedCardsScrollbarThickness,
+          scrollbarPadding: AutoRenewPrepaidTheme.savedCardsScrollbarPadding,
+          thumbHeight: AutoRenewPrepaidTheme.savedCardsScrollbarThumbHeight,
         );
       },
     );

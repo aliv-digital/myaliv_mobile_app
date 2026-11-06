@@ -99,4 +99,5 @@ class AssetConstant {
 
   static const giftAmountSVG = "assets/icons/gift_amout.svg";
   static const userGiftSVG = "assets/icons/user_gift.svg";
+  static const cardUpdatedSVG = "assets/icons/card_icon_update.svg";
 }

@@ -11,12 +11,14 @@ class TopUpPaymentSavedCardsSection extends StatelessWidget {
   final String? selectedToken;
   final ValueChanged<SavedCardModel> onCardSelected;
   final bool autoSelectFirst;
+  final ScrollController? scrollController;
 
   const TopUpPaymentSavedCardsSection({
     super.key,
     required this.selectedToken,
     required this.onCardSelected,
     this.autoSelectFirst = true,
+    this.scrollController,
   });
 
   @override
@@ -47,6 +49,12 @@ class TopUpPaymentSavedCardsSection extends StatelessWidget {
           logoBoxHeight: TopUpPaymentRadioMetrics.logoBoxHeight,
           // Previous artwork: logoImageAsset: AssetConstant.cardIconPNG,
           unselectedRadioFill: TopUpPaymentRadioMetrics.unselectedRadioFill,
+          scrollController: scrollController,
+          thumbVisibility: true,
+          scrollbarThickness:
+              TopUpPaymentRadioMetrics.savedCardsScrollbarThickness,
+          scrollbarPadding: TopUpPaymentRadioMetrics.savedCardsScrollbarPadding,
+          thumbHeight: TopUpPaymentRadioMetrics.savedCardsScrollbarThumbHeight,
         );
       },
     );
