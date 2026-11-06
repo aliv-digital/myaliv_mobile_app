@@ -20,7 +20,43 @@ class ForgetPasswordPhoneRow extends StatefulWidget {
 }
 
 class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
+  final LoginPhoneNumberHelper _phoneNumberHelper =
+      const LoginPhoneNumberHelper(requireBahamasAreaCode: true);
+  bool _hasPhoneFocus = false;
   Country? _selectedCountry;
+
+  @override
+  void initState() {
+    super.initState();
+    _hasPhoneFocus = widget.focusNode.hasFocus;
+    widget.focusNode.addListener(_handlePhoneFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant ForgetPasswordPhoneRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode.removeListener(_handlePhoneFocusChange);
+      widget.focusNode.addListener(_handlePhoneFocusChange);
+      _hasPhoneFocus = widget.focusNode.hasFocus;
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_handlePhoneFocusChange);
+    super.dispose();
+  }
+
+  void _handlePhoneFocusChange() {
+    if (_hasPhoneFocus == widget.focusNode.hasFocus) {
+      return;
+    }
+
+    setState(() {
+      _hasPhoneFocus = widget.focusNode.hasFocus;
+    });
+  }
 
   String get _flagEmoji =>
       _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
@@ -53,13 +89,26 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
 
   @override
   Widget build(BuildContext context) {
-    final hasFormatError = context.select(
-      (ForgetPasswordBloc bloc) =>
-          const LoginPhoneNumberHelper().hasLiveValidationError(
-            rawPhoneNumber: bloc.state.phone,
-            selectedCountry: LoginCountrySelection.defaultBahamas,
-          ),
+    final showLivePhoneValidationError = context.select(
+      (ForgetPasswordBloc bloc) => _phoneNumberHelper.hasLiveValidationError(
+        rawPhoneNumber: bloc.state.phone,
+        selectedCountry: LoginCountrySelection.defaultBahamas,
+      ),
     );
+    final bool showPhoneBorderError = showLivePhoneValidationError;
+    final Color phoneBorderColor = showPhoneBorderError
+        ? AuthModuleColors.errorRed
+        : ForgetPasswordColors.fieldBorder;
+    final TextStyle phoneInputStyle = showLivePhoneValidationError
+        ? ForgetPasswordTheme.phoneInput.copyWith(
+            color: AuthModuleColors.errorRed,
+          )
+        : ForgetPasswordTheme.phoneInput;
+    final double phoneErrorLeftPadding =
+        ForgetPasswordSizes.countryWidth +
+        ForgetPasswordSizes.countryToPhoneGap +
+        ForgetPasswordPaddings.fieldHorizontal14.left;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -75,9 +124,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
             ForgetPasswordPhoneChanged(value),
           ),
           backgroundColor: ForgetPasswordColors.pageBackground,
-          unfocusedBorderColor: hasFormatError
-              ? AuthModuleColors.errorRed
-              : ForgetPasswordColors.fieldBorder,
+          unfocusedBorderColor: phoneBorderColor,
           focusedBorderGradient: ForgetPasswordGradients.focusedInputBorder,
           borderRadius: ForgetPasswordSizes.fieldRadius,
           borderWidth: ForgetPasswordSizes.fieldBorderWidth,
@@ -97,22 +144,13 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
           countryArrowColor: ForgetPasswordColors.hintGrey,
           flagStyle: ForgetPasswordTheme.countryFlag,
           dialCodeStyle: ForgetPasswordTheme.dialCode,
-          phoneInputStyle: hasFormatError
-              ? ForgetPasswordTheme.phoneInput.copyWith(
-                  color: AuthModuleColors.errorRed,
-                )
-              : ForgetPasswordTheme.phoneInput,
+          phoneInputStyle: phoneInputStyle,
           phoneHintStyle: ForgetPasswordTheme.phoneHint,
         ),
-        if (hasFormatError) ...[
+        if (showLivePhoneValidationError) ...[
           const SizedBox(height: 6),
           Padding(
-            padding: EdgeInsets.only(
-              left:
-                  ForgetPasswordSizes.countryWidth +
-                  ForgetPasswordSizes.countryToPhoneGap +
-                  ForgetPasswordPaddings.fieldHorizontal14.left,
-            ),
+            padding: EdgeInsets.only(left: phoneErrorLeftPadding),
             child: const Text(
               'invalid Format',
               style: AuthModuleTextStyles.invalidCredentials,

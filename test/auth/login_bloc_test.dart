@@ -311,7 +311,7 @@ void main() {
             .having(
               (s) => s.errorMessage,
               'errorMessage',
-              'your account is locked out, please try again in 15 minutes',
+              'your account is locked out, please try again in 30 minutes',
             )
             .having((s) => s.outcome, 'outcome', LoginOutcome.none)
             .having((s) => s.phoneFieldError, 'phoneFieldError', false)

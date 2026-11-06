@@ -26,7 +26,7 @@ const _lockedBody = {
   'error_description': 'FailedUsernameIsLocked',
 };
 const _lockedMessage =
-    'your account is locked out, please try again in 15 minutes';
+    'your account is locked out, please try again in 30 minutes';
 const _seed = LoginState(
   phone: '2423241234',
   password: 'test-password',

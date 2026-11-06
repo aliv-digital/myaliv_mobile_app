@@ -457,33 +457,47 @@ void main() {
     });
   }
 
-  testWidgets('typing uses Login validity including seven digits and prefix', (
-    tester,
-  ) async {
+  testWidgets(
+    'typing uses Login validity including Bahamas area code requirement',
+    (tester) async {
+      await _pumpScreen(tester);
+      const helper = LoginPhoneNumberHelper(requireBahamasAreaCode: true);
+      for (final input in [
+        '',
+        '2',
+        '24255',
+        '8997955',
+        '2408999',
+        '24289979',
+        '2428997955',
+        '3058997955',
+      ]) {
+        await tester.enterText(_phoneField(), input);
+        await tester.pump();
+        final expectedError = helper.hasLiveValidationError(
+          rawPhoneNumber: _phoneText(tester),
+          selectedCountry: LoginCountrySelection.defaultBahamas,
+        );
+        expect(
+          find.text('invalid Format'),
+          expectedError ? findsOneWidget : findsNothing,
+          reason: 'Forgot Password must match Login for $input',
+        );
+        verifyZeroInteractions(networkService);
+      }
+    },
+  );
+
+  testWidgets('seven digits without Bahamas prefix block Send', (tester) async {
     await _pumpScreen(tester);
-    const helper = LoginPhoneNumberHelper();
-    for (final input in [
-      '',
-      '2',
-      '24255',
-      '8997955',
-      '24289979',
-      '2428997955',
-      '3058997955',
-    ]) {
-      await tester.enterText(_phoneField(), input);
-      await tester.pump();
-      final expectedError = helper.hasLiveValidationError(
-        rawPhoneNumber: _phoneText(tester),
-        selectedCountry: LoginCountrySelection.defaultBahamas,
-      );
-      expect(
-        find.text('invalid Format'),
-        expectedError ? findsOneWidget : findsNothing,
-        reason: 'Forgot Password must match Login for $input',
-      );
-      verifyZeroInteractions(networkService);
-    }
+    await tester.enterText(_phoneField(), '2408999');
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    await tester.tap(find.text('send'));
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
+    verifyZeroInteractions(networkService);
   });
 
   testWidgets('ten digits with a non-Bahamas prefix block Send', (
@@ -501,7 +515,7 @@ void main() {
   });
 
   testWidgets(
-    'seven-digit Login-valid input sends the canonical Bahamas username',
+    'ten-digit Bahamas Login-valid input sends the canonical Bahamas username',
     (tester) async {
       LoginOtpRouteArgs? otp;
       when(
@@ -518,7 +532,7 @@ void main() {
         ),
       );
       await _pumpScreen(tester, onOtp: (args) => otp = args);
-      await tester.enterText(_phoneField(), '8997955');
+      await tester.enterText(_phoneField(), '2428997955');
       await tester.pump();
       expect(find.text('invalid Format'), findsNothing);
       verifyZeroInteractions(networkService);

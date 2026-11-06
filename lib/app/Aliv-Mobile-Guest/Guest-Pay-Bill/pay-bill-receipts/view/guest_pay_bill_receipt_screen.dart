@@ -162,8 +162,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                             GuestPayBillReceiptTheme.screenBackground,
                         statusMessage:
                             data.rightType.trim().toUpperCase() == 'ALIVFIBR'
-                            ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
-                                  'has been successfully processed for account ${data.phoneNumber}'
+                            ? 'It will take a few moments for the payment to appear on the account.'
                             : 'It will take a few moments for the payment to appear on the account.',
                         backButtonText: buttonText,
                         onBackHome: () {

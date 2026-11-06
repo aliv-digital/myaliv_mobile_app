@@ -95,7 +95,7 @@ void main() {
   Finder field(String hint) => find.byWidgetPredicate(
     (widget) => widget is TextField && widget.decoration?.hintText == hint,
   );
-  Finder success() => find.textContaining('Your payment of');
+  Finder success() => find.textContaining('It will take a few moments for the payment to appear on the account.');
 
   Future<void> open(WidgetTester tester, {double width = 390}) async {
     payment = Completer<Response<dynamic>>();
@@ -255,7 +255,7 @@ void main() {
       await finish(tester, {'OrderId': 123});
       expect(
         find.text(
-          'Your payment of $formatted has been successfully processed for account $account',
+          'It will take a few moments for the payment to appear on the account.',
         ),
         findsOneWidget,
       );

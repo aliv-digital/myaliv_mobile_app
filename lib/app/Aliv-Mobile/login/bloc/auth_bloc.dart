@@ -292,7 +292,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (message.toString() == "FailedUsernameIsLocked") {
         _emitFailure(
           emit,
-          message: "your account is locked out, please try again in 15 minutes",
+          message: "your account is locked out, please try again in 30 minutes",
           phoneFieldError: false,
           passwordFieldError: false,
           showToast: true,

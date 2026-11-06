@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/app_keyboard_toolbar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -264,7 +265,20 @@ class _VisaPrefix extends StatelessWidget {
       child: SizedBox(
         width: 34,
         height: 24,
-        child: SvgPicture.asset(AssetConstant.visaCardSVG, fit: BoxFit.fill),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
+            child: SvgPicture.asset(
+              AssetConstant.cardUpdatedSVG,
+
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -12,7 +12,9 @@ class ForgetPasswordBloc
     extends Bloc<ForgetPasswordEvent, ForgetPasswordState> {
   final ForgetPasswordRepository repository;
   final AnalyticsService _analyticsService;
-  static const _phoneNumberHelper = LoginPhoneNumberHelper();
+  static const _phoneNumberHelper = LoginPhoneNumberHelper(
+    requireBahamasAreaCode: true,
+  );
 
   ForgetPasswordBloc({
     required this.repository,

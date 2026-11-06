@@ -147,7 +147,17 @@ class _AmountRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        const Text('amount', style: _CheckoutSheetStyles.label),
+        Row(
+          children: [
+            SvgPicture.asset(
+              AssetConstant.walletIconSVG,
+              height: 15,
+              width: 15,
+            ),
+            SizedBox(width: 10),
+            const Text('amount', style: _CheckoutSheetStyles.label),
+          ],
+        ),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
