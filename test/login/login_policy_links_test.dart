@@ -100,29 +100,16 @@ void main() {
           expect(tester.getCenter(group).dx, closeTo(width / 2, 0.01));
           final row = tester.widget<Row>(group);
           expect(row.crossAxisAlignment, CrossAxisAlignment.baseline);
-          final underline =
-              tester
-                      .widget<DecoratedBox>(
-                        find
-                            .descendant(
-                              of: find.byType(LoginPrivacyPolicyLink),
-                              matching: find.byType(DecoratedBox),
-                            )
-                            .first,
-                      )
-                      .decoration
-                  as BoxDecoration;
-          expect((underline.border! as Border).bottom.style, BorderStyle.solid);
           for (final label in ['Privacy Policy', 'Terms of Use']) {
             final text = tester.widget<Text>(find.text(label));
             expect(text.style!.fontSize, 10);
             expect(text.style!.fontWeight, FontWeight.w700);
-            expect(
-              text.style!.color,
-              (underline.border! as Border).bottom.color,
-            );
-            expect(text.style!.decoration, TextDecoration.none);
+            expect(text.style!.decoration, TextDecoration.underline);
           }
+          expect(
+            tester.widget<Text>(find.text(' | ')).style!.decoration,
+            isNot(TextDecoration.underline),
+          );
         },
       );
     }
