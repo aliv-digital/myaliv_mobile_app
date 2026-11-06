@@ -7,8 +7,7 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/bucket_uni
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/models/bucket_usage_summary_model.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:myaliv_mobile_app/resources/widgets/fair_use_policy_modal.dart';
 
 /// Bucket detail bottom sheet — shows full API totals (total / used /
 /// remaining) and per-instance expiry rows for a single bucket, plus the
@@ -35,28 +34,8 @@ class BucketDetailModal extends StatelessWidget {
     );
   }
 
-  /// Same external-launch + toast-fallback path as
-  /// `HomePlanAddOnsTabContent._openFairUsePolicy`, so users see one
-  /// consistent fair-use experience across the app.
-  static final Uri _fairUsePolicyUri = Uri.parse(
-    'https://www.bealiv.com/fair-use-policy/',
-  );
-
-  Future<void> _openFairUsePolicy() async {
-    try {
-      final launched = await launchUrl(
-        _fairUsePolicyUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (launched) return;
-    } catch (_) {
-      // launchUrl can throw PlatformException when no handler is
-      // installed for the URI scheme — fall through to the toast.
-    }
-    AppToast.show(
-      message: 'could not open fair use policy',
-      type: ToastType.error,
-    );
+  Future<void> _openFairUsePolicy(BuildContext context) async {
+    await showFairUsePolicyModal(context);
   }
 
   @override
@@ -123,7 +102,7 @@ class BucketDetailModal extends StatelessWidget {
                 const SizedBox(height: 16),
                 const ActivePlansExpander(initiallyExpanded: false),
                 const SizedBox(height: 20),
-                _fairUseLink(),
+                _fairUseLink(context),
                 const SizedBox(height: 12),
                 _closeButton(context),
                 const SizedBox(height: 8),
@@ -313,11 +292,11 @@ class BucketDetailModal extends StatelessWidget {
     );
   }
 
-  Widget _fairUseLink() {
+  Widget _fairUseLink(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
       child: InkWell(
-        onTap: _openFairUsePolicy,
+        onTap: () => _openFairUsePolicy(context),
         borderRadius: BorderRadius.circular(4),
         child: const Padding(
           padding: EdgeInsets.symmetric(vertical: 4),

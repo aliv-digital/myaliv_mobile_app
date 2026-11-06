@@ -10,8 +10,7 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:myaliv_mobile_app/resources/widgets/fair_use_policy_modal.dart';
 
 import '../cubit/plans_state.dart';
 import '../cubit/plans_cubit.dart';
@@ -27,25 +26,8 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   });
 
   static const double _addOnsTabHorizontalPadding = 25;
-  static final Uri _fairUsePolicyUri = Uri.parse(
-    'https://www.bealiv.com/fair-use-policy/',
-  );
-
-  Future<void> _openFairUsePolicy() async {
-    try {
-      final launched = await launchUrl(
-        _fairUsePolicyUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (launched) return;
-    } catch (_) {
-      // Fall through to the toast — `launchUrl` can throw a PlatformException
-      // when no handler is installed for the URI scheme.
-    }
-    AppToast.show(
-      message: 'could not open fair use policy',
-      type: ToastType.error,
-    );
+  Future<void> _openFairUsePolicy(BuildContext context) async {
+    await showFairUsePolicyModal(context);
   }
 
   final List<HomePlanAddOnModel> addOns;
@@ -100,7 +82,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
           policy: fairUsePolicy,
-          onTap: _openFairUsePolicy,
+          onTap: () => _openFairUsePolicy(context),
         ),
         const SizedBox(height: 16),
         ...addOns.map((addOn) {

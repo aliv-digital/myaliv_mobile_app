@@ -874,7 +874,12 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPayBill,
-        builder: (context, state) => const GuestPayBillScreen(),
+        builder: (context, state) {
+          final serviceCode =
+              state.uri.queryParameters['service'] ??
+              (state.extra is String ? state.extra as String : null);
+          return GuestPayBillScreen(initialServiceCode: serviceCode);
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlan,

@@ -2,6 +2,17 @@ class BillService {
   final String code; // e.g. 'REV', 'ALIV_POSTPAID'
   final String label; // e.g. 'REV', 'ALIV Postpaid'
   const BillService({required this.code, required this.label});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BillService &&
+          runtimeType == other.runtimeType &&
+          code.toUpperCase() == other.code.toUpperCase() &&
+          label == other.label;
+
+  @override
+  int get hashCode => Object.hash(code.toUpperCase(), label);
 }
 
 class PayBillAccountInfo {

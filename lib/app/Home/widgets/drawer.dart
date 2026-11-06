@@ -146,7 +146,7 @@ class AppMenuDrawer extends StatelessWidget {
               child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
             ),
             if (!isRestricted)
-              _item('assets/icons/bill.svg', 'REV bill pay', context),
+              _item('assets/icons/bill.svg', 'guest bill pay', context),
             if (!isRestricted)
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16),
@@ -233,43 +233,30 @@ class AppMenuDrawer extends StatelessWidget {
           ? null
           : label == 'notifications'
           ? null
-          : label == 'REV bill pay'
+          : label == 'guest bill pay'
           ? null
           : external
           ? SvgPicture.asset('assets/icons/alivfibr.svg', height: 18, width: 18)
           : const Icon(Icons.chevron_right),
       onTap: () async {
+        Navigator.of(context).pop(); // close drawer
+        await Future.delayed(const Duration(milliseconds: 50));
+        if (!context.mounted) return;
         if (label == 'profile') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.profilePrepaidScreen);
         } else if (label == 'purchases') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.purchasesPrepaidScreen); // going to purchase
         } else if (label == 'refer a friend') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.referFriendPrepaidScreen);
         } else if (label == 'settings') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.settingsScreen);
-        } else if (label == 'REV bill pay') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
-          context.push(AppRoutes.revLandingPrepaidScreen);
+        } else if (label == 'guest bill pay') {
+          context.push('${AppRoutes.guestPayBill}?service=REV', extra: 'REV');
         } else if (label == 'notifications') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.notificationScreen);
         } else if (label == 'support') {
-          Navigator.of(context).pop(); // close drawer
-          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.supportScreen);
         } else if (label == 'ALIVFibr') {
-          Navigator.of(context).pop(); // close drawer)
-
           final uri = Uri.parse(
             'https://portal.alivfibr.com/myfibr/login.aspx',
           );

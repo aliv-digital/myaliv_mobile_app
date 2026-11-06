@@ -1,31 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:myaliv_mobile_app/resources/widgets/fair_use_policy_modal.dart';
 
 /// Right-aligned "fair use policy" link sitting between the active plan
-/// card and the bucket usage list. Same launch + toast fallback as
-/// `BucketDetailModal._openFairUsePolicy` and the plan add-ons screen,
+/// card and the bucket usage list. Shows the Fair Use Policy modal,
 /// so users see one consistent fair-use experience across the app.
 class UsageFairUseLink extends StatelessWidget {
   const UsageFairUseLink({super.key});
 
-  static final Uri _uri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
-
-  Future<void> _launch() async {
-    try {
-      final launched = await launchUrl(
-        _uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (launched) return;
-    } catch (_) {
-      // launchUrl can throw PlatformException when no handler is
-      // installed for the URI scheme — fall through to the toast.
-    }
-    AppToast.show(
-      message: 'could not open fair use policy',
-      type: ToastType.error,
-    );
+  Future<void> _launch(BuildContext context) async {
+    await showFairUsePolicyModal(context);
   }
 
   @override
@@ -35,7 +18,7 @@ class UsageFairUseLink extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerRight,
         child: TextButton(
-          onPressed: _launch,
+          onPressed: () => _launch(context),
           child: const Text(
             'fair use policy',
             style: TextStyle(

@@ -9,7 +9,7 @@ class RevLandingHeroImage extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: screenHeight * 0.5),
       child: Image.asset(
-        'assets/images/rev_top_image.png',
+        'assets/images/rev_top_image_new.png',
         width: double.infinity,
         fit: BoxFit.fitWidth,
         alignment: Alignment.topCenter,
