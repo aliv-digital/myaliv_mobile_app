@@ -4,15 +4,18 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usa
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_limit_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 
-/// Drives the entire "roaming plan" block on the Usage tab from
-/// `BucketUsageSummaryState`. Hidden when the user has no stand-alone
-/// plan. Renders one card per stand-alone plan, followed immediately by
-/// that plan's own usage rows (computed via
-/// `state.bucketUsageForPlan(plan)` so shared bucket names from sibling
-/// roaming plans don't bleed across cards).
+/// Drives the "roaming plan" block on the Usage tab.
+///
+/// Plan cards (name, dates) come from [PlansCubit] — a HydratedCubit restored
+/// from disk on app start, so the section appears immediately without waiting
+/// for a network call. Usage metric rows come from [BucketUsageSummaryCubit]
+/// via an inner builder and fill in once the bucket usage API responds.
 class RoamingPlanSection extends StatelessWidget {
   const RoamingPlanSection({super.key});
 
@@ -21,24 +24,13 @@ class RoamingPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
-      buildWhen: (a, b) =>
-          a.summary != b.summary || a.standAlonePlans != b.standAlonePlans,
-      builder: (context, state) {
-        // Drop plans whose StartDate is strictly after today — they belong on
-        // the Future Plans tab. Uses date-only comparison (same as
-        // `_startsInFuture` in `future_plan_tab.dart`) so each plan appears
-        // in exactly one tab.
-        final now = DateTime.now();
-        final today = DateTime(now.year, now.month, now.day);
-        final plans = state.standAlonePlans
-            .where((p) {
-              final start = p.startDateTime;
-              if (start == null) return true;
-              final startDay = DateTime(start.year, start.month, start.day);
-              return !startDay.isAfter(today);
-            })
-            .toList(growable: false);
+    return BlocBuilder<PlansCubit, PlansState>(
+      buildWhen: (a, b) => a.standAlonePlans != b.standAlonePlans,
+      builder: (context, plansState) {
+        // standAlonePlansForBucketUsage already filters to current-only
+        // (StartDate ≤ today) and merges duplicate planIds. Future slots
+        // appear on the Future Plans tab instead.
+        final plans = plansState.standAlonePlansForBucketUsage;
         if (plans.isEmpty) return const SizedBox.shrink();
 
         return Column(
@@ -50,19 +42,35 @@ class RoamingPlanSection extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
                 child: UsageRoamingPlanCard(plan: plans[i]),
               ),
-              Builder(
-                builder: (_) {
-                  final rows = state.bucketUsageForPlan(plans[i]);
-                  if (rows.isEmpty) return const SizedBox.shrink();
-                  return _MetricRows(rows: rows);
-                },
-              ),
+              _UsageRows(plan: plans[i]),
               if (i < plans.length - 1) const SizedBox(height: 24),
             ],
             const SizedBox(height: 16),
             const _BottomSpacer(),
           ],
         );
+      },
+    );
+  }
+}
+
+/// Usage metric rows for a single stand-alone plan. Reads from
+/// [BucketUsageSummaryCubit] independently so the plan cards above
+/// render immediately from the hydrated [PlansCubit] cache while these
+/// rows fill in once the bucket usage API responds.
+class _UsageRows extends StatelessWidget {
+  const _UsageRows({required this.plan});
+
+  final BasePlanModel plan;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
+      buildWhen: (a, b) => a.summary != b.summary,
+      builder: (context, state) {
+        final rows = state.bucketUsageForPlan(plan);
+        if (rows.isEmpty) return const SizedBox.shrink();
+        return _MetricRows(rows: rows);
       },
     );
   }
