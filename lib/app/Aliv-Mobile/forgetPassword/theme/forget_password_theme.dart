@@ -48,7 +48,7 @@ class ForgetPasswordSizes {
   static const double logoHeight = 50.79;
   static const double logoToTitleGap = 44;
   static const double titleToSubtitleGap = 0;
-  static const double subtitleWidth = 294;
+  static const double subtitleWidth = 298;
 
   // Field sizes.
   static const double fieldHeight = 54;
@@ -167,7 +167,7 @@ class ForgetPasswordTheme {
   // Header subtitle: "please enter your mobile..."
   static const TextStyle subtitle = TextStyle(
     fontSize: 15,
-    height: 1.47,
+    height: 1.20,
     fontFamily: AppConstants.defaultFontFamily,
     // Design asks for w450; Flutter named weights are discrete, so w500 is used.
     fontWeight: FontWeight.w500,
