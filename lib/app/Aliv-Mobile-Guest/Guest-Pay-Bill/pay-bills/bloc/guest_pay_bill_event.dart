@@ -9,7 +9,12 @@ abstract class GuestPayBillEvent extends Equatable {
 }
 
 class GuestPayBillStarted extends GuestPayBillEvent {
-  const GuestPayBillStarted();
+  final String? initialServiceCode;
+
+  const GuestPayBillStarted({this.initialServiceCode});
+
+  @override
+  List<Object?> get props => [initialServiceCode];
 }
 
 class GuestPayBillServiceChanged extends GuestPayBillEvent {

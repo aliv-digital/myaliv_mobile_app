@@ -28,7 +28,9 @@ import '../widgets/guest_pay_bill_required_label.dart';
 import '../widgets/guest_pay_bill_service_dropdown.dart';
 
 class GuestPayBillScreen extends StatelessWidget {
-  const GuestPayBillScreen({super.key});
+  final String? initialServiceCode;
+
+  const GuestPayBillScreen({super.key, this.initialServiceCode});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class GuestPayBillScreen extends StatelessWidget {
         final bloc = GuestPayBillBloc();
 
         // Populate available network when the screen opens.
-        bloc.add(const GuestPayBillStarted());
+        bloc.add(GuestPayBillStarted(initialServiceCode: initialServiceCode));
 
         return bloc;
       },

@@ -45,7 +45,7 @@ class MyProfilePrepaidTheme {
   static const Color statusPillBg = Color(0xFF00C4B3);
   static const TextStyle statusPillText = TextStyle(
     fontFamily: 'CircularPro',
-    fontSize: 10,
+    fontSize: 15,
     fontWeight: FontWeight.w700,
     color: Colors.white,
   );
@@ -76,7 +76,7 @@ class MyProfilePrepaidTheme {
 
   static const TextStyle infoCardValue = TextStyle(
     fontFamily: 'CircularPro',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w500, // closest available to requested w450
     color: Colors.black,
   );

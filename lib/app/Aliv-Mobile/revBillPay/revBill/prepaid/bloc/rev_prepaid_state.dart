@@ -36,7 +36,7 @@ class RevPrepaidState extends Equatable {
 
   factory RevPrepaidState.initial() {
     return const RevPrepaidState(
-      title: 'REV bill pay',
+      title: 'guest bill pay',
       service: 'REV',
       accountNumber: '',
       name: '',

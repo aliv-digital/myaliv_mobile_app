@@ -11,10 +11,9 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/resources/widgets/fair_use_policy_modal.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/plan_purchase_plan_add_ons_bloc.dart';
@@ -306,7 +305,7 @@ class _ReadyContent extends StatelessWidget {
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
           policy: displayedPolicy,
-          onTap: _openFairUsePolicy,
+          onTap: () => _openFairUsePolicy(context),
         ),
         const SizedBox(height: 16),
         ..._buildAddOnTiles(context),
@@ -315,23 +314,8 @@ class _ReadyContent extends StatelessWidget {
     );
   }
 
-  static final Uri _fairUsePolicyUri = Uri.parse(
-    'https://www.bealiv.com/fair-use-policy/',
-  );
-
-  Future<void> _openFairUsePolicy() async {
-    try {
-      final launched = await launchUrl(
-        _fairUsePolicyUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (launched) return;
-    } catch (_) {
-      AppToast.show(
-        message: 'could not open fair use policy',
-        type: ToastType.error,
-      );
-    }
+  Future<void> _openFairUsePolicy(BuildContext context) async {
+    await showFairUsePolicyModal(context);
   }
 
   List<Widget> _buildAddOnTiles(BuildContext context) {

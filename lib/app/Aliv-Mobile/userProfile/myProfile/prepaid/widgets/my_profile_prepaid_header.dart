@@ -61,7 +61,7 @@ class MyProfilePrepaidHeader extends StatelessWidget {
               'account status:',
               style: TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 12,
+                fontSize: 15,
                 letterSpacing: -0.30,
                 fontWeight: FontWeight.w400,
                 color: MyProfilePrepaidTheme.textMuted,

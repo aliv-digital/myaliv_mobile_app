@@ -22,9 +22,9 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/fair_use_policy_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/guest_purchase_plan_bloc.dart';
 import '../bloc/guest_purchase_plan_event.dart';
@@ -167,28 +167,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
     );
   }
 
-  static final Uri _fairUsePolicyUri = Uri.parse(
-    'https://www.bealiv.com/fair-use-policy/',
-  );
-
-  /// Mirrors prepaid HomePlanAddOnsTabContent._openFairUsePolicy
-  /// (home_plan_add_ons_tab_content.dart:33-48): launches the URL in an
-  /// external browser; falls back to a toast when no handler is
-  /// installed for the URI scheme.
-  Future<void> _openFairUsePolicy() async {
-    try {
-      final launched = await launchUrl(
-        _fairUsePolicyUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (launched) return;
-    } catch (_) {
-      // launchUrl can throw PlatformException on devices without a browser.
-    }
-    AppToast.show(
-      message: 'could not open fair use policy',
-      type: ToastType.error,
-    );
+  Future<void> _openFairUsePolicy(BuildContext context) async {
+    await showFairUsePolicyModal(context);
   }
 
   add_ons_models.AddOnItem _toAddOnTileModel(AddOnModel addOn) {
@@ -288,7 +268,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
           expireTime: activePlan.expireTime,
         ),
         const SizedBox(height: 16),
-        FairUsePolicyCard(policy: fairUsePolicy, onTap: _openFairUsePolicy),
+        FairUsePolicyCard(
+          policy: fairUsePolicy,
+          onTap: () => _openFairUsePolicy(context),
+        ),
         const SizedBox(height: 16),
         ...state.addOns.map((addOn) {
           final selected = state.selectedAddOnIds.contains(addOn.id);
