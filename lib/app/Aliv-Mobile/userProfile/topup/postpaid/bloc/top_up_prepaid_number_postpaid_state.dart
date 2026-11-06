@@ -98,8 +98,9 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
       final numDigits = number.replaceAll(digitsOnly, '');
       final confirmDigits = confirmNumber.replaceAll(digitsOnly, '');
       final normNum = numDigits.length == 7 ? '242$numDigits' : numDigits;
-      final normConfirm =
-          confirmDigits.length == 7 ? '242$confirmDigits' : confirmDigits;
+      final normConfirm = confirmDigits.length == 7
+          ? '242$confirmDigits'
+          : confirmDigits;
 
       if (normNum.startsWith(confirmDigits) ||
           numDigits.startsWith(confirmDigits) ||
@@ -128,8 +129,9 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
     if (confirmDigits.isEmpty) return false;
 
     final normNum = numDigits.length == 7 ? '242$numDigits' : numDigits;
-    final normConfirm =
-        confirmDigits.length == 7 ? '242$confirmDigits' : confirmDigits;
+    final normConfirm = confirmDigits.length == 7
+        ? '242$confirmDigits'
+        : confirmDigits;
 
     if (numDigits.length >= 7 && confirmDigits.length >= 7) {
       return normNum != normConfirm;

@@ -355,9 +355,25 @@ class PlansState extends Equatable {
   List<BasePlanModel> get standAlonePlansForBucketUsage {
     if (standAlonePlans.isEmpty) return const <BasePlanModel>[];
 
+    // Exclude future instances — their allowances are not yet live in the
+    // usage API, so counting them would inflate the displayed date range and
+    // could cause incorrect bucket matching.
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final currentOnly = standAlonePlans
+        .where((plan) {
+          final start = plan.startDateTime;
+          if (start == null) return true;
+          final startDay = DateTime(start.year, start.month, start.day);
+          return !startDay.isAfter(today);
+        })
+        .toList(growable: false);
+
+    if (currentOnly.isEmpty) return const <BasePlanModel>[];
+
     final groupsByPlanId = <String, List<BasePlanModel>>{};
     final planIdOrder = <String>[];
-    for (final plan in standAlonePlans) {
+    for (final plan in currentOnly) {
       if (!groupsByPlanId.containsKey(plan.planId)) {
         planIdOrder.add(plan.planId);
       }

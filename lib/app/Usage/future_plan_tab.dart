@@ -104,10 +104,14 @@ class _StandAloneFuturePlans extends StatelessWidget {
       },
       builder: (context, state) {
         final seenPlanIds = <String>{};
-        final futurePlans = <BasePlanModel>[
-          ...state.addOnsApiPrimaryPlans.where(_startsInFuture),
-          ...state.standAlonePlans.where(_startsInFuture),
-        ].where((p) => seenPlanIds.add(p.planId)).toList(growable: false);
+        final futurePrimary = state.addOnsApiPrimaryPlans
+            .where(_startsInFuture)
+            .where((p) => seenPlanIds.add(p.planId))
+            .toList(growable: false);
+        final futureStandalone = state.standAlonePlans
+            .where(_startsInFuture)
+            .toList(growable: false);
+        final futurePlans = [...futurePrimary, ...futureStandalone];
         final startablePlanIndex = isPostpaid
             ? null
             : _earliestFuturePrimaryPlanIndex(futurePlans);
