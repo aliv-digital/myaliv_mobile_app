@@ -138,7 +138,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                     onPressed: () => context.go(AppRoutes.home),
                     icon: SvgPicture.asset(
                       'assets/icons/home.svg',
-                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),

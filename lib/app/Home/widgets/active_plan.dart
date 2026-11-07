@@ -152,7 +152,10 @@ class PrepaidActivePlanCard extends StatelessWidget {
               'assets/icons/card-add.svg',
               width: 18,
               height: 18,
-              colorFilter: const ColorFilter.mode(Color(0xFFEF3A4B), BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                Color(0xFFEF3A4B),
+                BlendMode.srcIn,
+              ),
             ),
             SizedBox(width: 10),
             Text(

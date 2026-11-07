@@ -121,5 +121,4 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
       ),
     );
   }
-
 }

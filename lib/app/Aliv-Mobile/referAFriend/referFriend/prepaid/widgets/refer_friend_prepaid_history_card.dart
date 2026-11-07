@@ -78,10 +78,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                   decoration: ShapeDecoration(
                     color: Colors.white /* 1 */,
                     shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        width: 1,
-                        color: Color(0xFFDD2F37),
-                      ),
+                      side: BorderSide(width: 1, color: Color(0xFFDD2F37)),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

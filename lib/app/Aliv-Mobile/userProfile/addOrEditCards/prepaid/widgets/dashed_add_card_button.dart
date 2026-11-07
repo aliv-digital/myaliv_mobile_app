@@ -15,8 +15,8 @@ class DashedAddCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ✅ make border color stronger (deep)
-    final borderColor = AddOrEditCardsPrepaidTheme.dashedBorder.withValues(alpha: 
-      1.0,
+    final borderColor = AddOrEditCardsPrepaidTheme.dashedBorder.withValues(
+      alpha: 1.0,
     );
 
     return InkWell(

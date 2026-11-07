@@ -124,5 +124,4 @@ class LocalStorage {
       await prefs.remove(key);
     }
   }
-
 }
