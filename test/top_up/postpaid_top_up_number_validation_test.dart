@@ -64,7 +64,6 @@ void main() {
       expect(state.hasConfirmFormatError, isTrue);
       expect(state.hasConfirmMismatchError, isFalse);
     });
-
   });
 
   group('TopUpPrepaidNumberPostPaidConfirmNumberSection UI', () {

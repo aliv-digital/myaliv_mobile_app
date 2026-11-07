@@ -98,5 +98,4 @@ void main() {
     expect(result, isFalse);
     verifyNever(() => devices.disableAutoRenew(any()));
   });
-
 }

@@ -357,7 +357,6 @@ void main() {
       await applyAndVerifyOtp(tester);
       expect(submitted(tester).autoTopUpAmount, 100);
     });
-
   });
 
   group('ATOP-007 authorization success', () {
