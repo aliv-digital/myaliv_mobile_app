@@ -19,8 +19,6 @@ class _DeviceState extends Mock implements DeviceLimitsState {}
 class _Device extends Mock implements DeviceLimitsModel {}
 
 const _question = 'are you sure you want to turn off auto renew?';
-const _success = 'auto renew has been turned off';
-const _failure = 'Failed to disable auto-renew';
 
 void main() {
   late _Devices devices;
@@ -80,11 +78,6 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.tap(find.text('toggle'));
-    await tester.pumpAndSettle();
-  }
-
-  Future<void> settleToasts(WidgetTester tester) async {
-    await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   }
 

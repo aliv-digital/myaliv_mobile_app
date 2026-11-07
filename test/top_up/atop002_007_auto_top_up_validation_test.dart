@@ -35,7 +35,6 @@ class _DeviceState extends Mock implements DeviceLimitsState {}
 class _Account extends MockCubit<AccountInfoState>
     implements AccountInfoCubit {}
 
-const _threshold = r'amount must be above $10.00 and below $100.00';
 const _noAmount = 'choose a top-up amount or enter a custom amount';
 const _min = r'the minimum top-up amount is $5.00';
 const _max = r'the maximum top-up amount is $100.00';
