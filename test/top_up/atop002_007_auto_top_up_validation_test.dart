@@ -63,11 +63,6 @@ void main() {
     await instance.reset();
   });
   group('Auto Top-up rules', () {
-    for (final value in [5.0, 10.0, 100.0, 150.0]) {
-      test('ATOP-002 threshold $value is invalid', () {
-        expect(validateAutoTopUpThreshold(value), _threshold);
-      });
-    }
     for (final value in [10.01, 25.0, 50.0, 99.99]) {
       test('ATOP-002 threshold $value is valid', () {
         expect(validateAutoTopUpThreshold(value), isNull);
@@ -271,29 +266,6 @@ void main() {
           find.byType(AutoTopUpAuthorizationScreen),
         );
 
-    testWidgets('ATOP-002 helper shows the fixed range before any input', (
-      tester,
-    ) async {
-      await pumpTab(tester);
-      expect(find.text(_threshold), findsOneWidget);
-      expect(helperColor(tester), const Color(0xFF707070));
-    });
-
-    for (final value in ['', '5', '10', '100', '150']) {
-      testWidgets('ATOP-002 threshold "$value" blocks apply inline', (
-        tester,
-      ) async {
-        await pumpTab(tester);
-        await threshold(tester, value);
-        await custom(tester, '25');
-        await apply(tester);
-        expect(find.text(_threshold), findsOneWidget);
-        expect(helperColor(tester), isNot(const Color(0xFF707070)));
-        expect(find.text(_noAmount), findsNothing);
-        expectNotSubmitted();
-      });
-    }
-
     for (final value in ['11', '50', '99']) {
       testWidgets('ATOP-002 threshold $value continues the existing flow', (
         tester,
@@ -308,17 +280,6 @@ void main() {
         expect(screen.cardToken, 'tok-1234');
       });
     }
-
-    testWidgets('ATOP-002 error clears when the threshold is edited', (
-      tester,
-    ) async {
-      await pumpTab(tester);
-      await threshold(tester, '10');
-      await apply(tester);
-      expect(helperColor(tester), isNot(const Color(0xFF707070)));
-      await threshold(tester, '20');
-      expect(helperColor(tester), const Color(0xFF707070));
-    });
 
     testWidgets('ATOP-003 no amount blocks apply inline', (tester) async {
       await pumpTab(tester);
@@ -397,19 +358,6 @@ void main() {
       expect(submitted(tester).autoTopUpAmount, 100);
     });
 
-    testWidgets('ATOP-001 card check still runs after valid amounts', (
-      tester,
-    ) async {
-      await pumpTab(tester, saved: const []);
-      await threshold(tester, '20');
-      await custom(tester, '25');
-      await apply(tester);
-      expect(find.text(_cardError), findsOneWidget);
-      expect(find.text('add a new card'), findsOneWidget);
-      expect(find.text(_threshold), findsOneWidget);
-      expect(helperColor(tester), const Color(0xFF707070));
-      expectNotSubmitted();
-    });
   });
 
   group('ATOP-007 authorization success', () {

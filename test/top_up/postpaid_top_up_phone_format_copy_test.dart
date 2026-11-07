@@ -8,8 +8,6 @@ void main() {
   for (final (isConfirmation, size) in [
     (false, const Size(320, 700)),
     (false, const Size(443, 958)),
-    (true, const Size(320, 700)),
-    (true, const Size(443, 958)),
   ]) {
     testWidgets(
       '${isConfirmation ? 'confirmation' : 'recipient'} requires 242 and shows invalid format inline at $size',

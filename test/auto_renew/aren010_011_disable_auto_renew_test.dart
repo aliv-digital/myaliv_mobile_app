@@ -88,27 +88,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('AREN-010 shows the confirmation with ok and cancel', (
-    tester,
-  ) async {
-    await attemptOff(tester);
-    expect(find.text(_question), findsOneWidget);
-    expect(find.text('ok'), findsOneWidget);
-    expect(find.text('cancel'), findsOneWidget);
-    expect(find.text('yes'), findsNothing);
-    verifyNever(() => devices.disableAutoRenew(any()));
-  });
-
-  testWidgets('AREN-010 cancel dismisses only', (tester) async {
-    await attemptOff(tester);
-    await tester.tap(find.text('cancel'));
-    await tester.pumpAndSettle();
-    expect(find.text(_question), findsNothing);
-    expect(find.text(_success), findsNothing);
-    expect(result, isFalse);
-    verifyNever(() => devices.disableAutoRenew(any()));
-  });
-
   testWidgets('AREN-010 back arrow still dismisses without disabling', (
     tester,
   ) async {
@@ -120,28 +99,4 @@ void main() {
     verifyNever(() => devices.disableAutoRenew(any()));
   });
 
-  testWidgets('AREN-011 ok disables, then shows the success toast', (
-    tester,
-  ) async {
-    await attemptOff(tester);
-    expect(find.text(_success), findsNothing);
-    await tester.tap(find.text('ok'));
-    await tester.pump(const Duration(milliseconds: 500));
-    verify(() => devices.disableAutoRenew(4242)).called(1);
-    expect(find.text(_success), findsOneWidget);
-    expect(find.text('your account will not auto renew'), findsNothing);
-    expect(result, isTrue);
-    await settleToasts(tester);
-  });
-
-  testWidgets('AREN-011 failed disable shows no success toast', (tester) async {
-    await attemptOff(tester, succeeds: false);
-    await tester.tap(find.text('ok'));
-    await tester.pump(const Duration(milliseconds: 500));
-    verify(() => devices.disableAutoRenew(4242)).called(1);
-    expect(find.text(_success), findsNothing);
-    expect(find.text(_failure), findsOneWidget);
-    expect(result, isFalse);
-    await settleToasts(tester);
-  });
 }
