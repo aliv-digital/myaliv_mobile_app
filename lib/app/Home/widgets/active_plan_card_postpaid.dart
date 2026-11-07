@@ -247,6 +247,7 @@ class _TopRow extends StatelessWidget {
 
 /// Auto-pay invoice toggle (interactive) for postpaid
 class _AutoPayToggle extends StatefulWidget {
+  // ignore: unused_element_parameter
   const _AutoPayToggle({required this.value, this.isLoading = false});
 
   final bool value;
@@ -274,9 +275,6 @@ class _AutoPayToggleState extends State<_AutoPayToggle> {
   }
 
   Future<void> _handleTap() async {
-    // Don't allow tap while loading
-    if (widget.isLoading) return;
-
     final newValue = !isOn;
 
     if (newValue) {

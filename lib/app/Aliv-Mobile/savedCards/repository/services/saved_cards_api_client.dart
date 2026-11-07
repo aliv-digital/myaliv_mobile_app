@@ -199,21 +199,6 @@ class SavedCardsApiClient {
     }
   }
 
-  Map<String, dynamic> _decodeMap(dynamic data) {
-    if (data is Map<String, dynamic>) return data;
-    if (data is Map) {
-      return data.map((key, value) => MapEntry(key.toString(), value));
-    }
-    if (data is String && data.trim().isNotEmpty) {
-      final decoded = jsonDecode(data);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) {
-        return decoded.map((key, value) => MapEntry(key.toString(), value));
-      }
-    }
-    return <String, dynamic>{};
-  }
-
   SavedCardsException _mapNetworkExceptionToSavedCardsException(
     NetworkException e,
   ) {

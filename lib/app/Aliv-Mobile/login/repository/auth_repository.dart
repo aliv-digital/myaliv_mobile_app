@@ -61,8 +61,9 @@ class LoginRepository {
     if (data is String) {
       final decoded = jsonDecode(data);
       if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map)
+      if (decoded is Map) {
         return decoded.map((k, v) => MapEntry(k.toString(), v));
+      }
     }
     throw const FormatException('Login response body was not a JSON object');
   }

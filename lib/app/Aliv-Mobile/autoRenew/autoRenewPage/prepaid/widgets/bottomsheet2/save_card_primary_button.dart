@@ -24,7 +24,7 @@ class SaveCardPrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AddOrEditCardsPrepaidTheme.primary,
           disabledBackgroundColor: AddOrEditCardsPrepaidTheme.primary
-              .withOpacity(0.45),
+              .withValues(alpha: 0.45),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),

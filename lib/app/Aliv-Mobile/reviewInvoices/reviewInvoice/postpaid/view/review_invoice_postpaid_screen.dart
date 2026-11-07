@@ -76,7 +76,7 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
           sliver: SliverList.separated(
             itemCount: state.invoices.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final invoice = state.invoices[index];
               final isDownloading = state.isDownloadingInvoice(

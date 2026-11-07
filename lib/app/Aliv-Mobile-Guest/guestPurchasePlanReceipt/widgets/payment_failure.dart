@@ -286,40 +286,32 @@ class _TicketBorderPainter extends CustomPainter {
 }
 
 class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter({
-    required this.color,
-    this.dashWidth = 6,
-    this.dashGap = 5,
-    this.strokeWidth = 1.4,
-  });
+  _DashedLinePainter({required this.color});
 
   final Color color;
-  final double dashWidth;
-  final double dashGap;
-  final double strokeWidth;
+  static const double _dashWidth = 6;
+  static const double _dashGap = 5;
+  static const double _strokeWidth = 1.4;
 
   @override
   void paint(Canvas canvas, Size size) {
     final p = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
+      ..strokeWidth = _strokeWidth;
 
     double x = 0.0;
     final double y = size.height / 2;
 
     while (x < size.width) {
-      final double x2 = (x + dashWidth).clamp(0.0, size.width).toDouble();
+      final double x2 = (x + _dashWidth).clamp(0.0, size.width).toDouble();
       canvas.drawLine(Offset(x, y), Offset(x2, y), p);
-      x += dashWidth + dashGap;
+      x += _dashWidth + _dashGap;
     }
   }
 
   @override
   bool shouldRepaint(covariant _DashedLinePainter oldDelegate) {
-    return oldDelegate.color != color ||
-        oldDelegate.dashWidth != dashWidth ||
-        oldDelegate.dashGap != dashGap ||
-        oldDelegate.strokeWidth != strokeWidth;
+    return oldDelegate.color != color;
   }
 }

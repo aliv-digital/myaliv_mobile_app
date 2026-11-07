@@ -8,13 +8,13 @@ class MyOutlinedButton extends StatelessWidget {
   final double thickness;
 
   const MyOutlinedButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     this.style,
     this.gradient,
     this.thickness = 2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

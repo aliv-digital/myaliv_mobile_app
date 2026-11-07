@@ -86,8 +86,9 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
 
   // Derives the display label from the user-enabled type flags.
   String _resolveDisplayType() {
-    if (widget.showFingerprint && widget.showFaceId)
+    if (widget.showFingerprint && widget.showFaceId) {
       return 'Fingerprint & Face ID';
+    }
     if (widget.showFingerprint) return 'Fingerprint';
     if (widget.showFaceId) return 'Face ID';
     return 'Biometric';

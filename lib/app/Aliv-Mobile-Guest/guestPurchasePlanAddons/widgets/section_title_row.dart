@@ -17,7 +17,7 @@ class SectionTitleRow extends StatelessWidget {
             style: GuestPurchasePlanAddOnsTheme.t(14, weight: FontWeight.w700),
           ),
         ),
-        if (trailing != null) trailing!,
+        ?trailing,
       ],
     );
   }

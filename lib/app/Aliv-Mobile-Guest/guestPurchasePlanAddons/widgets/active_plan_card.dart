@@ -83,7 +83,7 @@
 //                 width: 220,
 //                 height: 220,
 //                 decoration: BoxDecoration(
-//                   color: Colors.black.withOpacity(0.08),
+//                   color: Colors.black.withValues(alpha: 0.08),
 //                   shape: BoxShape.circle,
 //                 ),
 //               ),
@@ -95,7 +95,7 @@
 //                 width: 260,
 //                 height: 260,
 //                 decoration: BoxDecoration(
-//                   color: Colors.white.withOpacity(0.10),
+//                   color: Colors.white.withValues(alpha: 0.10),
 //                   shape: BoxShape.circle,
 //                 ),
 //               ),
@@ -396,7 +396,7 @@
 //                 width: 220,
 //                 height: 220,
 //                 decoration: BoxDecoration(
-//                   color: Colors.black.withOpacity(0.08),
+//                   color: Colors.black.withValues(alpha: 0.08),
 //                   shape: BoxShape.circle,
 //                 ),
 //               ),
@@ -408,7 +408,7 @@
 //                 width: 260,
 //                 height: 260,
 //                 decoration: BoxDecoration(
-//                   color: Colors.white.withOpacity(0.10),
+//                   color: Colors.white.withValues(alpha: 0.10),
 //                   shape: BoxShape.circle,
 //                 ),
 //               ),
@@ -723,7 +723,7 @@ class _CardBody extends StatelessWidget {
                 width: 220,
                 height: 220,
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -735,7 +735,7 @@ class _CardBody extends StatelessWidget {
                 width: 260,
                 height: 260,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.10),
+                  color: Colors.white.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                 ),
               ),

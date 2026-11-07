@@ -34,9 +34,6 @@ class WelcomeView extends StatelessWidget {
 
   static const double _horizontal = 25;
 
-  // ✅ Figma-like image crop/zoom
-  static const double _imageZoom = 1.0;
-
   // ✅ Bottom panel sizing (device independent feel)
   // - ratio-based but clamped so it never becomes too tall/too short
   static const double _panelMinH = 290;

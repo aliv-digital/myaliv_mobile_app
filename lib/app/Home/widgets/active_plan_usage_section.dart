@@ -264,15 +264,10 @@ class _UsageSectionSkeleton extends StatelessWidget {
 }
 
 class _SkeletonBox extends StatelessWidget {
-  const _SkeletonBox({
-    required this.width,
-    required this.height,
-    this.radius = 8,
-  });
+  const _SkeletonBox({required this.width, required this.height});
 
   final double width;
   final double height;
-  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +276,7 @@ class _SkeletonBox extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

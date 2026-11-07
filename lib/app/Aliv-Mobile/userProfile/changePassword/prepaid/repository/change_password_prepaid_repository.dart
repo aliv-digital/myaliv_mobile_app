@@ -5,7 +5,7 @@ class ChangePasswordPrepaidRepository {
   final NetworkService _networkService = instance<NetworkService>();
 
   /// POST /Auth/update-password
-  /// Body: { "NewPassword": "<new>" }
+  /// Body: { "NewPassword": "`<new>`" }
   Future<bool> changePassword({required String newPassword}) async {
     try {
       final response = await _networkService.request<dynamic>(

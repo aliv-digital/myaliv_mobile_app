@@ -1,5 +1,3 @@
-library core;
-
 // Network
 export 'src/network/network_service.dart';
 export 'src/network/network_config.dart';

@@ -18,7 +18,7 @@ class TopUpPrepaidNumberPostPaidApplySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final bg = enabled
         ? TopUpPrepaidNumberPostPaidTheme.primary
-        : TopUpPrepaidNumberPostPaidTheme.primary.withOpacity(0.45);
+        : TopUpPrepaidNumberPostPaidTheme.primary.withValues(alpha: 0.45);
 
     return SizedBox(
       height: 48,

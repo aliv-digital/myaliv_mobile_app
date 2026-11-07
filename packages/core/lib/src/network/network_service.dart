@@ -137,7 +137,7 @@ class NetworkService {
     final canRetry = method == HttpMethod.get;
     final maxAttempts = canRetry ? _maxRetryAttempts : 1;
 
-    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         final response = await _dispatchRequest<T>(
           path,

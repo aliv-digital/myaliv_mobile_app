@@ -8,8 +8,6 @@ import '../../../../../../router/app_routes.dart';
 class WalletTransferReceiptScreen extends StatelessWidget {
   const WalletTransferReceiptScreen({super.key});
 
-  String _money(double v) => AppUtils.formatPrice(v);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

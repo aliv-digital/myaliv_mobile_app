@@ -137,14 +137,15 @@ class _BottomShellState extends State<BottomShell> {
       return scaffold;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
         if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
           Navigator.of(context).pop();
-          return false;
+          return;
         }
         context.go(AppRoutes.welcome);
-        return false;
       },
       child: scaffold,
     );

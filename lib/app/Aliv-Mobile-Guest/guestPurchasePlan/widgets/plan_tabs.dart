@@ -51,7 +51,7 @@ class PlanTabs extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
               itemCount: visibleTabs.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 26),
+              separatorBuilder: (_, _) => const SizedBox(width: 26),
               itemBuilder: (context, i) {
                 final tab = visibleTabs[i];
                 final label = _tabs[tab]!;

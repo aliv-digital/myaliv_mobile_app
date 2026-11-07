@@ -19,7 +19,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           TextSpan(
             text: 'By pressing ‘Continue’ button you agree',
             style: TextStyle(
-              color: const Color(0xFF58677D),
+              color: Color(0xFF58677D),
               fontSize: 12,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
@@ -28,7 +28,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           TextSpan(
             text: 'to the ',
             style: TextStyle(
-              color: const Color(0xFF58677D),
+              color: Color(0xFF58677D),
               fontSize: 12,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
@@ -37,7 +37,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           TextSpan(
             text: 'Terms & Conditions',
             style: TextStyle(
-              color: const Color(0xFF645D9C),
+              color: Color(0xFF645D9C),
               fontSize: 13,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
@@ -53,7 +53,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           TextSpan(
             text: ' & ',
             style: TextStyle(
-              color: const Color(0xFF58677D),
+              color: Color(0xFF58677D),
               fontSize: 12,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
@@ -62,7 +62,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           TextSpan(
             text: 'Privacy Policy',
             style: TextStyle(
-              color: const Color(0xFF645D9C),
+              color: Color(0xFF645D9C),
               fontSize: 13,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,

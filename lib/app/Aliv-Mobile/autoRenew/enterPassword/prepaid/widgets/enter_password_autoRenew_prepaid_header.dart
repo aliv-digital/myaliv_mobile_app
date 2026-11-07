@@ -10,7 +10,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
         Text(
           'password required',
           style: TextStyle(
-            color: const Color(0xFF010101),
+            color: Color(0xFF010101),
             fontSize: 17,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
@@ -21,7 +21,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
           'for security reasons, please enter your password to continue.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: const Color(0xFF58677D),
+            color: Color(0xFF58677D),
             fontSize: 15,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,

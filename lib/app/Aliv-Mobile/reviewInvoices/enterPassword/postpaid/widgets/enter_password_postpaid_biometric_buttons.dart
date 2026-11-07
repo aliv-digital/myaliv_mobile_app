@@ -29,7 +29,7 @@ class EnterPasswordPostpaidBiometricButtons extends StatelessWidget {
               child: const Text(
                 'Face ID',
                 style: TextStyle(
-                  color: const Color(0xCC5146A8),
+                  color: Color(0xCC5146A8),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
@@ -54,7 +54,7 @@ class EnterPasswordPostpaidBiometricButtons extends StatelessWidget {
               child: const Text(
                 'Fingerprint',
                 style: TextStyle(
-                  color: const Color(0xCC5146A8),
+                  color: Color(0xCC5146A8),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,

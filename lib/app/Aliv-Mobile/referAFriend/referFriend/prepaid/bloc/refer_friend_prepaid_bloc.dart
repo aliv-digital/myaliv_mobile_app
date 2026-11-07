@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/active_device.dart';
 
 import '../../../../account-information/cubit/account_info_cubit.dart';

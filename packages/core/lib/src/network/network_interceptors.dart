@@ -55,21 +55,21 @@ class NetworkLoggingInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException error, ErrorInterceptorHandler handler) {
-    final status = error.response?.statusCode;
-    final tag = status?.toString() ?? error.type.name;
-    final method = error.requestOptions.method;
-    final uri = error.requestOptions.uri;
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    final status = err.response?.statusCode;
+    final tag = status?.toString() ?? err.type.name;
+    final method = err.requestOptions.method;
+    final uri = err.requestOptions.uri;
 
     debugPrint('\n❌ ERROR [$tag] $method $uri');
-    debugPrint('🔻 Type: ${error.type.name}');
-    debugPrint('🧨 Message: ${error.message ?? "(none)"}');
+    debugPrint('🔻 Type: ${err.type.name}');
+    debugPrint('🧨 Message: ${err.message ?? "(none)"}');
 
-    if (error.error != null) {
-      debugPrint('🪤 Cause: ${error.error}');
+    if (err.error != null) {
+      debugPrint('🪤 Cause: ${err.error}');
     }
 
-    final response = error.response;
+    final response = err.response;
     if (response != null) {
       if (_config.logResponseHeaders) {
         _printChunked('📋 Response Headers', _formatBody(response.headers.map));
@@ -88,7 +88,7 @@ class NetworkLoggingInterceptor extends Interceptor {
     }
 
     if (_config.logErrorRequestBody) {
-      final reqData = error.requestOptions.data;
+      final reqData = err.requestOptions.data;
       if (reqData != null) {
         if (reqData is FormData) {
           debugPrint('📤 Request FormData Fields: ${reqData.fields}');
@@ -101,11 +101,11 @@ class NetworkLoggingInterceptor extends Interceptor {
       }
     }
 
-    if (_config.logErrorStack && error.stackTrace.toString().isNotEmpty) {
-      debugPrint('🧵 Stack:\n${error.stackTrace}');
+    if (_config.logErrorStack && err.stackTrace.toString().isNotEmpty) {
+      debugPrint('🧵 Stack:\n${err.stackTrace}');
     }
 
-    return handler.next(error);
+    return handler.next(err);
   }
 
   // ---------------- helpers ----------------

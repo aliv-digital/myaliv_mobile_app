@@ -180,22 +180,6 @@ class _EmptyFuturePlansMessage extends StatelessWidget {
   }
 }
 
-/// Static first plan for prepaid users (existing behavior)
-class _PrepaidStaticFuturePlan extends StatelessWidget {
-  const _PrepaidStaticFuturePlan();
-
-  @override
-  Widget build(BuildContext context) {
-    return const FuturePlanCard(
-      title: 'liberty45',
-      startDate: '06/01/25',
-      endDate: '05/02/25',
-      image: 'assets/images/Future Plan 1.png',
-      isActivePlan: true,
-    );
-  }
-}
-
 class _StartPlanButton extends StatefulWidget {
   const _StartPlanButton();
 

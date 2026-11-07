@@ -29,12 +29,8 @@ class AppToast {
     final iconColor = isSuccess ? const Color(0xFF094338) : Colors.white;
 
     final entry = OverlayEntry(
-      builder: (_) => Positioned(
-        top:
-            MediaQueryData.fromWindow(
-              WidgetsBinding.instance.window,
-            ).padding.top +
-            16,
+      builder: (context) => Positioned(
+        top: MediaQuery.paddingOf(context).top + 16,
         left: 16,
         right: 16,
         child: Material(
@@ -68,7 +64,7 @@ class AppToast {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(

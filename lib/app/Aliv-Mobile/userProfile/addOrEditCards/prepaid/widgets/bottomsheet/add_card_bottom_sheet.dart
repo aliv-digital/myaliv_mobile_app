@@ -63,7 +63,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF2F0FA),
+                    color: Color(0xFFF2F0FA),
                     borderRadius: BorderRadius.circular(23),
                   ),
                   child: SvgPicture.asset(
@@ -83,7 +83,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                   //   height: 32,
                   //   decoration: BoxDecoration(
                   //
-                  //     border: Border.all(color: const Color(0xFF1F1F1F), width: 2),
+                  //     border: Border.all(color: Color(0xFF1F1F1F), width: 2),
                   //     shape: BoxShape.circle,
                   //   ),
                   //   child: const Icon(Icons.close, size: 18, color: Color(0xFF1F1F1F)),
@@ -99,7 +99,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: Text(
                 'save *${widget.last4} card',
                 style: const TextStyle(
-                  color: const Color(0xFF222222),
+                  color: Color(0xFF222222),
                   fontSize: 18,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
@@ -113,7 +113,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: Text(
                 'confirm expiration date',
                 style: TextStyle(
-                  color: const Color(0xFF707070),
+                  color: Color(0xFF707070),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
@@ -168,7 +168,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                 child: const Text(
                   'save card',
                   style: TextStyle(
-                    color: const Color(0xFFF1F1F8),
+                    color: Color(0xFFF1F1F8),
                     fontSize: 13,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
@@ -232,7 +232,7 @@ class _DropField<T> extends StatelessWidget {
       height: 46,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F3F7),
+        color: Color(0xFFF2F3F7),
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(
@@ -250,7 +250,7 @@ class _DropField<T> extends StatelessWidget {
                   child: Text(
                     labelBuilder(e),
                     style: const TextStyle(
-                      color: const Color(0xFF707070),
+                      color: Color(0xFF707070),
                       fontSize: 14,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,

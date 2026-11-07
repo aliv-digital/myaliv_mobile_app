@@ -80,11 +80,13 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     if (_initialValuesSet || !state.hasDeviceLimits) return;
     _initialValuesSet = true;
     _minThreshold = state.balanceThreshold.abs();
-    if (_minThreshold > 0)
+    if (_minThreshold > 0) {
       _thresholdController.text = _minThreshold.toInt().toString();
+    }
     final amount = state.autoTopUpAmount.abs().toInt();
-    if (AutoTopupAmountGrid.presetAmounts.contains(amount))
+    if (AutoTopupAmountGrid.presetAmounts.contains(amount)) {
       _selectedAmount = amount;
+    }
   }
 
   void _matchCard(SavedCardsState cardsState, String token) {

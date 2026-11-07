@@ -46,7 +46,7 @@ class NoRewardsPrepaid extends StatelessWidget {
         borderRadius: BorderRadius.circular(cardRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
@@ -66,7 +66,7 @@ class NoRewardsPrepaid extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 22),
                 padding: const EdgeInsets.fromLTRB(26, 20, 26, 20),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.96),
+                  color: Colors.white.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: const Color(0xFFFF3B30),

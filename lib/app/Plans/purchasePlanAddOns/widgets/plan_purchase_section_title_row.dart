@@ -21,7 +21,7 @@ class PlanPurchaseSectionTitleRow extends StatelessWidget {
             style: PlanPurchasePlanAddOnsTheme.t(14, weight: FontWeight.w700),
           ),
         ),
-        if (trailing != null) trailing!,
+        ?trailing,
       ],
     );
   }

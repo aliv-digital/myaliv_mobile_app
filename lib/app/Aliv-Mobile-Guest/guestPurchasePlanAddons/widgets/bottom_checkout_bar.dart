@@ -63,7 +63,7 @@ class BottomPayBar extends StatelessWidget {
                   onPressed: isLoading ? null : onPayNow,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
-                    disabledBackgroundColor: buttonColor.withOpacity(0.7),
+                    disabledBackgroundColor: buttonColor.withValues(alpha: 0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),

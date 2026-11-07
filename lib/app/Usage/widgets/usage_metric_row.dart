@@ -33,7 +33,7 @@ class UsageMetricRow extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: const Color(0xFF222222),
+                        color: Color(0xFF222222),
                         fontSize: 12,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
@@ -43,7 +43,7 @@ class UsageMetricRow extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color: const Color(0xFF707070),
+                        color: Color(0xFF707070),
                         fontSize: 12,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
@@ -119,31 +119,3 @@ class UsageMetricRow extends StatelessWidget {
   }
 }
 
-class _ProgressBar extends StatelessWidget {
-  final double progress;
-  final List<Color> gradient;
-
-  const _ProgressBar({required this.progress, required this.gradient});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 140,
-      height: 6,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: Colors.grey.shade200,
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: progress.clamp(0, 1),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            gradient: LinearGradient(colors: gradient),
-          ),
-        ),
-      ),
-    );
-  }
-}

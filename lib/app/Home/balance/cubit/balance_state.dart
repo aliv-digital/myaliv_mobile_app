@@ -170,8 +170,8 @@ class BalanceState {
   @override
   String toString() {
     return 'BalanceState(status: $status, '
-        'wallet: \$${walletBalanceFormatted}, '
-        'bonus: \$${bonusBalanceFormatted}, '
+        'wallet: \$$walletBalanceFormatted, '
+        'bonus: \$$bonusBalanceFormatted, '
         'errorMessage: $errorMessage, '
         'lastFetchedAt: $lastFetchedAt)';
   }

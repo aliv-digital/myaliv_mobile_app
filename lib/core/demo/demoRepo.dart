@@ -67,9 +67,12 @@ class DemoApiRepository {
   }) async {
     final String url = '$_baseUrl/users/settings';
     final Map<String, dynamic> payload = {};
-    if (emailNotifications != null)
+    if (emailNotifications != null) {
       payload['emailNotifications'] = emailNotifications;
-    if (theme != null) payload['theme'] = theme;
+    }
+    if (theme != null) {
+      payload['theme'] = theme;
+    }
 
     return _api.patchJson(url, body: payload);
   }

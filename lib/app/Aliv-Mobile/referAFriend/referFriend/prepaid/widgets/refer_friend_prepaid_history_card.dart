@@ -21,7 +21,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(
-          side: BorderSide(width: 1, color: const Color(0xFFDDDAF0)),
+          side: BorderSide(width: 1, color: Color(0xFFDDDAF0)),
           borderRadius: BorderRadius.circular(8),
         ),
         shadows: [
@@ -53,7 +53,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
               Text(
                 item.code,
                 style: const TextStyle(
-                  color: const Color(0xFF222222),
+                  color: Color(0xFF222222),
                   fontSize: 20,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
@@ -80,7 +80,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       side: BorderSide(
                         width: 1,
-                        color: const Color(0xFFDD2F37),
+                        color: Color(0xFFDD2F37),
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -88,7 +88,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                   child: Text(
                     item.expiryLabel!,
                     style: TextStyle(
-                      color: const Color(
+                      color: Color(
                         0xFFD92C20,
                       ) /* Colors-Text-text-error-primary-(600) */,
                       fontSize: 12,
@@ -103,7 +103,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
           Text(
             item.email,
             style: const TextStyle(
-              color: const Color(0xFF222222),
+              color: Color(0xFF222222),
               fontSize: 14,
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w500,
@@ -155,7 +155,7 @@ class _Meta extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: const Color(0xFF222222),
+              color: Color(0xFF222222),
               fontSize: 13,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
@@ -165,7 +165,7 @@ class _Meta extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: const Color(0xFF222222),
+              color: Color(0xFF222222),
               fontSize: 16,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,

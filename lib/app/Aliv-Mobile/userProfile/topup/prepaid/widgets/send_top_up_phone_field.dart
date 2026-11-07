@@ -13,10 +13,7 @@ class SendTopUpPhoneField extends StatefulWidget {
 
 class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
   Country? _selectedCountry;
-  String _phone = '';
   String? _error;
-
-  String get _flagEmoji => _selectedCountry?.flagEmoji ?? '🇺🇸';
 
   String get _dialCode {
     final raw = _selectedCountry?.phoneCode ?? '1';
@@ -93,7 +90,7 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
                       border: InputBorder.none,
                       hintText: widget.hint,
                       hintStyle: const TextStyle(
-                        color: const Color(0xFF707070),
+                        color: Color(0xFF707070),
                         fontSize: 14,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
@@ -102,7 +99,6 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
                     ),
                     onChanged: (value) {
                       setState(() {
-                        _phone = value;
                         _validate(value);
                       });
                     },

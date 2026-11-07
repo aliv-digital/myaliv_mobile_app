@@ -5,7 +5,7 @@ class ActionTile extends StatelessWidget {
   final String iconPath;
   final String label;
 
-  const ActionTile(this.iconPath, this.label);
+  const ActionTile(this.iconPath, this.label, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class ActionTile extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: const Color(0xFF222222),
+              color: Color(0xFF222222),
               fontSize: 12,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,

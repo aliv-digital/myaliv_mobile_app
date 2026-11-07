@@ -87,7 +87,7 @@ class PlanCard extends StatelessWidget {
                         Text(
                           plan.subtitle,
                           style: const TextStyle(
-                            color: const Color(0xFFE5D0D0),
+                            color: Color(0xFFE5D0D0),
                             fontSize: 13,
                             fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w500,

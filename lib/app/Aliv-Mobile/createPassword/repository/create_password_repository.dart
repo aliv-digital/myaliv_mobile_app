@@ -8,7 +8,7 @@ class CreatePasswordRepository {
   final NetworkService _network = instance<NetworkService>();
 
   /// POST /Auth/update-password
-  /// Body: { "CurrentPassword": null, "NewPassword": "<password>" }
+  /// Body: { "CurrentPassword": null, "NewPassword": "`<password>`" }
   /// Auth handled automatically by NetworkService (session set after OTP verify).
   Future<void> createPassword({required String password}) async {
     try {
@@ -41,8 +41,9 @@ class CreatePasswordRepository {
       if (data is String) {
         final decoded = jsonDecode(data);
         if (decoded is Map<String, dynamic>) return decoded;
-        if (decoded is Map)
+        if (decoded is Map) {
           return decoded.map((k, v) => MapEntry(k.toString(), v));
+        }
       }
     } catch (_) {}
     return null;

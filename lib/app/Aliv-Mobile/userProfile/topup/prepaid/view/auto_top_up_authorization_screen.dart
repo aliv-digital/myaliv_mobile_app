@@ -161,6 +161,7 @@ class _AutoTopUpAuthorizationScreenState
         );
       }
       _showError('Failed to update settings. Please try again.');
+      if (!mounted) return;
       final navigator = Navigator.of(context);
       if (navigator.canPop()) {
         navigator.pop();

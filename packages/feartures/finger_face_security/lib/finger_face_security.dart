@@ -1,5 +1,3 @@
-library finger_face_security;
-
 export 'src/services/biometric_auth_service.dart';
 export 'src/model/finger_face_security_model.dart';
 export 'src/bloc/finger_face_security_state.dart';

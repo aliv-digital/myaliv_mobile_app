@@ -9,7 +9,6 @@ import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../repository/base_login_otp_repository.dart';
-import '../repository/login_otp_repository.dart';
 import '../repository/otp_attempt_failure.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';

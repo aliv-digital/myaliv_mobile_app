@@ -61,7 +61,7 @@ void main() {
         data: <String, dynamic>{
           'id_acc': 1001,
           'Balance': balance,
-          if (accountStatus != null) 'AccountStatus': accountStatus,
+          'AccountStatus': ?accountStatus,
         },
       ),
     );

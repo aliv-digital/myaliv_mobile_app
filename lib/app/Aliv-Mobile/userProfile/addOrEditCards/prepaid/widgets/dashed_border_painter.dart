@@ -43,7 +43,7 @@ class DeepDashedRRectPainter extends CustomPainter {
     // 1) halo paint (behind)
     final haloPaint = Paint()
       ..isAntiAlias = true
-      ..color = color.withOpacity(haloOpacity)
+      ..color = color.withValues(alpha: haloOpacity)
       ..strokeWidth = haloWidth
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round

@@ -74,7 +74,7 @@ class PlanRedImageCard extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          if (topRight != null) topRight!,
+                          ?topRight,
                         ],
                       ),
                       Text(

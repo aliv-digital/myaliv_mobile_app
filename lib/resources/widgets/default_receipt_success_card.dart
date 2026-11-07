@@ -183,7 +183,7 @@ class _BackToLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(AppSession.appRoute);
+    debugPrint(AppSession.appRoute);
     return SizedBox(
       width: 156,
       height: 40,

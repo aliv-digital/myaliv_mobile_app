@@ -8,7 +8,6 @@ import 'support_state.dart';
 
 class SupportBloc extends Bloc<SupportEvent, SupportState> {
   final SupportRepository repository;
-  bool _isFaqOpening = false;
 
   SupportBloc({required this.repository}) : super(SupportState.initial()) {
     on<SupportStarted>(_onStarted);
@@ -89,7 +88,6 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
     SupportLaunchHandled event,
     Emitter<SupportState> emit,
   ) {
-    _isFaqOpening = false;
     emit(state.copyWith(isFaqOpening: false));
   }
 
@@ -124,20 +122,4 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
     );
   }
 
-  void _emitFailureLaunch(
-    Emitter<SupportState> emit, {
-    required String failureMessage,
-  }) {
-    final int nextId = state.actionSequence + 1;
-    emit(
-      state.copyWith(
-        actionSequence: nextId,
-        launchRequest: SupportLaunchRequest(
-          id: nextId,
-          uri: Uri.parse('https://www.bealiv.com'),
-          failureMessage: failureMessage,
-        ),
-      ),
-    );
-  }
 }

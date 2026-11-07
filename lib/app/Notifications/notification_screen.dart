@@ -366,7 +366,7 @@ class NotificationItem extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      color: const Color(0xFF1C1C1C) /* Black-100% */,
+                      color: Color(0xFF1C1C1C) /* Black-100% */,
                       fontSize: 14,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
@@ -425,7 +425,7 @@ class _MonthDropdown extends StatelessWidget {
                 fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: const Color(0xFF222222),
+                color: Color(0xFF222222),
               ),
             ),
             SizedBox(width: 8),

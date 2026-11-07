@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MyShadows {
   static BoxShadow tabShadow = BoxShadow(
-    color: Colors.white.withOpacity(0.18),
+    color: Colors.white.withValues(alpha: 0.18),
     offset: const Offset(0, 6),
     blurRadius: 20,
     spreadRadius: 0,

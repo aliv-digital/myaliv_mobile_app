@@ -133,7 +133,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
             isScrollControlled: true,
             isDismissible: true,
             backgroundColor: Colors.transparent,
-            barrierColor: Colors.black.withOpacity(0.5),
+            barrierColor: Colors.black.withValues(alpha: 0.5),
             builder: (_) => const AutoRenewBottomSheet(),
           );
         },
@@ -152,7 +152,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
               'assets/icons/card-add.svg',
               width: 18,
               height: 18,
-              color: Color(0xFFEF3A4B),
+              colorFilter: const ColorFilter.mode(Color(0xFFEF3A4B), BlendMode.srcIn),
             ),
             SizedBox(width: 10),
             Text(

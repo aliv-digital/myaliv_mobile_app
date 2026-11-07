@@ -69,7 +69,7 @@ class UsageCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(icon, color: color, height: 18, width: 18),
+              SvgPicture.asset(icon, colorFilter: ColorFilter.mode(color, BlendMode.srcIn), height: 18, width: 18),
               const SizedBox(width: 4),
               Flexible(
                 fit: FlexFit.loose,

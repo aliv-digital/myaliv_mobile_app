@@ -18,7 +18,7 @@ class EnterPasswordAutoRenewPrepaidOrDivider extends StatelessWidget {
           'Or Continue with',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: const Color(0xFF8A8A8F),
+            color: Color(0xFF8A8A8F),
             fontSize: 13,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,

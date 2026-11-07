@@ -36,6 +36,7 @@ dependencies:
   cached_network_image: ^3.4.1
   firebase_core: ^3.0.0
   dio: ^5.4.0
+  get_it: ^9.2.1
   core:
     path: packages/core
   finger_face_security:
