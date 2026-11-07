@@ -9,7 +9,6 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_mo
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/widgets/change_password_prepaid_header_text.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/widgets/change_password_prepaid_password_field.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 

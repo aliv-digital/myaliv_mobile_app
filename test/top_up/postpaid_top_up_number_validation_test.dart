@@ -1,25 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/bloc/top_up_prepaid_number_postpaid_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/bloc/top_up_prepaid_number_postpaid_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/bloc/top_up_prepaid_number_postpaid_state.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/repository/top_up_prepaid_number_postpaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/widgets/sections/top_up_prepaid_number_postpaid_confirm_number_section.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/postpaid/widgets/sections/top_up_prepaid_number_postpaid_number_section.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_limit_left_model.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
-
-class MockAccountInfoCubit extends Mock implements AccountInfoCubit {}
-
-class MockTopUpPrepaidNumberPostPaidRepository extends Mock
-    implements TopUpPrepaidNumberPostPaidRepository {}
-
-class MockTopUpPrepaidRepository extends Mock
-    implements TopUpPrepaidRepository {}
 
 void main() {
   setUpAll(() {

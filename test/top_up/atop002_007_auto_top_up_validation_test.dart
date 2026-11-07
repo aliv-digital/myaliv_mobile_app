@@ -39,7 +39,6 @@ const _threshold = r'amount must be above $10.00 and below $100.00';
 const _noAmount = 'choose a top-up amount or enter a custom amount';
 const _min = r'the minimum top-up amount is $5.00';
 const _max = r'the maximum top-up amount is $100.00';
-const _cardError = 'select a card to continue';
 const _started = 'auto top-up successfully started';
 const _updated =
     "We're working on it! Auto top-up takes a few minutes to update. Thank you for your patience.";
@@ -254,9 +253,6 @@ void main() {
           await otp.verify(tester);
           await tester.pumpAndSettle();
         });
-
-    Color? helperColor(WidgetTester tester) =>
-        tester.widget<Text>(find.text(_threshold)).style?.color;
 
     void expectNotSubmitted() =>
         expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
